@@ -1,4 +1,4 @@
-var settings = require('athena-settings');
+var settings = require('vmark-settings');
 var Frankon = require('../../framework/frankon');
 var Router = require('koa-router');
 var wechat = require('co-wechat');

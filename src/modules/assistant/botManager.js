@@ -23,7 +23,7 @@ botManager.on('register', function(msg){
 });
 
 botManager.on('need-login', function(msg){
-    //var settings = require('athena-settings');
+    //var settings = require('vmark-settings');
     //var url = settings.api.url + '/file?media_id=' + msg.media_id;
     //wechatApi.sendText(msg.openid, url, function(err, result){
     //    if(err){

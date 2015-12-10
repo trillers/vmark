@@ -6,7 +6,7 @@ var csState = require('../../modules/common/models/TypeRegistry').item('CSState'
 var userKvs = require('../../modules/user/kvs/User');
 var botManager = require('../../modules/assistant/botManager');
 var wechatApi = require('../../modules/wechat/common/api').api;
-var settings = require('athena-settings');
+var settings = require('vmark-settings');
 
 var Promise = require('bluebird');
 

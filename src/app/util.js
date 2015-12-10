@@ -1,4 +1,4 @@
-var settings = require('athena-settings');
+var settings = require('vmark-settings');
 var util = {};
 util.extend = function(obj, source) {
     for (var prop in source) {

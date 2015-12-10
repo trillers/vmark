@@ -1,12 +1,11 @@
 var koa = require('koa');
 var app = module.exports = koa();
-//var views = require('co-views');
 var views = require('koa-views');
 var logging = require('./logging');
 var logger = require('./logging').logger;
 var path = require('path');
 //var render= views(path.join(__dirname, '../views'), { map: { html: 'swig' }});
-var settings = require('athena-settings');
+var settings = require('vmark-settings');
 var koaBody = require('koa-body');
 app.env = 'development' || settings.env.NODE_ENV;
 //app.enable('trust proxy'); //TODO: configure it by settings
