@@ -1,0 +1,33 @@
+<assistant-item>
+    <li style="width: 100%">
+        <span class="col-md-3 assistantList"> <a  onclick="{operation}" style="text-decoration: none; cursor: pointer">{nickname || '匿名'}</a></span>
+        <span class="col-md-3 assistantList"> {date}</span>
+        <span class="col-md-3 assistantList"> {lFlg} </span>
+        <span class="col-md-3 assistantList"> {loginFlag ? '已登陆' : '未登录'} </span>
+        <span class="col-md-3 assistantList"> {remark}</span>
+    </li>
+    <br>
+    <br>
+    <style scoped>
+        .assistantList{width: 20%}
+    </style>
+    <script>
+        var self = this;
+        var item = self.opts.curritem;
+        var createTime = new Date(item.crtOn);
+        var year = createTime.getFullYear();
+        var month = createTime.getMonth() + 1;
+        var day = createTime.getDate();
+        self.date =  year + '-' + month + '-' + day;
+
+        mass(e){
+            e.preventUpdate = true;
+            riot.route('assistant/mass/_' + item._id);
+        }
+
+        operation(e){
+            e.preventUpdate = true;
+            riot.route('assistant/operation/_' + item._id);
+        }
+    </script>
+</assistant-item>
