@@ -8,7 +8,7 @@ before(function(done){
         done();
     }, 2000);
 });
-describe('PlatformTenantService', function(){
+describe('PlatformOrgService', function(){
     describe('ensurePlatform', function(){
         it('Succeed to ensure the platfrom tenant', function(done){
             var service = context.services.platformOrgService;

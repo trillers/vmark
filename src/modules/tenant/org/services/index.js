@@ -2,8 +2,8 @@ var Promise = require('bluebird');
 var u = require('../../../../app/util');
 var context = require('../../../../context');
 
-var TenantService = require('./TenantService');
+var TenantOrgService = require('./TenantOrgService');
 
-module.exports.tenantService = Promise.promisifyAll(new TenantService(context));
+module.exports.tenantOrgService = Promise.promisifyAll(new TenantOrgService(context));
 
 u.extend(context.services, module.exports);

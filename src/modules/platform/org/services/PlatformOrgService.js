@@ -3,7 +3,6 @@ var platformSettings = require('vmark-settings').platform;
 var cbUtil = require('../../../../framework/callback');
 var PartyType = require('../../../common/models/TypeRegistry').item('PartyType');
 var OrgService = require('./../../../org/services/OrgService');
-var Promise = require('bluebird');
 
 var Service = function(context){
     this.context = context;
