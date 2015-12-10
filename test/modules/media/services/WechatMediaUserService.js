@@ -1,5 +1,5 @@
-var context = require('../../../../../src');
-var WechatMediaUserType = require('../../../../../src/modules/common/models/TypeRegistry').item('WechatMediaUserType');
+var context = require('../../../../src');
+var WechatMediaUserType = require('../../../../src/modules/common/models/TypeRegistry').item('WechatMediaUserType');
 
 before(function(done){
     setTimeout(function () {
@@ -11,7 +11,7 @@ describe('WechatMediaUserService', function(){
         var wechatSiteId = null;
         before(function(done){
             var service = context.services.platformWechatSiteService;
-            service.loadPlatformWechatSite(function(err, wechatSite){
+            service.ensurePlatformWechatSite(function(err, wechatSite){
                 wechatSiteId = wechatSite.id;
                 done();
             })

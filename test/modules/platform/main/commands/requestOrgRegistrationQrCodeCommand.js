@@ -14,12 +14,13 @@ before(function(done){
     },2000);
 })
 
-describe.only('requestOrgRegistrationQrCodeCommand', function() {
+describe('requestOrgRegistrationQrCodeCommand', function() {
     var openid = 'okvXqsw1VG76eVVJrKivWDgps_gA';//独自等待的错题本openid
     before(function(done){
         var service = context.services.platformService;
         try{
             service.registerPlatformOperation(openid, function(err, user){
+                console.info(user);
                 assert.equal(user.posts[0].role, OrgMemberRole.PlatformOperation.value());
                 done();
             });

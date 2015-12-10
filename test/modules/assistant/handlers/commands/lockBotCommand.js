@@ -15,7 +15,7 @@ before(function(done){
     },2000);
 })
 
-describe.only('lockBot', function() {
+describe('lockBot', function() {
     var customer = null;
     //before(function(done){
     //    customerService.createFromOpenid(openid, function(err, data){

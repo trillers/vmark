@@ -1,4 +1,4 @@
-var context = require('../../../../../src');
+var context = require('../../../../src');
 
 before(function(done){
     setTimeout(function () {
@@ -10,7 +10,7 @@ describe('WechatMediaService', function(){
         var platformId = null;
         before(function(done){
             var service = context.services.platformOrgService;
-            service.loadPlatform(function(err, platform){
+            service.ensurePlatform(function(err, platform){
                 platformId = platform.id;
                 done();
             })

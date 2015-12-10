@@ -3,7 +3,7 @@ var IntegrationType = require('../../common/models/TypeRegistry').item('Integrat
 
 var Model = function(domainBuilder){
     var schema = domainBuilder
-        .i('Tenant')
+        .i('Org')
         .withBasis()
         .withLifeFlag()
         .withCreatedOn()
