@@ -7,7 +7,7 @@ var path = require('path');
 var settings = require('vmark-settings');
 var koaBody = require('koa-body');
 
-app.env = process.env.NODE_ENV || settings.env.NODE_ENV;
+app.env = process.env.NODE_ENV || settings.env.mode;
 app.proxy = true;
 app.port =  process.env.PORT || settings.env.port;
 app.bindip =  process.env.BINDIP || settings.env.bindIp;
