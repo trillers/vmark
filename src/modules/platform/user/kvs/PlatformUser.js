@@ -57,6 +57,19 @@ Kv.prototype.saveById = function(json, callback){
     });
 };
 
+Kv.prototype.deleteById = function(id, callback){
+    var redis = this.context.redis.main;
+    var key = idToObjKey(id);
+    redis.del(key, function(err, result){
+        cbUtil.logCallback(
+            err,
+            'Fail to delete platform user by id ' + id + ': ' + err,
+            'Succeed to delete platform user by id ' + id);
+
+        cbUtil.handleSingleValue(callback, err, result);
+    });
+};
+
 Kv.prototype.loadIdByOpenid = function(openid, callback){
     var redis = this.context.redis.main;
     var key = openidToIdKey(openid);

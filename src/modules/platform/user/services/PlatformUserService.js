@@ -22,6 +22,29 @@ Service.prototype.loadPlatformUserByOpenid = function(openid, callback) {
     });
 };
 
+Service.prototype.deletePlatformUserByOpenid = function(openid, callback) {
+    var logger = this.context.logger;
+    var kv = this.context.kvs.platformUser;
+    var PlatformUser = this.context.models.PlatformUser;
+    co(function* (){
+        var userId = yield kv.loadIdByOpenidAsync(openid);
+        if(!userId){
+            //TODO no opened linked user
+            if(callback) callback(null);
+            return;
+        }
+        yield PlatformUser.findByIdAndRemove(userId).exec();
+        yield kv.deleteByIdAsync(userId);
+        yield kv.unlinkOpenidAsync(openid);
+
+        if(callback) callback(null);
+    }).catch(Error, function(err){
+        logger.error('Fail to delete platform user by wechat site user\'s openid ' + openid + ' : ' + err);
+        logger.error(err.stack);
+        if(callback) callback(err);
+    });
+};
+
 Service.prototype.createPlatformUser = function(openid, callback) {
     var logger = this.context.logger;
     var kv = this.context.kvs.platformUser;

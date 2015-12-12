@@ -18,8 +18,19 @@ describe('PlatformUserService', function(){
                 done();
             });
         });
-
     });
+
+    describe.only('deletePlatformUserByOpenid', function(){
+        it('Succeed to delete a platform user', function(done){
+            var service = context.services.platformUserService;
+            var openid = 'okvXqsw1VG76eVVJrKivWDgps_gA';
+            service.deletePlatformUserByOpenid(openid, function(err){
+                assert.notOk(err);
+                done();
+            });
+        });
+    });
+
     describe('createPlatformUser', function(){
         it('Succeed to create a platform user', function(done){
             var service = context.services.platformUserService;
