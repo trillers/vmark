@@ -3,6 +3,7 @@ var cbUtil = require('../../../../framework/callback');
 var WechatMediaUserType = require('../../../common/models/TypeRegistry').item('WechatMediaUserType');
 var wechat = require('../../../wechat/common/api');
 var helper = require('../../../wechat/common/helper');
+var Kv = require('../kvs/PlatformUser');
 
 var Service = function(context){
     this.context = context;
@@ -10,10 +11,19 @@ var Service = function(context){
 
 Service.prototype.loadPlatformUserByOpenid = function(openid, callback) {
     var logger = this.context.logger;
-    var kv = this.context.kvs.platformUser;
+    var platformWechatSiteUserKv = this.context.kvs.platformWechatSiteUser;
+    var me = this;
+
     co(function* (){
-        var userId = yield kv.loadIdByOpenidAsync(openid);
-        var user = yield kv.loadByIdAsync(userId);
+        var wechatSiteUser = yield platformWechatSiteUserKv.loadByOpenidAsync(openid);
+        if(!wechatSiteUser){
+            if(callback) callback(null, null);
+        }
+        var userId = wechatSiteUser.user;
+        var user = null;
+        if(userId){
+            user = yield me.loadByIdAsync(userId);
+        }
         if(callback) callback(null, user);
     }).catch(Error, function(err){
         logger.error('Fail to load platform user by wechat site user\'s openid '+openid+' : ' + err);
@@ -24,20 +34,17 @@ Service.prototype.loadPlatformUserByOpenid = function(openid, callback) {
 
 Service.prototype.deletePlatformUserByOpenid = function(openid, callback) {
     var logger = this.context.logger;
-    var kv = this.context.kvs.platformUser;
-    var PlatformUser = this.context.models.PlatformUser;
+    var platformWechatSiteUserService = this.context.services.platformWechatSiteUserService;
+    var me = this;
     co(function* (){
-        var userId = yield kv.loadIdByOpenidAsync(openid);
-        if(!userId){
-            //TODO no opened linked user
+        var userid = yield platformWechatSiteUserService.deletePlatformWechatSiteUserByOpenidAsync(openid);
+        if(!userid){
+            logger.warn('No platfrom wechat site user [openid = ' + openid + '] found, skip deleting platform user');
             if(callback) callback(null);
             return;
         }
-        yield PlatformUser.findByIdAndRemove(userId).exec();
-        yield kv.deleteByIdAsync(userId);
-        yield kv.unlinkOpenidAsync(openid);
-
-        if(callback) callback(null);
+        yield me.deleteByIdAsync(userid);
+        if(callback) callback();
     }).catch(Error, function(err){
         logger.error('Fail to delete platform user by wechat site user\'s openid ' + openid + ' : ' + err);
         logger.error(err.stack);
@@ -47,30 +54,46 @@ Service.prototype.deletePlatformUserByOpenid = function(openid, callback) {
 
 Service.prototype.createPlatformUser = function(openid, callback) {
     var logger = this.context.logger;
-    var kv = this.context.kvs.platformUser;
-    var platformWechatSiteService = this.context.services.platformWechatSiteService;
     var platformWechatSiteUserService = this.context.services.platformWechatSiteUserService;
     var me = this;
 
     co(function* (){
-        var userId = yield kv.loadIdByOpenidAsync(openid);
-        var user = yield kv.loadByIdAsync(userId);
-        if(user){
-            if(callback) callback(null, user);
+        var wechatSiteUser = yield platformWechatSiteUserService.loadByOpenidAsync(openid);
+        var userId = null;
+        var user = null;
+        if(wechatSiteUser){
+            userId = wechatSiteUser.user;
+            if(userId){
+                user = yield me.loadByIdAsync(userId);
+                if(user){
+                    if(callback) callback(null, user); //TODO: set action result action: 'loaded'
+                    return;
+                }
+                else{
+                    //db is in not illegal state. create user and link to wechat site user again.
+                    logger.error('Fail to load platform user by id ' + userId + ', begin to create a brand new one and link it');
+                }
+            }
+
+            /*
+             *  Create user and link to wechat site user
+             */
+            var userJson = {};
+            helper.copyUserInfo(userJson, wechatSiteUser);
+            user = yield me.createAsync(userJson);
+            yield platformWechatSiteUserService.updatePlatformWechatSiteUserByIdAsync(wechatSiteUser.id, {user: user.id});
+            if(callback) callback(null, user); //TODO: set action result action: 'attached'
             return;
         }
 
         var wechatSiteUserInfo = yield helper.getUserInfoAsync(wechat.api, openid, 'zh_CN');
-        var userJson = {posts: []};
+        var userJson = {};
         helper.copyUserInfo(userJson, wechatSiteUserInfo);
         user = yield me.createAsync(userJson);
-        var wechatSite = yield platformWechatSiteService.ensurePlatformWechatSiteAsync();
         var wechatSiteUserJson = {};
-        wechatSiteUserJson.host = wechatSite.id;
-        wechatSiteUserJson.type = WechatMediaUserType.WechatSiteUser.value();
         wechatSiteUserJson.user = user.id;
         helper.copyUserInfo(wechatSiteUserJson, wechatSiteUserInfo);
-        platformWechatSiteUserService.createPlatformWechatSiteUser(wechatSiteUserJson);
+        yield platformWechatSiteUserService.createPlatformWechatSiteUserAsync(wechatSiteUserJson);
         if(callback) callback(null, user);
     }).catch(Error, function(err){
         logger.error('Fail to create platform user linked to wechat site user: ' + err);
@@ -79,6 +102,13 @@ Service.prototype.createPlatformUser = function(openid, callback) {
     });
 };
 
+Service.prototype.loadById = Kv.prototype.loadById;
+
+/**
+ * Create user in mongoose and redis.
+ * @param userJson
+ * @param callback
+ */
 Service.prototype.create = function(userJson, callback){
     var logger = this.context.logger;
     var kv = this.context.kvs.platformUser;
@@ -99,16 +129,23 @@ Service.prototype.create = function(userJson, callback){
                     if(callback) callback(err);
                     return;
                 }
-                kv.linkOpenid(obj.openid, obj.id, function(err){
-                    if(callback) callback(err, obj);
-                });
+                if(callback) callback(err, obj);
+                //kv.linkOpenid(obj.openid, obj.id, function(err){
+                //    if(callback) callback(err, obj);
+                //});
             });
         }, err, result, affected);
     });
-
 };
 
+/**
+ *
+ * @param conditions
+ * @param update
+ * @param callback
+ */
 Service.prototype.update = function(conditions, update, callback){
+    var logger = this.context.logger;
     var PlatformUser = this.context.models.PlatformUser;
     var kv = this.context.kvs.platformUser;
     PlatformUser.findOneAndUpdate(conditions, update, {new: true}, function(err, doc){
@@ -121,15 +158,43 @@ Service.prototype.update = function(conditions, update, callback){
             var obj = doc.toObject({virtuals: true});
             kv.saveById(obj, function(err, obj){
                 if(err){
-                    //TODO
+                    logger.error('Fail to update platform user: ' + err);
+                    logger.error(err.stack);
                     if(callback) callback(err);
                     return;
                 }
-                obj.posts = JSON.parse(obj.posts);
                 if(callback) callback(err, obj);
             });
         }, err, doc);
     })
-}
+};
+
+/**
+ * Delete user in mongoose and redis by id
+ * @param id
+ * @param callback
+ */
+Service.prototype.deleteById = function(id, callback) {
+    var logger = this.context.logger;
+    var PlatformUser = this.context.models.PlatformUser;
+    var kv = this.context.kvs.platformUser;
+    PlatformUser.findByIdAndRemove(id, function(err){
+        if (err) {
+            logger.error('Fail to delete platform user by [id=' + id + ']: ' + err);
+            if(callback) callback(err);
+            return;
+        }
+        kv.deleteById(id, function(err){
+            if (err) {
+                logger.error('Fail to delete platform user by [id=' + id + ']: ' + err);
+                if(callback) callback(err);
+                return;
+            }
+
+            logger.debug('Succeed to delete platform user [id=' + id + ']');
+            if(callback) callback();
+        });
+    });
+};
 
 module.exports = Service;

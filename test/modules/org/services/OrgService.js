@@ -8,7 +8,7 @@ before(function(done){
 });
 describe('OrgService', function(){
     describe('create', function(){
-        it('Succeed to create a personal tenant', function(done){
+        it('Succeed to create a personal org', function(done){
             var service = context.services.orgService;
             var org = {
                 name: '包三哥'

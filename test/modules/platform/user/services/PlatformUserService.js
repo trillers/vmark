@@ -7,45 +7,46 @@ before(function(done){
         done();
     }, 2000);
 });
+
 describe('PlatformUserService', function(){
-    describe('loadPlatformUserByOpenid', function(){
-        it('Succeed to load a platform user', function(done){
-            var service = context.services.platformUserService;
-            var openid = 'okvXqsw1VG76eVVJrKivWDgps_gA';
-            service.loadPlatformUserByOpenid(openid, function(err, user){
-                logger.debug(user);
-                assert.equal(user.openid, openid);
-                done();
-            });
-        });
-    });
-
-    describe.only('deletePlatformUserByOpenid', function(){
-        it('Succeed to delete a platform user', function(done){
-            var service = context.services.platformUserService;
-            var openid = 'okvXqsw1VG76eVVJrKivWDgps_gA';
-            service.deletePlatformUserByOpenid(openid, function(err){
-                assert.notOk(err);
-                done();
-            });
-        });
-    });
-
+    var openid = 'okvXqs_VftHruzwFV9rx4Pbd_fno'; //小小星星妹
+    var openid = 'okvXqsw1VG76eVVJrKivWDgps_gA';
     describe('createPlatformUser', function(){
         it('Succeed to create a platform user', function(done){
             var service = context.services.platformUserService;
-            var openid = 'okvXqs_VftHruzwFV9rx4Pbd_fno';
             service.createPlatformUser(openid, function(err, user){
                 logger.debug(user);
+                assert.ok(user);
+                done();
+            });
+        });
+    });
+    describe('loadPlatformUserByOpenid', function(){
+        it('Succeed to load a platform user', function(done){
+            var service = context.services.platformUserService;
+            service.loadPlatformUserByOpenid(openid, function(err, user){
+                logger.debug(user);
+                assert.equal(user.openid, openid);
+                assert.equal(user.nickname, '包三哥');
                 done();
             });
         });
     });
 
+    //describe('deletePlatformUserByOpenid', function(){
+    //    it('Succeed to delete a platform user', function(done){
+    //        var service = context.services.platformUserService;
+    //        service.deletePlatformUserByOpenid(openid, function(err){
+    //            assert.notOk(err);
+    //            done();
+    //        });
+    //    });
+    //});
+
+    var userId = null;
     describe('create', function(){
         it('Succeed to create a user', function(done){
             var service = context.services.platformUserService;
-            var openid = 'okvXqsw1VG76eVVJrKivWDgps_gA';
             var user = {
                 posts: [{org: '001', member: '001', role: 'to'}]
                 , openid: openid
@@ -60,11 +61,33 @@ describe('PlatformUserService', function(){
             };
 
             service.create(user, function(err, user){
+                userId = user.id;
                 logger.debug(user);
                 done();
             });
         });
+    });
 
+    describe('update', function(){
+        it('Succeed to update a user', function(done){
+            var service = context.services.platformUserService;
+            service.update({_id: userId}, {nickname: '包三哥-updated'}, function(err, user){
+                logger.debug(user);
+                assert.equal(user.openid, openid);
+                assert.equal(user.nickname, '包三哥-updated');
+                done();
+            });
+        });
+    });
+
+    describe('deleteById', function(){
+        it('Succeed to delete a user', function(done){
+            var service = context.services.platformUserService;
+            service.deleteById(userId, function(err){
+                assert.notOk(err);
+                done();
+            });
+        });
     });
 
 });

@@ -10,7 +10,7 @@ before(function(done){
 });
 describe('PlatformOrgService', function(){
     describe('ensurePlatform', function(){
-        it('Succeed to ensure the platfrom tenant', function(done){
+        it('Succeed to ensure the platform org', function(done){
             var service = context.services.platformOrgService;
             service.ensurePlatform(function(err, platform){
                 logger.debug(platform);
@@ -22,7 +22,7 @@ describe('PlatformOrgService', function(){
     });
 
     describe('createPlatform', function(){
-        it('Succeed to create a platfrom tenant', function(done){
+        it('Succeed to create a platform org', function(done){
             var service = context.services.platformOrgService;
             service.createPlatform(function(err, platform){
                 logger.debug(platform);
@@ -35,7 +35,7 @@ describe('PlatformOrgService', function(){
     });
 
     describe('loadPlatform', function(){
-        it('Succeed to load the platfrom tenant', function(done){
+        it('Succeed to load the platform org', function(done){
             var service = context.services.platformOrgService;
             service.loadPlatform(function(err, platform){
                 logger.debug(platform);
