@@ -35,10 +35,8 @@ Service.prototype.registerPlatformPost = function (openid, role, callback) {
     var logger = this.context.logger;
     var platformOrgService = this.context.services.platformOrgService;
     var platformUserService = this.context.services.platformUserService;
-    var platformUserKv = this.context.kvs.platformUser;
     co(function*() {
-        var id = yield platformUserKv.loadIdByOpenidAsync(openid);
-        var user = yield platformUserKv.loadByIdAsync(id);
+        var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
         var updateOrAdd = 'add';
         var platform = yield platformOrgService.ensurePlatformAsync();
         if (user) {
@@ -66,6 +64,7 @@ Service.prototype.registerPlatformPost = function (openid, role, callback) {
                 else {
                     hasOperationRole = true;
                 }
+
                 if (hasOperationRole) {
                     if (callback) callback(null, user);
                     return;
