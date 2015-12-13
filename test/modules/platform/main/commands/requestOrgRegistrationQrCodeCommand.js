@@ -18,20 +18,16 @@ describe('requestOrgRegistrationQrCodeCommand', function() {
     var openid = 'okvXqsw1VG76eVVJrKivWDgps_gA';//独自等待的错题本openid
     before(function(done){
         var service = context.services.platformService;
-        try{
-            service.registerPlatformOperation(openid, function(err, user){
-                console.info(user);
-                assert.equal(user.posts[0].role, OrgMemberRole.PlatformOperation.value());
-                done();
-            });
-        }
-        catch(e){
-            console.error(e);
+        service.registerPlatformOperation(openid, function(err, user){
+            assert.ok(
+                user.posts[0].role == OrgMemberRole.PlatformOperation.value() ||
+                user.posts[0].role == OrgMemberRole.PlatformAdmin.value()
+            );
             done();
-        }
+        });
     });
     describe('request org registration qr code', function(){
-        it('success', function (done) {
+        it('succeed to request', function (done) {
             var platform = new Wechat.Platform();
             var client = wxutil.newSignedInClient(platform);
             var site = wxutil.newRegisteredSite(platform);

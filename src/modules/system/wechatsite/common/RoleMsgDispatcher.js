@@ -13,22 +13,23 @@ var RoleMsgDispatcher = function(){
 RoleMsgDispatcher.prototype.emit = function(context){
     var self = this;
     context.getUser().then(function(user){
+        console.error(user);
         var post = null;
         if(user && user.posts && user.posts.length>0){
             post = user.posts[0]; 
         }
         
         if(post){ //for platform and regular tenant users
-            if(user.role == OrgMemberRole.TenantOperation.value()){
+            if(post.role == OrgMemberRole.TenantOperation.value()){
                 self.emitter.emit('to', 'to', context);
             }
-            else if(user.role == OrgMemberRole.TenantAdmin.value()){
+            else if(post.role == OrgMemberRole.TenantAdmin.value()){
                 self.emitter.emit('ta', 'ta', context);
             }
             else if(post.role == OrgMemberRole.PlatformOperation.value()){
                 self.emitter.emit('po', 'po', context);
             }
-            else if(user.role == OrgMemberRole.PlatformAdmin.value()){
+            else if(post.role == OrgMemberRole.PlatformAdmin.value()){
                 self.emitter.emit('pa', 'pa', context);
             }
             else{
