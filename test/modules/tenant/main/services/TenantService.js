@@ -30,9 +30,8 @@ describe('TenantService', function(){
         it('Fail to bind a personal bot because no operator user', function(done){
             var service = context.services.tenantService;
             var bindBotResults = service.bindBotResults;
-            service.bindPersonalBot('fake openid', botOpenid, function(err, botUser, result){
+            service.bindPersonalBot('fake openid', botOpenid, function(err, result){
                 logger.debug(err);
-                logger.debug(botUser);
                 logger.debug(result);
                 assert.equal(result.result, bindBotResults.NO_OPERATOR);
                 done();
@@ -42,9 +41,8 @@ describe('TenantService', function(){
         it('Fail to bind a personal bot because operator is not admin user', function(done){
             var service = context.services.tenantService;
             var bindBotResults = service.bindBotResults;
-            service.bindPersonalBot(botOpenid, botOpenid, function(err, botUser, result){
+            service.bindPersonalBot(botOpenid, botOpenid, function(err, result){
                 logger.debug(err);
-                logger.debug(botUser);
                 logger.debug(result);
                 assert.equal(result.result, bindBotResults.NOT_ADMIN);
                 done();
@@ -53,11 +51,9 @@ describe('TenantService', function(){
 
         it('Succeed to bind a personal bot', function(done){
             var service = context.services.tenantService;
-            service.bindPersonalBot(operatorOpenid, botOpenid, function(err, botUser, result){
+            service.bindPersonalBot(operatorOpenid, botOpenid, function(err, result){
                 logger.debug(err);
-                logger.debug(botUser);
                 logger.debug(result);
-                //assert.equal(result.administrative, false);
                 done();
             });
         });

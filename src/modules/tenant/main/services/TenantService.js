@@ -108,7 +108,10 @@ Service.prototype.bindPersonalBot = function(operatorOpenid, botOpenid, callback
 
         //Check if tenant admin user exists
         if(!adminUser){
-            if (callback) callback(null, null, {result: bindBotResults.NO_OPERATOR});
+            if (callback) callback(null, {
+                user: null,
+                result: bindBotResults.NO_OPERATOR
+            });
             return;
         }
 
@@ -116,7 +119,10 @@ Service.prototype.bindPersonalBot = function(operatorOpenid, botOpenid, callback
         if ( !adminUser.posts ||
             !adminUser.posts.length ||
             adminUser.posts[0].role != OrgMemberRole.TenantAdmin.value()) {
-            if (callback) callback(null, null, {result: bindBotResults.NOT_ADMIN});
+            if (callback) callback(null, {
+                user: null,
+                result: bindBotResults.NOT_ADMIN
+            });
             return;
         }
         else{
@@ -130,7 +136,10 @@ Service.prototype.bindPersonalBot = function(operatorOpenid, botOpenid, callback
         //Check if bot user exists
         if(botUser){
             if(botUser.posts && botUser.posts.length){
-                if (callback) callback(null, botUser, {result: bindBotResults.BOUND});
+                if (callback) callback(null, {
+                    user: botUser,
+                    result: bindBotResults.BOUND
+                });
                 return;
             }
         }
@@ -179,7 +188,10 @@ Service.prototype.bindPersonalBot = function(operatorOpenid, botOpenid, callback
         };
         botUser = yield platformUserService.updateAsync(conditions, update);
         //TODO: start bot
-        if (callback) callback(null, botUser,  {result: bindBotResults.BIND});
+        if (callback) callback(null, {
+            user: botUser,
+            result: bindBotResults.BIND
+        });
     }).catch(Error, function (err) {
         logger.error('Fail to bind personal bot ' + botOpenid + 'for operator ' + operatorOpenid + ': ' + err);
         logger.error(err.stack);
