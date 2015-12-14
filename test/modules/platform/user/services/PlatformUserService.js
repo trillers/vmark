@@ -9,7 +9,7 @@ before(function(done){
 });
 
 describe('PlatformUserService', function(){
-    var openid = 'okvXqs_VftHruzwFV9rx4Pbd_fno'; //小小星星妹
+    //var openid = 'okvXqs_VftHruzwFV9rx4Pbd_fno'; //小小星星妹
     var openid = 'okvXqsw1VG76eVVJrKivWDgps_gA';
     describe('createPlatformUser', function(){
         it('Succeed to create a platform user', function(done){

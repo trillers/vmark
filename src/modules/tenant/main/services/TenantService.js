@@ -11,10 +11,8 @@ Service.prototype.registerPersonalTenant = function(openid, callback) {
     var tenantOrgService = this.context.services.tenantOrgService;
     var tenantOrgMemberService = this.context.services.tenantOrgMemberService;
     var platformUserService = this.context.services.platformUserService;
-    var platformUserKv = this.context.kvs.platformUser;
     co(function*() {
-        var id = yield platformUserKv.loadIdByOpenidAsync(openid);
-        var user = yield platformUserKv.loadByIdAsync(id);
+        var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
         var tenant = null;
         var tenantAdmin = null;
         if (user) {
@@ -41,7 +39,7 @@ Service.prototype.registerPersonalTenant = function(openid, callback) {
             name: user.nickname,
             desc: user.nickname
         };
-        tenant = yield tenantOrgService.createPersonalTenant(tenantJson);
+        tenant = yield tenantOrgService.createPersonalTenantAsync(tenantJson);
         if(!tenant){
             if (callback) callback(new Error('Fail to create tenant from wechat site user'));
             return;
@@ -57,7 +55,7 @@ Service.prototype.registerPersonalTenant = function(openid, callback) {
             , remark: user.nickname
         };
 
-        tenantAdmin = yield tenantOrgMemberService.createTenantAdmin(tenantAdminJson);
+        tenantAdmin = yield tenantOrgMemberService.createTenantAdminAsync(tenantAdminJson);
         if(!tenantAdmin){
             if (callback) callback(new Error('Fail to create tenant admin from wechat site user'));
             return;
@@ -77,7 +75,6 @@ Service.prototype.registerPersonalTenant = function(openid, callback) {
             }
         };
         user = yield platformUserService.updateAsync(conditions, update);
-
         if (callback) callback(null, user);
     }).catch(Error, function (err) {
         logger.error('Fail to register personal tenant for openid ' + openid + ': ' + err);
