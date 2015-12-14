@@ -53,16 +53,13 @@ Service.prototype.registerPlatformPost = function (openid, role, callback) {
                     if (platformPost.role == role) {
                         hasOperationRole = true;
                     }
-                    else if (platformPost.role == OrgMemberRole.PlatformOperation.value() && role == OrgMemberRole.PlatformAdmin.value()) {
+                    else {
                         hasOperationRole = false;
                         updateOrAdd = 'update';
                     }
-                    else {
-                        hasOperationRole = true;
-                    }
                 }
                 else {
-                    hasOperationRole = true;
+                    hasOperationRole = false;
                 }
 
                 if (hasOperationRole) {
