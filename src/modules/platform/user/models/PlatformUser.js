@@ -9,7 +9,7 @@ var Model = function(domainBuilder){
         .withProperties({
             posts: [{
                 org: {type: String, ref: 'Org', required: true}
-                , member: {type: String, ref: 'OrgMember', required: true}
+                , member: {type: String, required: true}
                 , role: {type: String, enum: OrgMemberRole.valueList(), required: true}
             }]
             , openid:       {type: String} //服务号粉丝openid 或者 助手号联系人buid (bot's contact id)

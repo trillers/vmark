@@ -13,6 +13,7 @@ registry
     .up().item('OrgMemberRole', 'OrgMemberRole', '组织成员角色')
     .addChild('TenantAdmin','ta', '租户管理员')
     .addChild('TenantOperation','to', '租户运营')
+    .addChild('TenantWechatBot','twb', '微信助手号')
     .addChild('PlatformAdmin','pa', '平台管理员')
     .addChild('PlatformOperation','po', '平台运营')
 
