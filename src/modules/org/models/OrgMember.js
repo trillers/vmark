@@ -6,7 +6,8 @@ var Model = function(domainBuilder){
         .withLifeFlag()
         .withCreatedOn()
         .withProperties({
-            org:         {type: String, ref: 'Org', required: true}
+            org:            {type: String, ref: 'Org', required: true}
+            , user:         {type: String, ref: 'PlatformUser', required: false}
             , nickname:     {type: String, required: true}
             , headimgurl:   {type: String}
             , role:         {type: String, enum: OrgMemberRole.valueList(), default: OrgMemberRole.TenantAdmin.value(), required: true}
