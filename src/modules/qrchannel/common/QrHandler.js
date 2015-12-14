@@ -41,7 +41,7 @@ QrHandler.prototype.create = function(sceneId, customId, callback){
         forever: this.forever,
         type: this.type,
         scene_id: sceneId,
-        customId: customId
+        custom_id: customId
     };
 
      createQrCode(sceneId)
@@ -51,6 +51,8 @@ QrHandler.prototype.create = function(sceneId, customId, callback){
             qrChannel.expire = new Date(date.getTime() + 7*24*60*60*1000);
             return qrChannel;
         }).then(function(qrChannel){
+             console.log('$$$$$$$$$$$$$$$$$$$$$$$');
+             console.error(qrChannel);
             QrChannelService.create(qrChannel, function (err, doc) {
                 if (err) {
                     if (callback) callback(err);
