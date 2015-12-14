@@ -163,6 +163,16 @@ Service.prototype.update = function(conditions, update, callback){
                     if(callback) callback(err);
                     return;
                 }
+                if(obj.posts && typeof obj.posts == 'string'){
+                    var posts = obj.posts;
+                    try{
+                        obj.posts = JSON.parse(obj.posts);
+                    }
+                    catch(e){
+                        logger.error('Fail to parse posts: ' + posts);
+                        result.posts = [];
+                    }
+                }
                 if(callback) callback(err, obj);
             });
         }, err, doc);

@@ -126,6 +126,14 @@ Service.prototype.updatePlatformUserPosts = function(user, role, updateOrAdd, ca
             update = {
                 $set: { "posts.$.role" : role }
             }
+            var memberId = null;
+            user.posts.forEach(function (item) {
+                if (item.org == platform.id) {
+                    memberId = item.member;
+                    return;
+                }
+            });
+            yield orgMemberService.updateByIdAsync(memberId, {role: role});
         }
 
         user = yield platformUserService.updateAsync(conditions, update);

@@ -38,7 +38,7 @@ describe('PlatformService', function(){
                 assert.equal(user.posts[0].role, OrgMemberRole.PlatformAdmin.value());
 
                 service.registerPlatformPost(openid, OrgMemberRole.PlatformOperation.value(), function(err, user){
-                    assert.equal(user.posts[0].role, OrgMemberRole.PlatformAdmin.value());
+                    assert.equal(user.posts[0].role, OrgMemberRole.PlatformOperation.value());
                     done();
                 });
             });
