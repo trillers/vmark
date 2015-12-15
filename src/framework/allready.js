@@ -105,14 +105,10 @@ Ar.prototype.down = function(id){
  */
 Ar.prototype.check = function(fn){
     var me = this;
-    if(me._allComplete()){
-        fn.apply(null);
+    if(me.busy){
+        me.MAIN.push(fn);
     }else{
-        if(me.busy){
-            me.MAIN.push(fn);
-        }else{
-            me.ready(fn);
-        }
+        me.ready(fn);
     }
     return this;
 };
