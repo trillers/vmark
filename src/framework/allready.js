@@ -1,5 +1,5 @@
 var EventEmitter = require('events').EventEmitter;
-var util = require('./myutil');
+var util = {};
 var u = require('util');
 var Ar = function(){
     EventEmitter.call(this);
@@ -195,7 +195,42 @@ Ar.prototype.amqp = function(client){
         })
     }, function noop(){})
 };
-
+util.isObject = function(a){
+    return util.typeof(a) === 'object'
+};
+util.typeof = function(a){
+    var b = typeof a;
+    if(typeof a === 'object'){
+        if (a) {
+            if (a instanceof Array) {
+                return "array";
+            }
+            if (a instanceof Object) {
+                return b;
+            }
+            var c = Object.prototype.toString.call(a);
+            if ("[object Window]" == c) {
+                return "object";
+            }
+            if ("[object Array]" == c || "number" == typeof a.length && "undefined" != typeof a.splice && "undefined" != typeof a.propertyIsEnumerable && !a.propertyIsEnumerable("splice")) {
+                return "array";
+            }
+            if ("[object Function]" == c || "undefined" != typeof a.call && "undefined" != typeof a.propertyIsEnumerable && !a.propertyIsEnumerable("call")) {
+                return "function";
+            }
+        } else {
+            return "null";
+        }
+    } else {
+        if ("function" == b && "undefined" == typeof a.call) {
+            return "object";
+        }
+    }
+    return b;
+};
+util.isPromise = function(v){
+    return !!v && util.isObject(v) && (util.typeof(v['then']) === 'function' )
+};
 function isRedisClientObj(v){
     return !!v && util.isObject(v) && (v instanceof EventEmitter) && !!v.listeners('ready')
 }
