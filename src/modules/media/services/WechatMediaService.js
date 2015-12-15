@@ -24,4 +24,16 @@ Service.prototype.create = function(mediaJson, callback){
 
 };
 
+Service.prototype.findBotByOpenid = function(openid, callback){
+    var WechatMedia = this.context.models.WechatMedia;
+    WechatMedia.findOne({lFlg: 'a', customId: openid, type: 'wb'}, function (err, result) {
+        cbUtil.logCallback(
+            err,
+            'Fail to find wechat bot by openid: ' + err,
+            'Succeed to find wechat bot by openid');
+
+        cbUtil.handleSingleValue(callback, err, result);
+    });
+};
+
 module.exports = Service;

@@ -29,4 +29,12 @@ Service.prototype.loadAllBot = function(callback){
     });
 };
 
+Service.prototype.loadByMediaId = function(mediaId, callback){
+    var OrgMedia = this.context.models.OrgMedia;
+    OrgMedia.findOne({lFlg: 'a', type: 'wb', media: mediaId}).populate({path: 'operator'}).exec(function (err, result) {
+        //TODO: need logging
+        cbUtil.handleSingleValue(callback, err, result);
+    });
+};
+
 module.exports = Service;

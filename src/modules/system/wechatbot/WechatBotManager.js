@@ -27,6 +27,35 @@ WechatBotManager.prototype.stop = function(){
     }
 };
 
+WechatBotManager.prototype.registerBot = function(botInfo){
+    this._initBot(botInfo);
+};
+WechatBotManager.prototype._initBot = function(botInfo){
+    var botManager = this.context.botManager;
+    var logger = this.context.logger;
+    var bot = botManager.getBot(botInfo.customId);
+    bot.onClientActionIn(function(err, data){
+        if(err){
+            logger.error('bot on action in err: ' + err);
+            return;
+        }
+        switch(data.Action){
+            case 'login':
+                require('./handlers/needLoginHandler')(data);
+                break;
+        }
+        //TODO
+    })
+
+    bot.onClientActionFeedback(function(err, data){
+        if(err){
+            logger.error('bot on action feedback in err: ' + err);
+            return;
+        }
+        //TODO
+    })
+};
+
 WechatBotManager.prototype._init = function(){
     console.info('initiating...');
     var orgMediaService = this.context.services.orgMediaService;
@@ -34,20 +63,19 @@ WechatBotManager.prototype._init = function(){
         if (err) {
             return console.error('load bot err: ' + err);
         }
-        var botManager = this.context.botManager;
         bots.forEach(function (item) {
             if (item.media && item.media.customId) {
-                botManager.getBot(item.media.customId);
+                this._initBot(item.media);
             }
         });
     })
-    //TODO
 };
 
 WechatBotManager.prototype._uninit = function(){
     console.info('un-initiating...');
     //TODO
 };
+
 
 /**
  * TODO: start or stop bot in ordr to revise bot status
