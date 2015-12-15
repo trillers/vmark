@@ -27,15 +27,24 @@ WechatBotManager.prototype.stop = function(){
     }
 };
 
+WechatBotManager.prototype.registerBot = function(botInfo){
+    this._initBot(botInfo);
+};
+WechatBotManager.prototype._initBot = function(botInfo){
+};
+
 WechatBotManager.prototype._init = function(){
     console.info('initiating...');
     //TODO
+    var bots = [];
+
 };
 
 WechatBotManager.prototype._uninit = function(){
     console.info('un-initiating...');
     //TODO
 };
+
 
 /**
  * TODO: start or stop bot in ordr to revise bot status
