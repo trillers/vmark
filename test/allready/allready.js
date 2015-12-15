@@ -1,7 +1,6 @@
 var Ar = require('../../src/framework/allready');
 var ar = null;
 var assert = require('chai').assert;
-//var redisClient = ;
 var mongooseClient = require('../../src/app/mongoose');
 
 var rabbitmq = require('base-settings').rabbitmq;
