@@ -1,3 +1,5 @@
+var IntentionStatus = require('../../common/models/TypeRegistry').item('IntentionStatus');
+
 var WechatBotManager = function(context, options){
     this.timerId = null;
     this.context = context;
@@ -35,6 +37,7 @@ WechatBotManager.prototype._initBot = function(botInfo){
     var botManager = this.context.botManager;
     var logger = this.context.logger;
     var bot = botManager.getBot(botInfo.customId);
+
     bot.onClientActionIn(function(err, data){
         if(err){
             logger.error('bot on action in err: ' + err);
@@ -51,6 +54,19 @@ WechatBotManager.prototype._initBot = function(botInfo){
     bot.onClientActionFeedback(function(err, data){
         if(err){
             logger.error('bot on action feedback in err: ' + err);
+            return;
+        }
+        switch(data.NewStatus){
+            case 'aborted':
+                bot.start();
+                break;
+        }
+        //TODO
+    })
+
+    bot.onAgentStatusChange(function(err, data){
+        if(err){
+            logger.error('bot onAgentStatusChange err: ' + err);
             return;
         }
         //TODO
@@ -85,6 +101,21 @@ WechatBotManager.prototype._uninit = function(){
  */
 WechatBotManager.prototype._routines = function(){
     console.info('checking status');
+    var orgMediaService = this.context.services.orgMediaService;
+    orgMediaService.loadAllBot(function (err, bots) {
+        if (err) {
+            return console.error('load bot err: ' + err);
+        }
+        bots.forEach(function (botInfo) {
+            if(botInfo.intentionStatus !== botInfo.media.status){
+                if(botInfo.intentionStatus === IntentionStatus.On.value()){
+                    bot.start();
+                }else if(botInfo.intentionStatus === IntentionStatus.Off.value()){
+                    bot.stop();
+                }
+            }
+        });
+    })
 };
 
 module.exports = WechatBotManager;
