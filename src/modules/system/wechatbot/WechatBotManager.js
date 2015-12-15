@@ -30,6 +30,7 @@ WechatBotManager.prototype.stop = function(){
 WechatBotManager.prototype.registerBot = function(botInfo){
     this._initBot(botInfo);
 };
+
 WechatBotManager.prototype._initBot = function(botInfo){
     var botManager = this.context.botManager;
     var logger = this.context.logger;
