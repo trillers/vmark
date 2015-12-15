@@ -29,6 +29,18 @@ WechatBotManager.prototype.stop = function(){
 
 WechatBotManager.prototype._init = function(){
     console.info('initiating...');
+    var orgMediaService = this.context.services.orgMediaService;
+    orgMediaService.loadAllBot(function (err, bots) {
+        if (err) {
+            return console.error('load bot err: ' + err);
+        }
+        var botManager = this.context.botManager;
+        bots.forEach(function (item) {
+            if (item.media && item.media.customId) {
+                botManager.getBot(item.media.customId);
+            }
+        });
+    })
     //TODO
 };
 
