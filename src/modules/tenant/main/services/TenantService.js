@@ -90,6 +90,7 @@ var bindBotResults = {
     NO_OPERATOR: 'NO_OPERATOR',
     NOT_ADMIN: 'NOT_ADMIN',
     BOUND: 'BOUND',
+    OTHER_ROLE: 'OTHER_ROLE',
     BIND: 'BIND'
 };
 
@@ -136,9 +137,16 @@ Service.prototype.bindPersonalBot = function(operatorOpenid, botOpenid, callback
         //Check if bot user exists
         if(botUser){
             if(botUser.posts && botUser.posts.length){
+                var result = null;
+                if(botUser.posts[0].role == OrgMemberRole.TenantWechatBot.value()){
+                    result = bindBotResults.BOUND;
+                }
+                else{
+                    result = bindBotResults.OTHER_ROLE;
+                }
                 if (callback) callback(null, {
                     user: botUser,
-                    result: bindBotResults.BOUND
+                    result: result
                 });
                 return;
             }
@@ -166,13 +174,12 @@ Service.prototype.bindPersonalBot = function(operatorOpenid, botOpenid, callback
             , type:         WechatMediaType.WechatBot.value()
             , media:        wechatBot.id
             , user:         botUser.id
-            , operator:         adminMemberId
+            , operator:     adminMemberId
             , intentionStatus:   IntentionStatus.On.value()
             , desc:    ''
         };
 
         var orgWechatBot = yield orgMediaService.createAsync(orgMediaJson);
-
         var postJson = {
             org: tenantId
             , member: orgWechatBot._id
@@ -193,7 +200,7 @@ Service.prototype.bindPersonalBot = function(operatorOpenid, botOpenid, callback
             result: bindBotResults.BIND
         });
     }).catch(Error, function (err) {
-        logger.error('Fail to bind personal bot ' + botOpenid + 'for operator ' + operatorOpenid + ': ' + err);
+        logger.error('Fail to bind personal bot ' + botOpenid + ' for operator ' + operatorOpenid + ': ' + err);
         logger.error(err.stack);
         if (callback) callback(err);
     });
