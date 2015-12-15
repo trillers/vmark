@@ -1,6 +1,5 @@
 var util = require('util');
 var cbUtil = require('../../../../framework/callback');
-var WechatMediaKv = require('../../../media/kvs/WechatMedia');
 
 var botOidToOpOidKey = function(oid){
     return 'op:oid:bot:oid:' + oid;
@@ -9,8 +8,6 @@ var botOidToOpOidKey = function(oid){
 var Kv = function(context){
     this.context = context;
 };
-
-util.inherits(Kv, WechatMediaKv);
 
 Kv.prototype.getOperatorOpenid = function(botOpenid, callback){
     var redis = this.context.redis.main;
