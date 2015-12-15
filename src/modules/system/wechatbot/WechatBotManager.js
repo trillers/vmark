@@ -8,6 +8,7 @@ var WechatBotManager = function(context, options){
 
 WechatBotManager.prototype.start = function(){
     if(!this.timerId){
+        this._init();
         this.timerId = setInterval(this._routines, this.options.interval);
     }
     else{
@@ -19,10 +20,21 @@ WechatBotManager.prototype.stop = function(){
     if(this.timerId){
         clearInterval(this.timerId);
         this.timerId = null;
+        this._uninit();
     }
     else{
         console.warn('stopped already! duplicated call');
     }
+};
+
+WechatBotManager.prototype._init = function(){
+    console.info('initiating...');
+    //TODO
+};
+
+WechatBotManager.prototype._uninit = function(){
+    console.info('un-initiating...');
+    //TODO
 };
 
 /**
