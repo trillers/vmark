@@ -47,7 +47,9 @@ describe('all ready', function(){
                 ar.down('test');
             }, 2000)
         });
-        ar.checkReady(function(){
+        ar.ready(function(){
+            console.log('all ready');
+        }).check(function(){
             console.log('do something...');
             done();
         });

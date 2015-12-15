@@ -103,7 +103,7 @@ Ar.prototype.down = function(id){
  * @param fn function(*)
  * if all ready, execute the fn that provided directly
  */
-Ar.prototype.checkReady = function(fn){
+Ar.prototype.check = function(fn){
     var me = this;
     if(me._allComplete()){
         fn.apply(null);
