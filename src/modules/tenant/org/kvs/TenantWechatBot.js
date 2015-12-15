@@ -12,25 +12,25 @@ var Kv = function(context){
 Kv.prototype.getOperatorOpenid = function(botOpenid, callback){
     var redis = this.context.redis.main;
     var key = botOidToOpOidKey(botOpenid);
-    //redis.get(key, function(err, result){
-    //    cbUtil.logCallback(
-    //        err,
-    //        'Fail to get platform wechat siteid: ' + err,
-    //        'Succeed to get platform wechat site id ' + result);
-    //    cbUtil.handleSingleValue(callback, err, result);
-    //});
+    redis.get(key, function(err, result){
+        cbUtil.logCallback(
+            err,
+            'Fail to get setOperatorOpenid, botOpenid: ' + botOpenid + ': ' + err,
+            'Succeed to get setOperatorOpenid, botOpenid: ' + botOpenid);
+        cbUtil.handleSingleValue(callback, err, result);
+    });
 };
 
 Kv.prototype.setOperatorOpenid = function(botOpenid, operatorId, callback){
     var redis = this.context.redis.main;
     var key = botOidToOpOidKey(botOpenid);
-    //redis.set(key, id, function(err, result){
-    //    cbUtil.logCallback(
-    //        err,
-    //        'Fail to set platform wechat siteid ' + id + ': ' + err,
-    //        'Succeed to set platform wechat site id ' + id);
-    //    cbUtil.handleOk(callback, err, result);
-    //});
+    redis.set(key, operatorId, function(err, result){
+        cbUtil.logCallback(
+            err,
+            'Fail to set setOperatorOpenid, botOpenid: ' + botOpenid + ': ' + err,
+            'Succeed to set setOperatorOpenid, botOpenid: ' + botOpenid);
+        cbUtil.handleOk(callback, err, result, operatorId);
+    });
 };
 
 module.exports = Kv;
