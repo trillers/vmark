@@ -26,6 +26,9 @@ RoleMsgDispatcher.prototype.emit = function(context){
             else if(post.role == OrgMemberRole.TenantAdmin.value()){
                 self.emitter.emit('ta', 'ta', context);
             }
+            else if(post.role == OrgMemberRole.TenantWechatBot.value()){
+                self.emitter.emit('twb', 'twb', context);
+            }
             else if(post.role == OrgMemberRole.PlatformOperation.value()){
                 self.emitter.emit('po', 'po', context);
             }

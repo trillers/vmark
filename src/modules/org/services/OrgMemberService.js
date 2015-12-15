@@ -1,5 +1,4 @@
 var cbUtil = require('../../../framework/callback');
-var Promise = require('bluebird');
 
 var Service = function(context){
     this.context = context;
@@ -24,5 +23,4 @@ Service.prototype.updateById = function(id, update, callback){
 
 };
 
-Service.prototype = Promise.promisifyAll(Service.prototype);
 module.exports = Service;

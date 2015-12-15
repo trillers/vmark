@@ -33,15 +33,15 @@ describe('PlatformUserService', function(){
         });
     });
 
-    //describe('deletePlatformUserByOpenid', function(){
-    //    it('Succeed to delete a platform user', function(done){
-    //        var service = context.services.platformUserService;
-    //        service.deletePlatformUserByOpenid(openid, function(err){
-    //            assert.notOk(err);
-    //            done();
-    //        });
-    //    });
-    //});
+    describe('deletePlatformUserByOpenid', function(){
+        it('Succeed to delete a platform user', function(done){
+            var service = context.services.platformUserService;
+            service.deletePlatformUserByOpenid(openid, function(err){
+                assert.notOk(err);
+                done();
+            });
+        });
+    });
 
     var userId = null;
     describe('create', function(){

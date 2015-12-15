@@ -1,27 +1,24 @@
-var botManager = require('../../../app/bot-manager');
+var botManagerContainer = require('../../../app/bot-manager');
 var context = require('../../../index');
-
+var orgMediaService = context.services.orgMediaService;
 var clients = {};
 
-botService.load(function(err, bots){
-    if(err){
-        return console.error('load bot err: ' + err);
-    }
-    bots.forEach(function(item){
-        clients[item._id] = botManager.getBot(item._id);
-    });
-})
+setImmediate(function() {
+    orgMediaService.loadAllBot(function (err, bots) {
+        if (err) {
+            return console.error('load bot err: ' + err);
+        }
+        var botManager = botManagerContainer.botManager;
+        bots.forEach(function (item) {
+            clients[item._id] = botManager.getBot(item._id);
+        });
+    })
+});
 
 var _getBot = function(botId) {
     if (clients[botId]) return clients[botId];
     return clients[botId] = botManager.getBot(botId);
 }
 
-var _addBot = function(botId){
-    clients[botId] = botManager.getBot(botId);
-    return clients[botId];
-}
-
 module.exports.getBot = _getBot;
-module.exports.addBot = _addBot;
 

@@ -10,11 +10,11 @@ var Model = function(domainBuilder){
         .withLifeFlag()
         .withCreatedOn()
         .withProperties({
-            type:           {type: String, enum: WechatMediaType.valueList(), default: WechatMediaType.WechatSite.value(), required: true}
-            , org:          {type: String, ref: 'Org', required: true}
+            org:            {type: String, ref: 'Org', required: true}
+            , type:         {type: String, enum: WechatMediaType.valueList(), default: WechatMediaType.WechatSite.value(), required: true}
             , media:        {type: String, ref: 'WechatMedia', required: true}
             , user:         {type: String, ref: 'PlatformUser', required: true}
-            , admin:        {type: String, ref: 'OrgMember', required: false}
+            , operator:     {type: String, ref: 'OrgMember', required: false}
             , intentionStatus:     {type: String, enum: IntentionStatus.valueList(), default: IntentionStatus.On.value(), required: true}
             , desc:         {type: String}
         })
