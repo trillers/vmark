@@ -31,6 +31,10 @@ registry
     .addChild('On','on', '已启动')
     .addChild('Off','off', '已停止')
 
+    //.up().item('WechatBotStatus', 'WechatBotStatus', '状态') //助手号状态
+    //.addChild('On','on', '已启动')
+    //.addChild('Off','off', '已停止')
+
     .up().item('MsgType', 'MsgType', '消息类型')
     .addChild('text','text', '文本')
     .addChild('voice','voice', '语音')
