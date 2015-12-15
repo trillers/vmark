@@ -1,4 +1,4 @@
-var platformUserService = require('../../../../').services.platformUserService;
+var platformUserService = require('../../../../context/context').services.platformUserService;
 
 var ContextDecorator = function(){};
 

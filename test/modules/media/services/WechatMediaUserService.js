@@ -1,5 +1,5 @@
 var assert = require('chai').assert;
-var context = require('../../../../src');
+var context = require('../../../../src/context').context;
 var WechatMediaUserType = require('../../../../src/modules/common/models/TypeRegistry').item('WechatMediaUserType');
 
 before(function(done){

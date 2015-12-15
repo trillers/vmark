@@ -1,4 +1,4 @@
-var context = require('../../../../index');
+var context = require('../../../../context/context');
 var wechatApi = require('../../../wechat/common/api').api;
 var co = require('co');
 

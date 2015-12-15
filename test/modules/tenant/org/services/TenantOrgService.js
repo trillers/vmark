@@ -1,5 +1,5 @@
 var assert = require('chai').assert;
-var context = require('../../../../../src/index');
+var context = require('../../../../../src/context').context;
 var logger = context.logger;
 var PartyType = require('../../../../../src/modules/common/models/TypeRegistry').item('PartyType');
 

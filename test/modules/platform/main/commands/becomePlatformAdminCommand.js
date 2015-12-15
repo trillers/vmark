@@ -1,7 +1,7 @@
 var assert = require('chai').assert;
 var wxutil = require('../../../../framework/wechat/util');
 var Wechat = require('../../../../../src/framework/wechat/index');
-var context = require('../../../../../src/');
+var context = require('../../../../../src/context').context;
 var wechatemitter = require('../../../../../src/modules/system/wechatsite/wechatemitter');
 
 var mongoose = require('../../../../../src/app/mongoose');

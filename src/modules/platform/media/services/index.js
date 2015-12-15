@@ -1,6 +1,6 @@
 var Promise = require('bluebird');
 var u = require('../../../../app/util');
-var context = require('../../../../context');
+var context = require('../../../../context/context');
 
 var PlatformWechatSiteService = require('./PlatformWechatSiteService');
 var PlatformWechatSiteUserService = require('./PlatformWechatSiteUserService');

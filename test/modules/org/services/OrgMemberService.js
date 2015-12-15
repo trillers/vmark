@@ -1,4 +1,4 @@
-var context = require('../../../../src');
+var context = require('../../../../src/context').context;
 var assert = require('chai').assert;
 var logger = context.logger;
 var co = require('co');

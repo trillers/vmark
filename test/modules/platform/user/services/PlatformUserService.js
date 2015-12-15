@@ -1,5 +1,5 @@
 var assert = require('chai').assert;
-var context = require('../../../../../src');
+var context = require('../../../../../src/context').context;
 var logger = context.logger;
 
 before(function(done){

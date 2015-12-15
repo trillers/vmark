@@ -1,4 +1,4 @@
-var context = require('../../../../src');
+var context = require('../../../../src/context').context;
 
 before(function(done){
     setTimeout(function () {
