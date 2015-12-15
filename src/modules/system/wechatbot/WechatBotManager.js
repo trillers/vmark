@@ -40,7 +40,7 @@ WechatBotManager.prototype._initBot = function(botInfo){
             return;
         }
         switch(data.Action){
-            case 'login':
+            case 'need-login':
                 require('./handlers/needLoginHandler')(data);
                 break;
         }
@@ -54,6 +54,7 @@ WechatBotManager.prototype._initBot = function(botInfo){
         }
         //TODO
     })
+
 };
 
 WechatBotManager.prototype._init = function(){
