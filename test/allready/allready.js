@@ -38,4 +38,18 @@ describe('all ready', function(){
             done();
         })
     });
+
+    it('check ready', function(done){
+        ar.add('test', null, function onUp(){
+            ar.up('test');
+        }, function onDown(){
+            setTimeout(function(){
+                ar.down('test');
+            }, 2000)
+        });
+        ar.checkReady(function(){
+            console.log('do something...');
+            done();
+        });
+    });
 });
