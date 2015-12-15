@@ -21,4 +21,12 @@ Service.prototype.updateById = function(id, update, callback){
     });
 };
 
+Service.prototype.loadAllBot = function(callback){
+    var OrgMedia = this.context.models.OrgMedia;
+    OrgMedia.find({lFlg: 'a', type: 'wb'}).populate({path: 'media'}).exec(function (err, result) {
+        //TODO: need logging
+        cbUtil.handleSingleValue(callback, err, result);
+    });
+};
+
 module.exports = Service;
