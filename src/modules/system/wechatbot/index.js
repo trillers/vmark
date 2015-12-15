@@ -2,7 +2,7 @@ var botManagerContainer = require('../../../app/bot-manager');
 var context = require('../../../index');
 var orgMediaService = context.services.orgMediaService;
 var clients = {};
-
+var WechatBotManager = require('./WechatBotManager');
 setImmediate(function() {
     orgMediaService.loadAllBot(function (err, bots) {
         if (err) {
@@ -22,5 +22,9 @@ var _getBot = function(botId) {
     return clients[botId] = botManager.getBot(botId);
 }
 
-module.exports.getBot = _getBot;
+var wechatBotManager = new WechatBotManager(
+    context, {
+        interval: 10000
+    });
+module.exports = wechatBotManager;
 
