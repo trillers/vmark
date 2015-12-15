@@ -1,5 +1,5 @@
 var WechatMediaType = require('../../common/models/TypeRegistry').item('WechatMediaType');
-var WechatBotStatus = require('../../common/models/TypeRegistry').item('IntentionStatus');
+var WechatBotStatus = require('../../common/models/TypeRegistry').item('WechatBotStatus');
 
 var Model = function(domainBuilder){
     var schema = domainBuilder
