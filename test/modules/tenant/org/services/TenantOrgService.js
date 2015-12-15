@@ -1,13 +1,15 @@
 var assert = require('chai').assert;
-var context = require('../../../../../src/context').context;
-var logger = context.logger;
 var PartyType = require('../../../../../src/modules/common/models/TypeRegistry').item('PartyType');
+var contextLoader = require('../../../../../src/context');
+var context = contextLoader.context;
+var logger = context.logger;
 
 before(function(done){
-    setTimeout(function () {
+    contextLoader.check(function(){
         done();
-    }, 2000);
+    });
 });
+
 describe('TenantOrgService', function(){
     describe('createPersonalTenant', function(){
         it('Succeed to create a personal tenant', function(done){

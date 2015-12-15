@@ -1,16 +1,18 @@
 var assert = require('chai').assert;
 var wxutil = require('../../../../framework/wechat/util');
 var Wechat = require('../../../../../src/framework/wechat/index');
-var context = require('../../../../../src/context').context;
 var OrgMemberRole = require('../../../../../src/modules/common/models/TypeRegistry').item('OrgMemberRole');
-var logger = context.logger;
 var wechatemitter = require('../../../../../src/modules/system/wechatsite/wechatemitter');
 
+var contextLoader = require('../../../../../src/context');
+var context = contextLoader.context;
+var logger = context.logger;
+
 before(function(done){
-    setTimeout(function(){
+    contextLoader.check(function(){
         done();
-    },2000);
-})
+    });
+});
 
 describe('platform operation handler', function() {
     var openid = 'okvXqs4vtB5JDwtb8Gd6Rj26W6mE';//独自等待的错题本openid

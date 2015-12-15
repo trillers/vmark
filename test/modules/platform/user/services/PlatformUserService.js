@@ -1,11 +1,12 @@
 var assert = require('chai').assert;
-var context = require('../../../../../src/context').context;
+var contextLoader = require('../../../../../src/context');
+var context = contextLoader.context;
 var logger = context.logger;
 
 before(function(done){
-    setTimeout(function () {
+    contextLoader.check(function(){
         done();
-    }, 2000);
+    });
 });
 
 describe('PlatformUserService', function(){

@@ -1,10 +1,11 @@
-var context = require('../../../../src/context').context;
+var contextLoader = require('../../../../src/context');
+var context = contextLoader.context;
 
 before(function(done){
-    setTimeout(function () {
+    contextLoader.check(function(){
         done();
-    }, 2000);
-})
+    });
+});
 describe('WechatMediaService', function(){
     describe('create', function(){
         var platformId = null;

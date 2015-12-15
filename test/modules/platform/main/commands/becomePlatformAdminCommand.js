@@ -1,17 +1,14 @@
 var assert = require('chai').assert;
 var wxutil = require('../../../../framework/wechat/util');
 var Wechat = require('../../../../../src/framework/wechat/index');
-var context = require('../../../../../src/context').context;
 var wechatemitter = require('../../../../../src/modules/system/wechatsite/wechatemitter');
-
-var mongoose = require('../../../../../src/app/mongoose');
-var redis = require('../../../../../src/app/redis');
+var contextLoader = require('../../../../../src/context');
 
 before(function(done){
-    setTimeout(function(){
+    contextLoader.check(function(){
         done();
-    },2000);
-})
+    });
+});
 
 describe('becomePlatformAdminCommand', function() {
     var openid = 'okvXqsw1VG76eVVJrKivWDgps_gA';//包三哥的错题本openid

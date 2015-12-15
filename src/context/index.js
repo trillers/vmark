@@ -21,10 +21,7 @@ context.logger = require('../app/logging').logger;
 context.redis.main = redisMain;
 context.mongoose.main = mongooseMain;
 context.domainBuilder.main = require('../framework/model/DomainBuilder');
-
 require('../modules');
-ar.ready(function(){
-    context.logger.info('All are ready!');
-});
+
 ar.context = context;
 module.exports = ar;
