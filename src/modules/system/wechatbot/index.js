@@ -10,7 +10,9 @@ setImmediate(function() {
         }
         var botManager = botManagerContainer.botManager;
         bots.forEach(function (item) {
-            clients[item._id] = botManager.getBot(item._id);
+            if(item.media && item.media.customId) {
+                clients[item.media.customId] = botManager.getBot(item.media.customId);
+            }
         });
     })
 });
