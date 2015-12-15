@@ -56,6 +56,19 @@ WechatBotManager.prototype._initBot = function(botInfo){
             logger.error('bot on action feedback in err: ' + err);
             return;
         }
+        switch(data.NewStatus){
+            case 'aborted':
+                bot.start();
+                break;
+        }
+        //TODO
+    })
+
+    bot.onAgentStatusChange(function(err, data){
+        if(err){
+            logger.error('bot onAgentStatusChange err: ' + err);
+            return;
+        }
         //TODO
     })
 
