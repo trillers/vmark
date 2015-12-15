@@ -36,4 +36,22 @@ Service.prototype.findBotByOpenid = function(openid, callback){
     });
 };
 
+Service.prototype.updateStatusById = function(id, status, callback){
+    var kv = this.context.kvs.wechatMedia;
+    var WechatMedia = this.context.models.WechatMedia;
+    WechatMedia.findByIdAndUpdate(id, {status: status}, {new: true}, function (err, result) {
+        cbUtil.logCallback(
+            err,
+            'Fail to update wechat media status by id: ' + id + ' err: ' + err,
+            'Succeed to save wechat media status by id: ' + id);
+
+        cbUtil.handleSingleValue(function(err, doc){
+            var obj = doc.toObject({virtuals: true});
+            kv.saveById(obj, function(err, obj){
+                if(callback) callback(err, obj);
+            });
+        }, err, result);
+    });
+
+};
 module.exports = Service;

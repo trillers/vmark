@@ -3,6 +3,7 @@ var util = {};
 var u = require('util');
 var Ar = function(){
     EventEmitter.call(this);
+    this.busy = false;
     this.s = {
         /**
          * Contains all components to prepare
@@ -28,7 +29,12 @@ u.inherits(Ar, EventEmitter);
  * Registry main method as application's entry point
  */
 Ar.prototype.ready = function(main){
-    this.MAIN.push(main);
+    var me = this;
+    if(me._allComplete()){
+        main.apply(null);
+    }else{
+        me.MAIN.push(main);
+    }
     return this;
 };
 
@@ -79,7 +85,8 @@ Ar.prototype.up = function(uid, service){
         var fns = r.MAIN;
         fns.forEach(function(fn){
             fn.apply(null);
-        })
+        });
+        r.busy = false;
     }
 };
 
@@ -90,6 +97,20 @@ Ar.prototype.up = function(uid, service){
 Ar.prototype.down = function(id){
     delete this.s.allReady[id];
     this.emit('disconnect', {id: id})
+};
+
+/**
+ * @param fn function(*)
+ * if all ready, execute the fn that provided directly
+ */
+Ar.prototype.check = function(fn){
+    var me = this;
+    if(me.busy){
+        me.MAIN.push(fn);
+    }else{
+        me.ready(fn);
+    }
+    return this;
 };
 
 /**
@@ -154,9 +175,6 @@ Ar.prototype._allComplete = function(){
  */
 Ar.prototype.redis = function(client){
     var r = this;
-    if(!isRedisClientObj(client)){
-        throw new Error('ar.redis invoke failed, input type illegal')
-    }
     return new C(null, client, function(service, nameId){
         service.on('ready', function(){
             r.up(nameId, service)
@@ -170,9 +188,6 @@ Ar.prototype.redis = function(client){
 
 Ar.prototype.mongoose = function(client){
     var r = this;
-    if(!isMongooseClientObj(client.connection)){
-        throw new Error('ar.mongoose invoke failed, input type illegal')
-    }
     return new C(null, client, function(service, nameId){
         service.connection.on('open', function(){
             r.up(nameId, service)
@@ -231,10 +246,4 @@ util.typeof = function(a){
 util.isPromise = function(v){
     return !!v && util.isObject(v) && (util.typeof(v['then']) === 'function' )
 };
-function isRedisClientObj(v){
-    return !!v && util.isObject(v) && (v instanceof EventEmitter) && !!v.listeners('ready')
-}
-function isMongooseClientObj(v){
-    return !!v && util.isObject(v) && (v instanceof EventEmitter) && !!v.listeners('open')
-}
 module.exports = Ar;
