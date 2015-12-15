@@ -4,10 +4,6 @@ var assert = require('chai').assert;
 //var redisClient = ;
 var mongooseClient = require('../../src/app/mongoose');
 
-var redisUtil = null;
-var mongooseUtil = null;
-var amqpUtil = null;
-
 var rabbitmq = require('base-settings').rabbitmq;
 var url = 'amqp://' +rabbitmq.username + ':' + rabbitmq.password + '@' + rabbitmq.host + ':' + rabbitmq.port + '/' + rabbitmq.vhost;
 var open = require('amqplib').connect(url);
@@ -15,9 +11,6 @@ var open = require('amqplib').connect(url);
 describe('all ready', function(){
     beforeEach(function(done){
         ar = new Ar();
-        redisUtil = ar.redis;
-        mongooseUtil = ar.mongoose;
-        amqpUtil = ar.amqp;
         done();
     });
 
