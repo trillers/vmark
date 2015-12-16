@@ -55,7 +55,8 @@ describe('TenantService', function(){
             service.bindPersonalBot(operatorOpenid, botOpenid, function(err, result){
                 logger.debug(err);
                 logger.debug(result);
-                done();
+                setTimeout(function(){done();}, 2000);
+                //done();
             });
         });
 

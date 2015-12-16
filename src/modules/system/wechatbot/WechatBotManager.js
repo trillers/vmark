@@ -1,18 +1,20 @@
 var IntentionStatus = require('../../common/models/TypeRegistry').item('IntentionStatus');
+var WechatBotStatus = require('../../common/models/TypeRegistry').item('WechatBotStatus');
 
 var WechatBotManager = function(context, options){
     this.timerId = null;
     this.context = context;
     this.api = this.context.botManager;
     this.options = options || {
-            interval: 100000
+            interval: 200000
         };
 };
 
 WechatBotManager.prototype.start = function(){
     if(!this.timerId){
         this._init();
-        this.timerId = setInterval(this._routines, this.options.interval);
+        setTimeout(this._routines.bind(this), 2000);
+        this.timerId = setInterval(this._routines.bind(this), this.options.interval);
     }
     else{
         console.warn('started already! duplicated call');
@@ -53,7 +55,6 @@ WechatBotManager.prototype._initBot = function(botInfo){
                 require('./handlers/needLoginHandler')(data);
                 break;
         }
-        //TODO
     })
 
     bot.onClientActionFeedback(function(err, data){
@@ -66,7 +67,6 @@ WechatBotManager.prototype._initBot = function(botInfo){
                 bot.start();
                 break;
         }
-        //TODO
     })
 
     bot.onAgentStatusChange(function(err, data){
@@ -74,20 +74,23 @@ WechatBotManager.prototype._initBot = function(botInfo){
             logger.error('bot onAgentStatusChange err: ' + err);
             return;
         }
-        //TODO
+        require('./handlers/statusChangeHandler')(data);
     })
 };
 
 WechatBotManager.prototype._init = function(){
-    console.info('initiating...');
+    var logger = this.context.logger;
+    logger.info('initiating...');
     var orgMediaService = this.context.services.orgMediaService;
-    orgMediaService.loadAllBot(function (err, bots) {
+    var me = this;
+    orgMediaService.loadAllBot(function (err, orgMedias) {
         if (err) {
             return console.error('load bot err: ' + err);
         }
-        bots.forEach(function (item) {
-            if (item.media && item.media.customId) {
-                this._initBot(item.media);
+        logger.debug('the count of all active bots: ' + orgMedias.length);
+        orgMedias.forEach(function (orgMedia) {
+            if (orgMedia.media && orgMedia.media.customId) {
+                me._initBot(orgMedia.media);
             }
         });
     })
@@ -104,20 +107,34 @@ WechatBotManager.prototype._uninit = function(){
  * @private
  */
 WechatBotManager.prototype._routines = function(){
-    console.info('checking status');
-    var orgMediaService = this.context.services.orgMediaService;
-    var botManager = this.context.botManager;
     var logger = this.context.logger;
-    orgMediaService.loadAllBot(function (err, bots) {
+    logger.debug('checking status...');
+    var orgMediaService = this.context.services.orgMediaService;
+    var wechatMediaService = this.context.services.wechatMediaService;
+    var botManager = this.context.botManager;
+    orgMediaService.loadAllBot(function (err, orgMedias) {
         if (err) {
             return logger.error('load bot err: ' + err);
         }
-        bots.forEach(function (botInfo) {
-            if(botInfo.intentionStatus !== botInfo.media.status){
+        orgMedias.forEach(function (orgMedia) {
+            var botInfo = orgMedia.media;
+            if(orgMedia.intentionStatus !== botInfo.status){
                 var bot = botManager.getBot(botInfo.customId);
-                if(botInfo.intentionStatus === IntentionStatus.Logged.value()){
-                    bot.start();
-                }else if(botInfo.intentionStatus === IntentionStatus.Exited.value()){
+                if(orgMedia.intentionStatus === IntentionStatus.Logged.value() &&
+                    (botInfo.status === WechatBotStatus.Exceptional.value() ||
+                    botInfo.status === WechatBotStatus.Exited.value() ||
+                    botInfo.status === WechatBotStatus.Aborted.value())){
+                    var options = {
+                        intention: 'login',
+                        mode: 'untrusted',
+                        nickname: botInfo.name,
+                        sex: botInfo.sex
+                    };
+                    logger.debug('Start bot ' + botInfo.customId + ': ' + JSON.stringify(options));
+                    bot.start(options);
+                    wechatMediaService.updateStatusById(botInfo._id, WechatBotStatus.Starting.value());
+                }else if(orgMedia.intentionStatus === IntentionStatus.Exited.value()){
+                    logger.debug('Stop bot ' + botInfo.customId);
                     bot.stop();
                 }
             }
