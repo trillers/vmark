@@ -9,7 +9,7 @@ module.exports = function(msg){
     co(function*(){
         var botId = msg.AgentId;
         var mediaUrl = msg.mediaIdUrl;
-        var kv = context.kvs.TenantWechatBot;
+        var kv = context.kvs.tenantWechatBot;
         var operator = yield kv.getOperatorOpenidAsync(botId);
         var loginQrCodePath = os.tmpdir() + operator + '.png';
         request(mediaUrl).pipe(fs.createWriteStream(loginQrCodePath)).on('close', function () {

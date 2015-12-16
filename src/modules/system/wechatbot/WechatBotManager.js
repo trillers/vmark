@@ -70,7 +70,7 @@ WechatBotManager.prototype._initBot = function(botInfo){
             logger.error('bot onAgentStatusChange err: ' + err);
             return;
         }
-        //TODO
+        require('./handlers/statusChangeHandler')(data);
     })
 
 };
@@ -103,6 +103,7 @@ WechatBotManager.prototype._uninit = function(){
 WechatBotManager.prototype._routines = function(){
     console.info('checking status');
     var orgMediaService = this.context.services.orgMediaService;
+    var wechatMediaService = this.context.services.wechatMediaService;
     var botManager = this.context.botManager;
     var logger = this.context.logger;
     orgMediaService.loadAllBot(function (err, bots) {
@@ -112,7 +113,9 @@ WechatBotManager.prototype._routines = function(){
         bots.forEach(function (botInfo) {
             if(botInfo.intentionStatus !== botInfo.media.status){
                 var bot = botManager.getBot(botInfo.customId);
-                if(botInfo.intentionStatus === IntentionStatus.Logged.value() && (botInfo.media.status === WechatBotStatus.)){
+                //intention status is logged ,but bot status is exceptional or exited or aborted , send start command
+                if(botInfo.intentionStatus === IntentionStatus.Logged.value() && (botInfo.media.status === WechatBotStatus.Exceptional.value() || botInfo.media.status === WechatBotStatus.Exited.value() || botInfo.media.status === WechatBotStatus.Aborted.value())){
+                    wechatMediaService.updateStatusById(botInfo.media._id, WechatBotStatus.Starting.value());
                     bot.start();
                 }else if(botInfo.intentionStatus === IntentionStatus.Exited.value()){
                     bot.stop();
