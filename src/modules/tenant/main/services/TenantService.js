@@ -167,6 +167,7 @@ Service.prototype.bindPersonalBot = function(operatorOpenid, botOpenid, callback
             , customId:     botOpenid
             , name:         botUser.nickname
             , headimgurl:   botUser.headimgurl
+            , sex:   botUser.sex
             , qrcodeurl:    null
         };
         var wechatBot = yield wechatMediaService.createAsync(wechatBotJson);
@@ -217,8 +218,8 @@ Service.prototype.bindPersonalBot = function(operatorOpenid, botOpenid, callback
         var opts = {
             intention: 'login',
             mode: 'untrusted',
-            nickname: botUser.nickname,
-            sex: botUser.sex
+            nickname: wechatBot.name,
+            sex: wechatBot.sex
         };
         logger.debug(opts);
         bot.start(opts);

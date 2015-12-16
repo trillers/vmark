@@ -22,6 +22,9 @@ context.redis.main = redisMain;
 context.mongoose.main = mongooseMain;
 context.domainBuilder.main = require('../framework/model/DomainBuilder');
 require('../modules');
+ar.ready(function(){
+    context.wechatBotManager.start();
+});
 
 ar.context = context;
 module.exports = ar;

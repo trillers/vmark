@@ -12,5 +12,4 @@ _exports.tenant.org = require('./tenant/org');
 _exports.tenant.main = require('./tenant/main');
 
 require('./system/wechatbot');
-
 module.exports = _exports;
