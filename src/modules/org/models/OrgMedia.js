@@ -15,7 +15,7 @@ var Model = function(domainBuilder){
             , media:        {type: String, ref: 'WechatMedia', required: true}
             , user:         {type: String, ref: 'PlatformUser', required: true}
             , operator:     {type: String, ref: 'OrgMember', required: false}
-            , intentionStatus:     {type: String, enum: IntentionStatus.valueList(), default: IntentionStatus.On.value(), required: true}
+            , intentionStatus:     {type: String, enum: IntentionStatus.valueList(), default: IntentionStatus.Logged.value(), required: true}
             , desc:         {type: String}
         })
         .build();

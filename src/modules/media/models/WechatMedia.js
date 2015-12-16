@@ -12,7 +12,7 @@ var Model = function(domainBuilder){
             , type:         {type: String, enum: WechatMediaType.valueList(), default: WechatMediaType.WechatSite.value(), required: true}
             , originalId: {type: String} //原始微信号ID，
             , customId:   {type: String} //自定义ID
-            , status: {type: String,  enum: WechatBotStatus.valueList(), default: WechatBotStatus.Off.value(), require: true} //wechat bot status
+            , status: {type: String,  enum: WechatBotStatus.valueList(), default: WechatBotStatus.Exited.value(), require: true} //wechat bot status
             , name:           {type: String, required: true}
             , headimgurl:   {type: String}
             , qrcodeurl:   {type: String} //服务号或者助手号的微信二维码

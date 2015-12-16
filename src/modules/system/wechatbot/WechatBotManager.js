@@ -115,9 +115,9 @@ WechatBotManager.prototype._routines = function(){
         bots.forEach(function (botInfo) {
             if(botInfo.intentionStatus !== botInfo.media.status){
                 var bot = botManager.getBot(botInfo.customId);
-                if(botInfo.intentionStatus === IntentionStatus.On.value()){
+                if(botInfo.intentionStatus === IntentionStatus.Logged.value()){
                     bot.start();
-                }else if(botInfo.intentionStatus === IntentionStatus.Off.value()){
+                }else if(botInfo.intentionStatus === IntentionStatus.Exited.value()){
                     bot.stop();
                 }
             }

@@ -1,8 +1,8 @@
-var context= require('../../../../');
+var context= require('../../../../context/context');
 var wechatMediaService = context.services.wechatMediaService;
 var wechatApi = require('../../../wechat/common/api').api;
 var WechatBotStatus = require('../../../common/models/TypeRegistry').item('WechatBotStatus');
-var inspect = require(util).inspect;
+var inspect = require('util').inspect;
 var co = require('co');
 module.exports = function(context){
     var openid = context.weixin.FromUserName;
