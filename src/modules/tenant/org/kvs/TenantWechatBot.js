@@ -15,8 +15,8 @@ Kv.prototype.getOperatorOpenid = function(botOpenid, callback){
     redis.get(key, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to get setOperatorOpenid, botOpenid: ' + botOpenid + ': ' + err,
-            'Succeed to get setOperatorOpenid, botOpenid: ' + botOpenid);
+            'Fail to get operator openid for bot: ' + botOpenid + ': ' + err,
+            'Succeed to get operator openid for bot: ' + botOpenid);
         cbUtil.handleSingleValue(callback, err, result);
     });
 };
@@ -27,8 +27,8 @@ Kv.prototype.setOperatorOpenid = function(botOpenid, operatorId, callback){
     redis.set(key, operatorId, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to set setOperatorOpenid, botOpenid: ' + botOpenid + ': ' + err,
-            'Succeed to set setOperatorOpenid, botOpenid: ' + botOpenid);
+            'Fail to set operator openid for bot: ' + botOpenid + ': ' + err,
+            'Succeed to set operator openid for bot: ' + botOpenid);
         cbUtil.handleOk(callback, err, result, operatorId);
     });
 };
