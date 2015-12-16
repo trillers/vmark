@@ -176,26 +176,34 @@ Ar.prototype._allComplete = function(){
 Ar.prototype.redis = function(client){
     var r = this;
     return new C(null, client, function(service, nameId){
-        service.on('ready', function(){
-            r.up(nameId, service)
-        })
+        service.on('ready', readyHandler);
+        function readyHandler(){
+            r.up(nameId, service);
+            service.removeListener('ready', readyHandler);
+        }
     }, function(service, nameId){
-        service.on('error', function(){
+        service.on('error', errorHandler);
+        function errorHandler(){
             r.down(nameId);
-        })
+            service.removeListener('error', readyHandler);
+        }
     })
 };
 
 Ar.prototype.mongoose = function(client){
     var r = this;
     return new C(null, client, function(service, nameId){
-        service.connection.on('open', function(){
-            r.up(nameId, service)
-        })
+        service.connection.on('open', openHandler);
+        function openHandler(){
+            r.up(nameId, service);
+            service.connection.removeListener('open', openHandler);
+        }
     }, function(service, nameId){
-        service.connection.on('error', function(){
+        service.connection.on('error', errorHandler);
+        function errorHandler(){
             r.down(nameId);
-        })
+            service.connection.removeListener('error', errorHandler);
+        }
     })
 };
 

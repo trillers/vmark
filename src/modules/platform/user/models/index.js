@@ -1,5 +1,5 @@
 var u = require('../../../../app/util');
-var context = require('../../../../context');
+var context = require('../../../../context/context');
 
 var PlatformUser = require('./PlatformUser');
 

@@ -11,15 +11,11 @@ var makeUrl = function(mongo){
 var url = makeUrl(settings);
 var options = {};
 
-var system = require('./system');
-system.addMember('mongo', mongoose);
 mongoose.connect(url, options, function(err){
     logger.info('Mongoose is connected to ' + url);
-    system.memberUp(mongoose);
 });
 mongoose.connection.on('error', function(err){
     logger.error('Mongoose error happens:' + err);
-    system.memberDown(mongoose);
 });
 
 module.exports = mongoose;

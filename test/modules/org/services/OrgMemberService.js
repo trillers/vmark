@@ -1,12 +1,13 @@
-var context = require('../../../../src');
-var assert = require('chai').assert;
-var logger = context.logger;
 var co = require('co');
+var assert = require('chai').assert;
+var contextLoader = require('../../../../src/context');
+var context = contextLoader.context;
+var logger = context.logger;
 
 before(function(done){
-    setTimeout(function () {
+    contextLoader.check(function(){
         done();
-    }, 2000);
+    });
 });
 describe('OrgMemberService', function(){
     describe('update', function(){

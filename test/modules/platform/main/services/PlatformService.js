@@ -1,12 +1,14 @@
 var assert = require('chai').assert;
-var context = require('../../../../../src/index');
 var OrgMemberRole = require('../../../../../src/modules/common/models/TypeRegistry').item('OrgMemberRole');
+var contextLoader = require('../../../../../src/context');
+var context = contextLoader.context;
 
 before(function(done){
-    setTimeout(function () {
+    contextLoader.check(function(){
         done();
-    }, 2000);
-})
+    });
+});
+
 describe('PlatformService', function(){
     describe('registerPlatformOperation', function(){
         it('success register platform operation for no subscribe user', function(done){

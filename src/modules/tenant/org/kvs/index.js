@@ -1,6 +1,6 @@
 var Promise = require('bluebird');
 var u = require('../../../../app/util');
-var context = require('../../../../context');
+var context = require('../../../../context/context');
 
 var TenantWechatBot = require('./TenantWechatBot');
 module.exports.TenantWechatBot = Promise.promisifyAll(new TenantWechatBot(context));

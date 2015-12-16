@@ -1,12 +1,13 @@
 var assert = require('chai').assert;
-var context = require('../../../../src');
+var contextLoader = require('../../../../src/context');
+var context = contextLoader.context;
 var WechatMediaUserType = require('../../../../src/modules/common/models/TypeRegistry').item('WechatMediaUserType');
 
 before(function(done){
-    setTimeout(function () {
+    contextLoader.check(function(){
         done();
-    }, 2000);
-})
+    });
+});
 
 describe('WechatMediaUserService', function(){
     describe('crud', function(){

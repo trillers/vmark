@@ -1,10 +1,12 @@
-var context = require('../../../../../src/index');
+var contextLoader = require('../../../../../src/context');
+var context = contextLoader.context;
 
 before(function(done){
-    setTimeout(function () {
+    contextLoader.check(function(){
         done();
-    }, 2000);
-})
+    });
+});
+
 describe('PlatformWechatSiteUserService', function(){
     describe('createPlatformWechatSiteUser', function(){
         it('create a platform wechat site user', function(done){

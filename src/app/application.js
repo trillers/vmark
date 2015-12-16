@@ -29,9 +29,6 @@ app.on('error', function(err){
     logger.error(err);
 });
 
-var system = require('./system');
-system.addMember('application', app);
 app.listen(app.port, app.bindip, function(){
-    logger.info('The server is binding on '+ app.bindip +' and listening on port ' + app.port + ' in ' + app.env );
-    system.memberUp(app);
+    logger.info('Http server is binding on '+ app.bindip +' and listening on port ' + app.port + ' in ' + app.env );
 });
