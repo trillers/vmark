@@ -191,6 +191,7 @@ Service.prototype.bindPersonalBot = function(operatorOpenid, botOpenid, callback
 
         var orgWechatBot = yield orgMediaService.createAsync(orgMediaJson);
         yield tenantWechatBotKv.setOperatorOpenidAsync(botOpenid, operatorOpenid);
+        yield tenantWechatBotKv.setBotOpenidAsync(operatorOpenid, botOpenid);
 
         /*
          *  update bot user 's post to append bot role
