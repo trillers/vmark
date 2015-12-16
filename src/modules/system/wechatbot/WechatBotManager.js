@@ -102,12 +102,15 @@ WechatBotManager.prototype._uninit = function(){
 WechatBotManager.prototype._routines = function(){
     console.info('checking status');
     var orgMediaService = this.context.services.orgMediaService;
+    var botManager = this.context.botManager;
+    var logger = this.context.logger;
     orgMediaService.loadAllBot(function (err, bots) {
         if (err) {
-            return console.error('load bot err: ' + err);
+            return logger.error('load bot err: ' + err);
         }
         bots.forEach(function (botInfo) {
             if(botInfo.intentionStatus !== botInfo.media.status){
+                var bot = botManager.getBot(botInfo.customId);
                 if(botInfo.intentionStatus === IntentionStatus.On.value()){
                     bot.start();
                 }else if(botInfo.intentionStatus === IntentionStatus.Off.value()){
