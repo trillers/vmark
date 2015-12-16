@@ -13,12 +13,12 @@ module.exports = function(context){
         try{
             var media = yield wechatMediaService.findBotByOpenid(openid);
             if(media){
-                yield wechatMediaService.updateStatusById(media._id, wechatBotStatus.Starting.value());
+                yield wechatMediaService.updateStatusById(media._id, wechatBotStatus.Exited.value());
                 var orgMedia = yield orgMediaService.loadByMediaId(media._id);
-                yield orgMediaService.updateById(orgMedia._id, {intentionStatus: intentionStatus.Logged.value()});
+                yield orgMediaService.updateById(orgMedia._id, {intentionStatus: intentionStatus.Exited.value()});
                 var bot = botMananger.getBot(media.custom_id);
-                bot.start();
-                var text = '[系统]: 助手号正在启动, 请稍后';
+                bot.stop();
+                var text = '[系统]: 助手号正在停止, 请稍后';
                 yield wechatApi.sendText(openid, text);
             }else{
                 var errTxt = '[系统]: 没有相关助手号';
