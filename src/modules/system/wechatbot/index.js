@@ -1,4 +1,4 @@
-var context = require('../../../index');
+var context = require('../../../context/context');
 
 var wechatBotManager = new WechatBotManager(
     context, {

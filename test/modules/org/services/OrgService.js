@@ -1,10 +1,11 @@
-var context = require('../../../../src');
+var contextLoader = require('../../../../src/context');
+var context = contextLoader.context;
 var logger = context.logger;
 
 before(function(done){
-    setTimeout(function () {
+    contextLoader.check(function(){
         done();
-    }, 2000);
+    });
 });
 describe('OrgService', function(){
     describe('create', function(){

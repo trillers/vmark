@@ -1,4 +1,4 @@
-var context = require('../../../../');
+var context = require('../../../../context/context');
 var wechatApi = require('../../../wechat/common/api').api;
 var logger = context.logger;
 var service = context.services.platformService;
