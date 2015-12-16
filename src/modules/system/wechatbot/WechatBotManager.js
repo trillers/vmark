@@ -3,6 +3,7 @@ var IntentionStatus = require('../../common/models/TypeRegistry').item('Intentio
 var WechatBotManager = function(context, options){
     this.timerId = null;
     this.context = context;
+    this.api = this.context.botManager;
     this.options = options || {
             interval: 100000
         };
@@ -29,8 +30,12 @@ WechatBotManager.prototype.stop = function(){
     }
 };
 
-WechatBotManager.prototype.registerBot = function(botInfo){
+WechatBotManager.prototype.bindBot = function(botInfo){
     this._initBot(botInfo);
+};
+
+WechatBotManager.prototype.getWechatBot = function(id){
+    return this.context.botManager.getBot(id);
 };
 
 WechatBotManager.prototype._initBot = function(botInfo){
@@ -71,7 +76,6 @@ WechatBotManager.prototype._initBot = function(botInfo){
         }
         //TODO
     })
-
 };
 
 WechatBotManager.prototype._init = function(){
@@ -111,9 +115,9 @@ WechatBotManager.prototype._routines = function(){
         bots.forEach(function (botInfo) {
             if(botInfo.intentionStatus !== botInfo.media.status){
                 var bot = botManager.getBot(botInfo.customId);
-                if(botInfo.intentionStatus === IntentionStatus.On.value()){
+                if(botInfo.intentionStatus === IntentionStatus.Logged.value()){
                     bot.start();
-                }else if(botInfo.intentionStatus === IntentionStatus.Off.value()){
+                }else if(botInfo.intentionStatus === IntentionStatus.Exited.value()){
                     bot.stop();
                 }
             }

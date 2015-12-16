@@ -2,7 +2,8 @@ var co = require('co');
 var logger = require('../../../app/logging').logger;
 var QrChannelService = require('../../qrchannel/services/QrChannelService');
 var wechatApi = require('../../wechat/common/api').api;
-var tenantService = require('../../../context/context').services.tenantService;
+var context = require('../../../context').context;
+var tenantService = context.services.tenantService;
 var bindBotResults = tenantService.bindBotResults;
 
 module.exports = function (emitter) {
