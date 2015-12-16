@@ -28,12 +28,17 @@ registry
     .addChild('WechatWebUser','wwu', '微信微站用户')
 
     .up().item('IntentionStatus', 'IntentionStatus', '启动状态') //服务号或助手号启动状态
-    .addChild('On','on', '已启动')
-    .addChild('Off','off', '已停止')
+    .addChild('Logged','logged', '已启动')
+    .addChild('Exited','exited', '已停止')
 
     .up().item('WechatBotStatus', 'WechatBotStatus', '状态') //助手号状态
-    .addChild('On','on', '已启动')
-    .addChild('Off','off', '已停止')
+    .addChild('Starting','starting', '启动中')
+    .addChild('Logging','logging', '登录中')
+    .addChild('Mislogged','mislogged', '未登录')
+    .addChild('Logged','logged', '已登录')
+    .addChild('Exceptional','exceptional', '异常中')
+    .addChild('Aborted','aborted', '已崩溃')
+    .addChild('Exited','exited', '已停止')
 
     .up().item('MsgType', 'MsgType', '消息类型')
     .addChild('text','text', '文本')
