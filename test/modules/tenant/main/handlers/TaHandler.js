@@ -2,7 +2,7 @@ var assert = require('chai').assert;
 var wxutil = require('../../../../framework/wechat/util');
 var Wechat = require('../../../../../src/framework/wechat/index');
 var OrgMemberRole = require('../../../../../src/modules/common/models/TypeRegistry').item('OrgMemberRole');
-var wechatemitter = require('../../../../../src/modules/system/wechatsite/wechatemitter');
+var wechatemitter =  require('../../../../../src/modules/system/wechatsite/wechatemitter');
 
 var contextLoader = require('../../../../../src/context');
 var context = contextLoader.context;
@@ -44,6 +44,10 @@ describe('platform operation handler', function() {
 
         siteClient.sendText({
             Content: '绑定微信号二维码'
+        });
+
+        siteClient.sendText({
+            Content: '状态'
         });
 
         setTimeout(function(){
