@@ -7,6 +7,8 @@ var request = require('request');
 
 module.exports = function(msg){
     co(function*(){
+        console.log('need-login msg: ' + msg);
+        console.log(msg);
         var botId = msg.AgentId;
         var mediaUrl = msg.mediaIdUrl;
         var kv = context.kvs.tenantWechatBot;

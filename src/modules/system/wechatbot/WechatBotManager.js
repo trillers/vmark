@@ -51,6 +51,7 @@ WechatBotManager.prototype._initBot = function(botInfo){
         }
         switch(data.Action){
             case 'need-login':
+                console.log('need-login');
                 require('./handlers/needLoginHandler')(data);
                 break;
         }
