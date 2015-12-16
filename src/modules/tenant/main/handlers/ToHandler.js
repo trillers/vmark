@@ -3,14 +3,9 @@ var wechatApi = require('../../../wechat/common/api').api;
 
 var CommandRegistry = require('../../../../framework/wechat/command-registry');
 var registry = new CommandRegistry();
-registry.addCommand('绑定微信号二维码', require('../commands/requestBindBotQrCodeCommand'));
-registry.addCommand('状态', require('../commands/viewingBotStatusCommand'));
-registry.addCommand('启动', require('../commands/startBotCommand'));
-registry.addCommand('停止', require('../commands/stopBotCommand'));
-registry.addCommand('重启', require('../commands/restartBotCommand'));
 
 module.exports = function(emitter){
-    emitter.ta(function(event, context){
+    emitter.to(function(event, context){
         co(function*(){
             var handler = registry.extractCommandFromContext(context);
             if(handler){
