@@ -8,13 +8,13 @@ module.exports = function(context){
     var openid = context.weixin.FromUserName;
     co(function*(){
         try{
-            var bot = yield wechatMediaService.findBotByOpenid(openid);
+            var bot = yield wechatMediaService.findBotByOpenidAsync(openid);
             if(bot){
                 var text = '[系统]: 微信助手号当前状态为 ' + WechatBotStatus.valueNames(bot.status);
-                yield wechatApi.sendText(openid, text);
+                yield wechatApi.sendTextAsync(openid, text);
             }else{
                 var errTxt = '[系统]: 没有相关助手号';
-                yield wechatApi.sendText(openid, errTxt);
+                yield wechatApi.sendTextAsync(openid, errTxt);
             }
         }catch (err) {
             logger.error('Fail to view bot\'s status ,' + inspect(err));

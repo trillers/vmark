@@ -12,18 +12,18 @@ module.exports = function(context){
     co(function*(){
         try{
             console.error('begin to stop bot...');
-            var media = yield wechatMediaService.findBotByOpenid(openid);
+            var media = yield wechatMediaService.findBotByOpenidAsync(openid);
             if(media){
-                yield wechatMediaService.updateStatusById(media._id, wechatBotStatus.Exited.value());
-                var orgMedia = yield orgMediaService.loadByMediaId(media._id);
-                yield orgMediaService.updateById(orgMedia._id, {intentionStatus: intentionStatus.Exited.value()});
+                yield wechatMediaService.updateStatusByIdAsync(media._id, wechatBotStatus.Exited.value());
+                var orgMedia = yield orgMediaService.loadByMediaIdAsync(media._id);
+                yield orgMediaService.updateByIdAsync(orgMedia._id, {intentionStatus: intentionStatus.Exited.value()});
                 var bot = botMananger.getWechatBot(media.custom_id);
                 bot.stop();
                 var text = '[系统]: 助手号正在停止, 请稍后';
-                yield wechatApi.sendText(openid, text);
+                yield wechatApi.sendTextAsync(openid, text);
             }else{
                 var errTxt = '[系统]: 没有相关助手号';
-                yield wechatApi.sendText(openid, errTxt);
+                yield wechatApi.sendTextAsync(openid, errTxt);
             }
         }catch (err) {
             logger.error('Fail to view bot\'s status ,' + inspect(err));
