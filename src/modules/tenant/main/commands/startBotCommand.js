@@ -1,3 +1,5 @@
+var co = require('co');
+var inspect = require('util').inspect;
 var context = require('../../../../context/context');
 var wechatMediaService = context.services.wechatMediaService;
 var wechatBotStatus = require('../../../common/models/TypeRegistry').item('WechatBotStatus');
@@ -5,13 +7,14 @@ var intentionStatus = require('../../../common/models/TypeRegistry').item('Inten
 var orgMediaService = context.services.orgMediaService;
 var wechatApi = require('../../../wechat/common/api').api;
 var botMananger = context.wechatBotManager;
-var inspect = require('util').inspect;
-var co = require('co');
+var tenantWechatBotKv = context.kvs.tenantWechatBot;
+
 module.exports = function(context){
     var openid = context.weixin.FromUserName;
     co(function*(){
         try{
-            var media = yield wechatMediaService.findBotByOpenidAsync(openid);
+            var botOpenid = yield tenantWechatBotKv.getBotOpenid(openid);
+            var media = yield wechatMediaService.findBotByOpenidAsync(botOpenid);
             if(media){
                 yield wechatMediaService.updateStatusByIdAsync(media._id, wechatBotStatus.Starting.value());
                 var orgMedia = yield orgMediaService.loadByMediaIdAsync(media._id);

@@ -2,13 +2,15 @@ var context= require('../../../../context/context');
 var wechatMediaService = context.services.wechatMediaService;
 var wechatApi = require('../../../wechat/common/api').api;
 var WechatBotStatus = require('../../../common/models/TypeRegistry').item('WechatBotStatus');
+var kv = context.kvs.tenantWechatBot;
 var inspect = require('util').inspect;
 var co = require('co');
-module.exports = function(context){
-    var openid = context.weixin.FromUserName;
+module.exports = function(ctx){
+    var openid = ctx.weixin.FromUserName;
     co(function*(){
         try{
-            var bot = yield wechatMediaService.findBotByOpenidAsync(openid);
+            var botOpenId = yield kv.getBotOpenidAsync(openid);
+            var bot = yield wechatMediaService.findBotByOpenidAsync(botOpenId);
             if(bot){
                 var text = '[系统]: 微信助手号当前状态为 ' + WechatBotStatus.valueNames(bot.status);
                 yield wechatApi.sendTextAsync(openid, text);
