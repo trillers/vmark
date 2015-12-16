@@ -11,18 +11,18 @@ module.exports = function(context){
     var openid = context.weixin.FromUserName;
     co(function*(){
         try{
-            var media = yield wechatMediaService.findBotByOpenid(openid);
+            var media = yield wechatMediaService.findBotByOpenidAsync(openid);
             if(media){
-                yield wechatMediaService.updateStatusById(media._id, wechatBotStatus.Starting.value());
-                var orgMedia = yield orgMediaService.loadByMediaId(media._id);
-                yield orgMediaService.updateById(orgMedia._id, {intentionStatus: intentionStatus.Logged.value()});
+                yield wechatMediaService.updateStatusByIdAsync(media._id, wechatBotStatus.Starting.value());
+                var orgMedia = yield orgMediaService.loadByMediaIdAsync(media._id);
+                yield orgMediaService.updateByIdAsync(orgMedia._id, {intentionStatus: intentionStatus.Logged.value()});
                 var bot = botMananger.getWechatBot(media.custom_id);
                 bot.start({intention: 'login', mode: 'trusted'});
                 var text = '[系统]: 助手号正在启动, 请稍后';
-                yield wechatApi.sendText(openid, text);
+                yield wechatApi.sendTextAsync(openid, text);
             }else{
                 var errTxt = '[系统]: 没有相关助手号';
-                yield wechatApi.sendText(openid, errTxt);
+                yield wechatApi.sendTextAsync(openid, errTxt);
             }
         }catch (err) {
             logger.error('Fail to view bot\'s status ,' + inspect(err));
