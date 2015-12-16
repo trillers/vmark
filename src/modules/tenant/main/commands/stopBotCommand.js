@@ -11,6 +11,7 @@ module.exports = function(context){
     var openid = context.weixin.FromUserName;
     co(function*(){
         try{
+            console.error('begin to stop bot...');
             var media = yield wechatMediaService.findBotByOpenid(openid);
             if(media){
                 yield wechatMediaService.updateStatusById(media._id, wechatBotStatus.Exited.value());
