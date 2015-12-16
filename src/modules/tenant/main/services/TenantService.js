@@ -175,7 +175,7 @@ Service.prototype.bindPersonalBot = function(operatorOpenid, botOpenid, callback
             , media:        wechatBot.id
             , user:         botUser.id
             , operator:     adminMemberId
-            , intentionStatus:   IntentionStatus.On.value()
+            , intentionStatus:   IntentionStatus.Logged.value()
             , desc:    ''
         };
 
