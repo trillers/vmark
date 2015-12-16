@@ -4,6 +4,7 @@ var WechatBotStatus = require('../../common/models/TypeRegistry').item('WechatBo
 var WechatBotManager = function(context, options){
     this.timerId = null;
     this.context = context;
+    this.api = this.context.botManager;
     this.options = options || {
             interval: 100000
         };
@@ -30,8 +31,12 @@ WechatBotManager.prototype.stop = function(){
     }
 };
 
-WechatBotManager.prototype.registerBot = function(botInfo){
+WechatBotManager.prototype.bindBot = function(botInfo){
     this._initBot(botInfo);
+};
+
+WechatBotManager.prototype.getWechatBot = function(id){
+    return this.context.botManager.getBot(id);
 };
 
 WechatBotManager.prototype._initBot = function(botInfo){
@@ -72,7 +77,6 @@ WechatBotManager.prototype._initBot = function(botInfo){
         }
         require('./handlers/statusChangeHandler')(data);
     })
-
 };
 
 WechatBotManager.prototype._init = function(){

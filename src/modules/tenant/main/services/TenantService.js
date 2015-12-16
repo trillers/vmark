@@ -101,6 +101,8 @@ Service.prototype.bindPersonalBot = function(operatorOpenid, botOpenid, callback
     var platformUserService = this.context.services.platformUserService;
     var wechatMediaService = this.context.services.wechatMediaService;
     var orgMediaService = this.context.services.orgMediaService;
+    var tenantWechatBotKv = this.context.kvs.tenantWechatBot;
+    var wechatBotManager = this.context.wechatBotManager;
 
     co(function*() {
         var tenantId = null;
@@ -169,6 +171,13 @@ Service.prototype.bindPersonalBot = function(operatorOpenid, botOpenid, callback
         };
         var wechatBot = yield wechatMediaService.createAsync(wechatBotJson);
 
+        /*
+         *  Create the to_be_bound tenant wechat bot for tenant:
+         *   - link to wechant bot (wechat media collection)
+         *   - link to bot user
+         *   - link to operator (the admin of the personal tenant)
+         *   - set intention status to On
+         */
         var orgMediaJson = {
             org:            tenantId
             , type:         WechatMediaType.WechatBot.value()
@@ -180,6 +189,11 @@ Service.prototype.bindPersonalBot = function(operatorOpenid, botOpenid, callback
         };
 
         var orgWechatBot = yield orgMediaService.createAsync(orgMediaJson);
+        yield tenantWechatBotKv.setOperatorOpenidAsync(botOpenid, operatorOpenid);
+
+        /*
+         *  update bot user 's post to append bot role
+         */
         var postJson = {
             org: tenantId
             , member: orgWechatBot._id
@@ -194,7 +208,21 @@ Service.prototype.bindPersonalBot = function(operatorOpenid, botOpenid, callback
             }
         };
         botUser = yield platformUserService.updateAsync(conditions, update);
-        //TODO: start bot
+
+        /*
+         *  Bind bot to wenode
+         */
+        wechatBotManager.bindBot(wechatBot);
+        var bot = wechatBotManager.getWechatBot(wechatBot.customId);
+        var opts = {
+            intention: 'login',
+            mode: 'untrusted',
+            nickname: botUser.nickname,
+            sex: botUser.sex
+        };
+        logger.debug(opts);
+        bot.start(opts);
+
         if (callback) callback(null, {
             user: botUser,
             result: bindBotResults.BIND
