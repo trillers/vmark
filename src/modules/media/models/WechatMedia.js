@@ -15,6 +15,7 @@ var Model = function(domainBuilder){
             , status: {type: String,  enum: WechatBotStatus.valueList(), default: WechatBotStatus.Exited.value(), require: true} //wechat bot status
             , name:           {type: String, required: true}
             , headimgurl:   {type: String}
+            , sex:          {type: Number, default: 0} //0: unknown, 1: male, 2: female
             , qrcodeurl:   {type: String} //服务号或者助手号的微信二维码
 
             , appId:   {type: String}   //as openid when it is wechat bot
