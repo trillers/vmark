@@ -47,6 +47,10 @@ describe('platform operation handler', function() {
             Content: '绑定微信号二维码'
         });
 
+        siteClient.sendText({
+            Content: '状态'
+        });
+
         setTimeout(function(){
             done();
         }, 4000);
