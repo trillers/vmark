@@ -17,7 +17,7 @@ module.exports = function(context){
                 var orgMedia = yield orgMediaService.loadByMediaId(media._id);
                 yield orgMediaService.updateById(orgMedia._id, {intentionStatus: intentionStatus.Logged.value()});
                 var bot = botMananger.getBot(media.custom_id);
-                bot.start();
+                bot.start({intention: 'login', mode: 'trusted'});
                 var text = '[系统]: 助手号正在启动, 请稍后';
                 yield wechatApi.sendText(openid, text);
             }else{
