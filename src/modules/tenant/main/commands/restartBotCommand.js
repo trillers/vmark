@@ -15,7 +15,7 @@ module.exports = function(context){
         try{
             var botOpenid = yield tenantWechatBotKv.getBotOpenidAsync(openid);
             if(botOpenid){
-                var media = yield wechatMediaService.findBotByOpenidAsync(openid);
+                var media = yield wechatMediaService.findBotByOpenidAsync(botOpenid);
                 yield wechatMediaService.updateStatusByIdAsync(media._id, wechatBotStatus.Starting.value());
                 var orgMedia = yield orgMediaService.loadByMediaIdAsync(media._id);
                 yield orgMediaService.updateByIdAsync(orgMedia._id, {intentionStatus: intentionStatus.Logged.value()});
