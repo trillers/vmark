@@ -5,6 +5,8 @@ var wechatMediaService = context.services.wechatMediaService;
 var wechatApi = require('../../../wechat/common/api').api;
 var WechatBotStatus = require('../../../common/models/TypeRegistry').item('WechatBotStatus');
 var tenantWechatBotKv = context.kvs.tenantWechatBot;
+var logger = require('../../../../app/logging').logger;
+
 module.exports = function(ctx){
     var openid = ctx.weixin.FromUserName;
     co(function*(){

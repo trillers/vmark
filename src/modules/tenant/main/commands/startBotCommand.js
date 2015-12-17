@@ -8,6 +8,7 @@ var orgMediaService = context.services.orgMediaService;
 var wechatApi = require('../../../wechat/common/api').api;
 var botMananger = context.wechatBotManager;
 var tenantWechatBotKv = context.kvs.tenantWechatBot;
+var logger = require('../../../../app/logging').logger;
 
 module.exports = function(context){
     var openid = context.weixin.FromUserName;

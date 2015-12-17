@@ -6,6 +6,7 @@ var orgMediaService = context.services.orgMediaService;
 var wechatApi = require('../../../wechat/common/api').api;
 var botMananger = context.wechatBotManager;
 var tenantWechatBotKv = context.kvs.tenantWechatBot;
+var logger = require('../../../../app/logging').logger;
 var inspect = require('util').inspect;
 var co = require('co');
 module.exports = function(context){
