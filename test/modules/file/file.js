@@ -1,19 +1,20 @@
 var assert = require('assert');
 var request = require('request');
 var fs = require('fs');
-var streamifier = require('streamifier');
 var wechatApi = require('../../../src/modules/wechat/common/api').api;
 var co = require('co');
 
-describe('file upload', function(){
+describe.only('file upload', function(){
     it('success upload image file', function(done){
         var formData = {
+            mediaId: '123',
             file: fs.createReadStream(__dirname + '/test.jpeg')
         }
-        request.post({url:'http://localhost:3020/api/file/upload', formData: formData}, function optionalCallback(err, httpResponse, body) {
+        request.post({url:'http://localhost:3040/api/file/upload', formData: formData}, function optionalCallback(err, httpResponse, body) {
             console.log(err);
             console.log(body);
             assert.ok(!err);
+            assert.ok(JSON.parse(body).custom_id);
             assert.ok(JSON.parse(body).media_id);
             assert.ok(JSON.parse(body).wx_media_id);
             done();
@@ -22,13 +23,15 @@ describe('file upload', function(){
 
     it('success upload voice file', function(done){
         var formData = {
+            mediaId: '123',
             file: fs.createReadStream(__dirname + '/test.amr')
         }
-        request.post({url:'http://localhost:3020/api/file/upload', formData: formData}, function optionalCallback(err, httpResponse, body) {
+        request.post({url:'http://localhost:3040/api/file/upload', formData: formData}, function optionalCallback(err, httpResponse, body) {
             console.log(err);
             console.log(body);
             assert.ok(!err);
             assert.ok(JSON.parse(body).media_id);
+            assert.ok(JSON.parse(body).custom_id);
             assert.ok(JSON.parse(body).wx_media_id);
             done();
         });
