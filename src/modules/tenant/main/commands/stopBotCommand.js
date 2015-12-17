@@ -12,14 +12,13 @@ module.exports = function(context){
     var openid = context.weixin.FromUserName;
     co(function*(){
         try{
-            console.error('begin to stop bot...');
             var botOpenid = yield tenantWechatBotKv.getBotOpenidAsync(openid);
             if(botOpenid){
                 var media = yield wechatMediaService.findBotByOpenidAsync(botOpenid);
                 yield wechatMediaService.updateStatusByIdAsync(media._id, wechatBotStatus.Exited.value());
                 var orgMedia = yield orgMediaService.loadByMediaIdAsync(media._id);
                 yield orgMediaService.updateByIdAsync(orgMedia._id, {intentionStatus: intentionStatus.Exited.value()});
-                var bot = botMananger.getWechatBot(media.custom_id);
+                var bot = botMananger.getWechatBot(media.customId);
                 bot.stop();
                 var text = '[系统]: 助手号正在停止, 请稍后';
                 yield wechatApi.sendTextAsync(openid, text);
