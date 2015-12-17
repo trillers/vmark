@@ -14,8 +14,8 @@ module.exports = function(context){
         try{
             console.error('begin to stop bot...');
             var botOpenid = yield tenantWechatBotKv.getBotOpenidAsync(openid);
-            var media = yield wechatMediaService.findBotByOpenidAsync(botOpenid);
-            if(media){
+            if(botOpenid){
+                var media = yield wechatMediaService.findBotByOpenidAsync(botOpenid);
                 yield wechatMediaService.updateStatusByIdAsync(media._id, wechatBotStatus.Exited.value());
                 var orgMedia = yield orgMediaService.loadByMediaIdAsync(media._id);
                 yield orgMediaService.updateByIdAsync(orgMedia._id, {intentionStatus: intentionStatus.Exited.value()});
