@@ -12,7 +12,6 @@ module.exports = function(context){
     var openid = context.weixin.FromUserName;
     co(function*(){
         try{
-            console.error('begin to stop bot...');
             var botOpenid = yield tenantWechatBotKv.getBotOpenidAsync(openid);
             if(botOpenid){
                 var media = yield wechatMediaService.findBotByOpenidAsync(botOpenid);
