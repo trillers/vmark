@@ -39,7 +39,7 @@ Kv.prototype.setOperatorOpenid = function(botOpenid, operatorId, callback){
 
 Kv.prototype.getBotOpenid = function(operatorId, callback){
     var redis = this.context.redis.main;
-    var key = opOidToBotOidKey(botOpenid);
+    var key = opOidToBotOidKey(operatorId);
     redis.get(key, function(err, result){
         cbUtil.logCallback(
             err,
@@ -51,8 +51,8 @@ Kv.prototype.getBotOpenid = function(operatorId, callback){
 
 Kv.prototype.setBotOpenid = function(operatorId, botOpenid, callback){
     var redis = this.context.redis.main;
-    var key = opOidToBotOidKey(botOpenid);
-    redis.set(key, operatorId, function(err, result){
+    var key = opOidToBotOidKey(operatorId);
+    redis.set(key, botOpenid, function(err, result){
         cbUtil.logCallback(
             err,
             'Fail to set bot openid for operator: ' + operatorId + ': ' + err,
