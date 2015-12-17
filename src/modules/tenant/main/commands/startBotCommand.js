@@ -13,7 +13,7 @@ module.exports = function(context){
     var openid = context.weixin.FromUserName;
     co(function*(){
         try{
-            var botOpenid = yield tenantWechatBotKv.getBotOpenid(openid);
+            var botOpenid = yield tenantWechatBotKv.getBotOpenidAsync(openid);
             if(botOpenid){
                 var media = yield wechatMediaService.findBotByOpenidAsync(botOpenid);
                 yield wechatMediaService.updateStatusByIdAsync(media._id, wechatBotStatus.Starting.value());
