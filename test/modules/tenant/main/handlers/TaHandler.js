@@ -53,6 +53,6 @@ describe('platform operation handler', function() {
 
         setTimeout(function(){
             done();
-        }, 100000);
+        }, 5000);
     })
 })

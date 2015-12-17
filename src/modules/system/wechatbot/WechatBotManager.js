@@ -119,26 +119,26 @@ WechatBotManager.prototype._routines = function(){
         }
         orgMedias.forEach(function (orgMedia) {
             var botInfo = orgMedia.media;
-            if(orgMedia.intentionStatus !== botInfo.status){
-                var bot = botManager.getBot(botInfo.customId);
-                if(orgMedia.intentionStatus === IntentionStatus.Logged.value() &&
-                    (botInfo.status === WechatBotStatus.Exceptional.value() ||
-                    botInfo.status === WechatBotStatus.Exited.value() ||
-                    botInfo.status === WechatBotStatus.Aborted.value())){
-                    var options = {
-                        intention: 'login',
-                        mode: 'untrusted',
-                        nickname: botInfo.name,
-                        sex: botInfo.sex
-                    };
-                    logger.debug('Start bot ' + botInfo.customId + ': ' + JSON.stringify(options));
-                    bot.start(options);
-                    wechatMediaService.updateStatusById(botInfo._id, WechatBotStatus.Starting.value());
-                }else if(orgMedia.intentionStatus === IntentionStatus.Exited.value()){
-                    logger.debug('Stop bot ' + botInfo.customId);
-                    bot.stop();
-                }
-            }
+            //if(orgMedia.intentionStatus !== botInfo.status){
+            //    var bot = botManager.getBot(botInfo.customId);
+            //    if(orgMedia.intentionStatus === IntentionStatus.Logged.value() &&
+            //        (botInfo.status === WechatBotStatus.Exceptional.value() ||
+            //        botInfo.status === WechatBotStatus.Exited.value() ||
+            //        botInfo.status === WechatBotStatus.Aborted.value())){
+            //        var options = {
+            //            intention: 'login',
+            //            mode: 'untrusted',
+            //            nickname: botInfo.name,
+            //            sex: botInfo.sex
+            //        };
+            //        logger.debug('Start bot ' + botInfo.customId + ': ' + JSON.stringify(options));
+            //        bot.start(options);
+            //        wechatMediaService.updateStatusById(botInfo._id, WechatBotStatus.Starting.value());
+            //    }else if(orgMedia.intentionStatus === IntentionStatus.Exited.value()){
+            //        logger.debug('Stop bot ' + botInfo.customId);
+            //        bot.stop();
+            //    }
+            //}
         });
     })
 };
