@@ -21,11 +21,11 @@ module.exports = function(context){
                 yield orgMediaService.updateByIdAsync(orgMedia._id, {intentionStatus: intentionStatus.Logged.value()});
                 var bot = botMananger.getWechatBot(media.customId);
                 bot.restart();
-                var text = '[系统]: 助手号正在重启, 请稍后';
-                yield wechatApi.sendText(openid, text);
+                var text = '[系统]: 助手号重启成功';
+                yield wechatApi.sendTextAsync(openid, text);
             }else{
                 var errTxt = '[系统]: 没有相关助手号';
-                yield wechatApi.sendText(openid, errTxt);
+                yield wechatApi.sendTextAsync(openid, errTxt);
             }
         }catch (err) {
             logger.error('Fail to view bot\'s status ,' + inspect(err));

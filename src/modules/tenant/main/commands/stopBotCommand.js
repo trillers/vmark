@@ -22,7 +22,7 @@ module.exports = function(context){
                 yield orgMediaService.updateByIdAsync(orgMedia._id, {intentionStatus: intentionStatus.Exited.value()});
                 var bot = botMananger.getWechatBot(media.customId);
                 bot.stop();
-                var text = '[系统]: 助手号正在停止, 请稍后';
+                var text = '[系统]: 助手号停止成功';
                 yield wechatApi.sendTextAsync(openid, text);
             }else{
                 var errTxt = '[系统]: 没有相关助手号';

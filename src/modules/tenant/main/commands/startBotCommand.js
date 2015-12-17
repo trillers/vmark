@@ -23,7 +23,7 @@ module.exports = function(context){
 
                 var bot = botMananger.getWechatBot(media.customId);
                 bot.start({intention: 'login', mode: 'trusted'});
-                var text = '[系统]: 助手号正在启动, 请稍后';
+                var text = '[系统]: 助手号启动成功';
                 yield wechatApi.sendTextAsync(openid, text);
             }else{
                 var errTxt = '[系统]: 没有相关助手号';
