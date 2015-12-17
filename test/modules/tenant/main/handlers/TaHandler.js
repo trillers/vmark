@@ -17,19 +17,19 @@ before(function(done){
 
 describe('platform operation handler', function() {
     var openid = 'okvXqs4vtB5JDwtb8Gd6Rj26W6mE';//独自等待的错题本openid
-    before(function(done){
-        var platformUserService = context.services.platformUserService;
-        platformUserService.createPlatformUser(openid, function(err, user){
-            logger.debug(user);
-            assert.ok(user);
-            var tenantService = context.services.tenantService;
-            tenantService.registerPersonalTenant(openid, function(err, user){
-                assert.ok(user);
-                assert(user.posts[0].role, OrgMemberRole.TenantAdmin.value());
-                done();
-            });
-        });
-    });
+    //before(function(done){
+    //    var platformUserService = context.services.platformUserService;
+    //    platformUserService.createPlatformUser(openid, function(err, user){
+    //        logger.debug(user);
+    //        assert.ok(user);
+    //        var tenantService = context.services.tenantService;
+    //        tenantService.registerPersonalTenant(openid, function(err, user){
+    //            assert.ok(user);
+    //            assert(user.posts[0].role, OrgMemberRole.TenantAdmin.value());
+    //            done();
+    //        });
+    //    });
+    //});
     it('success send tenant registry qr code', function (done) {
         var platform = new Wechat.Platform();
         var client = wxutil.newSignedInClient(platform);
@@ -43,9 +43,9 @@ describe('platform operation handler', function() {
             console.log('\r\n');
         });
 
-        siteClient.sendText({
-            Content: '绑定微信号二维码'
-        });
+        //siteClient.sendText({
+        //    Content: '绑定微信号二维码'
+        //});
 
         siteClient.sendText({
             Content: '状态'
