@@ -11,8 +11,9 @@ module.exports = function(context){
     var openid = context.weixin.FromUserName;
     co(function*(){
         try{
-            var media = yield wechatMediaService.findBotByOpenid(openid);
-            if(media){
+            var botOpenid = yield tenantWechatBotKv.getBotOpenid(openid);
+            if(botOpenid){
+                var media = yield wechatMediaService.findBotByOpenid(openid);
                 yield wechatMediaService.updateStatusById(media._id, wechatBotStatus.Starting.value());
                 var orgMedia = yield orgMediaService.loadByMediaId(media._id);
                 yield orgMediaService.updateById(orgMedia._id, {intentionStatus: intentionStatus.Logged.value()});
