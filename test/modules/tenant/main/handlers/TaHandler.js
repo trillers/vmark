@@ -43,9 +43,9 @@ describe('platform operation handler', function() {
             console.log('\r\n');
         });
 
-        siteClient.sendText({
-            Content: '绑定微信号二维码'
-        });
+        //siteClient.sendText({
+        //    Content: '绑定微信号二维码'
+        //});
 
         siteClient.sendText({
             Content: '状态'
@@ -53,6 +53,6 @@ describe('platform operation handler', function() {
 
         setTimeout(function(){
             done();
-        }, 4000);
+        }, 100000);
     })
 })

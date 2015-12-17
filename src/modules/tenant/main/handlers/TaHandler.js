@@ -12,9 +12,7 @@ registry.addCommand('重启', require('../commands/restartBotCommand'));
 module.exports = function(emitter){
     emitter.ta(function(event, context){
         co(function*(){
-            console.log('enter ta handler....');
             var handler = registry.extractCommandFromContext(context);
-            console.error(handler.toString());
             if(handler){
                 handler();
             }

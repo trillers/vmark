@@ -9,9 +9,10 @@ module.exports = function(ctx){
     var openid = ctx.weixin.FromUserName;
     co(function*(){
         try{
+            console.error(tenantWechatBotKv.getBotOpenidAsync);
             var botOpenId = yield tenantWechatBotKv.getBotOpenidAsync(openid);
-            var bot = yield wechatMediaService.findBotByOpenidAsync(botOpenId);
-            if(bot){
+            if(botOpenId){
+                var bot = yield wechatMediaService.findBotByOpenidAsync(botOpenId);
                 var text = '[系统]: 微信助手号当前状态为 ' + WechatBotStatus.valueNames(bot.status);
                 yield wechatApi.sendTextAsync(openid, text);
             }else{
