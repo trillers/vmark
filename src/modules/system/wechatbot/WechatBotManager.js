@@ -117,8 +117,6 @@ WechatBotManager.prototype._routines = function(){
         if (err) {
             return logger.error('load bot err: ' + err);
         }
-        console.log('$$$$$$$$$$$$$$$$$$$$$$$$$');
-        console.error(orgMedias);
         orgMedias.forEach(function (orgMedia) {
             var botInfo = orgMedia.media;
             if(orgMedia.intentionStatus !== botInfo.status){
