@@ -17,7 +17,7 @@ module.exports = function(context){
                 yield wechatMediaService.updateStatusByIdAsync(media._id, wechatBotStatus.Starting.value());
                 var orgMedia = yield orgMediaService.loadByMediaIdAsync(media._id);
                 yield orgMediaService.updateByIdAsync(orgMedia._id, {intentionStatus: intentionStatus.Logged.value()});
-                var bot = botMananger.getWechatBot(media.custom_id);
+                var bot = botMananger.getWechatBot(media.customId);
                 bot.restart();
                 var text = '[系统]: 助手号正在重启, 请稍后';
                 yield wechatApi.sendText(openid, text);
