@@ -8,12 +8,13 @@ var orgMediaService = context.services.orgMediaService;
 var wechatApi = require('../../../wechat/common/api').api;
 var botMananger = context.wechatBotManager;
 var tenantWechatBotKv = context.kvs.tenantWechatBot;
+var logger = require('../../../../app/logging').logger;
 
 module.exports = function(context){
     var openid = context.weixin.FromUserName;
     co(function*(){
         try{
-            var botOpenid = yield tenantWechatBotKv.getBotOpenid(openid);
+            var botOpenid = yield tenantWechatBotKv.getBotOpenidAsync(openid);
             if(botOpenid){
                 var media = yield wechatMediaService.findBotByOpenidAsync(botOpenid);
                 yield wechatMediaService.updateStatusByIdAsync(media._id, wechatBotStatus.Starting.value());
@@ -22,7 +23,7 @@ module.exports = function(context){
 
                 var bot = botMananger.getWechatBot(media.customId);
                 bot.start({intention: 'login', mode: 'trusted'});
-                var text = '[系统]: 助手号正在启动, 请稍后';
+                var text = '[系统]: 助手号启动成功';
                 yield wechatApi.sendTextAsync(openid, text);
             }else{
                 var errTxt = '[系统]: 没有相关助手号';
