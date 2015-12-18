@@ -4,6 +4,18 @@ var Service = function(context){
     this.context = context;
 };
 
+Service.prototype.loadById = function(id, callback){
+    var kv = this.context.kvs.WechatMedia;
+    kv.loadById(id, function(err, result){
+        cbUtil.logCallback(
+            err,
+            'Fail to find wechat bot by id: ' + err,
+            'Succeed to find wechat bot by id');
+
+        cbUtil.handleSingleValue(callback, err, result);
+    })
+};
+
 Service.prototype.create = function(mediaJson, callback){
     var kv = this.context.kvs.wechatMedia;
     var WechatMedia = this.context.models.WechatMedia;

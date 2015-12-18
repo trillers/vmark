@@ -33,6 +33,8 @@ WechatBotManager.prototype.stop = function(){
 };
 
 WechatBotManager.prototype.bindBot = function(botInfo){
+    var bot = this.getWechatBot(botInfo.customId);
+    bot.syncContacts();
     this._initBot(botInfo);
 };
 
@@ -55,8 +57,11 @@ WechatBotManager.prototype._initBot = function(botInfo){
                 console.log('need-login');
                 require('./handlers/needLoginHandler')(data);
                 break;
+            case 'remark-contact':
+                require('./handlers/remarkContactHandler')(data);
+                break;
         }
-    })
+    });
 
     bot.onClientActionFeedback(function(err, data){
         if(err){
@@ -64,7 +69,7 @@ WechatBotManager.prototype._initBot = function(botInfo){
             return;
         }
         //TODO
-    })
+    });
 
     bot.onAgentStatusChange(function(err, data){
         if(err){
