@@ -13,7 +13,7 @@ var Model = function(domainBuilder){
             , user:         {type: String} //平台用户id
             , openid:       {type: String} //服务号粉丝openid 或者 助手号联系人buid (bot's contact id)
             , nickname:     {type: String, required: true}
-            , remark:       {type: String, required: true}
+            , remark:       {type: String}
             , headimgurl:   {type: String}
             , sex:          {type: Number, default: 0} //0: unknown, 1: male, 2: female
 
