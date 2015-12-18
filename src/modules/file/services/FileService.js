@@ -6,7 +6,7 @@ var Promise = require('bluebird');
 var Service = {};
 
 Service.load = function (id, callback) {
-    File.findById(id).lean(true).exec(function (err, doc) {
+    File.findOne({$or: [{custom_id: id}, {_id: id}]}).lean(true).exec(function (err, doc) {
         if (err) {
             logger.error('Fail to load File [id=' + id + ']: ' + err);
             if (callback) callback(err);

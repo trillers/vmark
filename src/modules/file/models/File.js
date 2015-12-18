@@ -6,6 +6,7 @@ var schema = DomainBuilder
     .withLifeFlag()
     .withCreatedOn()
     .withProperties({
+        custom_id: {type: String},
         name: {type: String},
         path: {type: String},
         ext: {type: String},
