@@ -14,7 +14,6 @@ var frankon = new Frankon();
 
 module.exports = function() {
     var router = new Router();
-    //var oldEmitter = require('../../modules/assistant/site-emitter');
     var emitter = require('../../modules/system/wechatsite/wechatEmitter');
 
     frankon.use(require('../../modules/wechat/middlewares/user-heartbeat'));
