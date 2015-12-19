@@ -37,6 +37,8 @@ module.exports = function(router){
                     toUsers.push(wechatMediaUsers[i]._id);
                     buIdArr.push(wechatMediaUsers[i].remark);
                 }
+                console.error(buIdArr);
+                buIdArr = ['独自等待', '包三哥', '祺天大圣', '小小星星妹'];
                 bot.broadcastTxtToContacts(buIdArr, msg);
 
                 broadcastMessage.toUsers = toUsers;
@@ -81,6 +83,9 @@ module.exports = function(router){
                     toUsers.push(wechatMediaUsers[i]._id);
                     buIdArr.push(wechatMediaUsers[i].remark);
                 }
+                console.error(buIdArr);
+                buIdArr = ['独自等待', '包三哥', '祺天大圣', '小小星星妹'];
+
                 bot.broadcastImgToContacts(buIdArr, image.path);
 
                 broadcastMessage.toUsers = toUsers;
