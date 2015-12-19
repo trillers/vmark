@@ -7,7 +7,6 @@ module.exports = function (msg){
     co(function* (){
         var logger = context.logger;
         try{
-            console.error(msg)
             //msg.Data<headimgid, remark, nickname, sex, place, botid>
             var contact = msg.Data;
             var botId = msg.AgentId;

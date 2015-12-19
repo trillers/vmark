@@ -1,6 +1,7 @@
 var Router = require('koa-router');
 var context = require('../context/context');
-//var securityService = context.services.securityService;
+var securityService = context.services.securityService;
+var authResults = securityService.authResults;
 
 module.exports = function(app){
     var router = new Router();
@@ -37,12 +38,18 @@ module.exports = function(app){
             yield this.render('mock-login-list', {users: mockUsers});
             return;
         }
-        //var auth = yield securityService.authenticateAsync();
-        var auth = mockUsers[0];
+
+        var auth = yield securityService.authenticateAsync(openid);
+        //var auth = mockUsers[0];
         if(!auth){
             yield this.render('mock-login');
             return;
         }
+        else if(auth.result != authResults.OK && auth.result != authResults.NO_BOUND_BOT){
+            yield this.render('mock-login', {auth: auth});
+            return;
+        }
+
         this.session.auth = auth;
         this.redirect('/');
     });
