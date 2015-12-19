@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="/public/favicon.ico">
-    <title>主页面</title>
+    <title>登录</title>
     <!-- Bootstrap core CSS -->
     <link href="/public/components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="/public/components/jquery/jquery.min.js"></script>
@@ -19,10 +19,30 @@
 <body background="/web/images/bg2.jpg" style="background-repeat: no-repeat;
         background-attachment: fixed; background-size: cover;background-position: center bottom;" >
 <div class="container" style="text-align: left ; margin-top: 1%">
-    已登录
+
     <div class="row">
         <div class="col-lg-6" >
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>用户</th>
+                </tr>
+                </thead>
+                <tbody>
 
+                {% for user in users %}
+                <tr>
+                    <td>
+                        <a href="./mock-login?openid={{ user.openid }}" target="_self" >
+                            <img data-src="holder.js/80x80" class="img-rounded" alt="{{ user.nickname }}" src="{{ user.headimgurl }}" data-holder-rendered="true" style="width: 80px; height: 80px;">
+                            &nbsp;&nbsp;{{ user.nickname }}
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
         </div>
 
         <div class="col-lg-6" >
