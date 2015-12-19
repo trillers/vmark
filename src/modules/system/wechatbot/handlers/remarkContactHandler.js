@@ -7,8 +7,9 @@ module.exports = function (msg){
     co(function* (){
         var logger = context.logger;
         try{
-            //msg.Contact<headimgid, remark, nickname, sex, place, botid>
-            var contact = msg.Contact;
+            console.error(msg)
+            //msg.Data<headimgid, remark, nickname, sex, place, botid>
+            var contact = msg.Data;
             var botId = msg.AgentId;
             var wechatMediaService = context.services.wechatMediaService;
             var wechatMediaUserService = context.services.wechatMediaUserService;
@@ -26,6 +27,7 @@ module.exports = function (msg){
                         sex: contact.sex
                     };
                     yield wechatMediaUserService.updateByRemarkAsync(contact.remark, jsonForUpdate);
+                    logger.info('Succeed to sync the contact, contact\'s remark is ' + contact.remark);
                     return;
                 }
                 /**
@@ -44,9 +46,9 @@ module.exports = function (msg){
                     headimgurl: contact.headimgid,
                     sex: contact.sex
                 };
-                console.error(jsonForCreate);
                 copyPlace(jsonForCreate, contact.place);
                 yield wechatMediaUserService.createAsync(jsonForCreate);
+                return;
             }
             logger.error('Failed to sync the contact, no such media');
         }

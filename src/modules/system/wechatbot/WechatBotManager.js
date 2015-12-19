@@ -35,6 +35,7 @@ WechatBotManager.prototype.stop = function(){
 WechatBotManager.prototype.bindBot = function(botInfo){
     var bot = this.getWechatBot(botInfo.customId);
     bot.syncContacts();
+    bot.syncContacts();
     this._initBot(botInfo);
 };
 

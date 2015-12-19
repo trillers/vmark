@@ -4,8 +4,8 @@ var WechatMediaUserType = require('../../../common/models/TypeRegistry').item('W
 
 module.exports = function(msg){
     co(function* (){
-        //msg.Contact<headimgid, bid, nickname, sex, place, botid>
-        var contact = msg.Profile;
+        //msg.Data<headimgid, remark, nickname, sex, place, botid>
+        var contact = msg.Data;
         var botId = msg.AgentId;
         var wechatMediaService = context.services.wechatMediaService;
         var wechatMediaUserService = context.services.wechatMediaUserService;
