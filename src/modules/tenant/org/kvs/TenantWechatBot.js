@@ -37,6 +37,11 @@ Kv.prototype.setOperatorOpenid = function(botOpenid, operatorId, callback){
     });
 };
 
+/**
+ * Get bot openid by operator openid
+ * @param operatorId operator's openid
+ * @param callback
+ */
 Kv.prototype.getBotOpenid = function(operatorId, callback){
     var redis = this.context.redis.main;
     var key = opOidToBotOidKey(operatorId);
@@ -49,6 +54,12 @@ Kv.prototype.getBotOpenid = function(operatorId, callback){
     });
 };
 
+/**
+ * Link operator openid to bot openid
+ * @param operatorId operator's openid
+ * @param botOpenid bot's openid
+ * @param callback
+ */
 Kv.prototype.setBotOpenid = function(operatorId, botOpenid, callback){
     var redis = this.context.redis.main;
     var key = opOidToBotOidKey(operatorId);
