@@ -5,6 +5,30 @@ var Service = function(context){
     this.context = context;
 };
 
+Service.prototype.loadByRemark = function(remark, callback){
+    var WechatMedia = this.context.models.WechatMediaUser;
+    WechatMedia.findOne({lFlg: 'a', remark: remark, type: 'wbc'}, function (err, result) {
+        cbUtil.logCallback(
+            err,
+            'Fail to find wechat bot by remark: ' + err,
+            'Succeed to find wechat bot by remark');
+
+        cbUtil.handleSingleValue(callback, err, result);
+    });
+};
+
+Service.prototype.updateByRemark = function(remark, update, callback){
+    var WechatMedia = this.context.models.WechatMediaUser;
+    WechatMedia.update({remark: remark, lFlg: 'a', type: 'wbc'}, update, function (err, result) {
+        cbUtil.logCallback(
+            err,
+            'Fail to find wechat bot by remark: ' + err,
+            'Succeed to find wechat bot by remark');
+
+        cbUtil.handleSingleValue(callback, err, result);
+    });
+};
+
 Service.prototype.loadById = function(id, callback){
     var WechatMediaUser = this.context.models.WechatMediaUser;
     WechatMediaUser.findById({_id: id}, null, {lean: true}, function(err, doc){

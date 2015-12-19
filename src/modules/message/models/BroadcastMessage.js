@@ -4,7 +4,7 @@ var MsgContentType = require('../../common/models/TypeRegistry').item('MsgType')
 var BroadcastType = require('../../common/models/TypeRegistry').item('BroadcastType');
 
 var schema = DomainBuilder
-    .i('BatchMessage')
+    .i('BroadcastMessage')
     .withBasis()
     .withLifeFlag()
     .withCreatedOn()

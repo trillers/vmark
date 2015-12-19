@@ -13,6 +13,28 @@ var  directCities = {
 };
 helper.directCities = directCities;
 
+helper.copyPlace = function(dest, place){
+    if(!place){
+        return;
+    }
+    //TODO
+    var province = place.split(' ')[0];
+    var city = place.split(' ')[1];
+    dest.province = province;
+    if(directCities[province]){
+        dest.city = province;
+        dest.district = city;
+    }
+    else{
+        dest.city = city;
+    }
+    for(var prop in dest){
+        if(typeof dest[prop] === 'undefined'){
+            delete dest[prop];
+        }
+    }
+};
+
 helper.copyLocation = function(dest, src){
     dest.country = src.country;
     dest.province = src.province;

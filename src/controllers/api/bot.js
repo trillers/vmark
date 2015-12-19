@@ -97,7 +97,7 @@ module.exports = function(router){
         }
     });
 
-    router.post('/broadcastHistory', function *(){
+    router.get('/broadcastHistory', function *(){
         var botId = this.query.botId;
         var params = {
             conditions:{
