@@ -25,4 +25,10 @@ module.exports = function(app){
     require('./file')(file_router);
     app.use(file_router.routes());
 
+    //bot
+    var bot_router = new router();
+    bot_router.prefix('/api/bot');
+    require('./bot')(bot_router);
+    app.use(bot_router.routes());
+
 }

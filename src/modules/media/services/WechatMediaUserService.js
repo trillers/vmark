@@ -60,4 +60,43 @@ Service.prototype.deleteById = function(id, callback) {
     });
 };
 
+Service.prototype.find = function(params, callback){
+    var WechatMediaUser = this.context.models.WechatMediaUser;
+    var query = WechatMediaUser.find();
+
+    if (params.options) {
+        query.setOptions(params.options);
+    }
+
+    if (params.sort) {
+        query.sort(params.sort);
+    }
+
+    if (params.page) {
+        var skip = (params.page.no - 1) * params.page.size;
+        var limit = params.page.size;
+        if (skip) query.skip(skip);
+        if (limit) query.limit(limit);
+    }
+
+    if (params.conditions) {
+        query.find(params.conditions);
+    }
+
+    if (params.populate) {
+        params.populate.forEach(function(item){
+            query.populate(item);
+        })
+    }
+    query.lean(true);
+    query.exec(function (err, docs) {
+        if (err) {
+            callback(err);
+            return;
+        }
+
+        if (callback) callback(null, docs);
+    });
+};
+
 module.exports = Service;

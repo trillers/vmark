@@ -5,17 +5,14 @@ var proOrdev = true;
 
 seajs.config({
     alias: {
-        'jquery':'../../components/cmd-jquery/jquery.js',
-        //'zepto': '../public/components/zepto/zepto.min',
-        'zepto': '../../components/cmd-zepto/zepto',
-        //'jqlazyload':'js/app/jquery.lazyload.js',
-        'isjs':'js/app/is.js',
-        //'jssdk':'js/app/jssdk',
-        'util':'js/app/util.js',
-        'seedriot':'../../components/cmd-riot/riot+compiler.js'
+        'jquery':'/public/components/cmd-jquery/jquery.js',
+        'zepto': '/public/components/cmd-zepto/zepto',
+        'isjs':'/web/js/app/is.js',
+        'util':'/web/js/app/util.js',
+        'seedriot':'/public/components/cmd-riot/riot+compiler.js'
     },
     vars: {
-        'mainpath':'./js/app/index'
+        'mainpath':'/web/js/app/index'
     },
     map: [
         ['','']

@@ -1,7 +1,7 @@
 var mongoose = require('../../../app/mongoose');
 var DomainBuilder = require('../../../framework/model/DomainBuilder');
-var MsgContentType = require('../../common/models/TypeRegistry').item('MsgContent');
-var BatchType = require('../../common/models/TypeRegistry').item('BatchType');
+var MsgContentType = require('../../common/models/TypeRegistry').item('MsgType');
+var BroadcastType = require('../../common/models/TypeRegistry').item('BroadcastType');
 
 var schema = DomainBuilder
     .i('BatchMessage')
@@ -15,7 +15,7 @@ var schema = DomainBuilder
         contentType: {type: String, enum: MsgContentType.valueList(), default: MsgContentType.text.value()},
         content: {type: String},  //text content
         media_id: {type: String}, //media id
-        batchType:{type: String, enum: BatchType.valueList(), default: BatchType.single.value()}
+        broadcastType:{type: String, enum: BroadcastType.valueList(), default: BroadcastType.single.value()}
     })
     .build();
 module.exports.schema = schema;

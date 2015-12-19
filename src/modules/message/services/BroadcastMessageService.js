@@ -1,46 +1,46 @@
 var logger = require('../../../app/logging').logger;
 var u = require('../../../app/util');
-var BatchMessage = require('../models/BatchMessage').model;
+var BroadcastMessage = require('../models/BroadcastMessage').model;
 var Promise = require('bluebird');
 
 var Service = {};
 
 Service.load = function (id, callback) {
-    BatchMessage.findById(id).lean(true).exec(function (err, doc) {
+    BroadcastMessage.findById(id).lean(true).exec(function (err, doc) {
         if (err) {
-            logger.error('Fail to load BatchMessage [id=' + id + ']: ' + err);
+            logger.error('Fail to load BroadcastMessage [id=' + id + ']: ' + err);
             if (callback) callback(err);
             return;
         }
 
-        logger.debug('Succeed to load  BatchMessage [id=' + id + ']');
+        logger.debug('Succeed to load  BroadcastMessage [id=' + id + ']');
         if (callback) callback(null, doc);
     })
 };
 
 Service.create = function (json, callback) {
-    var batchMessage = new BatchMessage(json);
-    batchMessage.save(function (err, doc, numberAffected) {
+    var broadcastMessage = new BroadcastMessage(json);
+    broadcastMessage.save(function (err, doc, numberAffected) {
         if (err) {
-            logger.error('Fail to create BatchMessage: ' + err + '\r\n');
+            logger.error('Fail to create BroadcastMessage: ' + err + '\r\n');
             if (callback) callback(err);
             return;
         }
         if (numberAffected) {
-            logger.debug('Succeed to create BatchMessage: ' + require('util').inspect(doc) + '\r\n');
+            logger.debug('Succeed to create BroadcastMessage: ' + require('util').inspect(doc) + '\r\n');
             if (callback) callback(null, doc.toObject());
         }
         else {
-            logger.error('Fail to create BatchMessage: ' + require('util').inspect(doc) + '\r\n');
-            if (callback) callback(new Error('Fail to create BatchMessage'));
+            logger.error('Fail to create BroadcastMessage: ' + require('util').inspect(doc) + '\r\n');
+            if (callback) callback(new Error('Fail to create BroadcastMessage'));
         }
     });
 };
 
 Service.delete = function (id, callback) {
-    BatchMessage.findByIdAndRemove(id, function (err, doc) {
+    BroadcastMessage.findByIdAndRemove(id, function (err, doc) {
         if (err) {
-            logger.error('Fail to delete BatchMessage [id=' + id + ']: ' + err);
+            logger.error('Fail to delete BroadcastMessage [id=' + id + ']: ' + err);
             if (callback) callback(err);
             return;
         }
@@ -51,7 +51,7 @@ Service.delete = function (id, callback) {
 };
 
 Service.update = function (id, update, callback) {
-    BatchMessage.findByIdAndUpdate(id, update, {new: true}, function (err, result){
+    BroadcastMessage.findByIdAndUpdate(id, update, {new: true}, function (err, result){
         if(err) {
             callback(err);
         } else {
@@ -62,18 +62,18 @@ Service.update = function (id, update, callback) {
 };
 
 Service.updateByCondition = function (condition, update, callback) {
-    BatchMessage.findOneAndUpdate(condition, update, {new: true}, function (err, doc){
+    BroadcastMessage.findOneAndUpdate(condition, update, {new: true}, function (err, doc){
         if(err) {
             callback(err);
         } else {
-            logger.debug('Succeed to update BatchMessage [id=' + doc._id + ']');
+            logger.debug('Succeed to update BroadcastMessage [id=' + doc._id + ']');
             callback(null, doc);
         }
     });
 };
 
 Service.find = function (params, callback) {
-    var query = BatchMessage.find();
+    var query = BroadcastMessage.find();
 
     if (params.options) {
         query.setOptions(params.options);
@@ -112,7 +112,7 @@ Service.find = function (params, callback) {
 };
 
 Service.filter = function (params, callback) {
-    var query = BatchMessage.find();
+    var query = BroadcastMessage.find();
 
     if (params.options) {
         query.setOptions(params.options);

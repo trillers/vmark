@@ -1,3 +1,198 @@
 <broadcast>
-    <span>群发</span>
+    <div if="{!hidden}">
+        <div class="container">
+            <div class="jumbotron" style="width: 55em; min-height: 39em; margin: 0 auto; padding-top: 0; padding-bottom: 20px;">
+                <div id="broadcast" style="padding-top: 1em">
+                    <div if="{!broadcastHistory}" class="panel panel-default" style="display: none; height: 20em; line-height: 3em; margin-top: 1em; text-align: center">
+                        <span>暂无群发无纪录</span>
+                    </div>
+                    <div if="{broadcastHistory}" class="panel panel-default" style="overflow-y: scroll; height: 20em; margin-top: 1em">
+                        <ul class="list-group">
+                            <li each="{groupBatchMsg}" class="list-group-item">
+                                <div if="{contentType == 'image'}">
+                                    <img style="height: 7em" riot-src="{contentType == 'image' && media_id && parent.api + '/file/?media_id=' + media_id}" alt=""/>
+                                </div>
+                                <div  if="{contentType == 'text'}" style="height: 100%; width: 100%">
+                                    <div style="height: 3em;overflow: hidden; float: left; width: 70%;">{content}</div>
+                                    <div style="height: 3em; line-height: 3em; text-align: center">{parent.formatDate(crtOn)}</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="panel panel-default" id="img_prew" style="display:none; margin-bottom: 5px">
+                        <table class="table table-bordered" style="text-align: center; vertical-align: middle;">
+                            <tbody>
+                            <tr>
+                                <td rowspan="3">
+                                    <img src="{img_url}" alt="" style="height: 9em;"/></td>
+                                <td>文件名</td>
+                                <td>{img_name}</td>
+                            </tr>
+                            <tr>
+                                <td>文件大小</td>
+                                <td>{img_size}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <input class="btn btn-default" type="button"  style="margin-right: 50px" value="取消" onclick="{cancel_send_img}"/>
+                                    <input class="btn btn-success" type="button" value="发送" onclick="{send_img}"/>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="choose_img" style="margin-left: 5px">
+                        <span class='btn_addPic glyphicon glyphicon-picture' href="javascript:void(0);"><input id="img_file"  type="file"  class='filePrew' class="glyphicon glyphicon-picture" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{previewImg}"/></span>
+                    </div>
+                    <textarea id="broadcastMsg" style="margin-top: 5px;" class="form-control" rows="3"></textarea>
+                    <button type="button" onclick="{broadcast}" style="margin-left: 83%; margin-top: 1em; width: 7em; margin-right: 1em; margin-bottom: 1em;" class="btn btn-success">发送</button>
+                </div>
+            </div>
+        </div><!--/container-->
+
+        <style scoped>
+            .btn_addPic{
+                display: block;
+                position: relative;
+                font-size: 35px;
+                width: 38px;
+                height: 38px;
+                overflow: hidden;
+                cursor: pointer;
+                text-align: center;
+            }
+            .filePrew {
+                display: block;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 38px;
+                height: 38px;
+                cursor: pointer;
+                font-size: 100px; /* 增大不同浏览器的可点击区域 */
+                opacity: 0; /* 实现的关键点 */
+                filter:alpha(opacity=0);/* 兼容IE */
+            }
+        </style>
+
+        <script>
+            this.app = this.opts.app; //keep spa object
+            var self = nest.presentable(this);
+            self.env = (__app.settings.env.NODE_ENV=="production")?"public":"web";
+            self.api =  __app.settings.api.url;
+            var broadcastTxt = domain.action('broadcastTxt');
+            var broadcastImg = domain.action('broadcastImg');
+            var loadBroadcastHistory = domain.action('loadBroadcastHistory')
+
+            var onBroadcastTxt = function(data){
+                if(data.success){
+                    //TODO
+                }else{
+                    alert('发送失败')
+                }
+            }
+
+            var onBroadcastImg = function(data){
+                if(data.success){
+                    //TODO
+                }else{
+                    alert('发送失败')
+                }
+            }
+
+            var onLoadBroadcastHistory = function(data){
+                self.broadcastHistory = data.history;
+                self.update();
+            }
+
+            this.on('mount', function(){
+                console.info('tag broadcast index is mounted');
+                broadcastTxt.onDone(onBroadcastTxt);
+                broadcastImg.onDone(onBroadcastImg);
+                loadBroadcastHistory.onDone(onLoadBroadcastHistory);
+            });
+            this.on('unmount', function(){
+                console.info('tag broadcast index is unmounted');
+                broadcastTxt.offDone(onBroadcastTxt);
+                broadcastImg.offDone(onBroadcastImg);
+                loadBroadcastHistory.offDone(onLoadBroadcastHistory);
+            });
+            this.on('open', function(options){
+                console.info('tag broadcast index is opening');
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+            });
+
+            this.on('leave', function(){
+                self.mask = true;
+                self.update();
+            });
+
+            this.on('reenter', function(){
+                self.mask = false;
+                self.update();
+            });
+
+            this.on('refresh', function(){
+                console.info('tag broadcast index is refreshing');
+                //_refresh();
+            });
+
+            previewImg(e){
+                var file = e.target.files[0];
+                self.img_size = file.size/1000 + 'KB';
+                self.img_name = file.name;
+                var reader = new FileReader();
+                reader.onload = function(data){
+                    self.img_url = data.target.result;
+                    self.update();
+                    $('#img_prew').show();
+                }
+                reader.readAsDataURL(file);
+            }
+
+            cancel_send_img(e){
+                $('#img_prew').hide();
+            }
+
+            send_img(e){
+                var formData = new FormData();
+                var files = $('#img_file')[0].files;
+                formData.append('file', files[0]);
+                $.ajax({
+                    url : self.api + '/file/upload',
+                    type : 'POST',
+                    data : formData,
+                    processData : false,
+                    contentType : false,
+                    success : function(responseStr) {
+                        $('#img_prew').hide();
+                        var data = {
+                            botId: self.botId,
+                            media_id: responseStr.media_id
+                        }
+                        broadcastImg.execute(data);
+                    },
+                    error : function(responseStr) {
+                        console.error("失败:" + JSON.stringify(responseStr));
+                    }
+                });
+            }
+
+            broadcast(e){
+                e.preventUpdate = true;
+                var msg = $('#broadcastMsg').val().trim();
+                if(msg.length > 0) {
+                    var data = {
+                        botId: self.botId,
+                        msg: msg,
+                    }
+                    broadcastTxt.execute(data);
+                }else{
+                    alert('发送内容不能为空');
+                }
+            }
+        </script>
+    </div>
 </broadcast>

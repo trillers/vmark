@@ -47,7 +47,7 @@ registry
     .addChild('video','video', '视频')
     .addChild('shortvideo','shortvideo', '小视频')
 
-    .up().item('BatchType', 'BatchType', '群发类型')
+    .up().item('BroadcastType', 'BroadcastType', '群发类型')
     .addChild('single','single', '个人')
     .addChild('group','group', '群组')
 
