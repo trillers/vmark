@@ -9,10 +9,15 @@ Service.prototype.loadById = function(id, callback){
     kv.loadById(id, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to find wechat bot by id: ' + err,
-            'Succeed to find wechat bot by id');
+            'Fail to save wechat media: ' + err,
+            'Succeed to save wechat media');
 
-        cbUtil.handleSingleValue(callback, err, result);
+        cbUtil.handleAffected(function(err, doc){
+            var obj = doc.toObject({virtuals: true});
+            kv.saveById(obj, function(err, obj){
+                if(callback) callback(err, obj);
+            });
+        }, err, result, affected);
     })
 };
 
