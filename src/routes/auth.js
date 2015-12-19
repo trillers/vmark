@@ -40,7 +40,7 @@ module.exports = function(app){
         }
 
         var auth = yield securityService.authenticateAsync(openid);
-        //var auth = mockUsers[0];
+        context.logger.debug(auth);
         if(!auth){
             yield this.render('mock-login');
             return;

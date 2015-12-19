@@ -5,20 +5,8 @@ var Service = function(context){
 };
 
 Service.prototype.loadById = function(id, callback){
-    var kv = this.context.kvs.WechatMedia;
-    kv.loadById(id, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to save wechat media: ' + err,
-            'Succeed to save wechat media');
-
-        cbUtil.handleAffected(function(err, doc){
-            var obj = doc.toObject({virtuals: true});
-            kv.saveById(obj, function(err, obj){
-                if(callback) callback(err, obj);
-            });
-        }, err, result, affected);
-    })
+    var kv = this.context.kvs.wechatMedia;
+    kv.loadById(id, callback);
 };
 
 Service.prototype.create = function(mediaJson, callback){

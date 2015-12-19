@@ -106,7 +106,7 @@ Service.prototype.authenticate = function (openid, callback) {
             wechatBot.id = wechatBot._id;
         }
         else if(post.role == OrgMemberRole.TenantWechatBot.value()){
-            wechatBot = yield wechatMediaService.loadByIdAsync(post.member);
+            wechatBot = yield tenantOrgMediaService.loadBoundMediaByIdAsync(post.member);
         }
 
         /*
