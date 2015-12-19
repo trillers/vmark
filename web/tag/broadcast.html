@@ -80,8 +80,9 @@
             this.app = this.opts.app; //keep spa object
             var self = nest.presentable(this);
             self.env = (__app.settings.env.NODE_ENV=="production")?"public":"web";
+            debugger;
             self.api =  __app.settings.api.url;
-            self.botId = __page.botId;
+            self.botId = __page.bot.customId;
 
             var broadcastTxt = domain.action('broadcastTxt');
             var broadcastImg = domain.action('broadcastImg');
@@ -125,7 +126,7 @@
                 console.info('tag broadcast index is opening');
                 self.trigger('ready', false);
                 self.trigger('view-route-to');
-                loadBroadcastHistory.execute('HEQ4');
+                loadBroadcastHistory.execute(self.botId);
             });
 
             this.on('leave', function(){

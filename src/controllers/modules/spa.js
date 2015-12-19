@@ -4,11 +4,11 @@ module.exports = function(router){
     require('../../app/routes-spa')(router);
 
     router.get('/', function *(){
-        //if(!this.session.user){
-        //    this.redirect('/login');
-        //}else{
+        if(!this.session.auth){
+            this.redirect('/mock-login-list');
+        }else{
             yield this.render('index');
-        //}
+        }
     });
     router.get('/login', function *(){
         yield this.render('login');
