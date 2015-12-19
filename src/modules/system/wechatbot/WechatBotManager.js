@@ -60,6 +60,9 @@ WechatBotManager.prototype._initBot = function(botInfo){
             case 'remark-contact':
                 require('./handlers/remarkContactHandler')(data);
                 break;
+            case 'first-profile':
+                require('./handlers/firstProfileHandler')(data);
+                break;
         }
     });
 

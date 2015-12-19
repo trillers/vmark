@@ -4,12 +4,12 @@ var WechatMediaUserType = require('../../../common/models/TypeRegistry').item('W
 
 module.exports = function(msg){
     co(function* (){
-        //msg.Contact<headimgid, bid, nickname, sex, place, botid>
-        var contact = msg.Profile;
-        var botId = msg.AgentId;
-        var wechatMediaService = context.services.wechatMediaService;
-        var wechatMediaUserService = context.services.wechatMediaUserService;
-
+        //TODO
+        //msg.Data<headimgid, remark, nickname, sex, place, botid>
+        //var contact = msg.Data;
+        //var botId = msg.AgentId;
+        //var wechatMediaService = context.services.wechatMediaService;
+        //var wechatBotManager = require('../WechatBotManager');
         //org:       {type: String, ref: 'Org', required: true}
         //, type:         {type: String, enum: WechatMediaType.valueList(), default: WechatMediaType.WechatSite.value(), required: true}
         //, originalId: {type: String} //原始微信号ID，
@@ -22,7 +22,7 @@ module.exports = function(msg){
         //
         //, appId:   {type: String}   //as openid when it is wechat bot
         //, appSecret:   {type: String}
-        var media = yield wechatMediaService.loadByIdAsync(botId);
+        //var media = yield wechatMediaService.loadByIdAsync(botId);
         //var json = {
         //    org:
         //    type:
