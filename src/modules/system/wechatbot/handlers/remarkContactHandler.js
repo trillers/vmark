@@ -14,7 +14,7 @@ module.exports = function (msg){
             var wechatMediaService = context.services.wechatMediaService;
             var wechatMediaUserService = context.services.wechatMediaUserService;
             var media = yield wechatMediaService.findBotByOpenidAsync(botId);
-            if(media){
+            if(media && contact.remark){
                 var meidaUser = yield wechatMediaUserService.loadByRemarkAsync(contact.remark);
                 /**
                  * mediaUser that own remark provided, update user info
