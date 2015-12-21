@@ -1,18 +1,21 @@
 var assert = require('chai').assert;
 var wxutil = require('../../../../framework/wechat/util');
 var Wechat = require('../../../../../src/framework/wechat/index');
-var wechatemitter = require('../../../../../src/modules/system/wechatsite/wechatemitter');
 var contextLoader = require('../../../../../src/context');
+var wechatemitter = null;
 
 before(function(done){
     contextLoader.check(function(){
+        wechatemitter = require('../../../../../src/modules/system/wechatsite/wechatemitter');
         done();
     });
 });
 
 describe('becomePlatformAdminCommand', function() {
-    var openid = 'okvXqsw1VG76eVVJrKivWDgps_gA';//包三哥的错题本openid
-    it('success to become a platform admin', function (done) {
+    //var openid = 'okvXqsw1VG76eVVJrKivWDgps_gA';//包三哥的错题本openid
+    var openid = 'oO9zswxhJsRd_9f8DlpzfZrWnjRk';//包三哥的跟谁学西安openid
+
+    it.only('success to become a platform admin', function (done) {
         var platform = new Wechat.Platform();
         var client = wxutil.newSignedInClient(platform);
         var site = wxutil.newRegisteredSite(platform);
@@ -25,7 +28,7 @@ describe('becomePlatformAdminCommand', function() {
 
         setTimeout(function(){
             done();
-        }, 4000);
+        }, 40000);
     })
 })
 

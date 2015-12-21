@@ -7,7 +7,6 @@ var Kv = require('../kvs/PlatformWechatSiteUser');
 
 var Service = function(context){
     this.context = context;
-    this.kv = this.context.kvs.platformWechatSiteUser;
 };
 
 util.inherits(Service, WechatMediaUserService);
@@ -17,7 +16,7 @@ Service.prototype.loadByOpenid = Kv.prototype.loadByOpenid;
 Service.prototype.createPlatformWechatSiteUser = function(mediaUserJson, callback){
     var logger = this.context.logger;
     var platformWechatSiteService = this.context.services.platformWechatSiteService;
-    //var kv = this.context.kvs.platformWechatSiteUser;
+    var kv = this.context.kvs.platformWechatSiteUser;
     var me = this;
     platformWechatSiteService.ensurePlatformWechatSite(function(err, wechatSite){
         if(err){
@@ -28,7 +27,7 @@ Service.prototype.createPlatformWechatSiteUser = function(mediaUserJson, callbac
         mediaUserJson.host = wechatSite.id;
         mediaUserJson.type = WechatMediaUserType.WechatSiteUser.value();
         me.create(mediaUserJson, function(err, json){
-            me.kv.saveByOpenid(json, function(err, obj){
+            kv.saveByOpenid(json, function(err, obj){
                 if(callback) callback(err, obj);
             });
         });

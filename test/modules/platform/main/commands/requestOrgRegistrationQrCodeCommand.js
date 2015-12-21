@@ -1,13 +1,14 @@
 var assert = require('chai').assert;
 var wxutil = require('../../../../framework/wechat/util');
 var Wechat = require('../../../../../src/framework/wechat/index');
-var wechatemitter = require('../../../../../src/modules/system/wechatsite/wechatemitter');
 var OrgMemberRole = require('../../../../../src/modules/common/models/TypeRegistry').item('OrgMemberRole');
 var contextLoader = require('../../../../../src/context');
 var context = contextLoader.context;
+var wechatemitter = null;
 
 before(function(done){
     contextLoader.check(function(){
+        wechatemitter = require('../../../../../src/modules/system/wechatsite/wechatemitter');
         done();
     });
 });
