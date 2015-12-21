@@ -185,7 +185,7 @@ Ar.prototype.redis = function(client){
         service.on('error', errorHandler);
         function errorHandler(){
             r.down(nameId);
-            service.removeListener('error', readyHandler);
+            service.removeListener('error', errorHandler);
         }
     })
 };
