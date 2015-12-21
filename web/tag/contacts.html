@@ -1,0 +1,103 @@
+<contacts>
+    <div if="{!hidden}">
+        <div if="{tip}" class="alert {addClass}" style="margin-top: -5px; float: left; width: 100%; text-align: center; margin-bottom: 0; position: absolute; z-index: 9999">
+            <strong>{tipInfo}</strong>
+        </div>
+        <div class="container" style="width: 100%; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0">
+            <div class="row-fluid">
+                <div class="col-md-3 col-xs-3 col-sm-3" style="padding-right: 0; padding-left: 1px; margin-top: -5px">
+                    <div class="well sidebar-nav" style="padding-top: 0; padding-right: 0; padding-left: 0;height: 39.4em; background-color:  #222; border: 1px solid #080808; overflow: scroll">
+                        <ul style="padding: 0; margin: 0; list-style-type: none">
+                            <li each="{contacts}" style="margin-bottom: 3px; padding: 5px 20px; background-color: #333; cursor: pointer">
+                                <img src="{headimgurl}" style="width: 4em; height: 4em" alt=""/><span style="color: white; margin-left: 15px">{nickname}</span>
+
+                            </li>
+                        </ul>
+                    </div><!--/.well -->
+                </div><!--/span-->
+                <div class="col-md-9 col-xs-9 col-sm-9" style="padding-right: 1px; padding-left: 0; margin-top: -5px">
+                    <div class="jumbotron" style="height: 39.4em">
+
+                    </div>
+                </div><!--/span-->
+            </div><!--/row-->
+        </div><!--/container-->
+
+        <style scoped>
+
+        </style>
+
+        <script>
+            this.app = this.opts.app; //keep spa object
+            var self = nest.presentable(this);
+            self.env = (__app.settings.env.NODE_ENV=="production")?"public":"web";
+            self.api =  __app.settings.api.url;
+            self.botId = __page.bot.customId;
+            self.tip = false;
+            self.tipInfo = "";
+
+            var loadContacts = domain.action('loadContacts');
+
+            var onLoadContacts = function(data){
+                self.update({contacts: data.contacts});
+            }
+
+            this.on('mount', function(){
+                console.info('tag contacts index is mounted');
+                loadContacts.onDone(onLoadContacts);
+            });
+            this.on('unmount', function(){
+                console.info('tag contacts index is unmounted');
+                loadContacts.offDone(onLoadContacts);
+            });
+            this.on('open', function(options){
+                console.info('tag contacts index is opening');
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+                loadContacts.execute(self.botId);
+            });
+
+            this.on('leave', function(){
+                self.mask = true;
+                self.update();
+            });
+
+            this.on('reenter', function(){
+                self.mask = false;
+                self.update();
+            });
+
+            this.on('refresh', function(){
+                console.info('tag contacts index is refreshing');
+                //_refresh();
+            });
+
+            function tipShow(type, msg){
+                var addClass = '';
+                if(type === 'success'){
+                    addClass = 'alert-success';
+                }
+                if(type === 'error'){
+                    addClass = 'alert-danger';
+                }
+                if(type === 'info'){
+                    addClass = 'alert-info';
+                }
+                if(type === 'warning'){
+                    addClass = 'alert-warning';
+                }
+                self.update({tip: true, tipInfo: msg, addClass: addClass});
+                setTimeout(function(){
+                    self.update({tip: false, tipInfo: '', addClass: ''});
+                }, 1000);
+            }
+
+            self.formatDate = function(date){
+                var dateStr = new Date(date).toLocaleDateString();
+                return dateStr.replace(/\//g, '-');
+            }
+
+
+        </script>
+    </div>
+</contacts>

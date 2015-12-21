@@ -3,7 +3,8 @@
         <div class="collapse navbar-collapse">
             <a class="navbar-brand" style="font-size: 2em;color: white">微信后台</a>
             <ul class="nav navbar-nav" style="width: 85%">
-                <li class="navbtn"><a route="broadcast" class="active" style="font-size: 1.5em" onclick={broadcast}>群发</a></li>
+                <li class="navbtn"><a id="broadcast" href="#" route="broadcast" class="active" style="font-size: 1.5em" onclick={broadcast}>群发</a></li>
+                <li class="navbtn"><a id="contacts" href="#" route="contacts" style="font-size: 1.5em" onclick={contacts}>联系人</a></li>
                 <li  style="float: right; margin-left:5em"><a href="#" style="font-size: 1.4em" onclick="{logout}">退出</a></li>
             </ul>
         </div>
@@ -13,12 +14,25 @@
         .active{color: #ffffff !important;}
     </style>
     <script>
+        this.on('mount', function(){
+            $('.navbtn a').removeClass('active');
+            $(window.location.hash).addClass('active');
+        });
+
         logout(e){
             $.get('/logout', function(data){
                window.location.href = '/login';
             });
         }
+
         broadcast(e){
+            e.preventUpdate = true;
+            $('.navbtn a').removeClass('active');
+            $(e.currentTarget).addClass('active');
+            riot.route($(e.currentTarget).attr('route'));
+        }
+
+        contacts(e){
             e.preventUpdate = true;
             $('.navbtn a').removeClass('active');
             $(e.currentTarget).addClass('active');
