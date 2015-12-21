@@ -1,5 +1,8 @@
 <broadcast>
     <div if="{!hidden}">
+        <div if="{tip}" class="alert {addClass}" style="margin-top: -5px; float: left; width: 100%; text-align: center; margin-bottom: 0; position: absolute; z-index: 9999">
+            <strong>{tipInfo}</strong>
+        </div>
         <div class="container">
             <div class="jumbotron" style="width: 55em; min-height: 39em; margin: 0 auto; padding-top: 0; padding-bottom: 20px;">
                 <div id="broadcast" style="padding-top: 1em">
@@ -11,6 +14,7 @@
                             <li each="{broadcastHistory}" class="list-group-item">
                                 <div if="{contentType == 'image'}">
                                     <img style="height: 7em" riot-src="{contentType == 'image' && media_id && parent.api + '/file/?media_id=' + media_id}" alt=""/>
+                                    <div style="text-align: center; width: 30%; line-height: 7em; float: right;">{parent.formatDate(crtOn)}</div>
                                 </div>
                                 <div  if="{contentType == 'text'}" style="height: 100%; width: 100%">
                                     <div style="height: 3em;overflow: hidden; float: left; width: 70%;">{content}</div>
@@ -46,7 +50,7 @@
                         <span class='btn_addPic glyphicon glyphicon-picture' href="javascript:void(0);"><input id="img_file"  type="file"  class='filePrew' class="glyphicon glyphicon-picture" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{previewImg}"/></span>
                     </div>
                     <textarea id="broadcastMsg" style="margin-top: 5px;" class="form-control" rows="3"></textarea>
-                    <button type="button" onclick="{broadcast}" style="margin-left: 83%; margin-top: 1em; width: 7em; margin-right: 1em; margin-bottom: 1em;" class="btn btn-success">发送</button>
+                    <button id="send" type="button" onclick="{broadcast}" style="margin-left: 83%; margin-top: 1em; width: 7em; margin-right: 1em; margin-bottom: 1em;" class="btn btn-success">发送</button>
                 </div>
             </div>
         </div><!--/container-->
@@ -80,32 +84,40 @@
             this.app = this.opts.app; //keep spa object
             var self = nest.presentable(this);
             self.env = (__app.settings.env.NODE_ENV=="production")?"public":"web";
-            debugger;
             self.api =  __app.settings.api.url;
             self.botId = __page.bot.customId;
+            self.broadcastHistory = [];
+            self.tip = false;
+            self.tipInfo = "";
 
             var broadcastTxt = domain.action('broadcastTxt');
             var broadcastImg = domain.action('broadcastImg');
             var loadBroadcastHistory = domain.action('loadBroadcastHistory')
 
             var onBroadcastTxt = function(data){
+                $('#send').attr('disabled', false);
                 if(data.success){
-                    //TODO
+                    $('#broadcastMsg').val('');
+                    self.broadcastHistory.unshift(data.msg);
+                    self.update();
+                    tipShow('success', '群发成功');
                 }else{
-                    alert('发送失败')
+                    tipShow('error', '群发失败');
                 }
             }
 
             var onBroadcastImg = function(data){
                 if(data.success){
-                    //TODO
+                    $('#img_file').val('');
+                    self.broadcastHistory.unshift(data.msg);
+                    self.update();
+                    tipShow('success', '群发图片成功');
                 }else{
-                    alert('发送失败')
+                    tipShow('error', '群发图片失败');
                 }
             }
 
             var onLoadBroadcastHistory = function(data){
-                debugger;
                 self.broadcastHistory = data.history;
                 self.update();
             }
@@ -144,6 +156,25 @@
                 //_refresh();
             });
 
+            function tipShow(type, msg){
+                var addClass = '';
+                if(type === 'success'){
+                    addClass = 'alert-success';
+                }
+                if(type === 'error'){
+                    addClass = 'alert-danger';
+                }
+                if(type === 'info'){
+                    addClass = 'alert-info';
+                }
+                if(type === 'warning'){
+                    addClass = 'alert-warning';
+                }
+                self.update({tip: true, tipInfo: msg, addClass: addClass});
+                setTimeout(function(){
+                    self.update({tip: false, tipInfo: '', addClass: ''});
+                }, 1000);
+            }
 
             self.formatDate = function(date){
                 var dateStr = new Date(date).toLocaleDateString();
@@ -197,11 +228,12 @@
                 if(msg.length > 0) {
                     var data = {
                         botId: self.botId,
-                        msg: msg,
+                        msg: msg
                     }
                     broadcastTxt.execute(data);
+                    $(e.currentTarget).attr('disabled', true);
                 }else{
-                    alert('发送内容不能为空');
+                    tipShow('warning', '发送内容不能为空');
                 }
             }
         </script>

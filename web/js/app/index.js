@@ -21,6 +21,18 @@ app.routeView('broadcast', nest.viewable({
   }
 }));
 
+app.routeView('contacts', nest.viewable({
+  name: 'contacts',
+  mount: function(ctx){
+    var tags = riot.mount('contacts', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx.req.query);
+  }
+}));
+
 app.on('init', function(){
   var attentionUrl = util.getCookie('attentionUrl');
   var hash = attentionUrl || window.location.hash;

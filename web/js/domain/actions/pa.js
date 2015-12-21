@@ -12,5 +12,8 @@ domain.action('broadcastImg').onExecute(function(data){
 domain.action('loadBroadcastHistory').onExecute(function(id){
     apiFactory.get('/bot/broadcastHistory?botId=' + id).drive(this).send();
 });
+domain.action('loadContacts').onExecute(function(id){
+    apiFactory.get('/bot/contacts?botId=' + id).drive(this).send();
+});
 
 module.exports = null;

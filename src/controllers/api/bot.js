@@ -5,22 +5,22 @@ var wechatBotManager = context.wechatBotManager;
 var fileService = require('../../modules/file/services/FileService');
 var lifeFlagEnum = require('../../framework/model/enums').LifeFlag;
 var broadcastMessageService = require('../../modules/message/services/BroadcastMessageService');
-var MsgContentType = require('../../modules/common/models/TypeRegistry').item('MsgContent');
+var MsgContentType = require('../../modules/common/models/TypeRegistry').item('MsgType');
 var BroadcastType = require('../../modules/common/models/TypeRegistry').item('BroadcastType');
 
-module.exports = function(router){
-    router.post('/broadcastTxt', function *(){
+module.exports = function (router) {
+    router.post('/broadcastTxt', function *() {
         try {
             var botId = this.request.body.botId;//bot openid
             var bot = wechatBotManager.getWechatBot(botId);
             var msg = this.request.body.msg;
             var media = yield wechatMediaService.findBotByOpenidAsync(botId);
-            if(media){
+            if (media) {
                 var broadcastMessage = {
                     from: botId,
                     contentType: MsgContentType.text.value(),
                     content: msg,
-                    broadcastType: BroadcastType.contacts.value()
+                    broadcastType: BroadcastType.single.value()
                 }
                 var params = {
                     conditions: {
@@ -42,9 +42,9 @@ module.exports = function(router){
                 bot.broadcastTxtToContacts(buIdArr, msg);
 
                 broadcastMessage.toUsers = toUsers;
-                yield broadcastMessageService.createAsync(broadcastMessage);
-                this.body = {success: true, err: null};
-            }else{
+                var msg = yield broadcastMessageService.createAsync(broadcastMessage);
+                this.body = {success: true, err: null, msg: msg};
+            } else {
                 console.log('failed to broadcastTxt err: no such bot');
                 this.body = {success: false, err: 'no such bot'};
             }
@@ -54,18 +54,18 @@ module.exports = function(router){
         }
     });
 
-    router.post('/broadcastImg', function *(){
+    router.post('/broadcastImg', function *() {
         try {
             var botId = this.request.body.botId;//bot openid
             var bot = wechatBotManager.getWechatBot(botId);
             var media_id = this.request.body.media_id;
             var media = yield wechatMediaService.findBotByOpenidAsync(botId);
-            if(media){
+            if (media) {
                 var broadcastMessage = {
                     from: botId,
                     contentType: MsgContentType.image.value(),
                     media_id: media_id,
-                    broadcastType: BroadcastType.contacts.value()
+                    broadcastType: BroadcastType.single.value()
                 }
                 var params = {
                     conditions: {
@@ -89,9 +89,9 @@ module.exports = function(router){
                 bot.broadcastImgToContacts(buIdArr, image.path);
 
                 broadcastMessage.toUsers = toUsers;
-                yield broadcastMessageService.createAsync(broadcastMessage);
-                this.body = {success: true, err: null};
-            }else{
+                var msg = yield broadcastMessageService.createAsync(broadcastMessage);
+                this.body = {success: true, err: null, msg: msg};
+            } else {
                 console.log('failed to broadcastImg err: no such bot');
                 this.body = {success: false, err: 'no such bot'};
             }
@@ -102,10 +102,10 @@ module.exports = function(router){
         }
     });
 
-    router.get('/broadcastHistory', function *(){
+    router.get('/broadcastHistory', function *() {
         var botId = this.query.botId;
         var params = {
-            conditions:{
+            conditions: {
                 from: botId
             },
             sort: {
@@ -116,9 +116,33 @@ module.exports = function(router){
             var data = yield broadcastMessageService.findAsync(params);
             var broadcastHistory = data.length > 0 ? data : null;
             this.body = {history: broadcastHistory};
-        }catch(err){
+        } catch (err) {
             console.log('load broadcastHistory err: ' + err);
             this.body = {history: null};
+        }
+    });
+
+    router.get('/contacts', function *() {
+        var botId = this.query.botId;
+        try {
+            var media = yield wechatMediaService.findBotByOpenidAsync(botId);
+
+            var params = {
+                conditions: {
+                    host: media._id,
+                    type: 'wbc'
+                },
+                sort: {
+                    crtOn: -1
+                }
+            }
+
+
+            var contacts = yield yield wechatMediaUserService.findAsync(params);
+            this.body = {contacts: contacts, error: null};
+        } catch (err) {
+            console.log('load contacts err: ' + err);
+            this.body = {contacts: [], error: err};
         }
     });
 }
