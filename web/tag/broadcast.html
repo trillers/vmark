@@ -11,6 +11,7 @@
                             <li each="{broadcastHistory}" class="list-group-item">
                                 <div if="{contentType == 'image'}">
                                     <img style="height: 7em" riot-src="{contentType == 'image' && media_id && parent.api + '/file/?media_id=' + media_id}" alt=""/>
+                                    <div style="text-align: center; width: 30%; line-height: 7em; float: right;">{parent.formatDate(crtOn)}</div>
                                 </div>
                                 <div  if="{contentType == 'text'}" style="height: 100%; width: 100%">
                                     <div style="height: 3em;overflow: hidden; float: left; width: 70%;">{content}</div>
@@ -83,6 +84,7 @@
             debugger;
             self.api =  __app.settings.api.url;
             self.botId = __page.bot.customId;
+            self.broadcastHistory = [];
 
             var broadcastTxt = domain.action('broadcastTxt');
             var broadcastImg = domain.action('broadcastImg');
@@ -90,7 +92,9 @@
 
             var onBroadcastTxt = function(data){
                 if(data.success){
-                    //TODO
+                    $('#broadcastMsg').val('');
+                    self.broadcastHistory.unshift(data.msg);
+                    self.update();
                 }else{
                     alert('发送失败')
                 }
@@ -98,14 +102,15 @@
 
             var onBroadcastImg = function(data){
                 if(data.success){
-                    //TODO
+                    $('#img_file').val('');
+                    self.broadcastHistory.unshift(data.msg);
+                    self.update();
                 }else{
                     alert('发送失败')
                 }
             }
 
             var onLoadBroadcastHistory = function(data){
-                debugger;
                 self.broadcastHistory = data.history;
                 self.update();
             }

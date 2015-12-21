@@ -5,7 +5,7 @@ var wechatBotManager = context.wechatBotManager;
 var fileService = require('../../modules/file/services/FileService');
 var lifeFlagEnum = require('../../framework/model/enums').LifeFlag;
 var broadcastMessageService = require('../../modules/message/services/BroadcastMessageService');
-var MsgContentType = require('../../modules/common/models/TypeRegistry').item('MsgContent');
+var MsgContentType = require('../../modules/common/models/TypeRegistry').item('MsgType');
 var BroadcastType = require('../../modules/common/models/TypeRegistry').item('BroadcastType');
 
 module.exports = function(router){
@@ -20,7 +20,7 @@ module.exports = function(router){
                     from: botId,
                     contentType: MsgContentType.text.value(),
                     content: msg,
-                    broadcastType: BroadcastType.contacts.value()
+                    broadcastType: BroadcastType.single.value()
                 }
                 var params = {
                     conditions: {
@@ -42,8 +42,8 @@ module.exports = function(router){
                 bot.broadcastTxtToContacts(buIdArr, msg);
 
                 broadcastMessage.toUsers = toUsers;
-                yield broadcastMessageService.createAsync(broadcastMessage);
-                this.body = {success: true, err: null};
+                var msg = yield broadcastMessageService.createAsync(broadcastMessage);
+                this.body = {success: true, err: null, msg: msg};
             }else{
                 console.log('failed to broadcastTxt err: no such bot');
                 this.body = {success: false, err: 'no such bot'};
@@ -65,7 +65,7 @@ module.exports = function(router){
                     from: botId,
                     contentType: MsgContentType.image.value(),
                     media_id: media_id,
-                    broadcastType: BroadcastType.contacts.value()
+                    broadcastType: BroadcastType.single.value()
                 }
                 var params = {
                     conditions: {
@@ -89,8 +89,8 @@ module.exports = function(router){
                 bot.broadcastImgToContacts(buIdArr, image.path);
 
                 broadcastMessage.toUsers = toUsers;
-                yield broadcastMessageService.createAsync(broadcastMessage);
-                this.body = {success: true, err: null};
+                var msg = yield broadcastMessageService.createAsync(broadcastMessage);
+                this.body = {success: true, err: null, msg: msg};
             }else{
                 console.log('failed to broadcastImg err: no such bot');
                 this.body = {success: false, err: 'no such bot'};
