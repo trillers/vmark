@@ -51,5 +51,13 @@ registry
     .addChild('single','single', '个人')
     .addChild('group','group', '群组')
 
+    .up().item('GroupType', 'GroupType', '分组类型')
+    .addChild('Selected','selected', '自选分组')
+    .addChild('Tagged','tagged', '标签分组')
+
+    .up().item('GroupScope', 'GroupScope', '分组范围')
+    .addChild('Tenant','t', '租户')
+    .addChild('Operator','o', '运营者')
+
 
 module.exports = registry;

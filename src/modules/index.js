@@ -8,8 +8,8 @@ _exports.platform.user = require('./platform/user');
 _exports.platform.main = require('./platform/main');
 _exports.tenant = {};
 _exports.tenant.org = require('./tenant/org');
-//_exports.tenant.media = require('./platform/media');
 _exports.tenant.main = require('./tenant/main');
+_exports.group = require('./group');
 
 require('./system/wechatbot');
 module.exports = _exports;
