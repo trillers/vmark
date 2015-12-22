@@ -3,56 +3,72 @@
         <div if="{tip}" class="alert {addClass}" style="margin-top: -5px; float: left; width: 100%; text-align: center; margin-bottom: 0; position: absolute; z-index: 9999">
             <strong>{tipInfo}</strong>
         </div>
-        <div class="container">
-            <div class="jumbotron" style="width: 55em; min-height: 39em; margin: 0 auto; padding-top: 0; padding-bottom: 20px;">
-                <div id="broadcast" style="padding-top: 1em">
-                    <div if="{!broadcastHistory}" class="panel panel-default" style="height: 20em; line-height: 3em; margin-top: 1em; text-align: center">
-                        <span>暂无群发无纪录</span>
-                    </div>
-                    <div if="{broadcastHistory}" class="panel panel-default" style="overflow-y: scroll; height: 20em; margin-top: 1em">
-                        <ul class="list-group">
-                            <li each="{broadcastHistory}" class="list-group-item">
-                                <div if="{contentType == 'image'}">
-                                    <img style="height: 7em" riot-src="{contentType == 'image' && media_id && parent.api + '/file/?media_id=' + media_id}" alt=""/>
-                                    <div style="text-align: center; width: 30%; line-height: 7em; float: right;">{parent.formatDate(crtOn)}</div>
-                                </div>
-                                <div  if="{contentType == 'text'}" style="height: 100%; width: 100%">
-                                    <div style="height: 3em;overflow: hidden; float: left; width: 70%;">{content}</div>
-                                    <div style="height: 3em; line-height: 3em; text-align: center">{parent.formatDate(crtOn)}</div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
+        <div class="container" style="width: 100%; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0">
+            <div class="row-fluid">
+                <div class="col-md-4 col-xs-4 col-sm-4" style="padding-right: 0; padding-left: 0; margin-top: -5px; width: 30%">
+                    <div class="well sidebar-nav" style="padding-top: 0; padding-right: 0; padding-left: 0;height: 40em; background-color:  #222; border: 1px solid #080808; overflow: scroll; border-radius: 0">
+                        <div if="{!broadcastHistory.length}">
+                            <ul style="padding: 0; margin: 0; list-style-type: none">
+                                <li style="margin-bottom: 3px; padding: 25px 20px; background-color: #333; cursor: pointer; text-align: center">
+                                    <span style="color: white">暂无群发纪录</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div if="{broadcastHistory.length}">
+                            <ul style="padding: 0; margin: 0; list-style-type: none">
+                                <li each="{broadcastHistory}" style="margin-bottom: 3px; padding: 5px 20px; background-color: #333; cursor: pointer; color: white">
+                                    <div if="{contentType == 'image'}" style="height: 100%; width: 100%">
+                                        <div style="height: 6em;overflow: hidden; float: left; width: 60%;">
+                                            <img style="height: 5em" riot-src="{contentType == 'image' && media_id && parent.api + '/file/?media_id=' + media_id}" alt=""/>
+                                        </div>
 
-                    <div class="panel panel-default" id="img_prew" style="display:none; margin-bottom: 5px">
-                        <table class="table table-bordered" style="text-align: center; vertical-align: middle;">
-                            <tbody>
-                            <tr>
-                                <td rowspan="3">
-                                    <img src="{img_url}" alt="" style="height: 9em;"/></td>
-                                <td>文件名</td>
-                                <td>{img_name}</td>
-                            </tr>
-                            <tr>
-                                <td>文件大小</td>
-                                <td>{img_size}</td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <input class="btn btn-default" type="button"  style="margin-right: 50px" value="取消" onclick="{cancel_send_img}"/>
-                                    <input class="btn btn-success" type="button" value="发送" onclick="{send_img}"/>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+                                        <div style="font-size: 5px; height: 6em; text-align: center; line-height: 6em;">{parent.formatDate(crtOn)}</div>
+                                    </div>
+                                    <div  if="{contentType == 'text'}" style="height: 100%; width: 100%">
+                                        <div style="height: 6em;overflow: hidden; float: left; width: 60%;">{content}</div>
+                                        <div style="font-size: 5px; height: 6em; line-height: 6em; text-align: center">{parent.formatDate(crtOn)}</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div><!--/.well -->
+                </div><!--/span-->
+                <div class="col-md-8 col-xs-8 col-sm-8" style="padding-right: 1px; padding-left: 0; margin-top: -5px;  width: 70%">
+                    <div class="jumbotron" style="height: 40em; border-radius: 0">
+                        <div id="broadcast">
+                            <div class="panel panel-default" style="overflow-y: scroll; height: 20em;">
+                            </div>
+                            <div class="panel panel-default" id="img_prew" style="display:none; margin-bottom: 5px">
+                                <table class="table table-bordered" style="text-align: center; vertical-align: middle;">
+                                    <tbody>
+                                    <tr>
+                                        <td rowspan="3">
+                                            <img src="{img_url}" alt="" style="height: 9em;"/></td>
+                                        <td>文件名</td>
+                                        <td>{img_name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>文件大小</td>
+                                        <td>{img_size}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <input class="btn btn-default" type="button"  style="margin-right: 50px" value="取消" onclick="{cancel_send_img}"/>
+                                            <input class="btn btn-success" type="button" value="发送" onclick="{send_img}"/>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="choose_img" style="margin-left: 5px">
+                                <span class='btn_addPic glyphicon glyphicon-picture' href="javascript:void(0);"><input id="img_file"  type="file"  class='filePrew' class="glyphicon glyphicon-picture" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{previewImg}"/></span>
+                            </div>
+                            <textarea id="broadcastMsg" style="margin-top: 5px;" class="form-control" rows="3"></textarea>
+                            <button id="send" type="button" onclick="{broadcast}" style="margin-left: 83%; margin-top: 1em; width: 7em; margin-right: 1em; margin-bottom: 1em;" class="btn btn-success">发送</button>
+                        </div>
                     </div>
-                    <div id="choose_img" style="margin-left: 5px">
-                        <span class='btn_addPic glyphicon glyphicon-picture' href="javascript:void(0);"><input id="img_file"  type="file"  class='filePrew' class="glyphicon glyphicon-picture" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{previewImg}"/></span>
-                    </div>
-                    <textarea id="broadcastMsg" style="margin-top: 5px;" class="form-control" rows="3"></textarea>
-                    <button id="send" type="button" onclick="{broadcast}" style="margin-left: 83%; margin-top: 1em; width: 7em; margin-right: 1em; margin-bottom: 1em;" class="btn btn-success">发送</button>
-                </div>
-            </div>
+                </div><!--/span-->
+            </div><!--/row-->
         </div><!--/container-->
 
         <style scoped>
@@ -177,7 +193,7 @@
             }
 
             self.formatDate = function(date){
-                var dateStr = new Date(date).toLocaleDateString();
+                var dateStr = new Date(date).toLocaleString();
                 return dateStr.replace(/\//g, '-');
             }
 
