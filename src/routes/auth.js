@@ -32,7 +32,28 @@ module.exports = function(app){
         "openid": "oO9zsw0jiq8hTtNDHi9ZepJ6zSPQ",
         "nickname": "独自等待",
         "headimgurl": "http://wx.qlogo.cn/mmopen/I1OPdTuWhEicbjlIqx1ibgjtbHcOG1Q95dXPrDNP2OIfxvtftOakR75AquTzLJgN5taLicichOnrKyPN8H4HbFf3GQ/0"
-    }];
+    },
+        {
+            "openid": "oO9zswxhJsRd_9f8DlpzfZrWnjRk",
+            "nickname": "包三哥",
+            "headimgurl": "http://wx.qlogo.cn/mmopen/MIbgLNjILzicjoS7yEMSdqfTunl9bmyeqHs2SHzicExaQC3iaibIfLoPYRUPNyQlTXuDFLTCzz5jukurmibCibbFCxY1ZCRibp5QibHb/0"
+        },
+        {
+            "openid": "oO9zsw2WAGehKPCUTbTxxLAm9DWQ",
+            "nickname": "酒剑仙",
+            "headimgurl": "http://wx.qlogo.cn/mmopen/Q3auHgzwzM4vvB2o4cciaYF9Qbk7n9xw1DklbqEiakPLkn8FBLcWcDPicqEvh3y2GRysr2LogRmw9CkDEgZ0q9UBg/0"
+        },
+        {
+            "openid": "oO9zsww3I9LWFN9AWf0RP9myCjsQ",
+            "nickname": "Rupert",
+            "headimgurl": "http://wx.qlogo.cn/mmopen/MIbgLNjILzicjoS7yEMSdqdiaVibaoqAfia9Whhp6jqb54gJFEaricTyTxjiaG0pZdg9us37bQVSgmIDicqVWYfw80C1PWfbs577HcK/0"
+        },
+        {
+            "openid": "oO9zsw5FiytqnSFzBIYlRTnshyGI",
+            "nickname": "小小星星妹",
+            "headimgurl": "http://wx.qlogo.cn/mmopen/MIbgLNjILzicjoS7yEMSdqeTrXGLqRKbsiaLd528BITNubKMMZIEgUpsKd5fShE9eiagnDbcBUmOYf2vXx9xaLljDvMMLsOcYDS/0"
+        }
+    ];
     router.get('/mock-login-list', function *(){
         //var users = yield securityService.loadAllTenantAdminUsersAsync();
         yield this.render('mock-login-list', {users: mockUsers, qaUsers: qaMockUsers});

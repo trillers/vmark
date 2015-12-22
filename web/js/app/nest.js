@@ -314,8 +314,8 @@ var presentize = function(tag, opts){
         tag.update({ready: tag.ready});
         if(typeof welcomediv != 'undefined' && welcomediv.parentNode !== null){
             welcomediv.parentNode.removeChild(welcomediv);
-            document.body.style.background = 'white';
-            document.body.style.overflow = 'auto';
+            //document.body.style.background = 'white';
+            //document.body.style.overflow = 'auto';
         }
     };
 
