@@ -7,15 +7,11 @@ var Service = function(context){
 };
 
 Service.prototype.listMyGroups = function(tenantId, operatorId, callback){
-    //var orgKv = this.context.kvs.org;
-    //var Group = this.context.models.Group;
-    //var org = new Org(orgJson);
-
-    co(function*(){
-
-
-    });
-
+    var Group = this.context.models.Group;
+    //var orgMediaService = this.context.services.orgMediaService;
+        //var medias = yield orgMediaService.listMyGroupsAsync(tenantId, operatorId);
+    var conditions = {tenantId: tenantId, lFlg: 'a', operator: operatorId};
+    Group.find(conditions, null, {lean: true}).exec(callback);
 };
 
 //Service.prototype.create = function(orgJson, callback){
