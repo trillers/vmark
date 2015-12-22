@@ -6,6 +6,25 @@ var Service = function(context){
     this.context = context;
 };
 
+Service.prototype.create = function(groupJson, callback){
+    var groupKv = this.context.kvs.group;
+    var Group = this.context.models.Group;
+    var group = new Group(groupJson);
+    group.save(function (err, result, affected) {
+        cbUtil.logCallback(
+            err,
+            'Fail to save org: ' + err,
+            'Succeed to save org');
+
+        cbUtil.handleAffected(function(err, doc){
+            var obj = doc.toObject({virtuals: true});
+            groupKv.saveById(obj, function(err, obj){
+                if(callback) callback(err, obj);
+            });
+        }, err, result, affected);
+    });
+};
+
 Service.prototype.listMyGroups = function(tenantId, operatorId, callback){
     //var orgKv = this.context.kvs.org;
     //var Group = this.context.models.Group;

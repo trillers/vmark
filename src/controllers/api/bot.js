@@ -5,8 +5,11 @@ var wechatBotManager = context.wechatBotManager;
 var fileService = require('../../modules/file/services/FileService');
 var lifeFlagEnum = require('../../framework/model/enums').LifeFlag;
 var broadcastMessageService = require('../../modules/message/services/BroadcastMessageService');
-var MsgContentType = require('../../modules/common/models/TypeRegistry').item('MsgType');
-var BroadcastType = require('../../modules/common/models/TypeRegistry').item('BroadcastType');
+var typeRegistry = require('../../modules/common/models/TypeRegistry');
+var MsgContentType = typeRegistry.item('MsgType');
+var BroadcastType = typeRegistry.item('BroadcastType');
+var GroupType = typeRegistry.item('GroupType');
+var GroupScope = typeRegistry.item('GroupScope');
 
 module.exports = function (router) {
     router.post('/broadcastTxt', function *() {
@@ -138,11 +141,38 @@ module.exports = function (router) {
             }
 
 
-            var contacts = yield yield wechatMediaUserService.findAsync(params);
+            var contacts = yield wechatMediaUserService.findAsync(params);
             this.body = {contacts: contacts, error: null};
         } catch (err) {
             console.log('load contacts err: ' + err);
             this.body = {contacts: [], error: err};
+        }
+    });
+
+    router.post('/group', function* (){
+        try{
+            //name:           {type: String, required: true}
+            //type:         {type: String, enum: GroupType.valueList(), default: GroupType.Selected.value(), required: true}
+            //scope:        {type: String, enum: GroupScope.valueList(), default: GroupScope.Tenant.value(), required: true}
+            //medias:       [{type: String}]
+            //desc:         {type: String}
+            var type = this.request.body.type;
+            var name = this.request.body.name;
+            var scope = this.request.body.scope;
+            var desc = this.request.body.desc;
+            var user = this.session.auth.user;
+            var group = {
+                name: name,
+                type: type,
+                desc: desc,
+                scope: scope
+            };
+            if(scope === GroupScope.Tenant.value()){
+                group['medias'] = yield wechatMediaService
+            }
+            else if(scope === GroupScope.Operator.value()){
+
+            }
         }
     });
 }

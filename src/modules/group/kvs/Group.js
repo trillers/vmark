@@ -1,7 +1,7 @@
 var cbUtil = require('../../../framework/callback');
 
 var idToObjKey = function(id){
-    return 'org:o:id:' + id;
+    return 'group:o:id:' + id;
 };
 
 var Kv = function(context){
@@ -32,8 +32,8 @@ Kv.prototype.saveById = function(json, callback){
     redis.hmset(key, json, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to save org by id ' + id + ': ' + err,
-            'Succeed to save org by id ' + id);
+            'Fail to save group by id ' + id + ': ' + err,
+            'Succeed to save group by id ' + id);
         cbUtil.handleOk(callback, err, result, json);
     });
 };
