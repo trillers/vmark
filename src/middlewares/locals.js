@@ -102,7 +102,7 @@ var attachLocals = function* (next) {
     this.state.__page.url = getUrl(this);
     this.state.__page.baseUrl = getBaseUrl(this);
     this.state.__page.servertime = getServerTime();
-    this.state.__page.user = this.session.user;
+    this.state.__page.user = this.session.auth ? this.session.auth.user : {};
     this.state.__page.bot = this.session.auth ? this.session.auth.bot : {};
 
     if(uid){

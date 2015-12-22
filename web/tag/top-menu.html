@@ -1,11 +1,14 @@
 <top-menu>
-    <nav class="navbar navbar-default navbar-inverse" role="navigation" style="margin-bottom: 5px">
-        <div class="collapse navbar-collapse">
+    <nav class="navbar navbar-default navbar-inverse" role="navigation" style="margin-bottom: 5px; border-radius: 0; min-height: 65px;">
+        <div class="collapse navbar-collapse" style="margin-top: 5px">
             <a class="navbar-brand" style="font-size: 2em;color: white">微信后台</a>
-            <ul class="nav navbar-nav" style="width: 85%">
+            <ul class="nav navbar-nav" style="width: 88%">
                 <li class="navbtn"><a id="broadcast" href="#" route="broadcast" class="active" style="font-size: 1.5em" onclick={broadcast}>群发</a></li>
                 <li class="navbtn"><a id="contacts" href="#" route="contacts" style="font-size: 1.5em" onclick={contacts}>联系人</a></li>
-                <li  style="float: right; margin-left:5em"><a href="#" style="font-size: 1.4em" onclick="{logout}">退出</a></li>
+                <li  style="float: right;"><a href="#" style="font-size: 1.4em" class="glyphicon glyphicon-log-out" title="退出" onclick="{logout}"></a></li>
+                <li style="float: right; margin-right: 20px; padding-top: 5px;">
+                    <img src="{headimgurl}" style="height: 45px; width: 45px" alt=""/><span style="margin-left: 10px; color: white">{nickname}</span>
+                </li>
             </ul>
         </div>
     </nav>
@@ -14,6 +17,9 @@
         .active{color: #ffffff !important;}
     </style>
     <script>
+        this.headimgurl = __page.user.headimgurl;
+        this.nickname = __page.user.nickname;
+
         this.on('mount', function(){
             $('.navbtn a').removeClass('active');
             $(window.location.hash).addClass('active');
