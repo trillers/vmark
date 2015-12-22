@@ -9,7 +9,7 @@
                     <div class="well sidebar-nav" style="padding-top: 0; padding-right: 0; padding-left: 0;height: 39.4em; background-color:  #222; border: 1px solid #080808; overflow: scroll">
                         <ul style="padding: 0; margin: 0; list-style-type: none">
                             <li each="{contacts}" style="margin-bottom: 3px; padding: 5px 20px; background-color: #333; cursor: pointer">
-                                <img src="{headimgurl}" style="width: 4em; height: 4em" alt=""/><span style="color: white; margin-left: 15px">{nickname}</span>
+                                <img src="{parent.api + '/file?media_id=' + headimgurl}" style="width: 4em; height: 4em" alt=""/><span style="color: white; margin-left: 15px">{nickname}</span>
 
                             </li>
                         </ul>
