@@ -21,11 +21,11 @@
 <div class="container" style="text-align: left ; margin-top: 1%">
 
     <div class="row">
-        <div class="col-lg-6" >
+        <div class="col-lg-4" >
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th>用户</th>
+                    <th>ci用户</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -45,7 +45,28 @@
             </table>
         </div>
 
-        <div class="col-lg-6" >
+        <div class="col-lg-4" >
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>qa用户</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for user in qaUsers %}
+                <tr>
+                    <td>
+                        <a href="./mock-login?openid={{ user.openid }}" target="_self" >
+                            <img data-src="holder.js/80x80" class="img-rounded" alt="{{ user.nickname }}" src="{{ user.headimgurl }}" data-holder-rendered="true" style="width: 80px; height: 80px;">
+                            &nbsp;&nbsp;{{ user.nickname }}
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
 
         </div>
     </div>
