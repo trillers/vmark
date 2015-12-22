@@ -27,15 +27,21 @@ module.exports = function(app){
             "headimgurl": "http://wx.qlogo.cn/mmopen/CyYbk1vmHvYCTpBHH4UiblcOM6IEMibm2VweVnbTm5tnWib1rQG5v6t7779AEnDSkFf212MXOVXX29JvZlKicjhUxjpRYDnTPTES/0"
         }
     ];
+
+    var qaMockUsers = [{
+        "openid": "oO9zsw0jiq8hTtNDHi9ZepJ6zSPQ",
+        "nickname": "独自等待",
+        "headimgurl": "http://wx.qlogo.cn/mmopen/I1OPdTuWhEicbjlIqx1ibgjtbHcOG1Q95dXPrDNP2OIfxvtftOakR75AquTzLJgN5taLicichOnrKyPN8H4HbFf3GQ/0"
+    }];
     router.get('/mock-login-list', function *(){
         //var users = yield securityService.loadAllTenantAdminUsersAsync();
-        yield this.render('mock-login-list', {users: mockUsers});
+        yield this.render('mock-login-list', {users: mockUsers, qaUsers: qaMockUsers});
     });
 
     router.get('/mock-login', function *(){
         var openid = this.query.openid;
         if(!openid){
-            yield this.render('mock-login-list', {users: mockUsers});
+            yield this.render('mock-login-list', {users: mockUsers, qaUsers: qaMockUsers});
             return;
         }
 
