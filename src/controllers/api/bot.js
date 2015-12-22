@@ -138,7 +138,7 @@ module.exports = function (router) {
             }
 
 
-            var contacts = yield yield wechatMediaUserService.findAsync(params);
+            var contacts = yield wechatMediaUserService.findAsync(params);
             this.body = {contacts: contacts, error: null};
         } catch (err) {
             console.log('load contacts err: ' + err);
