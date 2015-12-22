@@ -22,11 +22,11 @@
                                             <img style="height: 5em" riot-src="{contentType == 'image' && media_id && parent.api + '/file/?media_id=' + media_id}" alt=""/>
                                         </div>
 
-                                        <div style="font-size: 5px; height: 6em; text-align: center; line-height: 6em;">{parent.formatDate(crtOn)}</div>
+                                        <div style="font-size: 0.5em; height: 6em; text-align: center; line-height: 6em;">{parent.formatDate(crtOn)}</div>
                                     </div>
                                     <div  if="{contentType == 'text'}" style="height: 100%; width: 100%">
                                         <div style="height: 6em;overflow: hidden; float: left; width: 60%;">{content}</div>
-                                        <div style="font-size: 5px; height: 6em; line-height: 6em; text-align: center">{parent.formatDate(crtOn)}</div>
+                                        <div style="font-size: 0.5em; height: 6em; line-height: 6em; text-align: center">{parent.formatDate(crtOn)}</div>
                                     </div>
                                 </li>
                             </ul>
