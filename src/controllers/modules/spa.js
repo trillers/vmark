@@ -6,7 +6,7 @@ module.exports = function(router){
 
     router.get('/', function *(){
         if(!this.session.auth){
-            this.redirect('/mock-login-list');
+            this.redirect('/login');
         }else{
             yield this.render('index');
         }
