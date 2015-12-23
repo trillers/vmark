@@ -1,7 +1,7 @@
 var settings = require('vmark-settings');
 var resources = require('vmark-settings').resources;
 //var UserMeta = require('../kvs/UserMeta');
-//var typeRegistry = require('../models/TypeRegistry');
+var typeRegistry = require('../modules/common/models/TypeRegistry');
 //var workflowRegistry = require('../app/workflow');
 var time = require('../app/time');
 var _ = require('underscore');
@@ -14,7 +14,7 @@ var __app = {
         app: settings.app,
         env: settings.env
     },
-    //enums: typeRegistry.dict(),
+    enums: typeRegistry.dict(),
     //workflows: workflowRegistry.dict(),
     resources: resources
 };
@@ -104,6 +104,7 @@ var attachLocals = function* (next) {
     this.state.__page.servertime = getServerTime();
     this.state.__page.user = this.session.auth ? this.session.auth.user : {};
     this.state.__page.bot = this.session.auth ? this.session.auth.bot : {};
+    this.state.__page.tenantId = this.session.auth ? this.session.auth.tenantId : '';
 
     if(uid){
         //UserMeta.getMeta(uid, function(err, meta){

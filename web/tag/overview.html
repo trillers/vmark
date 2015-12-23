@@ -4,8 +4,58 @@
             <strong>{tipInfo}</strong>
         </div>
         <div class="container" style="width: 100%; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0">
-            <div class="row-fluid">
-                <div class="col-md-4 col-xs-4 col-sm-4" style="padding-right: 0; padding-left: 0; margin-top: -5px; width: 30%">
+            <div class="row">
+                &nbsp;
+            </div>
+            <div class="row">
+                <div class="col-md-8 col-lg-8" style="margin-left: 20px; margin-right: 20px;">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">账户信息</div>
+                        <div class="panel-body">
+                            <div class="container" style="">
+                                <div class="row">
+                                    <div class="col-md-1 col-lg-1" style="">
+                                        账户：
+                                    </div>
+                                    <div class="col-md-3 col-lg-3" style="">
+                                        {user.nickname} &nbsp;&nbsp; <small><small>个人账户</small></small>
+                                    </div>
+                                    <div class="col-md-1 col-lg-1" style="">
+                                        管理员：
+                                    </div>
+                                    <div class="col-md-3 col-lg-3" style="">
+                                        <img src="{user.headimgurl}" alt="{user.nickname}" class="img-rounded" data-src="holder.js/40x40"  style="width: 40px; height: 40px;">
+                                        &nbsp;&nbsp;{user.nickname}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">微信托管</div>
+                        <div class="panel-body">
+                            <div class="container" style="">
+                                <div class="row">
+                                    <div class="col-md-1 col-lg-1" style="">
+                                        <img src="{bot.headimgurl}" alt="{bot.name}" class="img-rounded" data-src="holder.js/40x40"  style="width: 40px; height: 40px;">
+                                    </div>
+                                    <div class="col-md-3 col-lg-3" style="">
+                                        {bot.name} &nbsp;
+                                            <img if="{bot.sex==1}" src="/web/images/male.png" alt="男" class="" data-src="holder.js/10x10"  style="width: 20px; height: 20px;">
+                                            <img if="{bot.sex==2}" src="/web/images/female.png" alt="女" class="" data-src="holder.js/10x10"  style="width: 20px; height: 20px;">
+                                    </div>
+                                    <div class="col-md-1 col-lg-1" style="">
+                                        管理员：
+                                    </div>
+                                    <div class="col-md-3 col-lg-3" style="">
+                                        <img src="{user.headimgurl}" alt="{user.nickname}" class="img-rounded" data-src="holder.js/40x40"  style="width: 40px; height: 40px;">
+                                        &nbsp;&nbsp;{user.nickname}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div><!--/span-->
             </div><!--/row-->
         </div><!--/container-->
@@ -18,9 +68,12 @@
             this.app = this.opts.app; //keep spa object
             var self = nest.presentable(this);
             self.api =  __app.settings.api.url;
-            self.botId = __page.bot.customId;
             self.tip = false;
             self.tipInfo = "";
+            self.botId = __page.bot.customId;
+            self.bot = __page.bot;
+            self.user = __page.user;
+            self.tenantId = __page.tenantId;
 
             var broadcastTxt = domain.action('broadcastTxt');
             var broadcastImg = domain.action('broadcastImg');
