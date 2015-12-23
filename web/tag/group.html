@@ -4,9 +4,9 @@
             <div class="col-md-4 col-xs-4 col-sm-4" style="padding-right: 0; padding-left: 0; width: 30%">
                 <div class="well sidebar-nav" style="padding-top: 0; padding-right: 0; padding-left: 0;height: 48em; background-color:  #2E3238; border: 1px solid #080808; overflow: scroll; border-radius: 0">
                     <ul style="padding: 0; margin: 0; list-style-type: none">
-                        <li style="height: 50px; line-height: 50px;overflow: hidden">
+                        <li style="height: 50px; border-bottom:2px solid #252525; line-height: 50px;overflow: hidden">
                             <div class="col-md-8 col-xs-8 col-sm-8" style="height:50px;line-height:50px;overflow: hidden">
-                                <div style="padding-left:10px;background: #24272C;height: 32px; margin-top: 12px;line-height:32px;color: #777">
+                                <div style="padding-left:10px;background: #24272C;height: 32px; margin-top: 8px;line-height:32px;color: #777">
                                     <b style="width:20%;">
                                         <span class="glyphicon glyphicon-search"></span>
                                     </b>
@@ -14,55 +14,30 @@
                                 </div>
                             </div>
                             <div class="col-md-4 col-xs-4 col-sm-4" style="height:50px;overflow: hidden;">
-                                <div style="height:32px;margin-top: 10px;line-height: 32px">
+                                <div style="height:32px;margin-top: 6px;line-height: 32px">
                                     <button type="button" onclick="{addGroup}" class="btn btn-sm" style="background: #42AC3E; color:white">
                                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 添加分组
                                     </button>
                                 </div>
                             </div>
                         </li>
-                        <li each="{group}" style="margin-bottom: 3px; padding: 5px 20px; background-color: #333; cursor: pointer">
-                            <span style="color: white; margin-left: 15px">{nickname}</span>
+                        <li onclick="{parent.viewGroup}" id="{_id}" each="{groups}" style="height: 64px;line-height: 50px;border-bottom:2px solid #252525;padding: 5px 20px; cursor: pointer">
+                            <span style="color: white; margin-left: 15px">{name}</span>
                         </li>
                     </ul>
                 </div>
             </div>
             <div class="col-md-8 col-xs-8 col-sm-8" style="background:#eee;padding-right: 1px; padding-left: 0;width: 70%">
+                <div if ="{panel.status === 'start'}">
+
+                </div>
                 <view-group if="{panel.status === 'view'}"/>
                 <add-group if="{panel.status === 'add'}"/>
             </div>
         </div>
     </div>
     <style scoped>
-        .profile{
-            padding-top:80px;
-            margin:0px auto;
-            width:80%
-        }
-        .profile_item{
-            margin: 0px auto;
-            text-align: center;
-            margin-bottom: 30px;
-            overflow: hidden;
-        }
-        .profile_item div.secondary label{
-            font-size: 16px;
-        }
-        .profile_item >div:first-child{
-            text-align: right;
-        }
-        .profile_item >div:nth-child(2){
-            text-indent: 3em;
-            text-align: left;
-        }
-        .profile_item label{
-            font-weight:400;
-            font-size: 24px;
-        }
-        .title_wrap{
-            height:50px;
-            margin:8px 10px;
-        }
+
     </style>
     <script>
         this.app = this.opts.app; //keep spa object
@@ -73,25 +48,39 @@
         self.tip = false;
         self.tipInfo = "";
 
-//        var loadGroups = domain.action('loadGroups');
+        var loadAllMyManageMedia = domain.action('loadAllMyManageMedia');
+        var loadGroups = domain.action('loadGroups');
+        var loadGroup = domain.action('loadGroup');
 
-//        var onLoadContacts = function(data){
-//            self.update({contacts: data.contacts});
-//        }
+        var onLoadGroups = function(data){
+            self.update({groups: data.groups});
+        };
+        var onLoadAllMyManageMedia = function(data){
+            self.myManageMedia = data.medias;
+            self.panel.add();
+            self.update();
+        };
+        var onLoadGroup = function(data){
+            self.group = data.group;
+            self.panel.view();
+        };
 
-//        this.on('mount', function(){
-//            console.info('tag group index is mounted');
-//            loadGroups.onDone(onLoadContacts);
-//        });
-//        this.on('unmount', function(){
-//            console.info('tag group index is unmounted');
-//            loadGroups.offDone(onLoadContacts);
-//        });
+        this.on('mount', function(){
+            loadAllMyManageMedia.onDone(onLoadAllMyManageMedia);
+            loadGroups.onDone(onLoadGroups);
+            loadGroup.onDone(onLoadGroup);
+        });
+        this.on('unmount', function(){
+            loadAllMyManageMedia.offDone(onLoadAllMyManageMedia);
+            loadGroups.offDone(onLoadGroups);
+            loadGroup.offDone(onLoadGroup);
+        });
         this.on('open', function(options){
             console.info('tag group index is opening');
             self.trigger('ready', false);
             self.trigger('view-route-to');
-//            loadGroups.execute(self.botId);
+            console.log( __page.user)
+            loadGroups.execute({tenantId:__page.user.posts[0].org, operatorId: __page.user.posts[0].member});
         });
 
         this.on('leave', function(){
@@ -109,49 +98,30 @@
             //_refresh();
         });
 
-        function tipShow(type, msg){
-            var addClass = '';
-            if(type === 'success'){
-                addClass = 'alert-success';
-            }
-            if(type === 'error'){
-                addClass = 'alert-danger';
-            }
-            if(type === 'info'){
-                addClass = 'alert-info';
-            }
-            if(type === 'warning'){
-                addClass = 'alert-warning';
-            }
-            self.update({tip: true, tipInfo: msg, addClass: addClass});
-            setTimeout(function(){
-                self.update({tip: false, tipInfo: '', addClass: ''});
-            }, 1000);
-        }
-
         self.formatDate = function(date){
             var dateStr = new Date(date).toLocaleDateString();
             return dateStr.replace(/\//g, '-');
         }
 
         self.panel ={
-            status: 'view',
+            status: 'start',
             add:function(){
                 this.status = 'add'
             },
             view: function(){
                 this.status = 'view'
             }
-
+        };
+        viewGroup(e){
+            var groupId = e.currentTarget.id;
+            loadGroup.execute({id: groupId});
         }
         addGroup(e){
             var w = self.panel;
-            console.log(w.status)
             if(w.status === 'add'){
                 return
             }
-            w.add();
+            loadAllMyManageMedia.execute({tenantId: __page.user.posts[0].org, operatorId: __page.user.posts[0].member});
         }
-
     </script>
 </group>

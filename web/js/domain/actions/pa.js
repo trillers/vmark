@@ -20,8 +20,17 @@ domain.action('addGroup').onExecute(function(data){
     apiFactory.post('/bot/group').drive(this).send(data);
 });
 
-domain.action('loadGroups').onExecute(function(data){
-
+domain.action('loadAllMyManageMedia').onExecute(function(data){
+    apiFactory.get('/bot/allMyMedia?tenantId=' + data.tenantId + '&operatorId=' + data.operatorId).drive(this).send();
 });
+
+domain.action('loadGroups').onExecute(function(data){
+    apiFactory.get('/bot/groups?tenantId=' + data.tenantId + '&operatorId=' + data.operatorId).drive(this).send();
+});
+
+domain.action('loadGroup').onExecute(function(data){
+    apiFactory.get('/bot/group?id=' + data.id).drive(this).send();
+});
+
 
 module.exports = null;

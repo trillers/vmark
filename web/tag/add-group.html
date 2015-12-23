@@ -21,10 +21,10 @@
             </div>
             <div class="secondary col-md-7 col-xs-7 col-sm-7">
                 <label class="radio-inline">
-                    <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1" checked> 选择分组
+                    <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="{app.enums.GroupType.names.Selected}" checked> {app.enums.GroupType.values.selected}
                 </label>
                 <label class="radio-inline" style="color:#ccc">
-                    <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2" disabled> 标签分组
+                    <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="{app.enums.GroupType.names.Tagged}" disabled> {app.enums.GroupType.values.tagged}
                 </label>
 
             </div>
@@ -34,7 +34,9 @@
                 <label>包含微信号</label>
             </div>
             <div class="secondary col-md-7 col-xs-7 col-sm-7">
-                <label>包含微信号</label>
+                <button each="{parent.myManageMedia}" onclick="{backToView}" type="button" class="btn btn-default" style="display:inline-block;background: #CCC; color:white; border: none">
+                    {name}
+                </button>
             </div>
         </div>
         <div class="profile_item row-fluid form-group">
@@ -42,7 +44,7 @@
                 <label>负责人</label>
             </div>
             <div class="secondary col-md-7 col-xs-7 col-sm-7">
-                <label>负责人</label>
+                <label>{page.user.nickname}</label>
             </div>
         </div>
         <div class="profile_item">
@@ -112,6 +114,8 @@
     </style>
     <script>
         var self = this;
+        self.app = __app;
+        self.page = __page;
         var addGroup = domain.action('addGroup');
         backToView(e){
             self.groupName.value = '';
@@ -119,25 +123,24 @@
             self.parent.update();
         }
         function onAddGroup(data){
-            console.log(data)
+            self.backToView();
         }
         this.on('mount', function(){
             addGroup.onDone(onAddGroup);
         });
         this.on('unmount', function(){
             addGroup.offDone(onAddGroup);
-        })
+        });
         submit(e){
             if(!self.groupName.value){
                 showAlert(self.form, '请输入名称', false);
                 return;
             }
-
+            var radio = document.querySelector('input[name="inlineRadioOptions"]:checked');
             var group = {
                 name: self.groupName.value,
-                type: '',
-                scope:''
-            }
+                type: radio.value
+            };
             addGroup.execute(group);
         }
 

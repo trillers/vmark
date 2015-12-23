@@ -10,6 +10,7 @@ var GroupScope = typeRegistry.item('GroupScope');
 var wechatMediaUserService = context.services.wechatMediaUserService;
 var wechatMediaService = context.services.wechatMediaService;
 var wechatBotManager = context.wechatBotManager;
+var tenantOrgMediaService = context.services.tenantOrgMediaService;
 var orgMediaService = context.services.orgMediaService;
 var groupService = context.services.groupService;
 
@@ -151,35 +152,67 @@ module.exports = function (router) {
         }
     });
 
+    router.get('/allMyMedia', function* (){
+        try{
+            var tenantId = this.query.tenantId;
+            var operator = this.query.operatorId;
+            var medias = yield tenantOrgMediaService.loadAllMyManagedMediasAsync(tenantId, operator);
+            this.body = {medias: medias};
+        }catch(e){
+            this.body = {error: e};
+        }
+    })
+
+    router.get('/groups', function*(){
+        try{
+            var tenantId = this.query.tenantId;
+            var operatorId = this.query.operatorId;
+            var groups = yield groupService.listMyGroupsAsync(tenantId, operatorId);
+            this.body = {groups: groups};
+        }catch(e){
+            this.body = {error: e};
+        }
+    })
+
+    router.get('/group', function*(){
+        try{
+            var groupId = this.query.id;
+            var group = yield groupService.loadByIdAsync(groupId);
+            //this.body = {group: group};
+        }catch(e){
+            this.body = {error: e};
+        }
+    })
+
     router.post('/group', function* (){
-        console.log(this.request.body)
-        this.body = "";
-        //try{
-        //    var name = this.request.body.name;
-        //    var type = this.request.body.type || GroupType.Selected.value();
-        //    var desc = this.request.body.desc || '';
-        //    var scope = this.request.body.scope || GroupScope.Tenant.value();
-        //    var user = this.session.auth.user;
-        //    var orgId = user.post.org;
-        //    var operator = this.request.body.operator || user.post.member;
-        //    var group = {
-        //        name: name,
-        //        type: type,
-        //        desc: desc,
-        //        scope: scope
-        //    };
-        //    if(scope === GroupScope.Tenant.value()){
-        //        group['medias'] = yield orgMediaService.listMediasByIdAsync(orgId);
-        //    }
-        //    else if(scope === GroupScope.Operator.value()){
-        //        group['operator'] = user.post.member;
-        //        group['medias'] = yield orgMediaService.listMediasByOperatorIdAsync(operator);
-        //    }
-        //    yield groupService.createAsync(group);
-        //    this.body = {success: true, data: group}
-        //}catch(e){
-        //    console.error(e);
-        //    this.body = {success: false, err: e};
-        //}
+        try{
+            var name = this.request.body.name;
+            var type = this.request.body.type || GroupType.Selected.value();
+            var desc = this.request.body.desc || '';
+            var scope = this.request.body.scope || GroupScope.Operator.value();
+            var user = this.session.auth.user;
+            console.log(user)
+            var orgId = user.posts[0].org;
+            var operator = this.request.body.operator || user.posts[0].member;
+            var group = {
+                name: name,
+                type: type,
+                desc: desc,
+                scope: scope,
+                org: orgId
+            };
+            if(scope === GroupScope.Tenant.value()){
+                group['medias'] = yield orgMediaService.listMediasByIdAsync(orgId);
+            }
+            else if(scope === GroupScope.Operator.value()){
+                group['operator'] = operator;
+                group['medias'] = yield orgMediaService.listMediasByOperatorIdAsync(orgId, operator);
+            }
+            yield groupService.createAsync(group);
+            this.body = {success: true, data: group}
+        }catch(e){
+            console.error(e);
+            this.body = {success: false, err: e};
+        }
     });
 }

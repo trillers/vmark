@@ -6,6 +6,11 @@ var Service = function(context){
     this.context = context;
 };
 
+Service.prototype.loadById = function(id, callback){
+    var Group = this.context.models.Group;
+    Group.findById(conditions, null, {lean: true}).exec(callback);
+};
+
 Service.prototype.create = function(groupJson, callback){
     var groupKv = this.context.kvs.group;
     var Group = this.context.models.Group;
@@ -13,8 +18,8 @@ Service.prototype.create = function(groupJson, callback){
     group.save(function (err, result, affected) {
         cbUtil.logCallback(
             err,
-            'Fail to save org: ' + err,
-            'Succeed to save org');
+            'Fail to save group: ' + err,
+            'Succeed to save group');
 
         cbUtil.handleAffected(function(err, doc){
             var obj = doc.toObject({virtuals: true});
@@ -27,7 +32,7 @@ Service.prototype.create = function(groupJson, callback){
 
 Service.prototype.listMyGroups = function(tenantId, operatorId, callback){
     var Group = this.context.models.Group;
-    var conditions = {tenantId: tenantId, lFlg: 'a', operator: operatorId};
+    var conditions = {org: tenantId, lFlg: 'a', operator: operatorId};
     Group.find(conditions, null, {lean: true}).exec(callback);
 };
 
