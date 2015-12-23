@@ -63,6 +63,7 @@
         var onLoadGroup = function(data){
             self.group = data.group;
             self.panel.view();
+            self.update();
         };
 
         this.on('mount', function(){

@@ -29,6 +29,18 @@ Service.prototype.create = function(mediaJson, callback){
 
 };
 
+Service.prototype.findBotsById = function(id, callback){
+    var WechatMedia = this.context.models.WechatMedia;
+    WechatMedia.findOne({lFlg: 'a', _id: id, type: 'wb'}, function (err, result) {
+        cbUtil.logCallback(
+            err,
+            'Fail to find wechat bots by id: ' + err,
+            'Succeed to find wechat bots by id');
+
+        cbUtil.handleSingleValue(callback, err, result);
+    });
+};
+
 Service.prototype.findBotByOpenid = function(openid, callback){
     var WechatMedia = this.context.models.WechatMedia;
     WechatMedia.findOne({lFlg: 'a', customId: openid, type: 'wb'}, function (err, result) {
