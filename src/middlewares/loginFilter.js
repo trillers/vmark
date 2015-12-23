@@ -15,7 +15,7 @@ var filterFn = function*(next){
         var qr = {};
         if(sceneId){
             qr = yield QrChannelService.loadBySceneIdAsync(sceneId);
-            if(new Date(qr.expireDate) < new Data()){
+            if(new Date(qr.expireDate) < new Date()){
                 qr = yield handler.autoCreateAsync(null);
             }
         }else{
