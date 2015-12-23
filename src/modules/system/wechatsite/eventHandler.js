@@ -5,6 +5,7 @@ var wechatApi = require('../../wechat/common/api').api;
 var context = require('../../../context/context');
 var tenantService = context.services.tenantService;
 var bindBotResults = tenantService.bindBotResults;
+var loginHandler = require('./loginHandler');
 
 module.exports = function (emitter) {
     emitter.qr(function (event, context) {
@@ -40,6 +41,9 @@ module.exports = function (emitter) {
                             else{
                                 reply = '[系统]: 微信号绑定成功！';
                             }
+                            break;
+                        case 'lg':
+                            reply = yield loginHandler(userOpenid, sceneId);
                             break;
                         //TODO another qr type
                     }

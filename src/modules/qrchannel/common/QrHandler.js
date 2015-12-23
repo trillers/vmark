@@ -48,7 +48,7 @@ QrHandler.prototype.create = function(sceneId, customId, callback){
         .then(function (ticket) {
             qrChannel.ticket = ticket;
             var date = new Date();
-            qrChannel.expire = new Date(date.getTime() + 7*24*60*60*1000);
+            qrChannel.expireDate = new Date(date.getTime() + 30*24*60*60*1000);
             return qrChannel;
         }).then(function(qrChannel){
              console.log('$$$$$$$$$$$$$$$$$$$$$$$');
@@ -90,6 +90,8 @@ QrHandler.prototype.manualCreate = function(sceneId, customId, callback){
         }
     })
 };
+
+QrHandler.prototype = Promise.promisifyAll(QrHandler.prototype);
 
 module.exports = QrHandler;
 
