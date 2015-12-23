@@ -1,3 +1,4 @@
+"use strict"
 var context = require('../../context/context');
 var fileService = require('../../modules/file/services/FileService');
 var lifeFlagEnum = require('../../framework/model/enums').LifeFlag;
@@ -179,8 +180,17 @@ module.exports = function (router) {
         try{
             var groupId = this.query.id;
             var group = yield groupService.loadByIdAsync(groupId);
-            //this.body = {group: group};
+            if(group.medias){
+                var medias = [];
+                for(let i=0, len=group.medias.length; i<len; i++){
+                    let m = yield wechatMediaService.findBotsByIdAsync(group.medias[i]);
+                    medias.push(m);
+                }
+                group.medias = medias;
+            }
+            this.body = {group: group};
         }catch(e){
+            console.error(e)
             this.body = {error: e};
         }
     })
@@ -192,7 +202,6 @@ module.exports = function (router) {
             var desc = this.request.body.desc || '';
             var scope = this.request.body.scope || GroupScope.Operator.value();
             var user = this.session.auth.user;
-            console.log(user)
             var orgId = user.posts[0].org;
             var operator = this.request.body.operator || user.posts[0].member;
             var group = {

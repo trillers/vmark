@@ -8,7 +8,7 @@ var Service = function(context){
 
 Service.prototype.loadById = function(id, callback){
     var Group = this.context.models.Group;
-    Group.findById(conditions, null, {lean: true}).exec(callback);
+    Group.findById(id, null, {lean: true}).populate({path: 'operator'}).exec(callback);
 };
 
 Service.prototype.create = function(groupJson, callback){
