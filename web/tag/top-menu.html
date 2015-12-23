@@ -1,9 +1,10 @@
 <top-menu>
     <nav class="navbar navbar-default navbar-inverse" role="navigation" style="margin-bottom: 5px; border-radius: 0; min-height: 65px;">
         <div class="collapse navbar-collapse" style="margin-top: 5px">
-            <a class="navbar-brand" style="font-size: 2em;color: white">微信后台</a>
+            <a class="navbar-brand" style="font-size: 2em;color: white">微节点</a>
             <ul class="nav navbar-nav" style="width: 88%">
-                <li class="navbtn"><a id="broadcast" href="#" route="broadcast" class="active" style="font-size: 1.5em" onclick={broadcast}>群发</a></li>
+                <li class="navbtn"><a id="overview" href="#" route="overview" class="active" style="font-size: 1.5em" onclick={overview}>首页</a></li>
+                <li class="navbtn"><a id="broadcast" href="#" route="broadcast" class="" style="font-size: 1.5em" onclick={broadcast}>群发</a></li>
                 <li class="navbtn"><a id="contacts" href="#" route="contacts" style="font-size: 1.5em" onclick={contacts}>联系人</a></li>
                 <li class="navbtn"><a id="group" href="#" route="group" style="font-size: 1.5em" onclick={group}>群组</a></li>
                 <li  style="float: right;"><a href="#" style="font-size: 1.4em" class="glyphicon glyphicon-log-out" title="退出" onclick="{logout}"></a></li>
@@ -30,6 +31,13 @@
             $.get('/logout', function(data){
                window.location.href = '/login';
             });
+        }
+
+        overview(e){
+            e.preventUpdate = true;
+            $('.navbtn a').removeClass('active');
+            $(e.currentTarget).addClass('active');
+            riot.route($(e.currentTarget).attr('route'));
         }
 
         broadcast(e){

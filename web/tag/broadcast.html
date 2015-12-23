@@ -16,17 +16,17 @@
                         </div>
                         <div if="{broadcastHistory.length}">
                             <ul style="padding: 0; margin: 0; list-style-type: none">
-                                <li each="{broadcastHistory}" style="margin-bottom: 3px; padding: 5px 20px; background-color: #333; cursor: pointer; color: white">
+                                <li each="{broadcastHistory}" style="margin-bottom: 3px; padding: 5px 5px 5px 10px; background-color: #333; cursor: pointer; color: white">
                                     <div if="{contentType == 'image'}" style="height: 100%; width: 100%">
-                                        <div style="height: 6em;overflow: hidden; float: left; width: 60%;">
+                                        <div style="display: -webkit-inline-box; width: 60%;">
                                             <img style="height: 5em" riot-src="{contentType == 'image' && media_id && parent.api + '/file/?media_id=' + media_id}" alt=""/>
                                         </div>
 
-                                        <div style="font-size: 0.5em; height: 6em; text-align: center; line-height: 6em;">{parent.formatDate(crtOn)}</div>
+                                        <div style="font-size: 0.5em; height: 6em; text-align: right; float:right; line-height: 6em; width: 38%">{parent.formatDate(crtOn)}</div>
                                     </div>
                                     <div  if="{contentType == 'text'}" style="height: 100%; width: 100%">
-                                        <div style="height: 6em;overflow: hidden; float: left; width: 60%;">{content}</div>
-                                        <div style="font-size: 0.5em; height: 6em; line-height: 6em; text-align: center">{parent.formatDate(crtOn)}</div>
+                                        <div style="display: -webkit-inline-box; padding: 5px; height: 6em;overflow: hidden; width: 60%; font-size: 0.5em">{content}</div>
+                                        <div style="font-size: 0.5em; height: 6em; line-height: 6em; float:right; text-align: right; width: 38%">{parent.formatDate(crtOn)}</div>
                                     </div>
                                 </li>
                             </ul>

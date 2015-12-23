@@ -1,0 +1,144 @@
+<overview>
+    <div if="{!hidden}">
+        <div if="{tip}" class="alert {addClass}" style="margin-top: -5px; float: left; width: 100%; text-align: center; margin-bottom: 0; position: absolute; z-index: 9999">
+            <strong>{tipInfo}</strong>
+        </div>
+        <div class="container" style="width: 100%; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0">
+            <div class="row">
+                &nbsp;
+            </div>
+            <div class="row">
+                <div class="col-md-8 col-lg-8" style="margin-left: 20px; margin-right: 20px;">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">账户信息</div>
+                        <div class="panel-body">
+                            <div class="container" style="">
+                                <div class="row">
+                                    <div class="col-md-1 col-lg-1" style="">
+                                        账户：
+                                    </div>
+                                    <div class="col-md-3 col-lg-3" style="">
+                                        {user.nickname} &nbsp;&nbsp; <small><small>个人账户</small></small>
+                                    </div>
+                                    <div class="col-md-1 col-lg-1" style="">
+                                        管理员：
+                                    </div>
+                                    <div class="col-md-3 col-lg-3" style="">
+                                        <img src="{user.headimgurl}" alt="{user.nickname}" class="img-rounded" data-src="holder.js/40x40"  style="width: 40px; height: 40px;">
+                                        &nbsp;&nbsp;{user.nickname}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">微信托管</div>
+                        <div class="panel-body">
+                            <div class="container" style="">
+                                <div class="row">
+                                    <div class="col-md-1 col-lg-1" style="">
+                                        <img src="{bot.headimgurl}" alt="{bot.name}" class="img-rounded" data-src="holder.js/40x40"  style="width: 40px; height: 40px;">
+                                    </div>
+                                    <div class="col-md-3 col-lg-3" style="">
+                                        {bot.name} &nbsp;
+                                            <img if="{bot.sex==1}" src="/web/images/male.png" alt="男" class="" data-src="holder.js/10x10"  style="width: 20px; height: 20px;">
+                                            <img if="{bot.sex==2}" src="/web/images/female.png" alt="女" class="" data-src="holder.js/10x10"  style="width: 20px; height: 20px;">
+                                    </div>
+                                    <div class="col-md-1 col-lg-1" style="">
+                                        管理员：
+                                    </div>
+                                    <div class="col-md-3 col-lg-3" style="">
+                                        <img src="{user.headimgurl}" alt="{user.nickname}" class="img-rounded" data-src="holder.js/40x40"  style="width: 40px; height: 40px;">
+                                        &nbsp;&nbsp;{user.nickname}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div><!--/span-->
+            </div><!--/row-->
+        </div><!--/container-->
+
+        <style scoped>
+
+        </style>
+
+        <script>
+            this.app = this.opts.app; //keep spa object
+            var self = nest.presentable(this);
+            self.api =  __app.settings.api.url;
+            self.tip = false;
+            self.tipInfo = "";
+            self.botId = __page.bot.customId;
+            self.bot = __page.bot;
+            self.user = __page.user;
+            self.tenantId = __page.tenantId;
+
+            var broadcastTxt = domain.action('broadcastTxt');
+            var broadcastImg = domain.action('broadcastImg');
+            var loadBroadcastHistory = domain.action('loadBroadcastHistory')
+
+            var onLoadBroadcastHistory = function(data){
+                self.broadcastHistory = data.history;
+                self.update();
+            }
+
+            this.on('mount', function(){
+                console.info('tag overview index is mounted');
+//                broadcastTxt.onDone(onBroadcastTxt);
+//                broadcastImg.onDone(onBroadcastImg);
+//                loadBroadcastHistory.onDone(onLoadBroadcastHistory);
+            });
+            this.on('unmount', function(){
+                console.info('tag overview index is unmounted');
+//                broadcastTxt.offDone(onBroadcastTxt);
+//                broadcastImg.offDone(onBroadcastImg);
+//                loadBroadcastHistory.offDone(onLoadBroadcastHistory);
+            });
+            this.on('open', function(options){
+                console.info('tag broadcast index is opening');
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+//                loadBroadcastHistory.execute(self.botId);
+            });
+
+            this.on('leave', function(){
+                self.mask = true;
+                self.update();
+            });
+
+            this.on('reenter', function(){
+                self.mask = false;
+                self.update();
+            });
+
+            this.on('refresh', function(){
+                console.info('tag broadcast index is refreshing');
+                //_refresh();
+            });
+
+
+            self.formatDate = function(date){
+                var dateStr = new Date(date).toLocaleString();
+                return dateStr.replace(/\//g, '-');
+            }
+
+
+            startBot(e){
+                e.preventUpdate = true;
+                var msg = $('#broadcastMsg').val().trim();
+                if(msg.length > 0) {
+                    var data = {
+                        botId: self.botId,
+                        msg: msg
+                    }
+                    broadcastTxt.execute(data);
+                    $(e.currentTarget).attr('disabled', true);
+                }else{
+//                    tipShow('warning', '发送内容不能为空');
+                }
+            }
+        </script>
+    </div>
+</overview>
