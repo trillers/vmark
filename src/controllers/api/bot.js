@@ -174,6 +174,16 @@ module.exports = function (router) {
         }
     })
 
+    router.get('/group', function*(){
+        try{
+            var groupId = this.query.id;
+            var group = yield groupService.loadByIdAsync(groupId);
+            //this.body = {group: group};
+        }catch(e){
+            this.body = {error: e};
+        }
+    })
+
     router.post('/group', function* (){
         try{
             var name = this.request.body.name;

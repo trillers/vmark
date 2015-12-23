@@ -28,6 +28,9 @@ domain.action('loadGroups').onExecute(function(data){
     apiFactory.get('/bot/groups?tenantId=' + data.tenantId + '&operatorId=' + data.operatorId).drive(this).send();
 });
 
+domain.action('loadGroup').onExecute(function(data){
+    apiFactory.get('/bot/group?id=' + data.id).drive(this).send();
+});
 
 
 module.exports = null;

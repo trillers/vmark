@@ -6,6 +6,11 @@ var Service = function(context){
     this.context = context;
 };
 
+Service.prototype.loadById = function(id, callback){
+    var Group = this.context.models.Group;
+    Group.findById(conditions, null, {lean: true}).exec(callback);
+};
+
 Service.prototype.create = function(groupJson, callback){
     var groupKv = this.context.kvs.group;
     var Group = this.context.models.Group;

@@ -21,13 +21,16 @@
                                 </div>
                             </div>
                         </li>
-                        <li onclick="{viewGroup}" each="{groups}" style="height: 64px;line-height: 50px;border-bottom:2px solid #252525;padding: 5px 20px; cursor: pointer">
+                        <li onclick="{parent.viewGroup}" id="{_id}" each="{groups}" style="height: 64px;line-height: 50px;border-bottom:2px solid #252525;padding: 5px 20px; cursor: pointer">
                             <span style="color: white; margin-left: 15px">{name}</span>
                         </li>
                     </ul>
                 </div>
             </div>
             <div class="col-md-8 col-xs-8 col-sm-8" style="background:#eee;padding-right: 1px; padding-left: 0;width: 70%">
+                <div if ="{panel.status === 'start'}">
+
+                </div>
                 <view-group if="{panel.status === 'view'}"/>
                 <add-group if="{panel.status === 'add'}"/>
             </div>
@@ -47,9 +50,9 @@
 
         var loadAllMyManageMedia = domain.action('loadAllMyManageMedia');
         var loadGroups = domain.action('loadGroups');
+        var loadGroup = domain.action('loadGroup');
 
         var onLoadGroups = function(data){
-            console.warn(data)
             self.update({groups: data.groups});
         };
         var onLoadAllMyManageMedia = function(data){
@@ -57,14 +60,20 @@
             self.panel.add();
             self.update();
         };
+        var onLoadGroup = function(data){
+            self.group = data.group;
+            self.panel.view();
+        };
 
         this.on('mount', function(){
             loadAllMyManageMedia.onDone(onLoadAllMyManageMedia);
             loadGroups.onDone(onLoadGroups);
+            loadGroup.onDone(onLoadGroup);
         });
         this.on('unmount', function(){
             loadAllMyManageMedia.offDone(onLoadAllMyManageMedia);
             loadGroups.offDone(onLoadGroups);
+            loadGroup.offDone(onLoadGroup);
         });
         this.on('open', function(options){
             console.info('tag group index is opening');
@@ -95,7 +104,7 @@
         }
 
         self.panel ={
-            status: 'view',
+            status: 'start',
             add:function(){
                 this.status = 'add'
             },
@@ -104,7 +113,8 @@
             }
         };
         viewGroup(e){
-            alert(1)
+            var groupId = e.currentTarget.id;
+            loadGroup.execute({id: groupId});
         }
         addGroup(e){
             var w = self.panel;
