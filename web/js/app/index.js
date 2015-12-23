@@ -9,6 +9,18 @@ var util = require('./util');
 var Spa = require('./spa');
 var app = new Spa({defaultHash: 'broadcast'});
 
+app.routeView('overview', nest.viewable({
+  name: 'overview',
+  mount: function(ctx){
+    var tags = riot.mount('overview', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx.req.query);
+  }
+}));
+
 app.routeView('broadcast', nest.viewable({
   name: 'broadcast',
   mount: function(ctx){
