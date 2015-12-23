@@ -54,10 +54,10 @@ module.exports = function(app){
             "headimgurl": "http://wx.qlogo.cn/mmopen/MIbgLNjILzicjoS7yEMSdqeTrXGLqRKbsiaLd528BITNubKMMZIEgUpsKd5fShE9eiagnDbcBUmOYf2vXx9xaLljDvMMLsOcYDS/0"
         }
     ];
-    //router.get('/mock-login-list', function *(){
-    //    //var users = yield securityService.loadAllTenantAdminUsersAsync();
-    //    yield this.render('mock-login-list', {users: mockUsers, qaUsers: qaMockUsers});
-    //});
+    router.get('/mock-login-list', function *(){
+        //var users = yield securityService.loadAllTenantAdminUsersAsync();
+        yield this.render('mock-login-list', {users: mockUsers, qaUsers: qaMockUsers});
+    });
 
     router.get('/mock-login', function *(){
         var openid = this.query.openid;
