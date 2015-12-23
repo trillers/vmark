@@ -16,4 +16,12 @@ domain.action('loadContacts').onExecute(function(id){
     apiFactory.get('/bot/contacts?botId=' + id).drive(this).send();
 });
 
+domain.action('addGroup').onExecute(function(data){
+    apiFactory.post('/bot/group').drive(this).send(data);
+});
+
+domain.action('loadGroups').onExecute(function(data){
+
+});
+
 module.exports = null;

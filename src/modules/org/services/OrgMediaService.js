@@ -39,6 +39,31 @@ Service.prototype.loadByMediaId = function(mediaId, callback){
     });
 };
 
+Service.prototype.listMediasById = function(orgId, callback){
+    var OrgMedia = this.context.models.OrgMedia;
+    var conditions = {org: orgId, type: WechatMediaType.WechatBot.value(), lFlg: 'a'};
+    OrgMedia.find(conditions, 'media', {lean: true}).exec(function (err, result) {
+        cbUtil.logCallback(
+            err,
+            'Fail to list medias by org id ' + orgId + ': ' + err,
+            'Succeed to list medias by org id ' + orgId);
+
+        cbUtil.handleSingleValue(function(err, docs){
+            if(err){
+                if(callback) callback(err);
+            }
+            else{
+                var len = docs.length;
+                var mediaIds = [];
+                for(var i=0; i<len; i++){
+                    mediaIds.push(docs[i].media);
+                }
+                if(callback) callback(err, mediaIds);
+            }
+        }, err, result);
+    });
+};
+
 Service.prototype.listMediasByOperatorId = function(tenantId, operatorId, callback){
     var OrgMedia = this.context.models.OrgMedia;
     var conditions = {org: tenantId, type: WechatMediaType.WechatBot.value(), lFlg: 'a', operator: operatorId};

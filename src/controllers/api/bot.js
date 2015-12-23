@@ -1,12 +1,17 @@
 var context = require('../../context/context');
-var wechatMediaUserService = context.services.wechatMediaUserService;
-var wechatMediaService = context.services.wechatMediaService;
-var wechatBotManager = context.wechatBotManager;
 var fileService = require('../../modules/file/services/FileService');
 var lifeFlagEnum = require('../../framework/model/enums').LifeFlag;
 var broadcastMessageService = require('../../modules/message/services/BroadcastMessageService');
-var MsgContentType = require('../../modules/common/models/TypeRegistry').item('MsgType');
-var BroadcastType = require('../../modules/common/models/TypeRegistry').item('BroadcastType');
+var typeRegistry = require('../../modules/common/models/TypeRegistry');
+var MsgContentType = typeRegistry.item('MsgType');
+var BroadcastType = typeRegistry.item('BroadcastType');
+var GroupType = typeRegistry.item('GroupType');
+var GroupScope = typeRegistry.item('GroupScope');
+var wechatMediaUserService = context.services.wechatMediaUserService;
+var wechatMediaService = context.services.wechatMediaService;
+var wechatBotManager = context.wechatBotManager;
+var orgMediaService = context.services.orgMediaService;
+var groupService = context.services.groupService;
 
 module.exports = function (router) {
     router.post('/broadcastTxt', function *() {
@@ -144,5 +149,37 @@ module.exports = function (router) {
             console.log('load contacts err: ' + err);
             this.body = {contacts: [], error: err};
         }
+    });
+
+    router.post('/group', function* (){
+        console.log(this.request.body)
+        this.body = "";
+        //try{
+        //    var name = this.request.body.name;
+        //    var type = this.request.body.type || GroupType.Selected.value();
+        //    var desc = this.request.body.desc || '';
+        //    var scope = this.request.body.scope || GroupScope.Tenant.value();
+        //    var user = this.session.auth.user;
+        //    var orgId = user.post.org;
+        //    var operator = this.request.body.operator || user.post.member;
+        //    var group = {
+        //        name: name,
+        //        type: type,
+        //        desc: desc,
+        //        scope: scope
+        //    };
+        //    if(scope === GroupScope.Tenant.value()){
+        //        group['medias'] = yield orgMediaService.listMediasByIdAsync(orgId);
+        //    }
+        //    else if(scope === GroupScope.Operator.value()){
+        //        group['operator'] = user.post.member;
+        //        group['medias'] = yield orgMediaService.listMediasByOperatorIdAsync(operator);
+        //    }
+        //    yield groupService.createAsync(group);
+        //    this.body = {success: true, data: group}
+        //}catch(e){
+        //    console.error(e);
+        //    this.body = {success: false, err: e};
+        //}
     });
 }
