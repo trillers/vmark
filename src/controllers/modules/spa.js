@@ -1,4 +1,5 @@
 var util = require('../../app/util');
+var loginFilter = require('../../middlewares/loginFilter');
 
 module.exports = function(router){
     require('../../app/routes-spa')(router);
@@ -10,8 +11,8 @@ module.exports = function(router){
             yield this.render('index');
         }
     });
-    router.get('/login', function *(){
-        yield this.render('login');
+    router.get('/login', loginFilter, function *(){
+        yield this.render('login', {qrCodeUrl: this.qrCodeUrl, connId: this.connId});
     });
     router.post('/login', function *(){
         var username = this.request.body.username;
