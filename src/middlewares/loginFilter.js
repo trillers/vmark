@@ -11,10 +11,9 @@ var QrChannelService = require('../modules/qrchannel/services/QrChannelService')
 
 var filterFn = function*(next){
     try{
-        var token = this.cookies.get('token');
+        var sceneId = this.cookies.get('sceneId');
         var qr = {};
-        if(token){
-            var sceneId = yield kv.loadSceneIdByTokenAsync(token);
+        if(sceneId){
             qr = yield QrChannelService.loadBySceneIdAsync(sceneId);
             if(new Date(qr.expireDate) < new Data()){
                 qr = yield handler.autoCreateAsync(null);

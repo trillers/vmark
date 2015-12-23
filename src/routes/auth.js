@@ -54,13 +54,14 @@ module.exports = function(app){
             "headimgurl": "http://wx.qlogo.cn/mmopen/MIbgLNjILzicjoS7yEMSdqeTrXGLqRKbsiaLd528BITNubKMMZIEgUpsKd5fShE9eiagnDbcBUmOYf2vXx9xaLljDvMMLsOcYDS/0"
         }
     ];
-    //router.get('/mock-login-list', function *(){
-    //    //var users = yield securityService.loadAllTenantAdminUsersAsync();
-    //    yield this.render('mock-login-list', {users: mockUsers, qaUsers: qaMockUsers});
-    //});
+    router.get('/mock-login-list', function *(){
+        //var users = yield securityService.loadAllTenantAdminUsersAsync();
+        yield this.render('mock-login-list', {users: mockUsers, qaUsers: qaMockUsers});
+    });
 
     router.get('/mock-login', function *(){
         var openid = this.query.openid;
+        var sceneId = this.query.sceneId;
         if(!openid){
             this.redirect('/login');
             return;
@@ -78,6 +79,7 @@ module.exports = function(app){
         }
 
         this.session.auth = auth;
+        this.cookies.set('sceneId', sceneId, {maxAge: 3600000*24*30});
         this.redirect('/');
     });
 

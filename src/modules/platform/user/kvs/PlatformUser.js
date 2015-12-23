@@ -8,39 +8,9 @@ var openidToIdKey = function(openid){
     return 'plf:usr:id:oid:' + openid;
 };
 
-var tokenToLoginQrCodeSceneId = function(token){
-    return 'plf:usr:login' + token;
-};
 
 var Kv = function(context){
     this.context = context;
-};
-
-Kv.prototype.loadSceneIdByToken = function(token, callback){
-    var logger = this.context.logger;
-    var redis = this.context.redis.main;
-    var key = tokenToLoginQrCodeSceneId(token);
-    redis.get(key, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to get scene id ',
-            'Succeed to get scene id ');
-
-        cbUtil.handleSingleValue(callback, err, result);
-    });
-};
-
-Kv.prototype.saveSceneIdByToken = function(token, sceneId, callback){
-    var redis = this.context.redis.main;
-    var key = tokenToLoginQrCodeSceneId(token);
-
-    redis.set(key, sceneId, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to save scene id ',
-            'Succeed to save scene id ');
-        cbUtil.handleOk(callback, err, result, sceneId);
-    });
 };
 
 Kv.prototype.loadById = function(id, callback){

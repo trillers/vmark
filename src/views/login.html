@@ -24,7 +24,7 @@
             console.log( e.data);
             var data = JSON.parse(e.data);
             if(data.auth === 'success'){
-                window.location.href = '/mock-login?openid=' + data.openid;
+                window.location.href = '/mock-login?openid=' + data.openid + '&sceneId=' + data.sceneId;
             }else if(data.auth === 'failed'){
                 alert(data.msg);
             }
