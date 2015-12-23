@@ -21,6 +21,18 @@ app.routeView('broadcast', nest.viewable({
   }
 }));
 
+app.routeView('group', nest.viewable({
+  name: 'group',
+  mount: function(ctx){
+    var tags = riot.mount('group', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx.req.query);
+  }
+}));
+
 app.routeView('contacts', nest.viewable({
   name: 'contacts',
   mount: function(ctx){

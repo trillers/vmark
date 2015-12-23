@@ -152,32 +152,34 @@ module.exports = function (router) {
     });
 
     router.post('/group', function* (){
-        try{
-            var name = this.request.body.name;
-            var type = this.request.body.type || GroupType.Selected.value();
-            var desc = this.request.body.desc || '';
-            var scope = this.request.body.scope || GroupScope.Tenant.value();
-            var user = this.session.auth.user;
-            var orgId = user.post.org;
-            var operator = this.request.body.operator || user.post.member;
-            var group = {
-                name: name,
-                type: type,
-                desc: desc,
-                scope: scope
-            };
-            if(scope === GroupScope.Tenant.value()){
-                group['medias'] = yield orgMediaService.listMediasByIdAsync(orgId);
-            }
-            else if(scope === GroupScope.Operator.value()){
-                group['operator'] = user.post.member;
-                group['medias'] = yield orgMediaService.listMediasByOperatorIdAsync(operator);
-            }
-            yield groupService.createAsync(group);
-            this.body = {success: true, data: group}
-        }catch(e){
-            console.error(e);
-            this.body = {success: false, err: e};
-        }
+        console.log(this.request.body)
+        this.body = "";
+        //try{
+        //    var name = this.request.body.name;
+        //    var type = this.request.body.type || GroupType.Selected.value();
+        //    var desc = this.request.body.desc || '';
+        //    var scope = this.request.body.scope || GroupScope.Tenant.value();
+        //    var user = this.session.auth.user;
+        //    var orgId = user.post.org;
+        //    var operator = this.request.body.operator || user.post.member;
+        //    var group = {
+        //        name: name,
+        //        type: type,
+        //        desc: desc,
+        //        scope: scope
+        //    };
+        //    if(scope === GroupScope.Tenant.value()){
+        //        group['medias'] = yield orgMediaService.listMediasByIdAsync(orgId);
+        //    }
+        //    else if(scope === GroupScope.Operator.value()){
+        //        group['operator'] = user.post.member;
+        //        group['medias'] = yield orgMediaService.listMediasByOperatorIdAsync(operator);
+        //    }
+        //    yield groupService.createAsync(group);
+        //    this.body = {success: true, data: group}
+        //}catch(e){
+        //    console.error(e);
+        //    this.body = {success: false, err: e};
+        //}
     });
 }

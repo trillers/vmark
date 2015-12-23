@@ -1,11 +1,157 @@
 <group>
     <div if="{!hidden}">
-
+        <div class="row-fluid" style="overflow: hidden; background: #eee;margin-top:-6px">
+            <div class="col-md-4 col-xs-4 col-sm-4" style="padding-right: 0; padding-left: 0; width: 30%">
+                <div class="well sidebar-nav" style="padding-top: 0; padding-right: 0; padding-left: 0;height: 48em; background-color:  #2E3238; border: 1px solid #080808; overflow: scroll; border-radius: 0">
+                    <ul style="padding: 0; margin: 0; list-style-type: none">
+                        <li style="height: 50px; line-height: 50px;overflow: hidden">
+                            <div class="col-md-8 col-xs-8 col-sm-8" style="height:50px;line-height:50px;overflow: hidden">
+                                <div style="padding-left:10px;background: #24272C;height: 32px; margin-top: 12px;line-height:32px;color: #777">
+                                    <b style="width:20%;">
+                                        <span class="glyphicon glyphicon-search"></span>
+                                    </b>
+                                    <input type="text" style="background: transparent;border: none;width:80%" placeholder="搜索"/>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-xs-4 col-sm-4" style="height:50px;overflow: hidden;">
+                                <div style="height:32px;margin-top: 10px;line-height: 32px">
+                                    <button type="button" onclick="{addGroup}" class="btn btn-sm" style="background: #42AC3E; color:white">
+                                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 添加分组
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        <li each="{group}" style="margin-bottom: 3px; padding: 5px 20px; background-color: #333; cursor: pointer">
+                            <span style="color: white; margin-left: 15px">{nickname}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-8 col-xs-8 col-sm-8" style="background:#eee;padding-right: 1px; padding-left: 0;width: 70%">
+                <view-group if="{panel.status === 'view'}"/>
+                <add-group if="{panel.status === 'add'}"/>
+            </div>
+        </div>
     </div>
     <style scoped>
-
+        .profile{
+            padding-top:80px;
+            margin:0px auto;
+            width:80%
+        }
+        .profile_item{
+            margin: 0px auto;
+            text-align: center;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .profile_item div.secondary label{
+            font-size: 16px;
+        }
+        .profile_item >div:first-child{
+            text-align: right;
+        }
+        .profile_item >div:nth-child(2){
+            text-indent: 3em;
+            text-align: left;
+        }
+        .profile_item label{
+            font-weight:400;
+            font-size: 24px;
+        }
+        .title_wrap{
+            height:50px;
+            margin:8px 10px;
+        }
     </style>
     <script>
+        this.app = this.opts.app; //keep spa object
+        var self = nest.presentable(this);
+        self.env = (__app.settings.env.NODE_ENV=="production")?"public":"web";
+        self.api =  __app.settings.api.url;
+        self.botId = __page.bot.customId;
+        self.tip = false;
+        self.tipInfo = "";
+
+//        var loadGroups = domain.action('loadGroups');
+
+//        var onLoadContacts = function(data){
+//            self.update({contacts: data.contacts});
+//        }
+
+//        this.on('mount', function(){
+//            console.info('tag group index is mounted');
+//            loadGroups.onDone(onLoadContacts);
+//        });
+//        this.on('unmount', function(){
+//            console.info('tag group index is unmounted');
+//            loadGroups.offDone(onLoadContacts);
+//        });
+        this.on('open', function(options){
+            console.info('tag group index is opening');
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+//            loadGroups.execute(self.botId);
+        });
+
+        this.on('leave', function(){
+            self.mask = true;
+            self.update();
+        });
+
+        this.on('reenter', function(){
+            self.mask = false;
+            self.update();
+        });
+
+        this.on('refresh', function(){
+            console.info('tag group index is refreshing');
+            //_refresh();
+        });
+
+        function tipShow(type, msg){
+            var addClass = '';
+            if(type === 'success'){
+                addClass = 'alert-success';
+            }
+            if(type === 'error'){
+                addClass = 'alert-danger';
+            }
+            if(type === 'info'){
+                addClass = 'alert-info';
+            }
+            if(type === 'warning'){
+                addClass = 'alert-warning';
+            }
+            self.update({tip: true, tipInfo: msg, addClass: addClass});
+            setTimeout(function(){
+                self.update({tip: false, tipInfo: '', addClass: ''});
+            }, 1000);
+        }
+
+        self.formatDate = function(date){
+            var dateStr = new Date(date).toLocaleDateString();
+            return dateStr.replace(/\//g, '-');
+        }
+
+        self.panel ={
+            status: 'view',
+            add:function(){
+                this.status = 'add'
+            },
+            view: function(){
+                this.status = 'view'
+            }
+
+        }
+        addGroup(e){
+            var w = self.panel;
+            console.log(w.status)
+            if(w.status === 'add'){
+                return
+            }
+            w.add();
+        }
 
     </script>
 </group>

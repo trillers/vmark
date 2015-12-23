@@ -5,7 +5,7 @@
             <ul class="nav navbar-nav" style="width: 88%">
                 <li class="navbtn"><a id="broadcast" href="#" route="broadcast" class="active" style="font-size: 1.5em" onclick={broadcast}>群发</a></li>
                 <li class="navbtn"><a id="contacts" href="#" route="contacts" style="font-size: 1.5em" onclick={contacts}>联系人</a></li>
-                <!--<li class="navbtn"><a id="contacts" href="#" route="contacts" style="font-size: 1.5em" onclick={contacts}>联系人</a></li>-->
+                <li class="navbtn"><a id="group" href="#" route="group" style="font-size: 1.5em" onclick={group}>群组</a></li>
                 <li  style="float: right;"><a href="#" style="font-size: 1.4em" class="glyphicon glyphicon-log-out" title="退出" onclick="{logout}"></a></li>
                 <li style="float: right; margin-right: 20px; padding-top: 5px;">
                     <img src="{headimgurl}" style="height: 45px; width: 45px" alt=""/><span style="margin-left: 10px; color: white">{nickname}</span>
@@ -33,6 +33,13 @@
         }
 
         broadcast(e){
+            e.preventUpdate = true;
+            $('.navbtn a').removeClass('active');
+            $(e.currentTarget).addClass('active');
+            riot.route($(e.currentTarget).attr('route'));
+        }
+
+        group(e){
             e.preventUpdate = true;
             $('.navbtn a').removeClass('active');
             $(e.currentTarget).addClass('active');
