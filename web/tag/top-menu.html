@@ -3,7 +3,7 @@
         <div class="collapse navbar-collapse" style="margin-top: 5px">
             <a class="navbar-brand" style="font-size: 2em;color: white">微节点</a>
             <ul class="nav navbar-nav" style="width: 88%">
-                <li class="navbtn"><a id="overview" href="#" route="overview" class="active" style="font-size: 1.5em" onclick={overview}>首页</a></li>
+                <li class="navbtn"><a id="overview" href="#" route="overview" class="myActive" style="font-size: 1.5em" onclick={overview}>首页</a></li>
                 <li class="navbtn"><a id="broadcast" href="#" route="broadcast" class="" style="font-size: 1.5em" onclick={broadcast}>群发</a></li>
                 <li class="navbtn"><a id="contacts" href="#" route="contacts" style="font-size: 1.5em" onclick={contacts}>联系人</a></li>
                 <li class="navbtn"><a id="group" href="#" route="group" style="font-size: 1.5em" onclick={group}>群组</a></li>
@@ -16,15 +16,18 @@
     </nav>
     <style scoped>
         .navbtn{padding-left: 3em}
-        .active{color: #ffffff !important;}
+        .myActive{color: #ffffff !important;}
     </style>
     <script>
         this.headimgurl = __page.user.headimgurl;
         this.nickname = __page.user.nickname;
 
         this.on('mount', function(){
-            $('.navbtn a').removeClass('active');
-            $(window.location.hash).addClass('active');
+            console.error('moun');
+            if(window.location.hash) {
+                $('.navbtn a').removeClass('myActive');
+                $(window.location.hash).addClass('myActive');
+            }
         });
 
         logout(e){
@@ -35,29 +38,29 @@
 
         overview(e){
             e.preventUpdate = true;
-            $('.navbtn a').removeClass('active');
-            $(e.currentTarget).addClass('active');
+            $('.navbtn a').removeClass('myActive');
+            $(e.currentTarget).addClass('myActive');
             riot.route($(e.currentTarget).attr('route'));
         }
 
         broadcast(e){
             e.preventUpdate = true;
-            $('.navbtn a').removeClass('active');
-            $(e.currentTarget).addClass('active');
+            $('.navbtn a').removeClass('myActive');
+            $(e.currentTarget).addClass('myActive');
             riot.route($(e.currentTarget).attr('route'));
         }
 
         group(e){
             e.preventUpdate = true;
-            $('.navbtn a').removeClass('active');
-            $(e.currentTarget).addClass('active');
+            $('.navbtn a').removeClass('myActive');
+            $(e.currentTarget).addClass('myActive');
             riot.route($(e.currentTarget).attr('route'));
         }
 
         contacts(e){
             e.preventUpdate = true;
-            $('.navbtn a').removeClass('active');
-            $(e.currentTarget).addClass('active');
+            $('.navbtn a').removeClass('myActive');
+            $(e.currentTarget).addClass('myActive');
             riot.route($(e.currentTarget).attr('route'));
         }
     </script>

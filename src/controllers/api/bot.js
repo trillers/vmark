@@ -18,6 +18,7 @@ module.exports = function (router) {
     router.post('/broadcastTxt', function *() {
         try {
             var botId = this.request.body.botId;//bot openid
+            var groupId = this.request.body.groupId;
             var bot = wechatBotManager.getWechatBot(botId);
             var msg = this.request.body.msg;
             var media = yield wechatMediaService.findBotByOpenidAsync(botId);
