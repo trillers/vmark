@@ -216,6 +216,9 @@ module.exports = function (router) {
             var existMembers = tmpGroupMembers.map(function(groupMember){
                 return groupMember.member;
             });
+            console.log("exist members *************")
+            console.error(existMembers.length)
+            console.error(existMembers)
             var users = [];
             for(let i=0, len= medias.length; i<len; i++){
                 let media = medias[i];
@@ -230,9 +233,15 @@ module.exports = function (router) {
                     }
                 };
                 let tmps = yield wechatMediaUserService.findAsync(params);
+                console.log("all members *************")
+                console.log(tmps.length)
+                console.log(tmps)
                 let mediaUsers = tmps.filter(function(mediaUser){
                     return existMembers.indexOf(mediaUser._id) < 0
                 });
+                console.log("filtered members *************")
+                console.log(mediaUsers.length)
+                console.log(mediaUsers)
                 users.push({
                     media: media,
                     mediaUsers: mediaUsers
