@@ -223,7 +223,7 @@ module.exports = function (router) {
             for(let i=0, len= medias.length; i<len; i++){
                 let media = medias[i];
                 let params = {
-                    condition: {
+                    conditions: {
                         lFlg: 'a',
                         host: media,
                         type: 'wbc'
