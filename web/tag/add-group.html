@@ -123,7 +123,11 @@
             self.parent.update();
         }
         function onAddGroup(data){
+            self.parent.groups.unshift(data.data);
+            self.parent.group = data.data;
+            self.parent.groupMembers = [];
             self.backToView();
+            self.parent.update();
         }
         this.on('mount', function(){
             addGroup.onDone(onAddGroup);

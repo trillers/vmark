@@ -9,6 +9,11 @@ Service.prototype.loadById = function(id, callback){
     kv.loadById(id, callback);
 };
 
+Service.prototype.findById = function(id, callback){
+    var WechatMedia = this.context.models.WechatMedia;
+    WechatMedia.findById(id, null, {lean: true}).exec(callback);
+};
+
 Service.prototype.create = function(mediaJson, callback){
     var kv = this.context.kvs.wechatMedia;
     var WechatMedia = this.context.models.WechatMedia;

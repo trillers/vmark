@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 var context = require('../../context/context');
 var fileService = require('../../modules/file/services/FileService');
 var lifeFlagEnum = require('../../framework/model/enums').LifeFlag;
@@ -14,6 +14,7 @@ var wechatBotManager = context.wechatBotManager;
 var tenantOrgMediaService = context.services.tenantOrgMediaService;
 var orgMediaService = context.services.orgMediaService;
 var groupService = context.services.groupService;
+var groupMemberService = context.services.groupMemberService;
 
 module.exports = function (router) {
     router.post('/broadcastTxt', function *() {
@@ -175,9 +176,72 @@ module.exports = function (router) {
         }
     })
 
+    router.post('/group/members', function*(){
+        try{
+            var members = this.request.body.members;
+            var membersArr = [];
+            for(let i=0,len=Object.keys(members).length; i<len; i++){
+                var member = members[Object.keys(members)[i]];
+                var groupMember = {
+                    group: member['group'],
+                    media: member['media'],
+                    member: member['member']
+                };
+                var group = yield groupMemberService.createAsync(groupMember);
+                var tmpMember = yield groupMemberService.findAllDetailByIdAsync(group._id);
+                membersArr.push(tmpMember);
+            }
+            this.body = {success: true, error: null, data: membersArr};
+        }catch(e){
+            console.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.post('/group/mediaUser', function*(){
+        try{
+            var medias = this.request.body.medias;
+            var groupId = this.request.body.groupId;
+            if(!medias.length){
+                return this.body = {users: []};
+            }
+            var tmpGroupMembers = yield groupMemberService.findByGroupIdAsync(groupId);
+            var existMembers = tmpGroupMembers.map(function(groupMember){
+                return groupMember.member;
+            });
+            var users = [];
+            for(let i=0, len= medias.length; i<len; i++){
+                var media = medias[i];
+                var params = {
+                    condition: {
+                        lFlg: 'a',
+                        host: media,
+                        type: 'wbc'
+                    },
+                    sort: {
+                        crtOn: -1
+                    }
+                };
+                var tmps = yield wechatMediaUserService.findAsync(params);
+                var mediaUsers = tmps.filter(function(mediaUser){
+                    return existMembers.indexOf(mediaUser._id) < 0
+                });
+                users.push({
+                    media: media,
+                    mediaUsers: mediaUsers
+                });
+            }
+            this.body = {users: users};
+        }catch(e){
+            console.error(e);
+            this.body = {error: e};
+        }
+    });
+
     router.get('/group', function*(){
         try{
             var groupId = this.query.id;
+            var members = null;
             var group = yield groupService.loadByIdAsync(groupId);
             if(group.medias){
                 var medias = [];
@@ -187,12 +251,13 @@ module.exports = function (router) {
                 }
                 group.medias = medias;
             }
-            this.body = {group: group};
+            members = yield groupMemberService.findAllDetailByGroupIdAsync(groupId);
+            this.body = {group: group, members: members};
         }catch(e){
             console.error(e)
             this.body = {error: e};
         }
-    })
+    });
 
     router.post('/group', function* (){
         try{
@@ -217,11 +282,30 @@ module.exports = function (router) {
                 group['operator'] = operator;
                 group['medias'] = yield orgMediaService.listMediasByOperatorIdAsync(orgId, operator);
             }
-            yield groupService.createAsync(group);
-            this.body = {success: true, data: group}
+            var groupOrigin = yield groupService.createAsync(group);
+            var groupFinal = yield groupService.loadByIdAsync(groupOrigin._id);
+            var mediasResult = [];
+            for(let i=0,len=groupOrigin.medias.length; i<len; i++){
+                let media = yield wechatMediaService.findByIdAsync(groupOrigin.medias[i]);
+                mediasResult.push(media);
+            }
+            groupFinal.medias = mediasResult;
+            this.body = {success: true, data: groupFinal}
         }catch(e){
             console.error(e);
             this.body = {success: false, err: e};
         }
     });
+
+    router.delete('/group', function* (){
+        try{
+            var groupId = this.query.id;
+            yield groupService.removeGroupByIdAsync(groupId);
+            yield groupMemberService.removeGroupMembersByGroupIdAsync(groupId);
+            this.body = {success: true, err: null};
+        }catch(e){
+            console.error(e);
+            this.body = {success: false, err: e};
+        }
+    })
 }

@@ -1,0 +1,52 @@
+<group-left>
+    <div class="well sidebar-nav" style="padding-top: 0; padding-right: 0; padding-left: 0;height: 48em; background-color:  #2E3238; border: 1px solid #080808; overflow: scroll; border-radius: 0">
+        <ul style="padding: 0; margin: 0; list-style-type: none">
+            <li style="height: 50px; border-bottom:2px solid #252525; line-height: 50px;overflow: hidden">
+                <div class="col-md-8 col-xs-8 col-sm-8" style="height:50px;line-height:50px;overflow: hidden">
+                    <div style="padding-left:10px;background: #24272C;height: 32px; margin-top: 8px;line-height:32px;color: #777">
+                        <b style="width:20%;">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </b>
+                        <input oninput="{search}" type="text" id="searchInput" style="background: transparent;border: none;width:80%" placeholder="搜索"/>
+                    </div>
+                </div>
+                <div class="col-md-4 col-xs-4 col-sm-4" style="height:50px;overflow: hidden;">
+                    <div style="height:32px;margin-top: 6px;line-height: 32px">
+                        <button type="button" onclick="{parent.addGroup}" class="btn btn-sm" style="background: #42AC3E; color:white">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 添加分组
+                        </button>
+                    </div>
+                </div>
+            </li>
+            <li onclick="{parent.parent.viewGroup}" id="{_id}" each="{ownGroups || parent.groups}" style="height: 64px;line-height: 50px;border-bottom:2px solid #252525;padding: 5px 20px; cursor: pointer">
+                <span style="color: white; margin-left: 15px">{name}</span>
+            </li>
+        </ul>
+    </div>
+<script>
+    var self = this;
+    self.ownGroups = null;
+    self._timeout = null;
+    search(e){
+        if(self._timeout){
+            return;
+        }
+        self._timeout = setTimeout(function(){
+            var txt = self.searchInput.value;
+            var keywords = txt.split(' ');
+            self.ownGroups = self.parent.groups.filter(function(group){
+                var matched = true;
+                keywords.forEach(function(keyword){
+                    if(group.name.search(new RegExp(keyword)) <= -1){
+                        matched = false;
+                    }
+                });
+                return matched;
+            });
+            clearTimeout(self._timeout);
+            self._timeout = null;
+            self.update();
+        }, 500)
+    }
+</script>
+</group-left>

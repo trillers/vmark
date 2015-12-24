@@ -11,6 +11,21 @@ Service.prototype.loadById = function(id, callback){
     Group.findById(id, null, {lean: true}).populate({path: 'operator'}).exec(callback);
 };
 
+Service.prototype.removeGroupById = function(id, callback){
+    var Group = this.context.models.Group;
+    var groupKv = this.context.kvs.group;
+    Group.findByIdAndUpdate(id, {lFlg: 'd'}, {lean: true})
+        .exec(function(err){
+            if(err){
+                console.error(err);
+            }else{
+                groupKv.delById(id, function(err, obj){
+                    if(callback) callback(err, obj);
+                });
+            }
+        });
+};
+
 Service.prototype.create = function(groupJson, callback){
     var groupKv = this.context.kvs.group;
     var Group = this.context.models.Group;

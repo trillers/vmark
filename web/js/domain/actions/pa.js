@@ -32,5 +32,16 @@ domain.action('loadGroup').onExecute(function(data){
     apiFactory.get('/bot/group?id=' + data.id).drive(this).send();
 });
 
+domain.action('loadAllGroupMediaUsers').onExecute(function(data){
+    apiFactory.post('/bot/group/mediaUser').drive(this).send(data);
+});
+
+domain.action('addGroupMembers').onExecute(function(data){
+    apiFactory.post('/bot/group/members').drive(this).send(data);
+});
+
+domain.action('delGroup').onExecute(function(data){
+    apiFactory.delete('/bot/group?id=' + data.groupId).drive(this).send(data);
+});
 
 module.exports = null;

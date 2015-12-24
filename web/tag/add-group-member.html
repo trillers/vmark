@@ -1,0 +1,157 @@
+<add-group-member>
+    <div class="title_wrap">
+        <b onclick="{backToView}" style="display: block;width:24px;height:24px;float:left" onclick="{back}">
+            <i class="glyphicon glyphicon-chevron-left"></i>
+        </b>
+        添加成员
+        <b onclick="{submit}" style="display: block;width:80px;height:24px;float:right">
+            <button type="button" class="btn btn-default" style="display:inline-block;background: #42AC3E; color:white; border: none">
+                确认添加
+            </button>
+        </b>
+    </div>
+    <div>
+        <div class="wrapper" attr="{parent.mediaUsers}">
+            <div each="{parent.mediaUsers}">
+                <div style="height:24px;line-height: 24px;margin-bottom: 10px;border-bottom:1px solid #ddd">{media.name}<strong>({mediaUsers.length})</strong></div>
+                <ul class="user_list">
+                    <li onclick="{parent.parent.selectMember}" each="{mediaUsers}" id="{_id}" media="{parent.media._id}" group="{parent.parent.parent.group._id}">
+                        <img src="{parent.parent.app.settings.api.url + '/file?media_id=' + headimgurl}"/>
+                        <p style="overflow: hidden;height:24px">{remark}</p>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+    <style scoped>
+        .wrapper{
+            width:90%;
+            margin:0px auto;
+        }
+        .user_list{
+            overflow: hidden;
+            list-style-type: none;
+            margin:0px;
+            padding:0px;
+            color:#888;
+        }
+        .user_list >li{
+            width:100px;
+            float:left;
+            margin:5px 0px;
+            text-align: center;
+            line-height: 30px;
+            position: relative;
+        }
+        .user_list >li img{
+            display: inline-block;
+            width:64px;
+            height:64px;
+        }
+        .title_wrap{
+            height:50px;
+            margin:8px 10px;
+            text-align: center;
+            line-height: 50px;
+        }
+        .select{
+            position: absolute;
+            top:0px;
+            left:17px;
+            background:#42AC3E;
+            width:64px;
+            height:64px;
+            opacity: 0.8;
+        }
+        .select div{
+            font-size: 40px;
+            color:white;
+            margin:8px;
+        }
+    </style>
+    <script>
+        var self = this;
+        self.page = __page;
+        self.app = __app;
+        self.nav = 0;
+        self.members = {};
+        var navNameToIndex = {
+            '基本信息': 0,
+            '成员': 1
+        };
+        var addGroupMembers = domain.action('addGroupMembers');
+        function onAddGroupMembers(data){
+            if(data.success){
+                self.members = {};
+                console.log(data.data);
+                console.log(self.parent.groupMembers)
+                if(data.data && data.data.length){
+                    data.data.forEach(function(member){
+                        self.parent.groupMembers.unshift(member);
+                    })
+                }
+                self.parent.panel.view();
+                self.parent.update();
+            }
+        }
+        this.on('mount', function(){
+            addGroupMembers.onDone(onAddGroupMembers);
+        });
+        this.on('unmount', function(){
+            addGroupMembers.offDone(onAddGroupMembers);
+        });
+        clickNav(e){
+            self.nav = navNameToIndex[e.target.innerText];
+        }
+        addMember(e){
+            self.parent.panel.status = 'add_m';
+            self.parent.update();
+        }
+        selectMember(e){
+            var target = e.currentTarget;
+            var id = target.id;
+            var group = target.getAttribute('group');
+            var media = target.getAttribute('media');
+            toggle(target)
+            function toggle(target){
+                if(self.members[id]){
+                    cancel(target);
+                    delete self.members[id];
+                }else{
+                    var member = {
+                        group: group,
+                        media: media,
+                        member: id
+                    };
+                    self.members[id] = member;
+                    select(target);
+                }
+            }
+            function select(el){
+                var maskEl = document.createElement('div');
+                maskEl.classList.add('select');
+                var iconEl = document.createElement('div');
+                iconEl.classList.add('glyphicon');
+                iconEl.classList.add('glyphicon-ok');
+                maskEl.appendChild(iconEl);
+                el.appendChild(maskEl);
+            }
+            function cancel(el){
+                el.removeChild(el.childNodes[el.childNodes.length-1])
+            }
+        }
+        submit(e){
+            if(!Object.keys(self.members).length){
+                return;
+            }else{
+                addGroupMembers.execute({members: self.members});
+            }
+        }
+        backToView(e){
+            self.members = {};
+            self.parent.panel.view();
+            self.parent.update();
+        }
+    </script>
+</add-group-member>

@@ -49,17 +49,21 @@
         </div>
     </div>
     <div class="profile_item">
-        <button type="button" class="btn btn-default" style="height:40px;width:200px;background: #42AC3E; color:white; border: none">
+        <button onclick="{addMember}" type="button" class="btn btn-default" style="height:40px;width:160px;background: #42AC3E; color:white; border: none">
             <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 添加成员
+        </button>&nbsp&nbsp&nbsp&nbsp
+        <button onclick="{delGroup}" type="button" class="btn btn-default" style="height:40px;width:160px;background: #903D3D; color:white; border: none">
+            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> 删除该组
         </button>
     </div>
 </div>
 <div if="{nav===1}">
     <div class="wrapper">
+        <div style="margin-bottom: 10px">共 ( <strong style="color:#65cc2b">{parent.groupMembers.length}</strong> ) 人</div>
         <ul class="user_list">
-            <li>
-                <img src="/public/images/111.jpeg"/>
-                <p>张三</p>
+            <li each="{parent.groupMembers}">
+                <img src="{parent.app.settings.api.url + '/file?media_id=' + member.headimgurl}"/>
+                <p style="overflow: hidden;height:24px">{member.remark}</p>
             </li>
         </ul>
     </div>
@@ -127,8 +131,41 @@
         '基本信息': 0,
         '成员': 1
     };
+    var loadAllGroupMediaUsers = domain.action('loadAllGroupMediaUsers');
+    var delGroup = domain.action('delGroup');
+    function onLoadAllGroupMediaUsers(data){
+        self.parent.mediaUsers = data.users;
+        self.parent.update();
+    }
+    function onDelGroup(data){
+        self.parent.groups.forEach(function(group, index){
+            if(group._id === self.parent.group._id){
+                self.parent.groups.splice(index, 1);
+            }
+        });
+        self.parent.panel.start();
+        self.parent.update();
+    }
+    this.on('mount', function(){
+        delGroup.onDone(onDelGroup);
+        loadAllGroupMediaUsers.onDone(onLoadAllGroupMediaUsers);
+    });
+    this.on('unmount', function(){
+        delGroup.offDone(onDelGroup);
+        loadAllGroupMediaUsers.offDone(onLoadAllGroupMediaUsers);
+    });
     clickNav(e){
         self.nav = navNameToIndex[e.target.innerText];
+    }
+    addMember(e){
+        self.parent.panel.status = 'add_m';
+        var medias = self.parent.group.medias;
+        var groupId = self.parent.group._id;
+        loadAllGroupMediaUsers.execute({medias: medias, groupId: groupId});
+        self.parent.update();
+    }
+    delGroup(e){
+        delGroup.execute({groupId: self.parent.group._id});
     }
 </script>
 </view-group>

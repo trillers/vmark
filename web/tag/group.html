@@ -2,30 +2,7 @@
     <div if="{!hidden}">
         <div class="row-fluid" style="overflow: hidden; background: #eee;margin-top:-6px">
             <div class="col-md-4 col-xs-4 col-sm-4" style="padding-right: 0; padding-left: 0; width: 30%">
-                <div class="well sidebar-nav" style="padding-top: 0; padding-right: 0; padding-left: 0;height: 48em; background-color:  #2E3238; border: 1px solid #080808; overflow: scroll; border-radius: 0">
-                    <ul style="padding: 0; margin: 0; list-style-type: none">
-                        <li style="height: 50px; border-bottom:2px solid #252525; line-height: 50px;overflow: hidden">
-                            <div class="col-md-8 col-xs-8 col-sm-8" style="height:50px;line-height:50px;overflow: hidden">
-                                <div style="padding-left:10px;background: #24272C;height: 32px; margin-top: 8px;line-height:32px;color: #777">
-                                    <b style="width:20%;">
-                                        <span class="glyphicon glyphicon-search"></span>
-                                    </b>
-                                    <input type="text" style="background: transparent;border: none;width:80%" placeholder="搜索"/>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-xs-4 col-sm-4" style="height:50px;overflow: hidden;">
-                                <div style="height:32px;margin-top: 6px;line-height: 32px">
-                                    <button type="button" onclick="{addGroup}" class="btn btn-sm" style="background: #42AC3E; color:white">
-                                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 添加分组
-                                    </button>
-                                </div>
-                            </div>
-                        </li>
-                        <li onclick="{parent.viewGroup}" id="{_id}" each="{groups}" style="height: 64px;line-height: 50px;border-bottom:2px solid #252525;padding: 5px 20px; cursor: pointer">
-                            <span style="color: white; margin-left: 15px">{name}</span>
-                        </li>
-                    </ul>
-                </div>
+                <group-left></group-left>
             </div>
             <div class="col-md-8 col-xs-8 col-sm-8" style="background:#eee;padding-right: 1px; padding-left: 0;width: 70%">
                 <div if ="{panel.status === 'start'}">
@@ -33,6 +10,7 @@
                 </div>
                 <view-group if="{panel.status === 'view'}"/>
                 <add-group if="{panel.status === 'add'}"/>
+                <add-group-member if="{panel.status === 'add_m'}"/>
             </div>
         </div>
     </div>
@@ -47,13 +25,17 @@
         self.botId = __page.bot.customId;
         self.tip = false;
         self.tipInfo = "";
+        self.groups = {};
+        self.groupMembers = [];
 
         var loadAllMyManageMedia = domain.action('loadAllMyManageMedia');
         var loadGroups = domain.action('loadGroups');
         var loadGroup = domain.action('loadGroup');
 
         var onLoadGroups = function(data){
-            self.update({groups: data.groups});
+            console.error(data)
+            self.groups = data.groups
+            self.update();
         };
         var onLoadAllMyManageMedia = function(data){
             self.myManageMedia = data.medias;
@@ -62,6 +44,7 @@
         };
         var onLoadGroup = function(data){
             self.group = data.group;
+            self.groupMembers = data.members;
             self.panel.view();
             self.update();
         };
@@ -111,6 +94,11 @@
             },
             view: function(){
                 this.status = 'view'
+            },
+            start: function(){
+                this.status = 'start';
+                self.group = {};
+                self.groupMembers = [];
             }
         };
         viewGroup(e){
