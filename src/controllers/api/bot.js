@@ -216,8 +216,8 @@ module.exports = function (router) {
             });
             var users = [];
             for(let i=0, len= medias.length; i<len; i++){
-                var media = medias[i];
-                var params = {
+                let media = medias[i];
+                let params = {
                     condition: {
                         lFlg: 'a',
                         host: media,
@@ -227,8 +227,8 @@ module.exports = function (router) {
                         crtOn: -1
                     }
                 };
-                var tmps = yield wechatMediaUserService.findAsync(params);
-                var mediaUsers = tmps.filter(function(mediaUser){
+                let tmps = yield wechatMediaUserService.findAsync(params);
+                let mediaUsers = tmps.filter(function(mediaUser){
                     return existMembers.indexOf(mediaUser._id) < 0
                 });
                 users.push({
@@ -279,7 +279,7 @@ module.exports = function (router) {
             };
             let bot = wechatBotManager.getWechatBot(openid);
             if(type === 'txt'){
-                bot.broadcastTxtToContacts(toFull);
+                bot.broadcastTxtToContacts(toFull, payload);
                 broadcastMessage['contentType'] = MsgContentType.text.value();
                 broadcastMessage['content'] = payload;
             }
