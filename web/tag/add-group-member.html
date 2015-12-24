@@ -84,8 +84,6 @@
         function onAddGroupMembers(data){
             if(data.success){
                 self.members = {};
-                console.log(data.data);
-                console.log(self.parent.groupMembers)
                 if(data.data && data.data.length){
                     data.data.forEach(function(member){
                         self.parent.groupMembers.unshift(member);

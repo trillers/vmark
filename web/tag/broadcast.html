@@ -127,7 +127,9 @@
                 $('#send').attr('disabled', false);
                 if(data.success){
                     $('#broadcastMsg').val('');
-                    self.broadcastHistory.unshift(data.msg);
+                    data.msgArr.forEach(function(msg){
+                        self.broadcastHistory.unshift(msg);
+                    });
                     self.update();
                     tipShow('success', '群发成功');
                 }else{
@@ -138,7 +140,9 @@
             var onBroadcastImg = function(data){
                 if(data.success){
                     $('#img_file').val('');
-                    self.broadcastHistory.unshift(data.msg);
+                    data.msgArr.forEach(function(msg){
+                        self.broadcastHistory.unshift(msg);
+                    });
                     self.update();
                     tipShow('success', '群发图片成功');
                 }else{

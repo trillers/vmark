@@ -17,96 +17,23 @@ var groupService = context.services.groupService;
 var groupMemberService = context.services.groupMemberService;
 
 module.exports = function (router) {
+    /**
+     * MultiSend routers
+     */
     router.post('/broadcastTxt', function *() {
         try {
-            var botId = this.request.body.botId;//bot openid
-            var groupId = this.request.body.groupId;
-            var bot = wechatBotManager.getWechatBot(botId);
-            var msg = this.request.body.msg;
-            var media = yield wechatMediaService.findBotByOpenidAsync(botId);
-            if (media) {
-                var broadcastMessage = {
-                    from: botId,
-                    contentType: MsgContentType.text.value(),
-                    content: msg,
-                    broadcastType: BroadcastType.single.value()
-                }
-                var params = {
-                    conditions: {
-                        host: media._id,
-                        type: 'wbc'
-                    }
-                }
-                var toUsers = [];
-                var buIdArr = [];
-                var wechatMediaUsers = yield wechatMediaUserService.findAsync(params);
-                for (var i = 0; i < wechatMediaUsers.length; i++) {
-                    console.log('*************************');
-                    console.log(wechatMediaUsers[i].remark);
-                    toUsers.push(wechatMediaUsers[i]._id);
-                    buIdArr.push(wechatMediaUsers[i].remark);
-                }
-                console.error(buIdArr);
-                buIdArr = ['独自等待', '包三哥', '祺天大圣', '小小星星妹'];
-                bot.broadcastTxtToContacts(buIdArr, msg);
-
-                broadcastMessage.toUsers = toUsers;
-                var msg = yield broadcastMessageService.createAsync(broadcastMessage);
-                this.body = {success: true, err: null, msg: msg};
-            } else {
-                console.log('failed to broadcastTxt err: no such bot');
-                this.body = {success: false, err: 'no such bot'};
-            }
-        } catch (e) {
-            console.log('failed to broadcastTxt err: ' + e);
+            var msgArr = yield multiSend(this.request.body);
+            this.body = {success: true, err: null, msgArr: msgArr};
+        }catch(e){
             this.body = {success: false, err: e};
         }
     });
 
     router.post('/broadcastImg', function *() {
         try {
-            var botId = this.request.body.botId;//bot openid
-            var bot = wechatBotManager.getWechatBot(botId);
-            var media_id = this.request.body.media_id;
-            var media = yield wechatMediaService.findBotByOpenidAsync(botId);
-            if (media) {
-                var broadcastMessage = {
-                    from: botId,
-                    contentType: MsgContentType.image.value(),
-                    media_id: media_id,
-                    broadcastType: BroadcastType.single.value()
-                }
-                var params = {
-                    conditions: {
-                        host: media._id,
-                        type: 'wbc'
-                    }
-                }
-                var toUsers = [];
-                var buIdArr = [];
-                var wechatMediaUsers = yield wechatMediaUserService.findAsync(params);
-                var image = yield fileService.loadAsync(media_id);
-                for (var i = 0; i < wechatMediaUsers.length; i++) {
-                    console.log('*************************');
-                    console.log(wechatMediaUsers[i].remark);
-                    toUsers.push(wechatMediaUsers[i]._id);
-                    buIdArr.push(wechatMediaUsers[i].remark);
-                }
-                console.error(buIdArr);
-                buIdArr = ['独自等待', '包三哥', '祺天大圣', '小小星星妹'];
-
-                bot.broadcastImgToContacts(buIdArr, image.path);
-
-                broadcastMessage.toUsers = toUsers;
-                var msg = yield broadcastMessageService.createAsync(broadcastMessage);
-                this.body = {success: true, err: null, msg: msg};
-            } else {
-                console.log('failed to broadcastImg err: no such bot');
-                this.body = {success: false, err: 'no such bot'};
-            }
-
-        } catch (e) {
-            console.log('failed to broadcastImg err: ' + e);
+            var msgArr = yield multiSend(this.request.body);
+            this.body = {success: true, err: null, msgArr: msgArr};
+        }catch(e){
             this.body = {success: false, err: e};
         }
     });
@@ -131,6 +58,9 @@ module.exports = function (router) {
         }
     });
 
+    /**
+     * Contacts routers
+     */
     router.get('/contacts', function *() {
         var botId = this.query.botId;
         try {
@@ -166,6 +96,9 @@ module.exports = function (router) {
         }
     })
 
+    /**
+     * Group routers
+     */
     router.get('/groups', function*(){
         try{
             var tenantId = this.query.tenantId;
@@ -176,68 +109,6 @@ module.exports = function (router) {
             this.body = {error: e};
         }
     })
-
-    router.post('/group/members', function*(){
-        try{
-            var members = this.request.body.members;
-            var membersArr = [];
-            for(let i=0,len=Object.keys(members).length; i<len; i++){
-                var member = members[Object.keys(members)[i]];
-                var groupMember = {
-                    group: member['group'],
-                    media: member['media'],
-                    member: member['member']
-                };
-                var group = yield groupMemberService.createAsync(groupMember);
-                var tmpMember = yield groupMemberService.findAllDetailByIdAsync(group._id);
-                membersArr.push(tmpMember);
-            }
-            this.body = {success: true, error: null, data: membersArr};
-        }catch(e){
-            console.error(e);
-            this.body = {error: e};
-        }
-    });
-
-    router.post('/group/mediaUser', function*(){
-        try{
-            var medias = this.request.body.medias;
-            var groupId = this.request.body.groupId;
-            if(!medias.length){
-                return this.body = {users: []};
-            }
-            var tmpGroupMembers = yield groupMemberService.findByGroupIdAsync(groupId);
-            var existMembers = tmpGroupMembers.map(function(groupMember){
-                return groupMember.member;
-            });
-            var users = [];
-            for(let i=0, len= medias.length; i<len; i++){
-                var media = medias[i];
-                var params = {
-                    condition: {
-                        lFlg: 'a',
-                        host: media,
-                        type: 'wbc'
-                    },
-                    sort: {
-                        crtOn: -1
-                    }
-                };
-                var tmps = yield wechatMediaUserService.findAsync(params);
-                var mediaUsers = tmps.filter(function(mediaUser){
-                    return existMembers.indexOf(mediaUser._id) < 0
-                });
-                users.push({
-                    media: media,
-                    mediaUsers: mediaUsers
-                });
-            }
-            this.body = {users: users};
-        }catch(e){
-            console.error(e);
-            this.body = {error: e};
-        }
-    });
 
     router.get('/group', function*(){
         try{
@@ -309,4 +180,118 @@ module.exports = function (router) {
             this.body = {success: false, err: e};
         }
     })
+
+    router.post('/group/members', function*(){
+        try{
+            var members = this.request.body.members;
+            var membersArr = [];
+            for(let i=0,len=Object.keys(members).length; i<len; i++){
+                var member = members[Object.keys(members)[i]];
+                var groupMember = {
+                    group: member['group'],
+                    media: member['media'],
+                    member: member['member']
+                };
+                var group = yield groupMemberService.createAsync(groupMember);
+                var tmpMember = yield groupMemberService.findAllDetailByIdAsync(group._id);
+                membersArr.push(tmpMember);
+            }
+            this.body = {success: true, error: null, data: membersArr};
+        }catch(e){
+            console.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.post('/group/mediaUser', function*(){
+        try{
+            var medias = this.request.body.medias;
+            var groupId = this.request.body.groupId;
+            if(!medias.length){
+                return this.body = {users: []};
+            }
+            var tmpGroupMembers = yield groupMemberService.findByGroupIdAsync(groupId);
+            var existMembers = tmpGroupMembers.map(function(groupMember){
+                return groupMember.member;
+            });
+            var users = [];
+            for(let i=0, len= medias.length; i<len; i++){
+                var media = medias[i];
+                var params = {
+                    condition: {
+                        lFlg: 'a',
+                        host: media,
+                        type: 'wbc'
+                    },
+                    sort: {
+                        crtOn: -1
+                    }
+                };
+                var tmps = yield wechatMediaUserService.findAsync(params);
+                var mediaUsers = tmps.filter(function(mediaUser){
+                    return existMembers.indexOf(mediaUser._id) < 0
+                });
+                users.push({
+                    media: media,
+                    mediaUsers: mediaUsers
+                });
+            }
+            this.body = {users: users};
+        }catch(e){
+            console.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    /**
+     * Helper for multi-send
+     * @param body
+     * @returns {Array}
+     */
+    function* multiSend(body){
+        var type = body.msg ? 'txt' : 'image';
+        var payload = body.msg ? body.msg : body.media_id;
+        const groupId = body.groupId;
+        var msgResult = [];
+        var groupMembers =  yield groupMemberService.findByGroupIdAsync(groupId);
+        // hm<openid, tos>
+        var hm = {};
+        for(let i=0, len=groupMembers.length; i<len; i++){
+            let media = groupMembers[i].media;
+            var mediaFull = yield wechatMediaService.loadByIdAsync(media);
+            var customId = mediaFull.customId;
+            if(!hm[customId]){
+                hm[customId] = [];
+            }
+            hm[customId].push(groupMembers[i].member);
+        }
+        for(let openid in hm){
+            let toFull = [];
+            let tos = hm[openid];
+            for(let i=0, len=tos.length; i<len; i++){
+                let wcUser = yield wechatMediaUserService.loadByIdAsync(tos[i]);
+                toFull.push(wcUser.remark);
+            }
+            let broadcastMessage = {
+                toUsers: tos,
+                from: openid,
+                broadcastType: BroadcastType.single.value()
+            };
+            let bot = wechatBotManager.getWechatBot(openid);
+            if(type === 'txt'){
+                bot.broadcastTxtToContacts(toFull);
+                broadcastMessage['contentType'] = MsgContentType.text.value();
+                broadcastMessage['content'] = payload;
+            }
+            else if (type === 'image'){
+                var image = yield fileService.loadAsync(payload);
+                bot.broadcastImgToContacts(toFull, image.path);
+                broadcastMessage['contentType'] = MsgContentType.image.value();
+                broadcastMessage['media_id'] = payload;
+            }
+            let msgDoc = yield broadcastMessageService.createAsync(broadcastMessage);
+            msgResult.push(msgDoc);
+        }
+        return msgResult;
+    }
 }

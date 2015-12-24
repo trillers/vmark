@@ -33,7 +33,6 @@
         var loadGroup = domain.action('loadGroup');
 
         var onLoadGroups = function(data){
-            console.error(data)
             self.groups = data.groups
             self.update();
         };
@@ -63,7 +62,6 @@
             console.info('tag group index is opening');
             self.trigger('ready', false);
             self.trigger('view-route-to');
-            console.log( __page.user)
             loadGroups.execute({tenantId:__page.user.posts[0].org, operatorId: __page.user.posts[0].member});
         });
 
