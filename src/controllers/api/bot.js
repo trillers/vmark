@@ -206,6 +206,7 @@ module.exports = function (router) {
     router.post('/group/mediaUser', function*(){
         try{
             var medias = this.request.body.medias;
+            console.error("*****************");
             console.error(medias);
             var groupId = this.request.body.groupId;
             if(!medias.length){
