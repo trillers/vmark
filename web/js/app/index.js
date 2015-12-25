@@ -7,7 +7,7 @@ var agent = require('./agent').init();
 var util = require('./util');
 
 var Spa = require('./spa');
-var app = new Spa({defaultHash: 'broadcast'});
+var app = new Spa({defaultHash: 'overview'});
 
 app.routeView('overview', nest.viewable({
   name: 'overview',
@@ -25,6 +25,18 @@ app.routeView('broadcast', nest.viewable({
   name: 'broadcast',
   mount: function(ctx){
     var tags = riot.mount('broadcast', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx.req.query);
+  }
+}));
+
+app.routeView('group', nest.viewable({
+  name: 'group',
+  mount: function(ctx){
+    var tags = riot.mount('group', {filter: ctx.req.query, app: this.parent});
     this.tag = tags[0];
   },
   route: function(ctx){

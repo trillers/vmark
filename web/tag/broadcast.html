@@ -36,9 +36,8 @@
                 <div class="col-md-8 col-xs-8 col-sm-8" style="padding-right: 1px; padding-left: 0; margin-top: -5px;  width: 70%">
                     <div class="jumbotron" style="height: 48em; border-radius: 0">
                         <div id="broadcast">
-                            <div class="panel panel-default" style="overflow-y: scroll; height: 20em;">
-                            </div>
-                            <div class="panel panel-default" id="img_prew" style="display:none; margin-bottom: 5px">
+
+                            <div class="panel panel-default" id="img_prew" style="display:none; margin-bottom: 10px">
                                 <table class="table table-bordered" style="text-align: center; vertical-align: middle;">
                                     <tbody>
                                     <tr>
@@ -60,7 +59,16 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div id="choose_img" style="margin-left: 5px">
+                            <div class="btn-group" style="float: left">
+                                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span id="groupDisplay">请选择分组</span><span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li each="{groups}"><a href="javascript:void(0)" onclick="{parent.chooseGroup}" groupId="{_id}">{name}</a></li>
+                                </ul>
+                                <input id="group" type="hidden"/>
+                            </div>
+                            <div id="choose_img" style="float: left; margin-left: 10px; margin-bottom: 10px">
                                 <span class='btn_addPic glyphicon glyphicon-picture' href="javascript:void(0);"><input id="img_file"  type="file"  class='filePrew' class="glyphicon glyphicon-picture" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{previewImg}"/></span>
                             </div>
                             <textarea id="broadcastMsg" style="margin-top: 5px;" class="form-control" rows="3"></textarea>
@@ -109,12 +117,19 @@
             var broadcastTxt = domain.action('broadcastTxt');
             var broadcastImg = domain.action('broadcastImg');
             var loadBroadcastHistory = domain.action('loadBroadcastHistory')
+            var loadGroups = domain.action('loadGroups');
+
+            var onLoadGroups = function(data){
+                self.update({groups: data.groups});
+            };
 
             var onBroadcastTxt = function(data){
                 $('#send').attr('disabled', false);
                 if(data.success){
                     $('#broadcastMsg').val('');
-                    self.broadcastHistory.unshift(data.msg);
+                    data.msgArr.forEach(function(msg){
+                        self.broadcastHistory.unshift(msg);
+                    });
                     self.update();
                     tipShow('success', '群发成功');
                 }else{
@@ -125,7 +140,9 @@
             var onBroadcastImg = function(data){
                 if(data.success){
                     $('#img_file').val('');
-                    self.broadcastHistory.unshift(data.msg);
+                    data.msgArr.forEach(function(msg){
+                        self.broadcastHistory.unshift(msg);
+                    });
                     self.update();
                     tipShow('success', '群发图片成功');
                 }else{
@@ -143,18 +160,21 @@
                 broadcastTxt.onDone(onBroadcastTxt);
                 broadcastImg.onDone(onBroadcastImg);
                 loadBroadcastHistory.onDone(onLoadBroadcastHistory);
+                loadGroups.onDone(onLoadGroups);
             });
             this.on('unmount', function(){
                 console.info('tag broadcast index is unmounted');
                 broadcastTxt.offDone(onBroadcastTxt);
                 broadcastImg.offDone(onBroadcastImg);
                 loadBroadcastHistory.offDone(onLoadBroadcastHistory);
+                loadGroups.offDone(onLoadGroups);
             });
             this.on('open', function(options){
                 console.info('tag broadcast index is opening');
                 self.trigger('ready', false);
                 self.trigger('view-route-to');
                 loadBroadcastHistory.execute(self.botId);
+                loadGroups.execute({tenantId:__page.user.posts[0].org, operatorId: __page.user.posts[0].member});
             });
 
             this.on('leave', function(){
@@ -215,42 +235,59 @@
             }
 
             send_img(e){
-                var formData = new FormData();
-                var files = $('#img_file')[0].files;
-                formData.append('file', files[0]);
-                $.ajax({
-                    url : self.api + '/file/upload',
-                    type : 'POST',
-                    data : formData,
-                    processData : false,
-                    contentType : false,
-                    success : function(responseStr) {
-                        $('#img_prew').hide();
-                        var data = {
-                            botId: self.botId,
-                            media_id: responseStr.media_id
+                var groupId = $('#group').val();
+                if(groupId) {
+                    var formData = new FormData();
+                    var files = $('#img_file')[0].files;
+                    formData.append('file', files[0]);
+                    $.ajax({
+                        url: self.api + '/file/upload',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (responseStr) {
+                            $('#img_prew').hide();
+                            var data = {
+                                botId: self.botId,
+                                groupId: groupId,
+                                media_id: responseStr.media_id
+                            }
+                            broadcastImg.execute(data);
+                        },
+                        error: function (responseStr) {
+                            console.error("失败:" + JSON.stringify(responseStr));
                         }
-                        broadcastImg.execute(data);
-                    },
-                    error : function(responseStr) {
-                        console.error("失败:" + JSON.stringify(responseStr));
-                    }
-                });
+                    });
+                }else{
+                    tipShow('warning', '请先选择群发的分组');
+                }
             }
 
             broadcast(e){
                 e.preventUpdate = true;
-                var msg = $('#broadcastMsg').val().trim();
-                if(msg.length > 0) {
-                    var data = {
-                        botId: self.botId,
-                        msg: msg
+                var groupId = $('#group').val();
+                if(groupId) {
+                    var msg = $('#broadcastMsg').val().trim();
+                    if (msg.length > 0) {
+                        var data = {
+                            botId: self.botId,
+                            groupId: groupId,
+                            msg: msg
+                        }
+                        broadcastTxt.execute(data);
+                        $(e.currentTarget).attr('disabled', true);
+                    } else {
+                        tipShow('warning', '发送内容不能为空');
                     }
-                    broadcastTxt.execute(data);
-                    $(e.currentTarget).attr('disabled', true);
                 }else{
-                    tipShow('warning', '发送内容不能为空');
+                    tipShow('warning', '请先选择群发的分组');
                 }
+            }
+
+            chooseGroup(e){
+                $('#groupDisplay').text($(e.currentTarget).text());
+                $('#group').val($(e.currentTarget).attr('groupId'));
             }
         </script>
     </div>

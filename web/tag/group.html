@@ -1,0 +1,114 @@
+<group>
+    <div if="{!hidden}">
+        <div class="row-fluid" style="overflow: hidden; background: #eee;margin-top:-6px">
+            <div class="col-md-4 col-xs-4 col-sm-4" style="padding-right: 0; padding-left: 0; width: 30%">
+                <group-left></group-left>
+            </div>
+            <div class="col-md-8 col-xs-8 col-sm-8" style="background:#eee;padding-right: 1px; padding-left: 0;width: 70%">
+                <div if ="{panel.status === 'start'}">
+
+                </div>
+                <view-group if="{panel.status === 'view'}"/>
+                <add-group if="{panel.status === 'add'}"/>
+                <add-group-member if="{panel.status === 'add_m'}"/>
+            </div>
+        </div>
+    </div>
+    <style scoped>
+
+    </style>
+    <script>
+        this.app = this.opts.app; //keep spa object
+        var self = nest.presentable(this);
+        self.env = (__app.settings.env.NODE_ENV=="production")?"public":"web";
+        self.api =  __app.settings.api.url;
+        self.botId = __page.bot.customId;
+        self.tip = false;
+        self.tipInfo = "";
+        self.groups = {};
+        self.groupMembers = [];
+
+        var loadAllMyManageMedia = domain.action('loadAllMyManageMedia');
+        var loadGroups = domain.action('loadGroups');
+        var loadGroup = domain.action('loadGroup');
+
+        var onLoadGroups = function(data){
+            self.groups = data.groups
+            self.update();
+        };
+        var onLoadAllMyManageMedia = function(data){
+            self.myManageMedia = data.medias;
+            self.panel.add();
+            self.update();
+        };
+        var onLoadGroup = function(data){
+            self.group = data.group;
+            self.groupMembers = data.members;
+            self.panel.view();
+            self.update();
+        };
+
+        this.on('mount', function(){
+            loadAllMyManageMedia.onDone(onLoadAllMyManageMedia);
+            loadGroups.onDone(onLoadGroups);
+            loadGroup.onDone(onLoadGroup);
+        });
+        this.on('unmount', function(){
+            loadAllMyManageMedia.offDone(onLoadAllMyManageMedia);
+            loadGroups.offDone(onLoadGroups);
+            loadGroup.offDone(onLoadGroup);
+        });
+        this.on('open', function(options){
+            console.info('tag group index is opening');
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+            loadGroups.execute({tenantId:__page.user.posts[0].org, operatorId: __page.user.posts[0].member});
+        });
+
+        this.on('leave', function(){
+            self.mask = true;
+            self.update();
+        });
+
+        this.on('reenter', function(){
+            self.mask = false;
+            self.update();
+        });
+
+        this.on('refresh', function(){
+            console.info('tag group index is refreshing');
+            //_refresh();
+        });
+
+        self.formatDate = function(date){
+            var dateStr = new Date(date).toLocaleDateString();
+            return dateStr.replace(/\//g, '-');
+        }
+
+        self.panel ={
+            status: 'start',
+            add:function(){
+                this.status = 'add'
+            },
+            view: function(){
+                this.status = 'view'
+            },
+            start: function(){
+                this.status = 'start';
+                self.group = {};
+                self.groupMembers = [];
+            }
+        };
+        viewGroup(e){
+            var groupId = e.currentTarget.id;
+            loadGroup.execute({id: groupId});
+        }
+        addGroup(e){
+            var w = self.panel;
+            if(w.status === 'add'){
+                return
+            }
+            loadAllMyManageMedia.execute({tenantId: __page.user.posts[0].org, operatorId: __page.user.posts[0].member});
+        }
+    </script>
+</group>

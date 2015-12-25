@@ -61,23 +61,25 @@ module.exports = function(app){
 
     router.get('/mock-login', function *(){
         var openid = this.query.openid;
+        var sceneId = this.query.sceneId;
         if(!openid){
-            yield this.render('mock-login-list', {users: mockUsers, qaUsers: qaMockUsers});
+            this.redirect('/login');
             return;
         }
 
         var auth = yield securityService.authenticateAsync(openid);
         context.logger.debug(auth);
         if(!auth){
-            yield this.render('mock-login');
+            this.redirect('/login');
             return;
         }
         else if(auth.result != authResults.OK && auth.result != authResults.NO_BOUND_BOT){
-            yield this.render('mock-login', {auth: auth});
+            this.redirect('/login');
             return;
         }
 
         this.session.auth = auth;
+        this.cookies.set('sceneId', sceneId, {maxAge: 3600000*24*30});
         this.redirect('/');
     });
 

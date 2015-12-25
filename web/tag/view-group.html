@@ -1,0 +1,171 @@
+<view-group>
+<div class="title_wrap">
+    <ul onclick="{clickNav}" class="nav nav-tabs" style="color: #3E3D3D">
+        <li role="presentation" class="{active: nav===0}"><a href="#">基本信息</a></li>
+        <li role="presentation" class="{active: nav===1}"><a href="#">成员</a></li>
+    </ul>
+</div>
+<div if="{nav===0}" class="profile">
+    <div class="profile_item row-fluid">
+        <div class="primary col-md-5 col-xs-5 col-sm-5">
+            <label>名称</label>
+        </div>
+        <div class="primary col-md-7 col-xs-7 col-sm-7">
+            <label>{parent.group.name}</label>
+        </div>
+    </div>
+    <div class="profile_item row-fluid">
+        <div class="secondary col-md-5 col-xs-5 col-sm-5">
+            <label>类型</label>
+        </div>
+        <div class="secondary col-md-7 col-xs-7 col-sm-7">
+            <label>{__app.enums.GroupType.values[parent.group.type]}</label>
+        </div>
+    </div>
+    <div class="profile_item row-fluid">
+        <div class="secondary col-md-5 col-xs-5 col-sm-5">
+            <label>范围</label>
+        </div>
+        <div class="secondary col-md-7 col-xs-7 col-sm-7">
+            <label>{__app.enums.GroupScope.values[parent.group.scope]}</label>
+        </div>
+    </div>
+    <div class="profile_item row-fluid">
+        <div class="secondary col-md-5 col-xs-5 col-sm-5">
+            <label>包含微信号</label>
+        </div>
+        <div class="secondary col-md-7 col-xs-7 col-sm-7">
+            <button each="{parent.group.medias}" onclick="{backToView}" type="button" class="btn btn-default" style="display:inline-block;background: #CCC; color:white; border: none">
+                {name}
+            </button>
+        </div>
+    </div>
+    <div class="profile_item row-fluid">
+        <div class="secondary col-md-5 col-xs-5 col-sm-5">
+            <label>负责人</label>
+        </div>
+        <div class="secondary col-md-7 col-xs-7 col-sm-7">
+            <label>{parent.group.operator.remark}</label>
+        </div>
+    </div>
+    <div class="profile_item">
+        <button onclick="{addMember}" type="button" class="btn btn-default" style="height:40px;width:160px;background: #42AC3E; color:white; border: none">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 添加成员
+        </button>&nbsp&nbsp&nbsp&nbsp
+        <button onclick="{delGroup}" type="button" class="btn btn-default" style="height:40px;width:160px;background: #903D3D; color:white; border: none">
+            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> 删除该组
+        </button>
+    </div>
+</div>
+<div if="{nav===1}">
+    <div class="wrapper">
+        <div style="margin-bottom: 10px">共 ( <strong style="color:#65cc2b">{parent.groupMembers.length}</strong> ) 人</div>
+        <ul class="user_list">
+            <li each="{parent.groupMembers}">
+                <img src="{parent.app.settings.api.url + '/file?media_id=' + member.headimgurl}"/>
+                <p style="overflow: hidden;height:24px">{member.remark}</p>
+            </li>
+        </ul>
+    </div>
+</div>
+<style scoped>
+    .wrapper{
+        width:90%;
+        margin:0px auto;
+    }
+    .user_list{
+        overflow: hidden;
+        list-style-type: none;
+        margin:0px;
+        padding:0px;
+        color:#888;
+    }
+    .user_list >li{
+        width:100px;
+        float:left;
+        margin:5px 0px;
+        text-align: center;
+        line-height: 30px;
+    }
+    .user_list >li img{
+        display: inline-block;
+        width:64px;
+        height:64px;
+    }
+    .profile{
+        padding-top:80px;
+        margin:0px auto;
+        width:80%
+    }
+    .profile_item{
+        margin: 0px auto;
+        text-align: center;
+        margin-bottom: 30px;
+        overflow: hidden;
+    }
+    .profile_item div.secondary label{
+        font-size: 16px;
+    }
+    .profile_item >div:first-child{
+        text-align: right;
+    }
+    .profile_item >div:nth-child(2){
+        text-indent: 3em;
+        text-align: left;
+    }
+    .profile_item label{
+        font-weight:400;
+        font-size: 24px;
+    }
+    .title_wrap{
+        height:50px;
+        margin:8px 10px;
+    }
+</style>
+<script>
+    var self = this;
+    self.page = __page;
+    self.app = __app;
+    self.nav = 0;
+    var navNameToIndex = {
+        '基本信息': 0,
+        '成员': 1
+    };
+    var loadAllGroupMediaUsers = domain.action('loadAllGroupMediaUsers');
+    var delGroup = domain.action('delGroup');
+    function onLoadAllGroupMediaUsers(data){
+        self.parent.mediaUsers = data.users;
+        self.parent.update();
+    }
+    function onDelGroup(data){
+        self.parent.groups.forEach(function(group, index){
+            if(group._id === self.parent.group._id){
+                self.parent.groups.splice(index, 1);
+            }
+        });
+        self.parent.panel.start();
+        self.parent.update();
+    }
+    this.on('mount', function(){
+        delGroup.onDone(onDelGroup);
+        loadAllGroupMediaUsers.onDone(onLoadAllGroupMediaUsers);
+    });
+    this.on('unmount', function(){
+        delGroup.offDone(onDelGroup);
+        loadAllGroupMediaUsers.offDone(onLoadAllGroupMediaUsers);
+    });
+    clickNav(e){
+        self.nav = navNameToIndex[e.target.innerText];
+    }
+    addMember(e){
+        self.parent.panel.status = 'add_m';
+        var medias = self.parent.group.medias;
+        var groupId = self.parent.group._id;
+        loadAllGroupMediaUsers.execute({medias: medias, groupId: groupId});
+        self.parent.update();
+    }
+    delGroup(e){
+        delGroup.execute({groupId: self.parent.group._id});
+    }
+</script>
+</view-group>

@@ -9,7 +9,7 @@ var schema = DomainBuilder
         ticket:{type:String},
         scene_id:{type: String},
         custom_id:{type: String},
-        expires:{type: Date},
+        expireDate:{type: Date},
         views:{type: Number, default: 0}
     }).build();
 

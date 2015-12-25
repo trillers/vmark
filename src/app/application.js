@@ -19,6 +19,9 @@ app.use(koaBody({multipart:true, formidable:{keepExtensions: true, uploadDir: pa
 //router
 require('../routes')(app);
 
+//ws
+var server = require('./ws')(app);
+
 //404
 app.use(function *pageNotFound(next) {
     this.response.body = yield this.render('404');
@@ -29,6 +32,6 @@ app.on('error', function(err){
     logger.error(err);
 });
 
-app.listen(app.port, app.bindip, function(){
+server.listen(app.port, app.bindip, function(){
     logger.info('Http server is binding on '+ app.bindip +' and listening on port ' + app.port + ' in ' + app.env );
 });

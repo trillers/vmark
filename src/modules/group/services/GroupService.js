@@ -6,9 +6,48 @@ var Service = function(context){
     this.context = context;
 };
 
+Service.prototype.loadById = function(id, callback){
+    var Group = this.context.models.Group;
+    Group.findById(id, null, {lean: true}).populate({path: 'operator'}).exec(callback);
+};
+
+Service.prototype.removeGroupById = function(id, callback){
+    var Group = this.context.models.Group;
+    var groupKv = this.context.kvs.group;
+    Group.findByIdAndUpdate(id, {lFlg: 'd'}, {lean: true})
+        .exec(function(err){
+            if(err){
+                console.error(err);
+            }else{
+                groupKv.delById(id, function(err, obj){
+                    if(callback) callback(err, obj);
+                });
+            }
+        });
+};
+
+Service.prototype.create = function(groupJson, callback){
+    var groupKv = this.context.kvs.group;
+    var Group = this.context.models.Group;
+    var group = new Group(groupJson);
+    group.save(function (err, result, affected) {
+        cbUtil.logCallback(
+            err,
+            'Fail to save group: ' + err,
+            'Succeed to save group');
+
+        cbUtil.handleAffected(function(err, doc){
+            var obj = doc.toObject({virtuals: true});
+            groupKv.saveById(obj, function(err, obj){
+                if(callback) callback(err, obj);
+            });
+        }, err, result, affected);
+    });
+};
+
 Service.prototype.listMyGroups = function(tenantId, operatorId, callback){
     var Group = this.context.models.Group;
-    var conditions = {tenantId: tenantId, lFlg: 'a', operator: operatorId};
+    var conditions = {org: tenantId, lFlg: 'a', operator: operatorId};
     Group.find(conditions, null, {lean: true}).exec(callback);
 };
 

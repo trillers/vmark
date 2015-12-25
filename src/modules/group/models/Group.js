@@ -14,6 +14,7 @@ var Model = function(domainBuilder){
             , type:         {type: String, enum: GroupType.valueList(), default: GroupType.Selected.value(), required: true}
             , scope:        {type: String, enum: GroupScope.valueList(), default: GroupScope.Operator.value(), required: true}
             , medias:       [{type: String}]
+            , org:          {type: String}
             , operator:     {type: String, ref: 'OrgMember'}
             , desc:         {type: String}
         })
