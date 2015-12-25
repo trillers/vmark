@@ -6,11 +6,26 @@
         <div class="container" style="width: 100%; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0">
             <div class="row-fluid">
                 <div class="col-md-4 col-xs-4 col-sm-4" style="padding-right: 0; padding-left: 0; margin-top: -5px; width: 30%">
-                    <div class="well sidebar-nav" style="padding-top: 0; padding-right: 0; padding-left: 0;height: 48em; background-color:  #222; border: 1px solid #080808; overflow: scroll; border-radius: 0">
-                        <ul style="padding: 0; margin: 0; list-style-type: none">
-                            <li each="{contacts}" style="margin-bottom: 3px; padding: 5px 20px; background-color: #333; cursor: pointer">
-                                <img src="{parent.api + '/file?media_id=' + headimgurl}" style="width: 4em; height: 4em" alt=""/><span style="color: white; margin-left: 15px">{nickname}</span>
-
+                    <div class="row-fluid" style="overflow: hidden; background: #2E3238;">
+                        <div onclick="{changeContactType}" class="{left_nav_sel: viewModel.nav === CONST.NAV.CONTACT, left_nav_def: viewModel.nav != CONST.NAV.CONTACT} col-md-6 col-xs-6 col-sm-6" style="text-align: center;height:50px; line-height: 50px;border-right:1px solid #1C2129">
+                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span> &nbsp联系人
+                        </div>
+                        <div onclick="{changeContactType}" class="{left_nav_sel: viewModel.nav === CONST.NAV.GROUP,left_nav_def: viewModel.nav != CONST.NAV.GROUP} col-md-6 col-xs-6 col-sm-6" style="text-align: center;height:50px; line-height: 50px">
+                            <span class="glyphicon glyphicon-th" aria-hidden="true"></span> &nbsp群
+                        </div>
+                    </div>
+                    <div class="well sidebar-nav" style="padding-top: 0; padding-right: 0; padding-left: 0;height: 48em; background-color:  #2E3238; border: 1px solid #080808; overflow: scroll; border-radius: 0">
+                        <ul if="{viewModel.nav === CONST.NAV.CONTACT}" style="padding: 0; margin: 0; list-style-type: none">
+                            <li each="{contacts}" style="margin-bottom: 3px; padding: 5px 20px; border-bottom:1px solid #292C33; cursor: pointer">
+                                <img src="{parent.api + '/file?media_id=' + headimgurl}" style="width: 4em; height: 4em" alt=""/>
+                                <span style="color: white; margin-left: 15px">{nickname}</span>
+                            </li>
+                        </ul>
+                        <span style="display:block;text-align: center;margin-top: 10px; color: white" if="{!groups || groups.length===0}">暂无相关记录</span>
+                        <ul if="{viewModel.nav === CONST.NAV.GROUP}" style="padding: 0; margin: 0; list-style-type: none">
+                            <li each="{groups}" style="height:50px;line-height:40px;margin-bottom: 3px; padding: 5px 20px; border-bottom:1px solid #292C33; cursor: pointer">
+                                <!--<img src="{parent.api + '/file?media_id=' + headimgurl}" style="width: 4em; height: 4em" alt=""/>-->
+                                <span style="color: white; margin-left: 15px">{nickname}</span>
                             </li>
                         </ul>
                     </div><!--/.well -->
@@ -24,23 +39,37 @@
         </div><!--/container-->
 
         <style scoped>
-
+            .left_nav_def{
+                color:white;
+            }
+            .left_nav_sel{
+                color:#00AB00;
+            }
         </style>
 
         <script>
             this.app = this.opts.app; //keep spa object
             var self = nest.presentable(this);
+            var CONST = self.CONST = {
+                NAV: {
+                    CONTACT: 'contact',
+                    GROUP: 'group'
+                }
+            };
             self.env = (__app.settings.env.NODE_ENV=="production")?"public":"web";
             self.api =  __app.settings.api.url;
             self.botId = __page.bot.customId;
             self.tip = false;
             self.tipInfo = "";
+            self.viewModel = {
+                nav: CONST.NAV.CONTACT
+            };
 
             var loadContacts = domain.action('loadContacts');
 
             var onLoadContacts = function(data){
-                self.update({contacts: data.contacts});
-            }
+                self.update({contacts: data.contacts, groups: data.groups});
+            };
 
             this.on('mount', function(){
                 console.info('tag contacts index is mounted');
@@ -95,6 +124,10 @@
             self.formatDate = function(date){
                 var dateStr = new Date(date).toLocaleDateString();
                 return dateStr.replace(/\//g, '-');
+            };
+
+            changeContactType(e){
+                self.viewModel.nav = self.viewModel.nav === CONST.NAV.CONTACT ? CONST.NAV.GROUP : CONST.NAV.CONTACT;
             }
 
         </script>

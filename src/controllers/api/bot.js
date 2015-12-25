@@ -8,6 +8,7 @@ var MsgContentType = typeRegistry.item('MsgType');
 var BroadcastType = typeRegistry.item('BroadcastType');
 var GroupType = typeRegistry.item('GroupType');
 var GroupScope = typeRegistry.item('GroupScope');
+var WechatMediaUserContactType = typeRegistry.item('WechatMediaUserContactType');
 var wechatMediaUserService = context.services.wechatMediaUserService;
 var wechatMediaService = context.services.wechatMediaService;
 var wechatBotManager = context.wechatBotManager;
@@ -75,10 +76,18 @@ module.exports = function (router) {
                     crtOn: -1
                 }
             }
-
-
-            var contacts = yield wechatMediaUserService.findAsync(params);
-            this.body = {contacts: contacts, error: null};
+            var mixins = yield wechatMediaUserService.findAsync(params);
+            var contacts = [];
+            var groups = [];
+            mixins.forEach(function(mixin){
+                if(mixin.contacttype === WechatMediaUserContactType.Contact.value()){
+                    contacts.push(mixin)
+                }
+                else{
+                    groups.push(mixin)
+                }
+            });
+            this.body = {contacts: contacts, groups: groups, error: null};
         } catch (err) {
             console.log('load contacts err: ' + err);
             this.body = {contacts: [], error: err};

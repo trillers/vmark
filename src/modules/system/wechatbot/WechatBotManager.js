@@ -35,6 +35,7 @@ WechatBotManager.prototype.stop = function(){
 WechatBotManager.prototype.bindBot = function(botInfo){
     var bot = this.getWechatBot(botInfo.customId);
     bot.syncContacts();
+    bot.syncGroups();
     this._initBot(botInfo);
 };
 
@@ -46,7 +47,17 @@ WechatBotManager.prototype._initBot = function(botInfo){
     var botManager = this.context.botManager;
     var logger = this.context.logger;
     var bot = botManager.getBot(botInfo.customId);
+//!!#@!#@!#@!#@!#@!#!
 
+
+
+
+
+
+
+    bot.syncGroups();
+
+//#@!#@!#!$@!$!$@!$@!$
     bot.onClientActionIn(function(err, data){
         if(err){
             logger.error('bot on action in err: ' + err);
@@ -62,6 +73,9 @@ WechatBotManager.prototype._initBot = function(botInfo){
                 break;
             case 'first-profile':
                 require('./handlers/firstProfileHandler')(data);
+                break;
+            case 'sync-groups':
+                require('./handlers/syncGroupsHandler')(data);
                 break;
         }
     });

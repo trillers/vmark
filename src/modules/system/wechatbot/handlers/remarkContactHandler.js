@@ -1,6 +1,8 @@
 var context = require('../../../../context/context');
 var co = require('co');
-var WechatMediaUserType = require('../../../common/models/TypeRegistry').item('WechatMediaUserType');
+var TypeRegistry = require('../../../common/models/TypeRegistry');
+var WechatMediaUserType = TypeRegistry.item('WechatMediaUserType');
+var WechatMediaUserContactType = TypeRegistry.item('WechatMediaUserContactType');
 var copyPlace = require('../../../wechat/common/helper').copyPlace;
 
 module.exports = function (msg){
@@ -40,6 +42,7 @@ module.exports = function (msg){
                 var jsonForCreate = {
                     host: media._id,
                     type: WechatMediaUserType.WechatBotContact.value(),
+                    contacttype: WechatMediaUserContactType.Contact.value(),
                     remark: contact.remark,
                     nickname: contact.nickname,
                     headimgurl: contact.headimgid,

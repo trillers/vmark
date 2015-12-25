@@ -92,7 +92,8 @@
                 this.status = 'add'
             },
             view: function(){
-                this.status = 'view'
+                this.status = 'view';
+                self.tags['view-group'].init();
             },
             start: function(){
                 this.status = 'start';

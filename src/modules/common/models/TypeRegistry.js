@@ -27,6 +27,10 @@ registry
     .addChild('WechatBotContact','wbc', '微信助手号联系人')
     .addChild('WechatWebUser','wwu', '微信微站用户')
 
+    .up().item('WechatMediaUserContactType', 'WechatMediaUserContactType', '微信联系人类型')
+    .addChild('Contact','contact', '微信公众号粉丝')
+    .addChild('Group','group', '微信助手号联系人')
+
     .up().item('IntentionStatus', 'IntentionStatus', '启动状态') //服务号或助手号启动状态
     .addChild('Logged','logged', '已启动')
     .addChild('Exited','exited', '已停止')

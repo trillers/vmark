@@ -1,4 +1,5 @@
 var WechatMediaUserType = require('../../common/models/TypeRegistry').item('WechatMediaUserType');
+var WechatMediaUserContactType = require('../../common/models/TypeRegistry').item('WechatMediaUserContactType');
 
 var Model = function(domainBuilder){
     var schema = domainBuilder
@@ -9,6 +10,7 @@ var Model = function(domainBuilder){
         .withProperties({
             host:           {type: String, ref: 'WechatMedia', required: true}
             , type:         {type: String, enum: WechatMediaUserType.valueList(), default: WechatMediaUserType.WechatSiteUser.value(), required: true}
+            , contacttype:  {type: String, enum: WechatMediaUserContactType.valueList(), default: WechatMediaUserContactType.Contact.value(), required: true}
 
             , user:         {type: String} //平台用户id
             , openid:       {type: String} //服务号粉丝openid 或者 助手号联系人buid (bot's contact id)
