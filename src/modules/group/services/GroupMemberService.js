@@ -18,6 +18,10 @@ Service.prototype.findByGroupId = function(groupId, callback){
     GroupMember.find({group: groupId, 'lFlg': 'a'}, null, {lean: true}).exec(callback);
 };
 
+Service.prototype.findByWechatMediaUserId = function(groupId, wechatMediaUserId, callback){
+    var GroupMember = this.context.models.GroupMember;
+    GroupMember.findOne({group: groupId, member: wechatMediaUserId, 'lFlg': 'a'}, null, {lean: true}).exec(callback);
+};
 
 Service.prototype.findAllDetailByGroupId = function(groupId, callback){
     var GroupMember = this.context.models.GroupMember;
@@ -34,6 +38,10 @@ Service.prototype.removeGroupMembersByGroupId = function(groupId, callback){
     GroupMember.findOneAndUpdate({group: groupId}, {lFlg: 'd'}, {lean: true}).exec(callback);
 };
 
+Service.prototype.remove = function(id, callback){
+    var GroupMember = this.context.models.GroupMember;
+    GroupMember.findByIdAndUpdate(id, {lFlg: 'd'}, {lean: true}).exec(callback);
+};
 //
 //Service.prototype.create = function(OrgMemberJson, callback){
 //    var OrgMember = this.context.models.OrgMember;

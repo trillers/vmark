@@ -54,4 +54,8 @@ domain.action('addGroupMembers').onExecute(function(data){
     apiFactory.post('/bot/group/members').drive(this).send(data);
 });
 
+domain.action('delGroupMember').onExecute(function(data){
+    apiFactory.delete('/bot/group/members?ids='+data.mids + '&groupId=' + data.groupId).drive(this).send();
+});
+
 module.exports = null;

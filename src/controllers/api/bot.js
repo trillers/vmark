@@ -181,28 +181,6 @@ module.exports = function (router) {
         }
     })
 
-    router.post('/group/members', function*(){
-        try{
-            var members = this.request.body.members;
-            var membersArr = [];
-            for(let i=0,len=Object.keys(members).length; i<len; i++){
-                var member = members[Object.keys(members)[i]];
-                var groupMember = {
-                    group: member['group'],
-                    media: member['media'],
-                    member: member['member']
-                };
-                var group = yield groupMemberService.createAsync(groupMember);
-                var tmpMember = yield groupMemberService.findAllDetailByIdAsync(group._id);
-                membersArr.push(tmpMember);
-            }
-            this.body = {success: true, error: null, data: membersArr};
-        }catch(e){
-            console.error(e);
-            this.body = {error: e};
-        }
-    });
-
     router.post('/group/mediaUser', function*(){
         try{
             var medias = this.request.body.medias;
@@ -248,6 +226,49 @@ module.exports = function (router) {
                 });
             }
             this.body = {users: users};
+        }catch(e){
+            console.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    /**
+     * GroupMembers routers
+     */
+
+    router.post('/group/members', function*(){
+        try{
+            var members = this.request.body.members;
+            var membersArr = [];
+            for(let i=0,len=Object.keys(members).length; i<len; i++){
+                var member = members[Object.keys(members)[i]];
+                var groupMember = {
+                    group: member['group'],
+                    media: member['media'],
+                    member: member['member']
+                };
+                var group = yield groupMemberService.createAsync(groupMember);
+                var tmpMember = yield groupMemberService.findAllDetailByIdAsync(group._id);
+                membersArr.push(tmpMember);
+            }
+            this.body = {success: true, error: null, data: membersArr};
+        }catch(e){
+            console.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.delete('/group/members', function*(){
+        try{
+            var memberIds = JSON.parse(this.query.ids);
+            var groupId = this.query.groupId;
+            var deprecateMembers = [];
+            for(let i=0, len=memberIds.length; i<len; i++){
+                let groupMember = yield groupMemberService.findByWechatMediaUserIdAsync(groupId, memberIds[i]);
+                deprecateMembers.push(groupMember);
+                yield groupMemberService.removeAsync(groupMember._id);
+            }
+            this.body = {success: true, error: null, deprecateMembers: deprecateMembers};
         }catch(e){
             console.error(e);
             this.body = {error: e};

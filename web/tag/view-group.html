@@ -49,9 +49,6 @@
         </div>
     </div>
     <div class="profile_item">
-        <button onclick="{addMember}" type="button" class="btn btn-default" style="height:40px;width:160px;background: #42AC3E; color:white; border: none">
-            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 添加成员
-        </button>&nbsp&nbsp&nbsp&nbsp
         <button onclick="{delGroup}" type="button" class="btn btn-default" style="height:40px;width:160px;background: #903D3D; color:white; border: none">
             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> 删除该组
         </button>
@@ -59,16 +56,35 @@
 </div>
 <div if="{nav===1}">
     <div class="wrapper">
-        <div style="margin-bottom: 10px">共 ( <strong style="color:#65cc2b">{parent.groupMembers.length}</strong> ) 人</div>
+        <div style="margin-bottom: 10px">
+            <span>共 ( <strong style="color:#65cc2b">{parent.groupMembers.length}</strong> ) 人</span>
+            <div style="float:right">
+                <button if="{currentStatus === 'view'}" onclick="{addMember}"  style="background: #52B918; color:white" type="button" class="btn" aria-label="Left Align">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 添加成员
+                </button>
+                <button if="{currentStatus === 'view'}" onclick="{editMember}" style="background: #e35a51; color:white" type="button" class="btn" aria-label="Align Right">
+                    <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 移除成员
+                </button>
+                <button if="{currentStatus === 'edit'}" onclick="{delMember}" class="{btn: true, btn_enabled: members && Object.keys(members).length>0, btn_disable: !members || Object.keys(members).length===0}" style="color:white" type="button" aria-label="Align Right">
+                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> 完成
+                </button>
+                <button if="{currentStatus === 'edit'}" onclick="{cancelDelMember}" style="background: #B1B1B1; color:white" type="button" class="btn" aria-label="Align Right">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> 取消
+                </button>
+            </div>
+        </div>
         <ul class="user_list">
-            <li each="{parent.groupMembers}">
-                <img src="{parent.app.settings.api.url + '/file?media_id=' + member.headimgurl}"/>
+            <li onclick="{parent.selectMember}" each="{parent.groupMembers}" remark="{member.remark}" mid="{member._id}">
+                <img class="{img_sel: parent.currentStatus === 'edit'}" src="{parent.app.settings.api.url + '/file?media_id=' + member.headimgurl}" />
                 <p style="overflow: hidden;height:24px">{member.remark}</p>
             </li>
         </ul>
     </div>
 </div>
 <style scoped>
+    .img_sel{
+        opacity: 0.4;
+    }
     .wrapper{
         width:90%;
         margin:0px auto;
@@ -86,6 +102,7 @@
         margin:5px 0px;
         text-align: center;
         line-height: 30px;
+        position: relative;
     }
     .user_list >li img{
         display: inline-block;
@@ -117,24 +134,72 @@
         font-weight:400;
         font-size: 24px;
     }
+    .select{
+        position: absolute;
+        top:0px;
+        left:17px;
+        background:#42AC3E;
+        width:64px;
+        height:64px;
+        opacity: 0.8;
+    }
+    .select div{
+        font-size: 40px;
+        color:white;
+        margin:8px;
+    }
     .title_wrap{
         height:50px;
         margin:8px 10px;
     }
+    .btn_disable{
+        background: #B1B1B1;
+    }
+    .btn_enabled{
+        background: #e35a51;
+    }
 </style>
 <script>
     var self = this;
-    self.page = __page;
-    self.app = __app;
-    self.nav = 0;
     var navNameToIndex = {
         '基本信息': 0,
         '成员': 1
     };
+    var status = {
+        VIEW : 'view',
+        EDIT  : 'edit'
+    };
+    self.page = __page;
+    self.app = __app;
+    self.init = function(){
+        self.currentStatus = status.VIEW;
+        self.members = {};
+        self.nav = 0;
+    };
+    self.init();
     var loadAllGroupMediaUsers = domain.action('loadAllGroupMediaUsers');
     var delGroup = domain.action('delGroup');
+    var delGroupMember = domain.action('delGroupMember');
     function onLoadAllGroupMediaUsers(data){
+        self.parent.panel.status = 'add_m';
         self.parent.mediaUsers = data.users;
+        self.parent.update();
+    }
+    function onDelGroupMember(data){
+        if(!data.success){
+            alert('删除失败')
+        }
+        data.deprecateMembers.forEach(function(member){
+            var members = self.parent.groupMembers.map(function(pMember){
+                return pMember._id
+            });
+            var index = members.indexOf(member._id);
+            if(index >= 0){
+                return self.parent.groupMembers.splice(index, 1);
+            }
+        });
+        self.currentStatus = status.VIEW;
+        self.members = {};
         self.parent.update();
     }
     function onDelGroup(data){
@@ -148,24 +213,75 @@
     }
     this.on('mount', function(){
         delGroup.onDone(onDelGroup);
+        delGroupMember.onDone(onDelGroupMember);
         loadAllGroupMediaUsers.onDone(onLoadAllGroupMediaUsers);
     });
     this.on('unmount', function(){
         delGroup.offDone(onDelGroup);
+        delMember.onDone(onDelMember);
         loadAllGroupMediaUsers.offDone(onLoadAllGroupMediaUsers);
     });
     clickNav(e){
         self.nav = navNameToIndex[e.target.innerText];
     }
     addMember(e){
-        self.parent.panel.status = 'add_m';
         var medias = self.parent.group.medias;
         var groupId = self.parent.group._id;
         loadAllGroupMediaUsers.execute({medias: medias, groupId: groupId});
-        self.parent.update();
     }
     delGroup(e){
         delGroup.execute({groupId: self.parent.group._id});
+    }
+    editMember(e){
+        //enter edit
+        self.currentStatus = status.EDIT;
+    }
+    delMember(e){
+        if(!Object.keys(self.members).length){
+            return;
+        }
+        [].forEach.call(document.querySelectorAll('ul.user_list >li'), function(i){
+            i.removeChild(i.childNodes[i.childNodes.length-1])
+        });
+        delGroupMember.execute({groupId: self.parent.group._id, mids: JSON.stringify(Object.keys(self.members))});
+    }
+    cancelDelMember(e){
+        self.members = {};
+        [].forEach.call(document.querySelectorAll('ul.user_list >li >div.select'), function(i){
+            i.parentNode.removeChild(i);
+        });
+        self.currentStatus = status.VIEW;
+    }
+    selectMember(e){
+        if(self.currentStatus != status.EDIT){
+            return;
+        }
+        var target = e.currentTarget;
+        var remark = target.getAttribute('remark');
+        var mid = target.getAttribute('mid');
+        toggle(target);
+        self.update();
+        function toggle(target){
+            if(self.members[mid]){
+                cancel(target);
+                delete self.members[mid];
+            }else{
+                self.members[mid] = remark;
+                select(target);
+            }
+        }
+        function select(el){
+            var maskEl = document.createElement('div');
+            maskEl.classList.add('select');
+            var iconEl = document.createElement('div');
+            iconEl.classList.add('glyphicon');
+            iconEl.classList.add('glyphicon-ok');
+            maskEl.appendChild(iconEl);
+            el.appendChild(maskEl);
+        }
+        function cancel(el){
+            el.removeChild(el.childNodes[el.childNodes.length-1])
+        }
     }
 </script>
 </view-group>
