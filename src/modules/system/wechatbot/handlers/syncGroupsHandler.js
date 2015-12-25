@@ -25,7 +25,7 @@ module.exports = function (msg){
                      * mediaUser that own remark provided, nothing to do
                      */
                     if(meidaUser){
-                        logger.info('Succeed to sync the contact, contact\'s remark is ' + contact.remark);
+                        logger.info('Succeed to sync the group, contact\'s remark is ' + contact.remark);
                     }
                     else{
                         /**
@@ -42,8 +42,9 @@ module.exports = function (msg){
                         yield wechatMediaUserService.createAsync(jsonForCreate);
                     }
                 }
+                return;
             }
-            logger.error('Failed to sync the contact, no such media');
+            logger.error('Failed to sync the group, no such media');
         }
         catch(e){
             logger.error(e)

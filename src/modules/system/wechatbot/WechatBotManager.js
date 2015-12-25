@@ -47,17 +47,7 @@ WechatBotManager.prototype._initBot = function(botInfo){
     var botManager = this.context.botManager;
     var logger = this.context.logger;
     var bot = botManager.getBot(botInfo.customId);
-//!!#@!#@!#@!#@!#@!#!
 
-
-
-
-
-
-
-    bot.syncGroups();
-
-//#@!#@!#!$@!$!$@!$@!$
     bot.onClientActionIn(function(err, data){
         if(err){
             logger.error('bot on action in err: ' + err);

@@ -83,7 +83,7 @@ module.exports = function (router) {
                 if(mixin.contacttype === WechatMediaUserContactType.Contact.value()){
                     contacts.push(mixin)
                 }
-                else{
+                if(mixin.contacttype === WechatMediaUserContactType.Group.value()){
                     groups.push(mixin)
                 }
             });
