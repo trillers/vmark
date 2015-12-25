@@ -1,3 +1,4 @@
+"use strict";
 var context = require('../../../../context/context');
 var co = require('co');
 var TypeRegistry = require('../../../common/models/TypeRegistry')
