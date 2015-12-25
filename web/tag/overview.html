@@ -36,20 +36,26 @@
                         <div class="panel-body">
                             <div class="container" style="">
                                 <div class="row">
-                                    <div class="col-md-1 col-lg-1" style="">
+                                    <div class="col-md-3 col-lg-3" style="">
                                         <img src="{bot.headimgurl}" alt="{bot.name}" class="img-rounded" data-src="holder.js/40x40"  style="width: 40px; height: 40px;">
+                                        &nbsp; {bot.name}
+                                            <img if="{bot.sex==1}" src="/web/images/male.png" alt="男" class="" style="boder:0px; width: 16px; height: 16px;">
+                                            <img if="{bot.sex==2}" src="/web/images/female.png" alt="女" class="" style="boder:0px; width: 16px; height: 16px;">
                                     </div>
-                                    <div class="col-md-3 col-lg-3" style="">
-                                        {bot.name} &nbsp;
-                                            <img if="{bot.sex==1}" src="/web/images/male.png" alt="男" class="" data-src="holder.js/10x10"  style="width: 20px; height: 20px;">
-                                            <img if="{bot.sex==2}" src="/web/images/female.png" alt="女" class="" data-src="holder.js/10x10"  style="width: 20px; height: 20px;">
-                                    </div>
-                                    <div class="col-md-1 col-lg-1" style="">
-                                        管理员：
-                                    </div>
-                                    <div class="col-md-3 col-lg-3" style="">
-                                        <img src="{user.headimgurl}" alt="{user.nickname}" class="img-rounded" data-src="holder.js/40x40"  style="width: 40px; height: 40px;">
-                                        &nbsp;&nbsp;{user.nickname}
+                                    <div class="col-md-9 col-lg-9" style="">
+
+                                        <div class="row" >
+                                            <div class="col-md-1 col-lg-1" style="height: 60px;">
+                                                <img if="{!botActioning && botKeepLogged}" src="/web/images/start-active.png" alt="启动" onclick="{goLogging}" class="bot-action-icon bot-logged" style="">
+                                                <img if="{botActioning && botKeepLogged}" src="/web/images/start.png" alt="启动中..." class="bot-action-icon bot-logging" style="">
+                                                <img if="{!botActioning && botKeepExited}" src="/web/images/stop-active.png" alt="退出" onclick="{goExiting}" class="bot-action-icon bot-exited" style="">
+                                                <img if="{botActioning && botKeepExited}" src="/web/images/stop.png" alt="退出中..." class="bot-action-icon bot-exiting" style="">
+                                            </div>
+                                            <div class="col-md-2 col-lg-2" style="vertical-align: middle;height: 60px;">
+                                               <label>&nbsp;&nbsp;{bot.statusName}</label>
+                                            </div>
+
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -61,7 +67,15 @@
         </div><!--/container-->
 
         <style scoped>
-
+            .bot-action-icon{
+                border: 0px;
+                width: 60px;
+                height: 60px;
+            }
+            .bot-logged {cursor: default !important;}
+            .bot-logging {cursor: wait !important;}
+            .bot-exited {cursor: default !important;}
+            .bot-exiting {cursor: wait !important;}
         </style>
 
         <script>
@@ -74,6 +88,103 @@
             self.bot = __page.bot;
             self.user = __page.user;
             self.tenantId = __page.tenantId;
+            self.botKeepLogged = true;
+            self.botKeepExited = false;
+            self.botActioning = false;
+            var IntentionStatus = __app.enums.IntentionStatus.names;
+            var Status = __app.enums.WechatBotStatus.names;
+            var statusValues = __app.enums.WechatBotStatus.values;
+
+            var BotState = function(id, intentionStatus, status){
+                this.id = id;
+                this.intentionStatus = intentionStatus;
+                this.on('logged', this.onLogged.bind(this));
+                this.on('exited', this.onExited.bind(this));
+                this.on('logging', this.onLogging.bind(this));
+                this.on('exiting', this.onExiting.bind(this));
+                this.on('status-changed', this.onStatusChanged.bind(this));
+                this.updateStatus(status);
+            };
+            BotState.prototype = riot.observable({});
+            BotState.prototype.updateStatus = function(status){
+                if(this.status==status){
+                    return;
+                }
+                else{
+                    this.status = status;
+                }
+
+                if(status == IntentionStatus.Logged){
+                    this.trigger('logged');
+                }
+                else if(status == IntentionStatus.Exited){
+                    this.trigger('exited');
+                }
+                this.trigger('status-changed', this.status, status);
+            };
+            BotState.prototype.goLogging = function(){
+                this.trigger('logging');
+            };
+            BotState.prototype.goExiting = function(){
+                this.trigger('exiting');
+            };
+            BotState.prototype.onLogged = function(){
+                self.bot.intentionStatus = IntentionStatus.Logged;
+                self.botKeepLogged = true;
+                self.botKeepExited = false;
+                self.botActioning = false;
+                self.update();
+            };
+            BotState.prototype.onExited = function(){
+                self.bot.intentionStatus = IntentionStatus.Exited;
+                self.botKeepLogged = false;
+                self.botKeepExited = true;
+                self.botActioning = false;
+                self.update();
+            };
+            BotState.prototype.onLogging = function(){
+                self.botKeepLogged = true;
+                self.botKeepExited = false;
+                self.botActioning = true;
+                self.update();
+                console.info('logging...');
+                //TODO: trigger bot to start
+            };
+            BotState.prototype.onExiting = function(){
+                self.botKeepLogged = false;
+                self.botKeepExited = true;
+                self.botActioning = true;
+                self.update();
+                console.info('logging...');
+                //TODO: trigger bot to stop
+            };
+            BotState.prototype.onStatusChanged = function(oldStatus, newStatus){
+                self.bot.status = newStatus;
+                self.bot.statusName = statusValues[self.bot.status];
+                console.info(self.bot.statusName);
+                self.update();
+            };
+
+            var botState = new BotState(self.bot.id, IntentionStatus.Logged, Status.Logged);
+
+            //TODO: bind status syncing to update status
+            setTimeout(function(){
+                self.bot.status = Status.Starting;
+                botState.updateStatus(Status.Starting);
+            }, 3000);
+            setTimeout(function(){
+                self.bot.status = Status.Logging;
+                botState.updateStatus(Status.Logging);
+            }, 5000);
+
+            goLogging(e){
+                botState.goLogging();
+            }
+
+            goExiting(e){
+                botState.goExiting();
+            }
+
 
             var broadcastTxt = domain.action('broadcastTxt');
             var broadcastImg = domain.action('broadcastImg');

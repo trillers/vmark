@@ -18,6 +18,8 @@ var Model = function(domainBuilder){
             , sex:          {type: Number, default: 0} //0: unknown, 1: male, 2: female
             , qrcodeurl:   {type: String} //服务号或者助手号的微信二维码
 
+            //wechat bot location properties
+
             , appId:   {type: String}   //as openid when it is wechat bot
             , appSecret:   {type: String}
         })

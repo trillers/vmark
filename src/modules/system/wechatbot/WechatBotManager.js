@@ -113,7 +113,7 @@ WechatBotManager.prototype._uninit = function(){
  */
 WechatBotManager.prototype._routines = function(){
     var logger = this.context.logger;
-    //logger.debug('checking status...');
+    //logger.debug('checking status...'); //too frequently to log
     var orgMediaService = this.context.services.orgMediaService;
     var wechatMediaService = this.context.services.wechatMediaService;
     var botManager = this.context.botManager;

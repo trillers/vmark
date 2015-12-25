@@ -33,7 +33,7 @@ Service.prototype.loadBoundMediaById = function(orgMediaId, callback){
         var orgMedia = yield OrgMedia.findById(orgMediaId, 'media', {lean: true}).populate({path: 'media'}).exec();
         if(callback) callback(null, orgMedia.media);
     }).catch(Error, function(err){
-        logger.error('Fail to load bound media by id org media id: ' + err);
+        logger.error('Fail to load bound media by org media id: ' + err);
         logger.error(err.stack);
         if(callback) callback(err);
     });
