@@ -9,7 +9,7 @@ module.exports = function (msg){
     co(function* (){
         var logger = context.logger;
         try{
-            //msg.Data Array<{username, nickname}>
+            //msg.Data Array<{username, name}>
             var groups = msg.Data;
             console.error(msg);
             var botId = msg.AgentId;
@@ -19,7 +19,7 @@ module.exports = function (msg){
             if(media && groups && groups.length){
                 for(let i=0, len=groups.length; i<len; i++){
                     let group = groups[i];
-                    group.remark = group.nickname || 'no_name';
+                    group.remark = group.name || 'no_name';
                     let meidaUser = yield wechatMediaUserService.loadByRemarkAsync(group.remark);
                     /**
                      * mediaUser that own remark provided, nothing to do
@@ -37,7 +37,7 @@ module.exports = function (msg){
                             type: WechatMediaUserType.WechatBotContact.value(),
                             contacttype: WechatMediaUserContactType.Group.value(),
                             remark: group.remark,
-                            nickname: group.nickname
+                            nickname: group.name
                         };
                         yield wechatMediaUserService.createAsync(jsonForCreate);
                     }
