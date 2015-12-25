@@ -117,7 +117,7 @@ module.exports = function (router) {
         }catch(e){
             this.body = {error: e};
         }
-    })
+    });
 
     router.get('/group', function*(){
         try{
@@ -188,13 +188,11 @@ module.exports = function (router) {
             console.error(e);
             this.body = {success: false, err: e};
         }
-    })
+    });
 
     router.post('/group/mediaUser', function*(){
         try{
             var medias = this.request.body.medias;
-            console.error("*****************");
-            console.error(medias);
             var groupId = this.request.body.groupId;
             if(!medias.length){
                 return this.body = {users: []};
@@ -203,9 +201,6 @@ module.exports = function (router) {
             var existMembers = tmpGroupMembers.map(function(groupMember){
                 return groupMember.member;
             });
-            console.log("exist members *************")
-            console.error(existMembers.length)
-            console.error(existMembers)
             var users = [];
             for(let i=0, len= medias.length; i<len; i++){
                 let media = medias[i];
@@ -220,15 +215,9 @@ module.exports = function (router) {
                     }
                 };
                 let tmps = yield wechatMediaUserService.findAsync(params);
-                console.log("all members *************")
-                console.log(tmps.length)
-                console.log(tmps)
                 let mediaUsers = tmps.filter(function(mediaUser){
                     return existMembers.indexOf(mediaUser._id) < 0
                 });
-                console.log("filtered members *************")
-                console.log(mediaUsers.length)
-                console.log(mediaUsers)
                 users.push({
                     media: media,
                     mediaUsers: mediaUsers
@@ -335,4 +324,4 @@ module.exports = function (router) {
         }
         return msgResult;
     }
-}
+};
