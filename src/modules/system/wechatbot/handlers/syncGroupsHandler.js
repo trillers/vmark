@@ -11,6 +11,7 @@ module.exports = function (msg){
         try{
             //msg.Data Array<{username, nickname}>
             var groups = msg.Data;
+            console.error(msg);
             var botId = msg.AgentId;
             var wechatMediaService = context.services.wechatMediaService;
             var wechatMediaUserService = context.services.wechatMediaUserService;
