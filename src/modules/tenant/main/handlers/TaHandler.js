@@ -8,6 +8,8 @@ registry.addCommand('状态', require('../commands/viewingBotStatusCommand'));
 registry.addCommand('启动', require('../commands/startBotCommand'));
 registry.addCommand('停止', require('../commands/stopBotCommand'));
 registry.addCommand('重启', require('../commands/restartBotCommand'));
+registry.addCommand('同步联系人', require('../commands/syncContacts'));
+registry.addCommand('同步群组', require('../commands/syncGroups'));
 
 module.exports = function(emitter){
     emitter.ta(function(event, context){
