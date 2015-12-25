@@ -56,7 +56,7 @@
 </div>
 <div if="{nav===1}">
     <div class="wrapper">
-        <div style="margin-bottom: 10px">
+        <div style="margin-bottom: 10px; overflow: hidden">
             <span>共 ( <strong style="color:#65cc2b">{parent.groupMembers.length}</strong> ) 人</span>
             <div style="float:right">
                 <button if="{currentStatus === 'view'}" onclick="{addMember}"  style="background: #52B918; color:white" type="button" class="btn" aria-label="Left Align">
@@ -73,15 +73,22 @@
                 </button>
             </div>
         </div>
-        <ul class="user_list">
-            <li onclick="{parent.selectMember}" each="{parent.groupMembers}" remark="{member.remark}" mid="{member._id}">
-                <img class="{img_sel: parent.currentStatus === 'edit'}" src="{parent.app.settings.api.url + '/file?media_id=' + member.headimgurl}" />
-                <p style="overflow: hidden;height:24px">{member.remark}</p>
-            </li>
-        </ul>
+        <div class="list_container">
+            <ul class="user_list" >
+                <li onclick="{parent.selectMember}" each="{parent.groupMembers}" remark="{member.remark}" mid="{member._id}">
+                    <img class="{img_sel: parent.currentStatus === 'edit'}" src="{parent.app.settings.api.url + '/file?media_id=' + member.headimgurl}" />
+                    <p style="overflow: hidden;height:24px">{member.remark}</p>
+                </li>
+            </ul>
+        </div>
+
     </div>
 </div>
 <style scoped>
+    .list_container{
+        overflow: scroll;
+        height:500px;
+    }
     .img_sel{
         opacity: 0.4;
     }

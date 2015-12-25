@@ -13,18 +13,24 @@
     <div>
         <div class="wrapper" attr="{parent.mediaUsers}">
             <div each="{parent.mediaUsers}">
-                <div style="height:24px;line-height: 24px;margin-bottom: 10px;border-bottom:1px solid #ddd">{media.name}<strong>({mediaUsers.length})</strong></div>
-                <ul class="user_list">
-                    <li onclick="{parent.parent.selectMember}" each="{mediaUsers}" id="{_id}" media="{parent.media._id}" group="{parent.parent.parent.group._id}">
-                        <img src="{parent.parent.app.settings.api.url + '/file?media_id=' + headimgurl}"/>
-                        <p style="overflow: hidden;height:24px">{remark}</p>
-                    </li>
-                </ul>
+                <div class="list_container">
+                    <div style="height:24px;line-height: 24px;margin-bottom: 10px;border-bottom:1px solid #ddd">{media.name}<strong>({mediaUsers.length})</strong></div>
+                    <ul class="user_list">
+                        <li onclick="{parent.parent.selectMember}" each="{mediaUsers}" id="{_id}" media="{parent.media._id}" group="{parent.parent.parent.group._id}">
+                            <img src="{parent.parent.app.settings.api.url + '/file?media_id=' + headimgurl}"/>
+                            <p style="overflow: hidden;height:24px">{remark}</p>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
         </div>
     </div>
     <style scoped>
+        .list_container{
+            overflow: scroll;
+            height:500px;
+        }
         .wrapper{
             width:90%;
             margin:0px auto;
