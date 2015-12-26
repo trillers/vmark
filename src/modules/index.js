@@ -10,6 +10,7 @@ _exports.tenant = {};
 _exports.tenant.org = require('./tenant/org');
 _exports.tenant.main = require('./tenant/main');
 _exports.group = require('./group');
+_exports.recontent = require('./recontent');
 
 require('./system/wechatbot');
 module.exports = _exports;
