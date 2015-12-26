@@ -168,6 +168,9 @@
 </style>
 <script>
     var self = this;
+    var loadAllGroupMediaUsers = domain.action('loadAllGroupMediaUsers');
+    var delGroup = domain.action('delGroup');
+    var delGroupMember = domain.action('delGroupMember');
     var navNameToIndex = {
         '基本信息': 0,
         '成员': 1
@@ -184,9 +187,6 @@
         self.nav = 0;
     };
     self.init();
-    var loadAllGroupMediaUsers = domain.action('loadAllGroupMediaUsers');
-    var delGroup = domain.action('delGroup');
-    var delGroupMember = domain.action('delGroupMember');
     function onLoadAllGroupMediaUsers(data){
         self.parent.panel.status = 'add_m';
         self.parent.mediaUsers = data.users;

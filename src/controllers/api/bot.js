@@ -1,7 +1,6 @@
 "use strict";
 var context = require('../../context/context');
 var fileService = require('../../modules/file/services/FileService');
-var lifeFlagEnum = require('../../framework/model/enums').LifeFlag;
 var broadcastMessageService = require('../../modules/message/services/BroadcastMessageService');
 var typeRegistry = require('../../modules/common/models/TypeRegistry');
 var MsgContentType = typeRegistry.item('MsgType');

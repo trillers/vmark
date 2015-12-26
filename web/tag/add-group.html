@@ -120,6 +120,7 @@
         backToView(e){
             self.groupName.value = '';
             self.parent.panel.status = 'view';
+            self.parent.tags['group-left'].init();
             self.parent.update();
         }
         function onAddGroup(data){
@@ -127,7 +128,6 @@
             self.parent.group = data.data;
             self.parent.groupMembers = [];
             self.backToView();
-            self.parent.update();
         }
         this.on('mount', function(){
             addGroup.onDone(onAddGroup);

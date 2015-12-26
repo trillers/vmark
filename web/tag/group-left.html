@@ -27,6 +27,10 @@
     var self = this;
     self.ownGroups = null;
     self._timeout = null;
+    self.init = function(){
+        self.ownGroups = null;
+        self.searchInput.value = '';
+    }
     search(e){
         if(self._timeout){
             return;
