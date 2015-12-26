@@ -7,4 +7,7 @@ module.exports = function(app){
 
     //wechat
     app.use(require('./wechat')());
+
+    app.use(require('./recontent')());
+
 }
