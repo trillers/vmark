@@ -47,17 +47,12 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary" id="submit">生成</button>
+                <button type="submit" class="btn btn-primary pull-right" id="submit">生成</button>
             </form>
         </div>
     </div>
     <script>
         $(document).ready(function($){
-            $('.page_ads_close').click(function(){
-                alert();
-                $('.page_ad_banner').css('display', '');
-            });
-
             $('#submit').click(function(){
                 var width = 0;
                 var pgbar = $('.progress-bar');
