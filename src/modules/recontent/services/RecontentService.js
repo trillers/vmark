@@ -7,7 +7,7 @@ var cbUtil = require('../../../framework/callback');
 //var OrgType = require('../../common/models/TypeRegistry').item('OrgType');
 require('request').debug = true;
 
- var adHtml = '<div class="page_ads_item page_ad_banner" style="width: 100%; font-size: 0px; position: fixed; left: 0px; bottom: 0px;">   <div class="page_ads_close">   </div>   <div class="page_ads_content">   <a href="http://pandora.genshuixue.com/ap/info.json?id=cptad_44&amp;u=http%3A%2F%2Fm.genshuixue.com%2Fapp%2Fdw%3Fct%3DGenShuiXue_M2100013%26zn%3Dzn_appxiazai1_msite%26source%3Dcptad&amp;k=d7ROxgnOHX6Jngy3Wg9vVgsTnbRAnCmrnX9wWK6AnXR3nA/m0KOw0UhJMIRcjKmcZQn8MQROxK9XHb5qdbmcZQMzjbmhHA/7ZQ53dSROxK97nEhctgsanb6q0gROxKyqMIRcjKmhZQnzjbmrH1hzd7uhxKY=">       <img width="100%" height="100%" src="http://img.gsxservice.com/3410996_5oi1ifco.png">    </a></div></div>';
+ var adHtml = '<div id="page_ad_banner" class="page_ads_item page_ad_banner" style="width: 100%; font-size: 0px; position: fixed; left: 0px; bottom: 0px;">   <div class="page_ads_close">   </div>   <div class="page_ads_content">   <a href="http://pandora.genshuixue.com/ap/info.json?id=cptad_44&amp;u=http%3A%2F%2Fm.genshuixue.com%2Fapp%2Fdw%3Fct%3DGenShuiXue_M2100013%26zn%3Dzn_appxiazai1_msite%26source%3Dcptad&amp;k=d7ROxgnOHX6Jngy3Wg9vVgsTnbRAnCmrnX9wWK6AnXR3nA/m0KOw0UhJMIRcjKmcZQn8MQROxK9XHb5qdbmcZQMzjbmhHA/7ZQ53dSROxK97nEhctgsanb6q0gROxKyqMIRcjKmhZQnzjbmrH1hzd7uhxKY=">       <img width="100%" height="100%" src="http://img.gsxservice.com/3410996_5oi1ifco.png">    </a></div></div>';
 
 var ImgQueue = function(id, targetBaseDir, targetBaseUrl, originalReferer){
     this.queue = [];
