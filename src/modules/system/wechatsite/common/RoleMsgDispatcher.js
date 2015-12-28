@@ -13,7 +13,7 @@ var RoleMsgDispatcher = function(){
 RoleMsgDispatcher.prototype.emit = function(context){
     var self = this;
     context.getUser().then(function(user){
-        console.error(user);
+        console.info(user);
         var post = null;
         if(user && user.posts && user.posts.length>0){
             post = user.posts[0]; 
