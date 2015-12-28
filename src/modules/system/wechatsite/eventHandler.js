@@ -32,9 +32,9 @@ module.exports = function (emitter) {
                             else if(result.result == bindBotResults.NOT_ADMIN){
                                 reply = '[系统]: 微信号绑定失败：请绑定到管理员用户上！';
                             }
-                            else if(result.result == bindBotResults.OTHER_ROLE){
-                                reply = '[系统]: 微信号绑定失败：待绑定微信号已经有其他身份！';
-                            }
+                            //else if(result.result == bindBotResults.OTHER_ROLE){
+                            //    reply = '[系统]: 微信号绑定失败：待绑定微信号已经有其他身份！';
+                            //}
                             else if(result.result == bindBotResults.BOUND){
                                 reply = '[系统]: 微信号绑定失败：待绑定微信号已经绑定过！';
                             }
