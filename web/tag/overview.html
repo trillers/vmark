@@ -34,7 +34,7 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">微信托管</div>
                         <div class="panel-body">
-                            <div class="container" style="">
+                            <div style="">
                                 <div class="row">
                                     <div class="col-md-3 col-lg-3" style="">
                                         <img src="{bot.headimgurl}" alt="{bot.name}" class="img-rounded" data-src="holder.js/40x40"  style="width: 40px; height: 40px;">
@@ -42,17 +42,28 @@
                                             <img if="{bot.sex==1}" src="/web/images/male.png" alt="男" class="" style="boder:0px; width: 16px; height: 16px;">
                                             <img if="{bot.sex==2}" src="/web/images/female.png" alt="女" class="" style="boder:0px; width: 16px; height: 16px;">
                                     </div>
-                                    <div class="col-md-9 col-lg-9" style="">
+                                    <div class="col-md-3 col-lg-3" style="">
 
                                         <div class="row" >
-                                            <div class="col-md-1 col-lg-1" style="height: 60px;">
+                                            <div class="col-md-4 col-lg-4" style="height: 60px;">
                                                 <img if="{!botActioning && botKeepLogged}" src="/web/images/stop-active.png" alt="退出" onclick="{goExiting}" class="bot-action-icon bot-logged" style="">
                                                 <img if="{botActioning && botKeepLogged}" src="/web/images/start.png" alt="启动中..." class="bot-action-icon bot-logging" style="">
                                                 <img if="{!botActioning && botKeepExited}" src="/web/images/start-active.png" alt="启动" onclick="{goLogging}" class="bot-action-icon bot-exited" style="">
                                                 <img if="{botActioning && botKeepExited}" src="/web/images/stop.png" alt="退出中..." class="bot-action-icon bot-exiting" style="">
                                             </div>
-                                            <div class="col-md-2 col-lg-2" style="vertical-align: middle;height: 60px;">
+                                            <div class="col-md-8 col-lg-8" style="vertical-align: middle;height: 60px;">
                                                <label>&nbsp;&nbsp;{bot.statusName}</label>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-lg-6" if="{needLoginFlg}">
+                                        <div class="row" >
+                                            <div class="col-md-4 col-lg-4" style="height: 112px;">
+                                                <img src="{loginQR}" style="border:1px solid #ddd;display: inline-block; height: 100%">
+                                            </div>
+                                            <div class="col-md-8 col-lg-8" style="vertical-align: middle;height: 60px;">
+                                                <label>扫描左方二维码登录</label>
                                             </div>
 
                                         </div>
@@ -92,6 +103,7 @@
             self.botKeepLogged = true;
             self.botKeepExited = false;
             self.botActioning = false;
+            self.needLoginFlg = false;
             var IntentionStatus = __app.enums.IntentionStatus.names;
             var Status = __app.enums.WechatBotStatus.names;
             var statusValues = __app.enums.WechatBotStatus.values;
@@ -168,10 +180,22 @@
 
             var botState = null;
             //TODO: bind status syncing to update status
-            ws.subscribe('/bot/status', function(data){
+            ws.subscribe('/bot/st_change', function(data){
                 var json = data.data;
-                if(json.mediaId === self.bot._id){
+                if(json.agentId === self.bot.customId){
+                    if(json.newStatus === __app.enums.WechatBotStatus.Logged.value){
+                        self.needLoginFlg = false;
+                    }
                     botState.updateStatus(json.newStatus);
+                }
+            });
+
+            ws.subscribe('/bot/need_login', function(data){
+                var json = data.data;
+                if(json.agentId === self.bot.customId){
+                    self.loginQR = json.mediaUrl;
+                    self.needLoginFlg = true;
+                    self.update();
                 }
             });
 
@@ -191,7 +215,6 @@
             }
 
             goExiting(e){
-                console.log("************");
                 stopBot.execute({openid: self.bot.customId});
                 console.log({openid: self.bot.customId});
                 botState.goExiting();

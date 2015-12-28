@@ -9,47 +9,47 @@ function WebSocket(client){
     this.ws = client;
     this.ready = false;
     this.cache = [];
-    this.emitter = riot.observable({});
 }
+WebSocket.prototype = Object.create(riot.observable({}));
 WebSocket.prototype.onOpen = function(cb){
     var me = this;
     this.ws.onopen = function(){
         me.ready = true;
         me.cache.forEach(function(msg){
-            me.handleMsg(msg);
+            me._handleMsg(msg);
         });
-        me.listenServer();
+        me._listenServer();
         me.ws.send(JSON.stringify({method: 'connect',prefix: '/bot'}));
         cb();
     };
 };
-WebSocket.prototype.broadcast = function(rooms, data){
+WebSocket.prototype.subscribe = function(room, cb){
+    this.on(room, cb);
+};
+WebSocket.prototype._broadcast = function(rooms, data){
     var currRoom = '';
     for(var i=0, len=rooms.length; i<len; i++){
         currRoom += '/' + rooms[i];
-        this.emitter.trigger(currRoom, data);
+        this.trigger(currRoom, data);
     }
 };
-WebSocket.prototype.handleMsg = function(data){
-    var rooms = this.parseChannel(data.channel);
-    this.broadcast(rooms, data.data)
-}
-WebSocket.prototype.parseChannel = function(channel){
+WebSocket.prototype._handleMsg = function(data){
+    var rooms = this._parseChannel(data.channel);
+    this._broadcast(rooms, data.data)
+};
+WebSocket.prototype._parseChannel = function(channel){
     var rooms = channel.split('/');
     rooms.splice(0, 1);
     return rooms;
 };
-WebSocket.prototype.subscribe = function(room, cb){
-    this.emitter.on(room, cb);
-};
-WebSocket.prototype.listenServer = function(){
+WebSocket.prototype._listenServer = function(){
     var me = this;
     this.ws.onmessage = function(data){
         var json = JSON.parse(data.data);
         if(!me.ready){
             return me.cache.push(json);
         }
-        me.handleMsg(json);
+        me._handleMsg(json);
     }
 };
 module.exports = new WebSocket(new SockJS(default_Url));

@@ -15,7 +15,6 @@ module.exports = function(app){
             if(json.method === 'connect'){
                 wsConns[json.prefix] = conn;
             }
-            console.log(wsConns);
         });
         conn.on('close', function() {
             var id = getId(this);
