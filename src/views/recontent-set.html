@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns="http://www.w3.org/1999/html"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/public/favicon.ico">
+    <title>主页面</title>
+    <!-- Bootstrap core CSS -->
+    <link href="/public/components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/public/components/jquery/jquery.min.js"></script>
+    <script src="/public/components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+
+    </script>
+</head>
+<body style="" >
+<div class="container" style="text-align: left ; margin-top: 1%">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="height:20px;">
+            &nbsp;
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-offset-0 col-xs-12 col-sm-offset-2 col-sm-8 col-md-offset-2 col-md-8 col-lg-offset-2 col-lg-8" >
+            <div class="form-group progress">
+                <div class="progress-bar" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100" style="min-width: 0em; width: 0%;">
+            {% if feedback=='not_weixin' %}
+            URL不是来自微信公众账号的文章：{{url}}
+            {% elseif feedback %}
+            文章生成过程失败：{{feedback}}
+            {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-offset-0 col-xs-12 col-sm-offset-2 col-sm-8 col-md-offset-2 col-md-8 col-lg-offset-2 col-lg-8" >
+            <form class="" action="recontent-gen">
+                <div class="form-group">
+                    <label class="sr-only" for="url">文章地址（URL）</label>
+                    <div class="input-group">
+                        <div class="input-group-addon">地址：</div>
+                        <input type="text" class="form-control input-lg" id="url" name="url" placeholder="文章地址..." value="{{feedback ? '' : url}}">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary pull-right" id="submit">生成</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function($){
+            $('#submit').click(function(){
+                var width = 0;
+                var pgbar = $('.progress-bar');
+                var intervalId = setInterval(function(){
+                    width += 10;
+                    if(width>=100){
+                        clearInterval(intervalId);
+                        return;
+                    }
+                    var pwidth = '' + width + '%';
+                    pgbar.width(pwidth).text(pwidth);
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>
