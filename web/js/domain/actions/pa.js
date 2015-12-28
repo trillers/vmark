@@ -2,6 +2,24 @@ var domain = require('../domain');
 var apiFactory = domain.restApi();
 
 /**
+ * operate bot actions
+ */
+domain.action('startBot').onExecute(function(data){
+    apiFactory.post('/bot/start').drive(this).send(data);
+});
+domain.action('stopBot').onExecute(function(data){
+    apiFactory.get('/bot/stop/' + data.openid).drive(this).send();
+});
+
+
+/**
+ * status actions
+ */
+domain.action('loadBotByMediaId').onExecute(function(data){
+    apiFactory.get('/bot/' + data.botId).drive(this).send();
+});
+
+/**
  * multiSend actions
  */
 domain.action('broadcastTxt').onExecute(function(data){

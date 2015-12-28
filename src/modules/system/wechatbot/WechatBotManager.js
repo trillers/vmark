@@ -1,6 +1,5 @@
 var IntentionStatus = require('../../common/models/TypeRegistry').item('IntentionStatus');
 var WechatBotStatus = require('../../common/models/TypeRegistry').item('WechatBotStatus');
-
 var WechatBotManager = function(context, options){
     this.timerId = null;
     this.context = context;

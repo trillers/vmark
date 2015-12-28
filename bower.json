@@ -15,6 +15,7 @@
     "cmd-zepto": "~11.1.6",
     "is_js": "*",
     "seajs-wrap": "~1.0.2",
-    "bootstrap": "3.3.5"
+    "bootstrap": "3.3.5",
+    "sockjs-client": "~1.0.3"
   }
 }

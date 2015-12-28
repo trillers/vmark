@@ -10,10 +10,12 @@ module.exports = function(app){
     echo.on('connection', function(conn) {
         var id = getId(conn);
         wsConns[id] = conn;
-
         conn.on('data', function(message) {
+            var json = JSON.parse(message);
+            if(json.method === 'connect'){
+                wsConns[json.prefix] = conn;
+            }
             console.log(wsConns);
-            conn.write(message);
         });
         conn.on('close', function() {
             var id = getId(this);
@@ -24,7 +26,7 @@ module.exports = function(app){
     var server = http.createServer(app.callback());
 
     echo.installHandlers(server, {prefix:'/echo'});
-
+    echo.installHandlers(server, {prefix:'/bot'});
     return server;
 }
 

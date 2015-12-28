@@ -18,6 +18,18 @@ var groupMemberService = context.services.groupMemberService;
 
 module.exports = function (router) {
     /**
+     *  bot routers
+     */
+    router.get('/:id', function *() {
+        try {
+            var media = yield wechatMediaService.loadByIdAsync(this.params.id);
+            this.body = {success: true, err: null, media: media};
+        }catch(e){
+            this.body = {success: false, err: e};
+        }
+    });
+
+    /**
      * MultiSend routers
      */
     router.post('/broadcastTxt', function *() {
@@ -223,6 +235,36 @@ module.exports = function (router) {
                 });
             }
             this.body = {users: users};
+        }catch(e){
+            console.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    /**
+     * operate bot routers
+     */
+    router.post('/start', function*(){
+        try{
+            var json = this.request.body;
+            var bot = wechatBotManager.getWechatBot(json.openid);
+            bot.start({
+                intention: json.intention,
+                mode: json.mode,
+                nickname: json.nickname,
+                sex: json.sex
+            });
+            this.body = {success: true, error: null};
+        }catch(e){
+            console.error(e);
+            this.body = {error: e};
+        }
+    });
+    router.get('/stop/:id', function*(){
+        try{
+            var bot = wechatBotManager.getWechatBot(this.params.id);
+            bot.stop();
+            this.body = {success: true, error: null};
         }catch(e){
             console.error(e);
             this.body = {error: e};

@@ -46,9 +46,9 @@
 
                                         <div class="row" >
                                             <div class="col-md-1 col-lg-1" style="height: 60px;">
-                                                <img if="{!botActioning && botKeepLogged}" src="/web/images/start-active.png" alt="启动" onclick="{goLogging}" class="bot-action-icon bot-logged" style="">
+                                                <img if="{!botActioning && botKeepLogged}" src="/web/images/stop-active.png" alt="退出" onclick="{goExiting}" class="bot-action-icon bot-logged" style="">
                                                 <img if="{botActioning && botKeepLogged}" src="/web/images/start.png" alt="启动中..." class="bot-action-icon bot-logging" style="">
-                                                <img if="{!botActioning && botKeepExited}" src="/web/images/stop-active.png" alt="退出" onclick="{goExiting}" class="bot-action-icon bot-exited" style="">
+                                                <img if="{!botActioning && botKeepExited}" src="/web/images/start-active.png" alt="启动" onclick="{goLogging}" class="bot-action-icon bot-exited" style="">
                                                 <img if="{botActioning && botKeepExited}" src="/web/images/stop.png" alt="退出中..." class="bot-action-icon bot-exiting" style="">
                                             </div>
                                             <div class="col-md-2 col-lg-2" style="vertical-align: middle;height: 60px;">
@@ -79,6 +79,7 @@
         </style>
 
         <script>
+            "use strict";
             this.app = this.opts.app; //keep spa object
             var self = nest.presentable(this);
             self.api =  __app.settings.api.url;
@@ -155,7 +156,7 @@
                 self.botKeepExited = true;
                 self.botActioning = true;
                 self.update();
-                console.info('logging...');
+                console.info('exiting...');
                 //TODO: trigger bot to stop
             };
             BotState.prototype.onStatusChanged = function(oldStatus, newStatus){
@@ -165,53 +166,53 @@
                 self.update();
             };
 
-            var botState = new BotState(self.bot.id, IntentionStatus.Logged, Status.Logged);
-
+            var botState = null;
             //TODO: bind status syncing to update status
-            setTimeout(function(){
-                self.bot.status = Status.Starting;
-                botState.updateStatus(Status.Starting);
-            }, 3000);
-            setTimeout(function(){
-                self.bot.status = Status.Logging;
-                botState.updateStatus(Status.Logging);
-            }, 5000);
+            ws.subscribe('/bot/status', function(data){
+                var json = data.data;
+                if(json.mediaId === self.bot._id){
+                    botState.updateStatus(json.newStatus);
+                }
+            });
+
+            var loadBotByMediaId = domain.action('loadBotByMediaId');
+            var startBot = domain.action('startBot');
+            var stopBot = domain.action('stopBot');
 
             goLogging(e){
+                startBot.execute({
+                    openid: self.bot.customId,
+                    intention: 'login',
+                    mode: 'untrusted',
+                    nickname: self.bot.nickname,
+                    sex: self.bot.sex
+                });
                 botState.goLogging();
             }
 
             goExiting(e){
+                console.log("************");
+                stopBot.execute({openid: self.bot.customId});
+                console.log({openid: self.bot.customId});
                 botState.goExiting();
             }
 
-
-            var broadcastTxt = domain.action('broadcastTxt');
-            var broadcastImg = domain.action('broadcastImg');
-            var loadBroadcastHistory = domain.action('loadBroadcastHistory')
-
-            var onLoadBroadcastHistory = function(data){
-                self.broadcastHistory = data.history;
+            var onLoadBotByMediaId = function(data){
+                botState.updateStatus(data.media.status);
                 self.update();
-            }
+            };
 
             this.on('mount', function(){
-                console.info('tag overview index is mounted');
-//                broadcastTxt.onDone(onBroadcastTxt);
-//                broadcastImg.onDone(onBroadcastImg);
-//                loadBroadcastHistory.onDone(onLoadBroadcastHistory);
+                botState = new BotState(self.bot.id, IntentionStatus.Logged, __page.bot.status)
+                botState.updateStatus(__page.bot.status)
             });
             this.on('unmount', function(){
-                console.info('tag overview index is unmounted');
-//                broadcastTxt.offDone(onBroadcastTxt);
-//                broadcastImg.offDone(onBroadcastImg);
-//                loadBroadcastHistory.offDone(onLoadBroadcastHistory);
+                loadBotByMediaId.offDone(onLoadBotByMediaId);
             });
             this.on('open', function(options){
                 console.info('tag broadcast index is opening');
                 self.trigger('ready', false);
                 self.trigger('view-route-to');
-//                loadBroadcastHistory.execute(self.botId);
             });
 
             this.on('leave', function(){
@@ -229,27 +230,6 @@
                 //_refresh();
             });
 
-
-            self.formatDate = function(date){
-                var dateStr = new Date(date).toLocaleString();
-                return dateStr.replace(/\//g, '-');
-            }
-
-
-            startBot(e){
-                e.preventUpdate = true;
-                var msg = $('#broadcastMsg').val().trim();
-                if(msg.length > 0) {
-                    var data = {
-                        botId: self.botId,
-                        msg: msg
-                    }
-                    broadcastTxt.execute(data);
-                    $(e.currentTarget).attr('disabled', true);
-                }else{
-//                    tipShow('warning', '发送内容不能为空');
-                }
-            }
         </script>
     </div>
 </overview>
