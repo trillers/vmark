@@ -18,7 +18,8 @@ describe('TenantService', function(){
         it('Succeed to register a personal tenant', function(done){
             var service = context.services.tenantService;
             service.registerPersonalTenant(openid, function(err, user){
-                logger.debug(user);
+                console.error(err);
+                console.info(user);
                 //assert.equal(result.type, PartyType.Personal.value());
                 //assert.equal(result.administrative, false);
                 done();
@@ -53,7 +54,7 @@ describe('TenantService', function(){
             });
         });
 
-        it.only('Succeed to bind a personal bot', function(done){
+        it('Succeed to bind a personal bot', function(done){
             var service = context.services.tenantService;
             var bindBotResults = service.bindBotResults;
             service.bindPersonalBot(operatorOpenid, botOpenid, function(err, result){

@@ -5,6 +5,7 @@ var registry = new CommandRegistry();
 
 registry.addCommand('成为平台运营专员', require('../../platform/main/commands/becomePlatformOperationCommand'));
 registry.addCommand('成为平台管理员', require('../../platform/main/commands/becomePlatformAdminCommand'));
+registry.addCommand('删除当前用户', require('../../platform/main/commands/deletePlatformUserCommand'));
 
 
 module.exports = function(emitter){

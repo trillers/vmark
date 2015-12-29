@@ -279,6 +279,16 @@ Service.prototype.bindMyPersonalBot = function(openid, callback) {
         var tenantId = adminPost.org;
         var adminMemberId = adminPost.member;
 
+        //Check if user has become operator of other bots
+        var medias = yield orgMediaService.listMediasByOperatorIdAsync(tenantId, adminMemberId);
+        if(medias && medias.length){
+            if (callback) callback(null, {
+                user: user,
+                result: bindBotResults.BOUND
+            });
+            return;
+        }
+
         /*
          * Create to-be-binded wechat bot
          */
@@ -358,7 +368,6 @@ Service.prototype.bindMyPersonalBot = function(openid, callback) {
     });
 };
 
-
 Service.prototype._hasSomeRole = function(posts, role) {
     var len = posts.length;
     var has = false, post = null;
@@ -373,10 +382,6 @@ Service.prototype._hasSomeRole = function(posts, role) {
         }
     }
     return post;
-};
-
-Service.prototype.loadBotOperator = function(botOpenid, callback) {
-
 };
 
 module.exports = Service;

@@ -36,17 +36,24 @@ Service.prototype.createPlatformWechatSiteUser = function(mediaUserJson, callbac
 
 Service.prototype.deletePlatformWechatSiteUserByOpenid = function(openid, callback){
     var logger = this.context.logger;
-    var me = this;
+    var kv = this.context.kvs.platformWechatSiteUser;
+    var wechatMediaUserService = this.context.services.wechatMediaUserService;
     co(function* (){
-        var json = yield me.kv.loadByOpenidAsync(openid);
+        var json = yield kv.loadByOpenidAsync(openid);
         if(!json){ //user is not found, so skip running further
             if(callback) callback(null, null);
             return;
         }
         var wechatSiteUserId = json.id;
         var userId = json.user;
-        yield me.kv.deleteByOpenidAsync(openid);
-        yield me.deleteByIdAsync(wechatSiteUserId);
+        yield kv.deleteByOpenidAsync(openid);
+        try{
+            yield wechatMediaUserService.deleteByIdAsync(wechatSiteUserId);
+        }
+        catch(e){
+            logger.error(e);
+            if(callback) callback(e);
+        }
         if(callback) callback(null, userId);
     }).catch(Error, function(err){
         logger.error('Fail to delete platform wechat site user by openid ' + openid + ': ' + err);
@@ -57,8 +64,8 @@ Service.prototype.deletePlatformWechatSiteUserByOpenid = function(openid, callba
 
 Service.prototype.updatePlatformWechatSiteUserById = function(id, update, callback){
     var logger = this.context.logger;
+    var kv = this.context.kvs.platformWechatSiteUser;
     var me = this;
-
     co(function* (){
         var user = yield me.updateByIdAsync(id, update);
         if(!user){ //user is not found, so skip running further
@@ -66,7 +73,7 @@ Service.prototype.updatePlatformWechatSiteUserById = function(id, update, callba
             return;
         }
 
-        yield me.kv.saveByOpenidAsync(user);
+        yield kv.saveByOpenidAsync(user);
         if(callback) callback(null, user);
     }).catch(Error, function(err){
         logger.error('Fail to update platform wechat site user by id ' + id + ': ' + err);
