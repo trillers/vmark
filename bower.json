@@ -16,6 +16,7 @@
     "is_js": "*",
     "seajs-wrap": "~1.0.2",
     "bootstrap": "3.3.5",
-    "sockjs-client": "~1.0.3"
+    "sockjs-client": "~1.0.3",
+    "node-uuid": "*"
   }
 }

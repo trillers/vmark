@@ -4,7 +4,7 @@ var co = require('co');
 var fs = require('fs');
 var os = require('os');
 var request = require('request');
-var wsConns = require('../../../../app/wsConns');
+var ws = require('../../../../app/ws');
 
 module.exports = function(msg){
     co(function*(){
@@ -13,15 +13,10 @@ module.exports = function(msg){
         var botId = msg.AgentId;
         var mediaUrl = msg.MediaUrl;
         var kv = context.kvs.tenantWechatBot;
-        if(wsConns['/bot']){
-            wsConns['/bot'].write(JSON.stringify({
-                channel: '/bot/need_login',
-                data:{
-                    agentId: msg.AgentId,
-                    mediaUrl: msg.MediaUrl
-                }
-            }));
-        }
+        ws.of('/bot/need_login').emit({
+            agentId: msg.AgentId,
+            mediaUrl: msg.MediaUrl
+        });
         var operator = yield kv.getOperatorOpenidAsync(botId);
         var loginQrCodePath = os.tmpdir() + operator + '.png';
         request(mediaUrl).pipe(fs.createWriteStream(loginQrCodePath)).on('close', function () {

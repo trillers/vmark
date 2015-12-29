@@ -181,7 +181,7 @@
             var botState = null;
             //TODO: bind status syncing to update status
             ws.subscribe('/bot/st_change', function(data){
-                var json = data.data;
+                var json = data;
                 if(json.agentId === self.bot.customId){
                     if(json.newStatus === __app.enums.WechatBotStatus.Logged.value){
                         self.needLoginFlg = false;
@@ -189,6 +189,10 @@
                     botState.updateStatus(json.newStatus);
                 }
             });
+
+            setTimeout(function(){
+                ws.send({xxx: '1111'})
+            })
 
             ws.subscribe('/bot/need_login', function(data){
                 var json = data.data;

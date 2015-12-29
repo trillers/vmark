@@ -1,30 +1,51 @@
 "use strict";
 var SockJS = require('sockjs');
-console.log(new SockJS('/bot'));
 var riot = require('seedriot');
-
-var default_Url = '/bot';
+var uuid = require('uuid');
+var id = uuid.v4();
+var base_Url = '/bot';
+var orgId = __page.user.posts[0].org;
+console.log(orgId)
+var default_Url = '/bot?r=' + orgId;
 
 function WebSocket(client){
+    this.prefix = base_Url;
+    this.id = id;
     this.ws = client;
     this.ready = false;
-    this.cache = [];
+    this.receiveCache = [];
+    this.sendCache = [];
 }
 WebSocket.prototype = Object.create(riot.observable({}));
+WebSocket.prototype.send = function(data){
+    if(!this.ready){
+        this.sendCache.push(data);
+        return;
+    }
+    this.ws.send(JSON.stringify(data));
+};
 WebSocket.prototype.onOpen = function(cb){
     var me = this;
     this.ws.onopen = function(){
         me.ready = true;
-        me.cache.forEach(function(msg){
+        me.receiveCache.forEach(function(msg){
             me._handleMsg(msg);
         });
+        me.sendCache.forEach(function(msg){
+            me._handleSend(msg);
+        });
         me._listenServer();
-        me.ws.send(JSON.stringify({method: 'connect',prefix: '/bot'}));
         cb();
     };
 };
 WebSocket.prototype.subscribe = function(room, cb){
     this.on(room, cb);
+};
+WebSocket.prototype._handleSend = function(data){
+    this.ws.send(JSON.stringify({
+        socketId: this.id,
+        prefix: this.prefix,
+        data: data}));
 };
 WebSocket.prototype._broadcast = function(rooms, data){
     var currRoom = '';
@@ -47,7 +68,7 @@ WebSocket.prototype._listenServer = function(){
     this.ws.onmessage = function(data){
         var json = JSON.parse(data.data);
         if(!me.ready){
-            return me.cache.push(json);
+            return me.receiveCache.push(json);
         }
         me._handleMsg(json);
     }

@@ -6,6 +6,7 @@ var proOrdev = true;
 seajs.config({
     alias: {
         'sockjs': '/public/components/sockjs-client/dist/sockjs.min.js',
+        'uuid': '/public/components/node-uuid/uuid.js',
         'jquery':'/public/components/cmd-jquery/jquery.js',
         'zepto': '/public/components/cmd-zepto/zepto',
         'isjs':'/web/js/app/is.js',
