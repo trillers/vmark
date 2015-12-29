@@ -233,7 +233,7 @@
                 loadBotByMediaId.offDone(onLoadBotByMediaId);
             });
             this.on('open', function(options){
-                console.info('tag broadcast index is opening');
+                console.info('tag overview is opening');
                 self.trigger('ready', false);
                 self.trigger('view-route-to');
             });
@@ -249,7 +249,7 @@
             });
 
             this.on('refresh', function(){
-                console.info('tag broadcast index is refreshing');
+                console.info('tag overview is refreshing');
                 //_refresh();
             });
 

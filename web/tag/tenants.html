@@ -1,0 +1,65 @@
+<tenants>
+    <div if="{!hidden}">
+        <div if="{tip}" class="alert {addClass}" style="margin-top: -5px; float: left; width: 100%; text-align: center; margin-bottom: 0; position: absolute; z-index: 9999">
+            <strong>{tipInfo}</strong>
+        </div>
+        <div class="container" style="width: 100%; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0">
+            <div class="row">
+                &nbsp;
+            </div>
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2" >
+
+                </div><!--/span-->
+            </div><!--/row-->
+        </div><!--/container-->
+
+        <style scoped>
+
+        </style>
+
+        <script>
+            "use strict";
+            this.app = this.opts.app; //keep spa object
+            var self = nest.presentable(this);
+            self.api =  __app.settings.api.url;
+            self.tip = false;
+            self.tipInfo = "";
+
+
+//            var loadBotByMediaId = domain.action('loadBotByMediaId');
+
+            var onLoadBotByMediaId = function(data){
+                botState.updateStatus(data.media.status);
+                self.update();
+            };
+
+            this.on('mount', function(){
+            });
+            this.on('unmount', function(){
+//                loadBotByMediaId.offDone(onLoadBotByMediaId);
+            });
+            this.on('open', function(options){
+                console.info('tag tenants is opening');
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+            });
+
+            this.on('leave', function(){
+                self.mask = true;
+                self.update();
+            });
+
+            this.on('reenter', function(){
+                self.mask = false;
+                self.update();
+            });
+
+            this.on('refresh', function(){
+                console.info('tag tenants is refreshing');
+                //_refresh();
+            });
+
+        </script>
+    </div>
+</tenants>
