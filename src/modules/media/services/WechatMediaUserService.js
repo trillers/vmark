@@ -73,15 +73,21 @@ Service.prototype.updateById = function(id, update, callback){
 Service.prototype.deleteById = function(id, callback) {
     var logger = this.context.logger;
     var WechatMediaUser = this.context.models.WechatMediaUser;
-    WechatMediaUser.remove({_id: id}, function(err){
-        if (err) {
-            logger.error('Fail to delete wechat media user by [id=' + id + ']: ' + err);
-            if(callback) callback(err);
-            return;
-        }
-        logger.debug('Succeed to delete wechat media user [id=' + id + ']');
-        if(callback) callback(null);
-    });
+    try{
+        WechatMediaUser.findByIdAndRemove(id, function(err){
+            if (err) {
+                logger.error('Fail to delete wechat media user by [id=' + id + ']: ' + err);
+                if(callback) callback(err);
+                return;
+            }
+            logger.debug('Succeed to delete wechat media user [id=' + id + ']');
+            if(callback) callback();
+        });
+    }
+    catch(e){
+        logger.error(e);
+        if(callback) callback(err);
+    }
 };
 
 Service.prototype.find = function(params, callback){

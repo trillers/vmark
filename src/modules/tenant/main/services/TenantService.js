@@ -5,6 +5,23 @@ var OrgMemberRole = typeRegistry.item('OrgMemberRole');
 var WechatMediaType = typeRegistry.item('WechatMediaType');
 var IntentionStatus = typeRegistry.item('IntentionStatus');
 
+
+var hasRole = function(posts, role) {
+    var len = posts.length;
+    var has = false, post = null;
+    for(var i=0; i<len; i++){
+        post = posts[i];
+        if(post.role==role){
+            has = true;
+            break;
+        }
+        else{
+            post = null;
+        }
+    }
+    return post;
+};
+
 var Service = function(context){
     this.context = context;
 };
@@ -157,6 +174,16 @@ Service.prototype.bindPersonalBot = function(operatorOpenid, botOpenid, callback
             botUser = yield platformUserService.createPlatformUserAsync(botOpenid);
         }
 
+        //Check if user has become operator of other bots
+        var medias = yield orgMediaService.listMediasByOperatorIdAsync(tenantId, adminMemberId);
+        if(medias && medias.length){
+            if (callback) callback(null, {
+                user: adminUser,
+                result: bindBotResults.BOUND
+            });
+            return;
+        }
+
         /*
          * Create to-be-binded wechat bot
          */
@@ -236,8 +263,136 @@ Service.prototype.bindPersonalBot = function(operatorOpenid, botOpenid, callback
     });
 };
 
-Service.prototype.loadBotOperator = function(botOpenid, callback) {
+Service.prototype.bindMyPersonalBot = function(openid, callback) {
+    var logger = this.context.logger;
+    var platformUserService = this.context.services.platformUserService;
+    var wechatMediaService = this.context.services.wechatMediaService;
+    var orgMediaService = this.context.services.orgMediaService;
+    var tenantWechatBotKv = this.context.kvs.tenantWechatBot;
+    var wechatBotManager = this.context.wechatBotManager;
+    co(function*() {
+        var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
 
+        //Check if tenant admin user exists
+        if(!user || !user.posts || !user.posts.length){
+            if (callback) callback(null, {
+                user: null,
+                result: bindBotResults.NO_OPERATOR
+            });
+            return;
+        }
+
+        //Check if tenant admin user user has tenant admin role
+        var adminPost = hasRole(user.posts, OrgMemberRole.TenantAdmin.value());
+        if(!adminPost){
+            if (callback) callback(null, {
+                user: user,
+                result: bindBotResults.NOT_ADMIN
+            });
+            return;
+        }
+
+        var botPost = hasRole(user.posts, OrgMemberRole.TenantWechatBot.value());
+        if(botPost){
+            if (callback) callback(null, {
+                user: user,
+                result: bindBotResults.BOUND
+            });
+            return;
+        }
+
+        var tenantId = adminPost.org;
+        var adminMemberId = adminPost.member;
+
+        //Check if user has become operator of other bots
+        var medias = yield orgMediaService.listMediasByOperatorIdAsync(tenantId, adminMemberId);
+        if(medias && medias.length){
+            if (callback) callback(null, {
+                user: user,
+                result: bindBotResults.BOUND
+            });
+            return;
+        }
+
+        /*
+         * Create to-be-binded wechat bot
+         */
+        var wechatBotJson = {
+            org:            tenantId
+            , type:         WechatMediaType.WechatBot.value()
+            , originalId:   null
+            , customId:     openid
+            , name:         user.nickname
+            , headimgurl:   user.headimgurl
+            , sex:          user.sex
+            , qrcodeurl:    null
+        };
+        var wechatBot = yield wechatMediaService.createAsync(wechatBotJson);
+
+        /*
+         *  Create the to_be_bound tenant wechat bot for tenant:
+         *   - link to wechant bot (wechat media collection)
+         *   - link to bot user
+         *   - link to operator (the admin of the personal tenant)
+         *   - set intention status to On
+         */
+        var orgMediaJson = {
+            org:            tenantId
+            , type:         WechatMediaType.WechatBot.value()
+            , media:        wechatBot.id
+            , user:         user.id
+            , operator:     adminMemberId
+            , intentionStatus:   IntentionStatus.Logged.value()
+            , desc:    ''
+        };
+
+        var orgWechatBot = yield orgMediaService.createAsync(orgMediaJson);
+        yield tenantWechatBotKv.setOperatorOpenidAsync(openid, openid);
+        yield tenantWechatBotKv.setBotOpenidAsync(openid, openid);
+
+        /*
+         *  update bot user 's post to append bot role
+         */
+        var postJson = {
+            org: tenantId
+            , member: orgWechatBot._id
+            , role: OrgMemberRole.TenantWechatBot.value()
+        };
+        var conditions = {
+            _id: user._id
+        };
+        var update = {
+            $push: {
+                posts: postJson
+            }
+        };
+        user = yield platformUserService.updateAsync(conditions, update);
+
+        /*
+         *  Bind bot to wenode
+         */
+        wechatBotManager.bindBot(wechatBot);
+        var bot = wechatBotManager.getWechatBot(wechatBot.customId);
+        var opts = {
+            intention: 'login',
+            mode: 'untrusted',
+            nickname: wechatBot.name,
+            sex: wechatBot.sex
+        };
+        logger.debug(opts);
+        bot.start(opts);
+
+        if (callback) callback(null, {
+            user: user,
+            result: bindBotResults.BIND
+        });
+    }).catch(Error, function (err) {
+        logger.error('Fail to bind personal bot ' + openid + ' for operator ' + openid + ': ' + err);
+        logger.error(err.stack);
+        if (callback) callback(err);
+    });
 };
+
+
 
 module.exports = Service;

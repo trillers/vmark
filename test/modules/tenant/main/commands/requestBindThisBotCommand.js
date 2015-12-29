@@ -11,11 +11,11 @@ before(function(done){
     });
 });
 
-describe('becomePlatformAdminCommand', function() {
-    //var openid = 'okvXqsw1VG76eVVJrKivWDgps_gA';//包三哥的错题本openid
-    var openid = 'oO9zswxhJsRd_9f8DlpzfZrWnjRk';//包三哥的跟谁学西安openid
+describe('requestBindThisBotCommand', function() {
+    var openid = 'okvXqsw1VG76eVVJrKivWDgps_gA';//包三哥的错题本openid
+    //var openid = 'oO9zswxhJsRd_9f8DlpzfZrWnjRk';//包三哥的跟谁学西安openid
 
-    it('success to become a platform admin', function (done) {
+    it('success to bind my bot', function (done) {
         var platform = new Wechat.Platform();
         var client = wxutil.newSignedInClient(platform);
         var site = wxutil.newRegisteredSite(platform);
@@ -23,7 +23,7 @@ describe('becomePlatformAdminCommand', function() {
         var siteClient = client.subscribeSite(site.getId(), openid);
 
         siteClient.sendText({
-            Content: '成为平台管理员'
+            Content: '绑定这个微信号'
         });
 
         setTimeout(function(){
