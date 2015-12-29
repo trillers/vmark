@@ -20,7 +20,21 @@ authSupportRoles[OrgMemberRole.TenantAdmin.value()] = true;
 //authSupportRoles[OrgMemberRole.TenantOperation.value()] = true; //no operation added for personal tenant
 authSupportRoles[OrgMemberRole.TenantWechatBot.value()] = true;
 
-
+var hasRole = function(posts, role) {
+    var len = posts.length;
+    var has = false, post = null;
+    for(var i=0; i<len; i++){
+        post = posts[i];
+        if(post.role==role){
+            has = true;
+            break;
+        }
+        else{
+            post = null;
+        }
+    }
+    return post;
+};
 
 /**
  * Authenticate user when logining
@@ -71,10 +85,14 @@ Service.prototype.authenticate = function (openid, callback) {
             return;
         }
         var post = null;
+        var adminPost = null;
+        var botPost = null;
         var tenantId = null;
         var wechatBot = null;
         if(user.posts && user.posts.length>0){
-            post = user.posts[0];
+            var adminPost = hasRole(user.posts, OrgMemberRole.TenantAdmin.value());
+            var botPost = hasRole(user.posts, OrgMemberRole.TenantWechatBot.value());
+            post = adminPost || botPost;
             tenantId = post.org;
 
             /*
