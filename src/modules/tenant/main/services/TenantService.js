@@ -5,6 +5,23 @@ var OrgMemberRole = typeRegistry.item('OrgMemberRole');
 var WechatMediaType = typeRegistry.item('WechatMediaType');
 var IntentionStatus = typeRegistry.item('IntentionStatus');
 
+
+var hasRole = function(posts, role) {
+    var len = posts.length;
+    var has = false, post = null;
+    for(var i=0; i<len; i++){
+        post = posts[i];
+        if(post.role==role){
+            has = true;
+            break;
+        }
+        else{
+            post = null;
+        }
+    }
+    return post;
+};
+
 var Service = function(context){
     this.context = context;
 };
@@ -157,6 +174,16 @@ Service.prototype.bindPersonalBot = function(operatorOpenid, botOpenid, callback
             botUser = yield platformUserService.createPlatformUserAsync(botOpenid);
         }
 
+        //Check if user has become operator of other bots
+        var medias = yield orgMediaService.listMediasByOperatorIdAsync(tenantId, adminMemberId);
+        if(medias && medias.length){
+            if (callback) callback(null, {
+                user: adminUser,
+                result: bindBotResults.BOUND
+            });
+            return;
+        }
+
         /*
          * Create to-be-binded wechat bot
          */
@@ -236,7 +263,6 @@ Service.prototype.bindPersonalBot = function(operatorOpenid, botOpenid, callback
     });
 };
 
-
 Service.prototype.bindMyPersonalBot = function(openid, callback) {
     var logger = this.context.logger;
     var platformUserService = this.context.services.platformUserService;
@@ -244,7 +270,6 @@ Service.prototype.bindMyPersonalBot = function(openid, callback) {
     var orgMediaService = this.context.services.orgMediaService;
     var tenantWechatBotKv = this.context.kvs.tenantWechatBot;
     var wechatBotManager = this.context.wechatBotManager;
-    var me = this;
     co(function*() {
         var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
 
@@ -258,7 +283,7 @@ Service.prototype.bindMyPersonalBot = function(openid, callback) {
         }
 
         //Check if tenant admin user user has tenant admin role
-        var adminPost = me._hasSomeRole(user.posts, OrgMemberRole.TenantAdmin.value());
+        var adminPost = hasRole(user.posts, OrgMemberRole.TenantAdmin.value());
         if(!adminPost){
             if (callback) callback(null, {
                 user: user,
@@ -267,7 +292,7 @@ Service.prototype.bindMyPersonalBot = function(openid, callback) {
             return;
         }
 
-        var botPost = me._hasSomeRole(user.posts, OrgMemberRole.TenantWechatBot.value());
+        var botPost = hasRole(user.posts, OrgMemberRole.TenantWechatBot.value());
         if(botPost){
             if (callback) callback(null, {
                 user: user,
@@ -368,20 +393,6 @@ Service.prototype.bindMyPersonalBot = function(openid, callback) {
     });
 };
 
-Service.prototype._hasSomeRole = function(posts, role) {
-    var len = posts.length;
-    var has = false, post = null;
-    for(var i=0; i<len; i++){
-        post = posts[i];
-        if(post.role==role){
-            has = true;
-            break;
-        }
-        else{
-            post = null;
-        }
-    }
-    return post;
-};
+
 
 module.exports = Service;
