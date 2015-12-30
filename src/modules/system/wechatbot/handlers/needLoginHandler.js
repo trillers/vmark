@@ -13,12 +13,15 @@ module.exports = function(msg){
         var botId = msg.AgentId;
         var mediaUrl = msg.MediaUrl;
         var kv = context.kvs.tenantWechatBot;
-        ws.of('/bot/need_login').emit({
+        var wechatMediaService = context.services.wechatMediaService;
+        var media = yield  wechatMediaService.findBotByOpenidAsync(botId);
+        var operator = yield kv.getOperatorOpenidAsync(botId);
+        var loginQrCodePath = os.tmpdir() + operator + '.png';
+
+        ws.of('/bot/need_login').in(media.org).clients().emit({
             agentId: msg.AgentId,
             mediaUrl: msg.MediaUrl
         });
-        var operator = yield kv.getOperatorOpenidAsync(botId);
-        var loginQrCodePath = os.tmpdir() + operator + '.png';
         request(mediaUrl).pipe(fs.createWriteStream(loginQrCodePath)).on('close', function () {
             wechatApi.uploadMedia(loginQrCodePath, 'image', function (err, data) {
                 if (err) {

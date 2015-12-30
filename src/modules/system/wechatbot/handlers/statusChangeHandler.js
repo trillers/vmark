@@ -9,7 +9,7 @@ module.exports = function(msg){
         var media = yield wechatMediaService.findBotByOpenidAsync(msg.AgentId);
         if(media){
             yield wechatMediaService.updateStatusByIdAsync(media._id, msg.NewStatus);
-            ws.of('/bot/st_change').emit({
+            ws.of('/bot/st_change').in(media.org).clients().emit({
                 agent: msg.AgentId,
                 newStatus: msg.NewStatus
             });

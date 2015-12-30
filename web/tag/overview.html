@@ -110,7 +110,7 @@
 
             var BotState = function(id, intentionStatus, status){
                 this.id = id;
-                this.intentionStatus = intentionStatus;
+                this.intentionStatus = intentionStatus || IntentionStatus.Logged;
                 this.on('logged', this.onLogged.bind(this));
                 this.on('exited', this.onExited.bind(this));
                 this.on('logging', this.onLogging.bind(this));
@@ -120,6 +120,7 @@
             };
             BotState.prototype = riot.observable({});
             BotState.prototype.updateStatus = function(status){
+                debugger;
                 if(this.status==status){
                     return;
                 }
@@ -130,7 +131,7 @@
                 if(status == IntentionStatus.Logged){
                     this.trigger('logged');
                 }
-                else if(status == IntentionStatus.Exited){
+                else if(status == IntentionStatus.Exited || Status.Aborted){
                     this.trigger('exited');
                 }
                 this.trigger('status-changed', this.status, status);
