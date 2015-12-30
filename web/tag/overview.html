@@ -131,7 +131,7 @@
                 if(status == IntentionStatus.Logged){
                     this.trigger('logged');
                 }
-                else if(status == IntentionStatus.Exited || Status.Aborted){
+                else if(status == IntentionStatus.Exited || status == Status.Aborted){
                     this.trigger('exited');
                 }
                 this.trigger('status-changed', this.status, status);
