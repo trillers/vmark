@@ -5,8 +5,6 @@ var authResults = securityService.authResults;
 
 module.exports = function* (openid, sceneId){
     var conn = wsConns[sceneId];
-    console.log("login conn***************")
-    console.warn(conn)
     if(conn){
         var result = {};
         var auth = yield securityService.authenticateAsync(openid);

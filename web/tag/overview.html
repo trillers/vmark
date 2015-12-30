@@ -190,12 +190,8 @@
                 }
             });
 
-            setTimeout(function(){
-                ws.send({xxx: '1111'})
-            })
-
             ws.subscribe('/bot/need_login', function(data){
-                var json = data.data;
+                var json = data;
                 if(json.agentId === self.bot.customId){
                     self.loginQR = json.mediaUrl;
                     self.needLoginFlg = true;
