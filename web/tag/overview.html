@@ -102,7 +102,7 @@
             self.tenantId = __page.tenantId;
             self.botKeepLogged = true;
             self.botKeepExited = false;
-            self.botActioning = false;
+            self.botActioning = true;
             self.needLoginFlg = false;
             var IntentionStatus = __app.enums.IntentionStatus.names;
             var Status = __app.enums.WechatBotStatus.names;
@@ -120,11 +120,11 @@
             };
             BotState.prototype = riot.observable({});
             BotState.prototype.updateStatus = function(status){
+                debugger;
                 if(this.status==status){
                     return;
                 }
                 else{
-                    var oldStatus = this.status;
                     this.status = status;
                 }
 
@@ -134,7 +134,7 @@
                 else if(status == IntentionStatus.Exited || Status.Aborted){
                     this.trigger('exited');
                 }
-                this.trigger('status-changed', oldStatus, status);
+                this.trigger('status-changed', this.status, status);
             };
             BotState.prototype.goLogging = function(){
                 this.trigger('logging');
