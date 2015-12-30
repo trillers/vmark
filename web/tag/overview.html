@@ -224,9 +224,9 @@
                 botState.updateStatus(data.media.status);
                 self.update();
             };
-
+            
             this.on('mount', function(){
-                botState = new BotState(self.bot.id, IntentionStatus.Logged, __page.bot.status)
+                botState = new BotState(self.bot.id, __page.bot.intentionStatus, __page.bot.status)
                 botState.updateStatus(__page.bot.status)
             });
             this.on('unmount', function(){
