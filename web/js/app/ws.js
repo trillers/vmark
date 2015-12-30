@@ -1,7 +1,6 @@
 "use strict";
 var SockJS = require('sockjs');
 var riot = require('seedriot');
-var uuid = require('uuid');
 var base_Url = '/bot';
 var orgId = __page.user.posts[0].org;
 console.log(orgId)
@@ -9,7 +8,6 @@ var default_Url = '/bot?r=' + orgId;
 
 function WebSocket(client){
     this.prefix = base_Url;
-    this.id = id;
     this.ws = client;
     this.ready = false;
     this.receiveCache = [];
