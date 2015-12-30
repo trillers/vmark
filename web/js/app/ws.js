@@ -2,6 +2,7 @@
 var SockJS = require('sockjs');
 var riot = require('seedriot');
 var base_Url = '/bot';
+console.log(__page.bot)
 console.log(__page.user)
 var orgId = __page.user.posts[0].org;
 console.log(orgId)
