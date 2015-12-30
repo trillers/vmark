@@ -19,6 +19,10 @@ module.exports = function(msg){
             var operator = yield kv.getOperatorOpenidAsync(botId);
             var loginQrCodePath = os.tmpdir() + operator + '.png';
 
+            console.warn(media);
+
+            console.warn(media.org);
+
             console.warn(ws.of('/bot/need_login').in(media.org).clients());
             ws.of('/bot/need_login').in(media.org).clients().emit({
                 agentId: msg.AgentId,
