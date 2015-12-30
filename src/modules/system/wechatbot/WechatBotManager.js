@@ -126,7 +126,6 @@ WechatBotManager.prototype._routines = function(){
         }
         orgMedias.forEach(function (orgMedia) {
             var botInfo = orgMedia.media;
-            console.warn(orgMedia.intentionStatus+"******" + botInfo.status)
             if(orgMedia.intentionStatus !== botInfo.status){
                 var bot = botManager.getBot(botInfo.customId);
                 if(orgMedia.intentionStatus === IntentionStatus.Logged.value() &&
@@ -143,6 +142,10 @@ WechatBotManager.prototype._routines = function(){
                     bot.start(options);
                     wechatMediaService.updateStatusById(botInfo._id, WechatBotStatus.Starting.value());
                 }else if(orgMedia.intentionStatus === IntentionStatus.Exited.value()){
+                    if(botInfo.status === WechatBotStatus.Exited.value() ||
+                        WechatBotStatus.Aborted.value()){
+                        return;
+                    }
                     logger.debug('Stop bot ' + botInfo.customId);
                     bot.stop();
                 }

@@ -120,11 +120,11 @@
             };
             BotState.prototype = riot.observable({});
             BotState.prototype.updateStatus = function(status){
-                debugger;
                 if(this.status==status){
                     return;
                 }
                 else{
+                    var oldStatus = this.status;
                     this.status = status;
                 }
 
@@ -134,7 +134,7 @@
                 else if(status == IntentionStatus.Exited || Status.Aborted){
                     this.trigger('exited');
                 }
-                this.trigger('status-changed', this.status, status);
+                this.trigger('status-changed', oldStatus, status);
             };
             BotState.prototype.goLogging = function(){
                 this.trigger('logging');
@@ -179,7 +179,6 @@
                 self.update();
             };
 
-            console.log(__page.bot)
             var botState = null;
             //TODO: bind status syncing to update status
             ws.subscribe('/bot/st_change', function(data){
