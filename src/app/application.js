@@ -20,7 +20,7 @@ app.use(koaBody({multipart:true, formidable:{keepExtensions: true, uploadDir: pa
 require('../routes')(app);
 
 //ws
-var server = require('./ws')(app);
+var server = require('./ws')(app).server;
 
 //404
 app.use(function *pageNotFound(next) {

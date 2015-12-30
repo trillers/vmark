@@ -3,6 +3,7 @@ var context = require('../../context/context');
 var fileService = require('../../modules/file/services/FileService');
 var broadcastMessageService = require('../../modules/message/services/BroadcastMessageService');
 var typeRegistry = require('../../modules/common/models/TypeRegistry');
+var IntentionStatus = typeRegistry.item('IntentionStatus');
 var MsgContentType = typeRegistry.item('MsgType');
 var BroadcastType = typeRegistry.item('BroadcastType');
 var GroupType = typeRegistry.item('GroupType');
@@ -247,13 +248,17 @@ module.exports = function (router) {
     router.post('/start', function*(){
         try{
             var json = this.request.body;
-            var bot = wechatBotManager.getWechatBot(json.openid);
-            bot.start({
-                intention: json.intention,
-                mode: json.mode,
-                nickname: json.nickname,
-                sex: json.sex
-            });
+            console.warn(json);
+            var media = yield wechatMediaService.findBotByOpenidAsync(json.openid);
+            var orgMedia = yield orgMediaService.loadByMediaIdAsync(media._id);
+            yield orgMediaService.updateByIdAsync(orgMedia._id, {intentionStatus: IntentionStatus.Logged.value()});
+            //var bot = wechatBotManager.getWechatBot(json.openid);
+            //bot.start({
+            //    intention: json.intention,
+            //    mode: json.mode,
+            //    nickname: json.nickname,
+            //    sex: json.sex
+            //});
             this.body = {success: true, error: null};
         }catch(e){
             console.error(e);
@@ -262,8 +267,12 @@ module.exports = function (router) {
     });
     router.get('/stop/:id', function*(){
         try{
-            var bot = wechatBotManager.getWechatBot(this.params.id);
-            bot.stop();
+            var openid = this.params.id;
+            var media = yield wechatMediaService.findBotByOpenidAsync(openid);
+            var orgMedia = yield orgMediaService.loadByMediaIdAsync(media._id);
+            yield orgMediaService.updateByIdAsync(orgMedia._id, {intentionStatus: IntentionStatus.Exited.value()});
+            //var bot = wechatBotManager.getWechatBot(openid);
+            //bot.stop();
             this.body = {success: true, error: null};
         }catch(e){
             console.error(e);

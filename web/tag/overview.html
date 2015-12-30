@@ -102,7 +102,7 @@
             self.tenantId = __page.tenantId;
             self.botKeepLogged = true;
             self.botKeepExited = false;
-            self.botActioning = false;
+            self.botActioning = true;
             self.needLoginFlg = false;
             var IntentionStatus = __app.enums.IntentionStatus.names;
             var Status = __app.enums.WechatBotStatus.names;
@@ -110,7 +110,7 @@
 
             var BotState = function(id, intentionStatus, status){
                 this.id = id;
-                this.intentionStatus = intentionStatus;
+                this.intentionStatus = intentionStatus || IntentionStatus.Logged;
                 this.on('logged', this.onLogged.bind(this));
                 this.on('exited', this.onExited.bind(this));
                 this.on('logging', this.onLogging.bind(this));
@@ -130,7 +130,7 @@
                 if(status == IntentionStatus.Logged){
                     this.trigger('logged');
                 }
-                else if(status == IntentionStatus.Exited){
+                else if(status == IntentionStatus.Exited || status == Status.Aborted){
                     this.trigger('exited');
                 }
                 this.trigger('status-changed', this.status, status);
@@ -181,9 +181,9 @@
             var botState = null;
             //TODO: bind status syncing to update status
             ws.subscribe('/bot/st_change', function(data){
-                var json = data.data;
+                var json = data;
                 if(json.agentId === self.bot.customId){
-                    if(json.newStatus === __app.enums.WechatBotStatus.Logged.value){
+                    if(json.newStatus === Status.Logged){
                         self.needLoginFlg = false;
                     }
                     botState.updateStatus(json.newStatus);
@@ -191,7 +191,8 @@
             });
 
             ws.subscribe('/bot/need_login', function(data){
-                var json = data.data;
+                console.warn(data);
+                var json = data;
                 if(json.agentId === self.bot.customId){
                     self.loginQR = json.mediaUrl;
                     self.needLoginFlg = true;
@@ -202,13 +203,13 @@
             var loadBotByMediaId = domain.action('loadBotByMediaId');
             var startBot = domain.action('startBot');
             var stopBot = domain.action('stopBot');
-
+console.log(self.bot);
             goLogging(e){
                 startBot.execute({
                     openid: self.bot.customId,
                     intention: 'login',
                     mode: 'untrusted',
-                    nickname: self.bot.nickname,
+                    nickname: self.bot.name,
                     sex: self.bot.sex
                 });
                 botState.goLogging();
@@ -226,7 +227,7 @@
             };
 
             this.on('mount', function(){
-                botState = new BotState(self.bot.id, IntentionStatus.Logged, __page.bot.status)
+                botState = new BotState(self.bot.id, __page.bot.intentionStatus, __page.bot.status)
                 botState.updateStatus(__page.bot.status)
             });
             this.on('unmount', function(){

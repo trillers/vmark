@@ -13,6 +13,7 @@ _exports.group = require('./group');
 _exports.recontent = require('./recontent');
 _exports.boss = {};
 _exports.boss.main = require('./boss/main');
+_exports.websocket = require('./websocket');
 
 require('./system/wechatbot');
 module.exports = _exports;
