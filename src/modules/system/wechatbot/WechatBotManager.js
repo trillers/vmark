@@ -126,6 +126,7 @@ WechatBotManager.prototype._routines = function(){
         }
         orgMedias.forEach(function (orgMedia) {
             var botInfo = orgMedia.media;
+            console.warn(orgMedia.intentionStatus+"******" + botInfo.status)
             if(orgMedia.intentionStatus !== botInfo.status){
                 var bot = botManager.getBot(botInfo.customId);
                 if(orgMedia.intentionStatus === IntentionStatus.Logged.value() &&
