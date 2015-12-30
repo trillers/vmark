@@ -11,7 +11,7 @@ module.exports = function(msg){
             if(media){
                 yield wechatMediaService.updateStatusByIdAsync(media._id, msg.NewStatus);
                 ws.of('/bot/st_change').in(media.org).clients().emit({
-                    agent: msg.AgentId,
+                    agentId: msg.AgentId,
                     newStatus: msg.NewStatus
                 });
                 logger.info('success update wechat bot status, changeInfo: ' + msg);
