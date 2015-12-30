@@ -12,50 +12,47 @@ WebSocketClient.prototype.emit = function(data){
     this.client.write(str);
 };
 
+/**
+ * Allow a socket join a room
+ * @param room
+ */
 WebSocketClient.prototype.join = function(room){
-    var channels = room.split('/');
     var me = this;
     var ctx = this.ctx;
-    channels.splice(0, 1);
-    var currChannel = '';
-    for(var i=0, len=channels.length; i<len; i++){
-        var channel = channels[i];
-        currChannel+='/'+channel;
-        if(!(currChannel in ctx.rooms)){
-            ctx.rooms[currChannel] = [me.id];
-        }
-        if(ctx.rooms[currChannel].indexOf(me.id)<0){
-            ctx.rooms[currChannel].push(me.id);
-        }
+    if(!ctx.rooms[room]){
+        ctx.rooms[room] = [];
     }
+    ctx.rooms[room].push(me.id);
 };
 
-WebSocketClient.prototype.leave = function(){
-    var ctx = this.ctx;
+/**
+ * Leave a room
+ * @param room
+ */
+WebSocketClient.prototype.leave = function(room){
     var me = this;
-    var nodes = sort();
-    for(var i=0, len=nodes.length; i<len; i++){
-        var room = nodes[i];
-        var childs = ctx.rooms[room];
-        if(childs && childs.length && childs.indexOf(me.id)>=0){
-            if(childs.length === 1){
-                delete ctx.rooms[room];
-            }
-        }
-    }
-    function sort(){
-        var rooms = me.rooms();
-        rooms.forEach(function(c, i, arr){
-            if(i === arr.length-1){
-                return arr;
-            }
-            if(c.length>arr[i+1].length){
-                var tmp = arr[i];
-                arr[i] = arr[i+1];
-                arr[i+1] = tmp;
+    var ctx = this.ctx;
+    if(!room){
+        Object.keys(ctx.rooms).forEach(function(key){
+            var arr = ctx.rooms[key];
+            if(arr.indexOf(me.id)>=0){
+                if(arr.length === 1){
+                    delete ctx.rooms[key];
+                }else{
+                    arr.splice(arr.indexOf(me.id), 1);
+                }
             }
         });
-        return rooms;
+        return;
+    }
+    if(ctx.rooms[room]){
+        if(ctx.rooms[room].indexOf(me.id) > 0){
+            if(ctx.rooms[room].length === 1){
+                delete ctx.rooms[room]
+            }else{
+                ctx.rooms[room].splice(ctx.rooms[room].indexOf(me.id), 1);
+            }
+        }
     }
 };
 

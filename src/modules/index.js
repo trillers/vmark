@@ -11,6 +11,7 @@ _exports.tenant.org = require('./tenant/org');
 _exports.tenant.main = require('./tenant/main');
 _exports.group = require('./group');
 _exports.recontent = require('./recontent');
+_exports.websocket = require('./websocket');
 
 require('./system/wechatbot');
 module.exports = _exports;
