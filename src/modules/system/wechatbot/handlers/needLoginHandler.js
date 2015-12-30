@@ -4,7 +4,7 @@ var co = require('co');
 var fs = require('fs');
 var os = require('os');
 var request = require('request');
-var ws = require('../../../../app/ws');
+var ws = require('../../../../app/ws')();
 
 module.exports = function(msg){
     co(function*(){

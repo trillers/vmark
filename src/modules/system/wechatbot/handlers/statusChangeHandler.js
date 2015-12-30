@@ -1,6 +1,6 @@
 var context = require('../../../../context/context');
 var logger = context.logger;
-var ws = require('../../../../app/ws');
+var ws = require('../../../../app/ws')();
 var co = require('co');
 
 module.exports = function(msg){
