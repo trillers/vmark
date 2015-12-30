@@ -191,6 +191,7 @@
             });
 
             ws.subscribe('/bot/need_login', function(data){
+                console.warn(data);
                 var json = data;
                 if(json.agentId === self.bot.customId){
                     self.loginQR = json.mediaUrl;

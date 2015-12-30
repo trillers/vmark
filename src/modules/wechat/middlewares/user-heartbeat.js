@@ -6,7 +6,7 @@ module.exports = function* (next){
         analise the list and emit online and offline
     */
     if(LocationEvtOrNot(this.weixin)){
-        console.log('have not enable')
+        //console.log('have not enable')
     }
 
     yield next;
