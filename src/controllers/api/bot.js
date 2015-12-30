@@ -251,7 +251,7 @@ module.exports = function (router) {
             console.warn(json);
             var media = yield wechatMediaService.findBotByOpenidAsync(json.openid);
             var orgMedia = yield orgMediaService.loadByMediaIdAsync(media._id);
-            yield orgMediaService.updateByIdAsync(orgMedia._id, {intentionStatus: IntentionStatus.Exited.value()});
+            yield orgMediaService.updateByIdAsync(orgMedia._id, {intentionStatus: IntentionStatus.Logged.value()});
             //var bot = wechatBotManager.getWechatBot(json.openid);
             //bot.start({
             //    intention: json.intention,
@@ -270,7 +270,7 @@ module.exports = function (router) {
             var openid = this.params.id;
             var media = yield wechatMediaService.findBotByOpenidAsync(openid);
             var orgMedia = yield orgMediaService.loadByMediaIdAsync(media._id);
-            yield orgMediaService.updateByIdAsync(orgMedia._id, {intentionStatus: IntentionStatus.Logged.value()});
+            yield orgMediaService.updateByIdAsync(orgMedia._id, {intentionStatus: IntentionStatus.Exited.value()});
             //var bot = wechatBotManager.getWechatBot(openid);
             //bot.stop();
             this.body = {success: true, error: null};
