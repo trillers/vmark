@@ -5,7 +5,7 @@ var authResults = securityService.authResults;
 
 module.exports = function* (openid, sceneId){
     var conn = wsConns[sceneId];
-    cnsole.log("login conn***************")
+    console.log("login conn***************")
     console.warn(conn)
     if(conn){
         var result = {};
