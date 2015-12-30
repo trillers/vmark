@@ -31,4 +31,11 @@ module.exports = function(app){
     require('./bot')(bot_router);
     app.use(bot_router.routes());
 
+    //tenant
+    var bot_router = new router();
+    bot_router.prefix('/api/tenant');
+    require('./tenant')(bot_router);
+    app.use(bot_router.routes());
+
+
 }

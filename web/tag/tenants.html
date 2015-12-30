@@ -9,7 +9,32 @@
             </div>
             <div class="row">
                 <div class="col-md-8 col-md-offset-2" >
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th>类型</th>
+                            <th>状态</th>
+                        </tr>
+                        </thead>
+                        <tbody>
 
+                        <tr each="{tenants}">
+                            <td>
+                                <a href="#tenant?id={_id}">
+                                    {name}
+                                </a>
+                            </td>
+                            <td>
+                                { __app.enums.PartyType.values[type] }
+                            </td>
+                            <td>
+                                { __app.enums.LifeFlag.values[lFlg] }
+                            </td>
+                        </tr>
+
+                        </tbody>
+                    </table>
                 </div><!--/span-->
             </div><!--/row-->
         </div><!--/container-->
@@ -26,23 +51,24 @@
             self.tip = false;
             self.tipInfo = "";
 
+            var findTenants = domain.action('findTenants');
 
-//            var loadBotByMediaId = domain.action('loadBotByMediaId');
-
-            var onLoadBotByMediaId = function(data){
-                botState.updateStatus(data.media.status);
+            var onFindTenants = function(tenants){
+                self.tenants = tenants;
                 self.update();
             };
 
             this.on('mount', function(){
+                findTenants.onDone(onFindTenants);
             });
             this.on('unmount', function(){
-//                loadBotByMediaId.offDone(onLoadBotByMediaId);
+                findTenants.offDone(onFindTenants);
             });
             this.on('open', function(options){
                 console.info('tag tenants is opening');
                 self.trigger('ready', false);
                 self.trigger('view-route-to');
+                findTenants.execute({});
             });
 
             this.on('leave', function(){
