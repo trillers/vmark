@@ -1,4 +1,4 @@
-<tenants>
+<adlink-index>
     <div if="{!hidden}">
         <div if="{tip}" class="alert {addClass}" style="margin-top: -5px; float: left; width: 100%; text-align: center; margin-bottom: 0; position: absolute; z-index: 9999">
             <strong>{tipInfo}</strong>
@@ -8,34 +8,36 @@
                 &nbsp;
             </div>
             <div class="row">
-                <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2" >
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>名称</th>
-                            <th>类型</th>
-                            <th>状态</th>
-                        </tr>
-                        </thead>
-                        <tbody>
+                <div class="col-md-4  col-lg-4" >
+                    <div class="container" style="margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0">
+                        <div class="row">
+                            <div class="col-md-12  col-lg-12" >
 
-                        <tr each="{tenants}">
-                            <td>
-                                <a href="#tenant?id={_id}">
-                                    {name}
-                                </a>
-                            </td>
-                            <td>
-                                { __app.enums.PartyType.values[type] }
-                            </td>
-                            <td>
-                                { __app.enums.LifeFlag.values[lFlg] }
-                            </td>
-                        </tr>
 
-                        </tbody>
-                    </table>
-                </div><!--/span-->
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    <tr each="{adLinks}">
+                                        <td>
+                                            <a href="#adlink?id={_id}">
+                                                {name}{ __app.enums.PartyType.values[type] }
+                                            </a>
+                                        </td>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div><!--/row-->
         </div><!--/container-->
 
@@ -88,4 +90,4 @@
 
         </script>
     </div>
-</tenants>
+</adlink-index>

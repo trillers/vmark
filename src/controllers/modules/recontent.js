@@ -5,6 +5,12 @@ var recontentService = context.services.recontentService;
 module.exports = function(){
     var router = new Router();
     require('../../app/routes-spa')(router);
+
+    router.get('/tenant-recontent-:id', function *(){
+        var tenant = {name: '包三哥', type: 'p'};
+        yield this.render('tenant-recontent', {tenant: tenant});
+    });
+
     router.get('/recontent-set', function *(){
         var url = this.query.url;
         var feedback = this.query.feedback;

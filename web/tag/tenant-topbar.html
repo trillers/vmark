@@ -1,0 +1,42 @@
+<tenant-topbar>
+    <nav class="navbar navbar-default navbar-inverse" role="navigation" style="margin-bottom: 5px; border-radius: 0;">
+        <div class="collapse navbar-collapse">
+            <a class="navbar-brand" style="font-size:20px; color: #ffffff">微节点</a>
+            <ul class="nav navbar-nav" style="width: 88%">
+                <li class="navbtn"><a id="adlink-index" href="#" route="adlink-index" class="myActive" onclick={adlinks}>广告位</a></li>
+                <li  style="float: right;"><a href="#" style="font-size: 1.4em" class="glyphicon glyphicon-off" title="退出" onclick="{logout}"></a></li>
+                <li style="float: right; margin-right: 20px; padding-top: 5px;">
+                    <img src="{headimgurl}" style="height: 40px; width: 40px" alt=""/><span style="margin-left: 10px; color: white">{nickname}</span>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <style>
+        .navbtn{padding-left: 20px; font-size:16px}
+        .myActive{color: #ffffff !important; border:0; outline: none !important;}
+    </style>
+    <script>
+        this.headimgurl = __page.user.headimgurl;
+        this.nickname = __page.user.nickname;
+
+        this.on('mount', function(){
+            if(window.location.hash) {
+                $('.navbtn a').removeClass('myActive');
+                $(window.location.hash).addClass('myActive');
+            }
+        });
+
+        logout(e){
+            $.get('/logout', function(data){
+               window.location.href = '/login';
+            });
+        }
+
+        adlinks(e){
+            e.preventUpdate = true;
+            $('.navbtn a').removeClass('myActive');
+            $(e.currentTarget).addClass('myActive');
+            riot.route($(e.currentTarget).attr('route'));
+        }
+    </script>
+</tenant-topbar>
