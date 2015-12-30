@@ -3,6 +3,7 @@ var context = require('../../context/context');
 var fileService = require('../../modules/file/services/FileService');
 var broadcastMessageService = require('../../modules/message/services/BroadcastMessageService');
 var typeRegistry = require('../../modules/common/models/TypeRegistry');
+var IntentionStatus = typeRegistry.item('IntentionStatus');
 var MsgContentType = typeRegistry.item('MsgType');
 var BroadcastType = typeRegistry.item('BroadcastType');
 var GroupType = typeRegistry.item('GroupType');
@@ -247,6 +248,9 @@ module.exports = function (router) {
     router.post('/start', function*(){
         try{
             var json = this.request.body;
+            var media = yield wechatMediaService.findBotByOpenidAsync(json.openid);
+            var orgMedia = yield orgMediaService.loadByMediaIdAsync(media._id);
+            yield orgMediaService.updateByIdAsync(orgMedia._id, {intention: IntentionStatus.Exited.value()});
             var bot = wechatBotManager.getWechatBot(json.openid);
             bot.start({
                 intention: json.intention,
@@ -262,7 +266,11 @@ module.exports = function (router) {
     });
     router.get('/stop/:id', function*(){
         try{
-            var bot = wechatBotManager.getWechatBot(this.params.id);
+            var openid = this.params.id;
+            var media = yield wechatMediaService.findBotByOpenidAsync(openid);
+            var orgMedia = yield orgMediaService.loadByMediaIdAsync(media._id);
+            yield orgMediaService.updateByIdAsync(orgMedia._id, {intention: IntentionStatus.Logged.value()});
+            var bot = wechatBotManager.getWechatBot(openid);
             bot.stop();
             this.body = {success: true, error: null};
         }catch(e){

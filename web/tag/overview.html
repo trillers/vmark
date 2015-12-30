@@ -204,14 +204,15 @@
             var loadBotByMediaId = domain.action('loadBotByMediaId');
             var startBot = domain.action('startBot');
             var stopBot = domain.action('stopBot');
-
+console.log(self.bot);
             goLogging(e){
                 startBot.execute({
                     openid: self.bot.customId,
                     intention: 'login',
                     mode: 'untrusted',
                     nickname: self.bot.nickname,
-                    sex: self.bot.sex
+                    sex: self.bot.sex,
+
                 });
                 botState.goLogging();
             }
