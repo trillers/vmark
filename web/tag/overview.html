@@ -181,6 +181,8 @@
             var botState = null;
             //TODO: bind status syncing to update status
             ws.subscribe('/bot/st_change', function(data){
+                console.log("***********");
+                console.log(data);
                 var json = data;
                 if(json.agentId === self.bot.customId){
                     if(json.newStatus === __app.enums.WechatBotStatus.Logged.value){
