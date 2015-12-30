@@ -2,7 +2,6 @@
 var SockJS = require('sockjs');
 var riot = require('seedriot');
 var uuid = require('uuid');
-var id = uuid.v4();
 var base_Url = '/bot';
 var orgId = __page.user.posts[0].org;
 console.log(orgId)
