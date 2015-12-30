@@ -143,7 +143,7 @@ WechatBotManager.prototype._routines = function(){
                     wechatMediaService.updateStatusById(botInfo._id, WechatBotStatus.Starting.value());
                 }else if(orgMedia.intentionStatus === IntentionStatus.Exited.value()){
                     if(botInfo.status === WechatBotStatus.Exited.value() ||
-                        WechatBotStatus.Aborted.value()){
+                        botInfo.status === WechatBotStatus.Aborted.value()){
                         return;
                     }
                     logger.debug('Stop bot ' + botInfo.customId);
