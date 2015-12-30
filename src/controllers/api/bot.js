@@ -248,6 +248,7 @@ module.exports = function (router) {
     router.post('/start', function*(){
         try{
             var json = this.request.body;
+            console.warn(json);
             var media = yield wechatMediaService.findBotByOpenidAsync(json.openid);
             var orgMedia = yield orgMediaService.loadByMediaIdAsync(media._id);
             yield orgMediaService.updateByIdAsync(orgMedia._id, {intention: IntentionStatus.Exited.value()});
