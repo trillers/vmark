@@ -183,7 +183,7 @@
             ws.subscribe('/bot/st_change', function(data){
                 var json = data;
                 if(json.agentId === self.bot.customId){
-                    if(json.newStatus === __app.enums.WechatBotStatus.Logged.value){
+                    if(json.newStatus === Status.Logged){
                         self.needLoginFlg = false;
                     }
                     botState.updateStatus(json.newStatus);
