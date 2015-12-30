@@ -222,13 +222,16 @@ console.log(self.bot);
             }
 
             var onLoadBotByMediaId = function(data){
+                botState = new BotState(self.bot.id, data.media.intentionStatus, data.media.status);
                 botState.updateStatus(data.media.status);
                 self.update();
             };
 
             this.on('mount', function(){
-                botState = new BotState(self.bot.id, __page.bot.intentionStatus, __page.bot.status)
-                botState.updateStatus(__page.bot.status)
+                loadBotByMediaId.onDone(onLoadBotByMediaId);
+                loadBotByMediaId.execute({
+                    botId: self.bot._id
+                });
             });
             this.on('unmount', function(){
                 loadBotByMediaId.offDone(onLoadBotByMediaId);

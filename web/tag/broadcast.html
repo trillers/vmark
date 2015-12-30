@@ -21,11 +21,11 @@
                                         <div style="display: -webkit-inline-box;">
                                             <img style="width: 48px;height:48px" riot-src="{contentType == 'image' && media_id && parent.api + '/file/?media_id=' + media_id}" alt=""/>
                                         </div>
-                                        <div style="position:absolute;right:10px;bottom:10px;font-size: 0.5em;float:right; text-align: right;">{parent.formatDate(crtOn)}</div>
+                                        <div style="position:absolute;right:10px;bottom:10px;font-size: 12px;float:right; text-align: right;">{parent.formatDate(crtOn)}</div>
                                     </div>
                                     <div  if="{contentType == 'text'}" style="height: 100%; width: 100%">
-                                        <div style="display: -webkit-inline-box; padding: 5px; height: 50px;overflow: hidden; width: 100%; font-size: 0.5em">{content}</div>
-                                        <div style="position:absolute;right:10px;bottom:10px;font-size: 0.5em;float:right; text-align: right;">{parent.formatDate(crtOn)}</div>
+                                        <div style="display: -webkit-inline-box; padding: 5px; min-height: 50px; overflow: hidden; width: 100%; font-size: 14px">{content}</div>
+                                        <div style="position:absolute;right:10px;bottom:10px;font-size: 12px;float:right; text-align: right;">{parent.formatDate(crtOn)}</div>
                                     </div>
                                 </li>
                             </ul>

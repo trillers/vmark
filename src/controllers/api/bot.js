@@ -1,4 +1,5 @@
 "use strict";
+var _ = require('underscore');
 var context = require('../../context/context');
 var fileService = require('../../modules/file/services/FileService');
 var broadcastMessageService = require('../../modules/message/services/BroadcastMessageService');
@@ -24,6 +25,8 @@ module.exports = function (router) {
     router.get('/:id', function *() {
         try {
             var media = yield wechatMediaService.loadByIdAsync(this.params.id);
+            var orgMediaOrigin = yield orgMediaService.loadByMediaIdAsync(media._id);
+            media['intentionStatus'] = orgMediaOrigin.intentionStatus;
             this.body = {success: true, err: null, media: media};
         }catch(e){
             this.body = {success: false, err: e};
