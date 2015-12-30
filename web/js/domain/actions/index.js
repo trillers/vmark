@@ -1,5 +1,6 @@
 var domain = require('../domain');
 
-require('./pa');
+require('./wenode');
+require('./wenode-boss');
 
 module.exports = domain.actions();

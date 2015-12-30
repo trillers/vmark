@@ -1,0 +1,91 @@
+<tenants>
+    <div if="{!hidden}">
+        <div if="{tip}" class="alert {addClass}" style="margin-top: -5px; float: left; width: 100%; text-align: center; margin-bottom: 0; position: absolute; z-index: 9999">
+            <strong>{tipInfo}</strong>
+        </div>
+        <div class="container" style="width: 100%; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0">
+            <div class="row">
+                &nbsp;
+            </div>
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2" >
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th>类型</th>
+                            <th>状态</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr each="{tenants}">
+                            <td>
+                                <a href="#tenant?id={_id}">
+                                    {name}
+                                </a>
+                            </td>
+                            <td>
+                                { __app.enums.PartyType.values[type] }
+                            </td>
+                            <td>
+                                { __app.enums.LifeFlag.values[lFlg] }
+                            </td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div><!--/span-->
+            </div><!--/row-->
+        </div><!--/container-->
+
+        <style scoped>
+
+        </style>
+
+        <script>
+            "use strict";
+            this.app = this.opts.app; //keep spa object
+            var self = nest.presentable(this);
+            self.api =  __app.settings.api.url;
+            self.tip = false;
+            self.tipInfo = "";
+
+            var findTenants = domain.action('findTenants');
+
+            var onFindTenants = function(tenants){
+                self.tenants = tenants;
+                self.update();
+            };
+
+            this.on('mount', function(){
+                findTenants.onDone(onFindTenants);
+            });
+            this.on('unmount', function(){
+                findTenants.offDone(onFindTenants);
+            });
+            this.on('open', function(options){
+                console.info('tag tenants is opening');
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+                findTenants.execute({});
+            });
+
+            this.on('leave', function(){
+                self.mask = true;
+                self.update();
+            });
+
+            this.on('reenter', function(){
+                self.mask = false;
+                self.update();
+            });
+
+            this.on('refresh', function(){
+                console.info('tag tenants is refreshing');
+                //_refresh();
+            });
+
+        </script>
+    </div>
+</tenants>

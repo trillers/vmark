@@ -2,7 +2,12 @@ var TypeRegistry = require('../../../framework/model/TypeRegistry');
 var registry = new TypeRegistry('TypeRegistry', 'TypeRegistry', 'TypeRegistry');
 
 registry
-    .item('PartyType', 'PartyType', '租户类型')
+    .item('LifeFlag', 'LifeFlag', '状态')
+    .addChild('Active','a', '已激活')
+    .addChild('Inactive','i', '已锁定')
+    .addChild('Deleted','d', '已删除')
+
+    .up().item('PartyType', 'PartyType', '租户类型')
     .addChild('Personal','p', '个人')
     .addChild('Organizational','o', '组织')
 

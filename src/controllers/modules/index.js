@@ -10,4 +10,6 @@ module.exports = function(app){
 
     app.use(require('./recontent')());
 
+    app.use(require('./boss')());
+
 }
