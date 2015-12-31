@@ -9,15 +9,16 @@ var loginHandler = require('./loginHandler');
 
 module.exports = function (emitter) {
     emitter.qr(function (event, context) {
+        logger.error('qr scan');
         co(function*() {
             var sceneId = context.weixin.SceneId;
             var userOpenid = context.weixin.FromUserName;
             try {
-                console.error('#########################');
+                logger.error('#########################');
                 var user = null, reply = '[系统]: 系统繁忙，请稍后重试！';
                 var qr = yield QrChannelService.loadBySceneIdAsync(sceneId);
-                console.log('&&&&&&&&qr');
-                console.error(qr);
+                logger.log('&&&&&&&&qr');
+                logger.error(qr);
                 if (qr) {
                     switch (qr.type) {
                         case 'ta':
@@ -54,6 +55,7 @@ module.exports = function (emitter) {
                     });
                 }
                 else {
+                    logger.error('node qrcode');
                     reply = '[系统]: 该二维码已失效';
                     wechatApi.sendText(userOpenid, reply, function (err) {
                         console.log(err);
@@ -61,7 +63,7 @@ module.exports = function (emitter) {
                     });
                 }
             } catch (err) {
-                logger.err('qr event handler err: ' + err);
+                logger.error('qr event handler err: ' + err);
                 return;
             }
         });
