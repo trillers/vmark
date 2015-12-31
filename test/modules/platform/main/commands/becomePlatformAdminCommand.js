@@ -13,9 +13,10 @@ before(function(done){
 
 describe('becomePlatformAdminCommand', function() {
     //var openid = 'okvXqsw1VG76eVVJrKivWDgps_gA';//包三哥的错题本openid
-    var openid = 'oO9zswxhJsRd_9f8DlpzfZrWnjRk';//包三哥的跟谁学西安openid
+    //var openid = 'oO9zswxhJsRd_9f8DlpzfZrWnjRk';//包三哥的跟谁学西安openid
+    var openid = 'oO9zsww3I9LWFN9AWf0RP9myCjsQ';//Rupert的跟谁学西安openid
 
-    it('success to become a platform admin', function (done) {
+    it.only('success to become a platform admin', function (done) {
         var platform = new Wechat.Platform();
         var client = wxutil.newSignedInClient(platform);
         var site = wxutil.newRegisteredSite(platform);

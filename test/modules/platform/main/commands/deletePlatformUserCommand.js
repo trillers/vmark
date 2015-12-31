@@ -15,7 +15,7 @@ describe('becomePlatformAdminCommand', function() {
     var openid = 'okvXqsw1VG76eVVJrKivWDgps_gA';//包三哥的错题本openid
     //var openid = 'oO9zswxhJsRd_9f8DlpzfZrWnjRk';//包三哥的跟谁学西安openid
 
-    it.only('success to delete current user', function (done) {
+    it('success to delete current user', function (done) {
         var platform = new Wechat.Platform();
         var client = wxutil.newSignedInClient(platform);
         var site = wxutil.newRegisteredSite(platform);
