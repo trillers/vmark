@@ -26,6 +26,14 @@ var Model = function(domainBuilder){
 
             //微信公众号与助手号差异部分
             , language:     {type: String, default: 'zh_CN'} //公众号
+
+            /*
+             * 标签数组,包括自定义标签和类型标签两种:
+             *  自定义标签类似 ['小资', '女'],
+             *  类型标签类似: ['性别:男', '年级:初一']
+             *  自定义标签和类型标签可以混用: ['小资', '性别:男']
+             */
+            , tags: [String]
         })
         .build();
     return schema.model(true);
