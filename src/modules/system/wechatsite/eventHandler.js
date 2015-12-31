@@ -13,9 +13,11 @@ module.exports = function (emitter) {
             var sceneId = context.weixin.SceneId;
             var userOpenid = context.weixin.FromUserName;
             try {
+                console.error('#########################');
                 var user = null, reply = '[系统]: 系统繁忙，请稍后重试！';
                 var qr = yield QrChannelService.loadBySceneIdAsync(sceneId);
-                console.log(qr);
+                console.log('&&&&&&&&qr');
+                console.error(qr);
                 if (qr) {
                     switch (qr.type) {
                         case 'ta':
