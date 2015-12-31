@@ -15,7 +15,7 @@ module.exports = function (emitter) {
             try {
                 var user = null, reply = '[系统]: 系统繁忙，请稍后重试！';
                 var qr = yield QrChannelService.loadBySceneIdAsync(sceneId);
-                console.log(qr);
+                logger.error(qr);
                 if (qr) {
                     switch (qr.type) {
                         case 'ta':
@@ -59,7 +59,7 @@ module.exports = function (emitter) {
                     });
                 }
             } catch (err) {
-                logger.err('qr event handler err: ' + err);
+                logger.error('qr event handler err: ' + err);
                 return;
             }
         });
