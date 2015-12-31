@@ -22,7 +22,7 @@ var createLimitQRCode = function(sceneId, callback){
 };
 
 var createTempQRCode = function(sceneId, callback){
-    wechat.api.createTmpQRCode(sceneId, 604800, function(err, result){
+    wechat.api.createTmpQRCode(sceneId, 2592000, function(err, result){
         if(err){
             if(callback) callback(err);
         }
