@@ -34,6 +34,21 @@ module.exports = function (router) {
     });
 
     /**
+     * tags routers
+     */
+    router.post('/tags/user/:id', function* (){
+        try{
+            var wechatMediaUserId = this.params.id;
+            var tags = this.request.body.tags;
+            yield wechatMediaUserService.saveTagsByIdAsync(wechatMediaUserId, tags);
+            this.body = {success: true}
+        }catch(e){
+            console.error(e)
+            this.body = {error: true}
+        }
+    });
+
+    /**
      * MultiSend routers
      */
     router.post('/broadcastTxt', function *() {

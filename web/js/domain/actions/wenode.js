@@ -20,6 +20,13 @@ domain.action('loadBotByMediaId').onExecute(function(data){
 });
 
 /**
+ * tags actions
+ */
+domain.action('saveTagsById').onExecute(function(data){
+    apiFactory.post('/bot/tags/user/' + data.id).drive(this).send(data);
+});
+
+/**
  * multiSend actions
  */
 domain.action('broadcastTxt').onExecute(function(data){
