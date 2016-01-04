@@ -58,7 +58,7 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="btn-group" style="float: left">
+                            <div class="btn-group" style="float: left;margin-bottom: 10px">
                                 <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <span id="groupDisplay">请选择分组</span><span class="caret"></span>
                                 </button>
@@ -67,11 +67,11 @@
                                 </ul>
                                 <input id="group" type="hidden"/>
                             </div>
-                            <div id="choose_img" style="float: left; margin-left: 10px; margin-bottom: 10px">
-                                <span class='btn_addPic glyphicon glyphicon-picture' href="javascript:void(0);"><input id="img_file"  type="file"  class='filePrew' class="glyphicon glyphicon-picture" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{previewImg}"/></span>
-                            </div>
                             <textarea id="broadcastMsg" style="height:160px;background: #FBFBFB;margin-top: 5px;" class="form-control" rows="3"></textarea>
                             <button id="send" type="button" onclick="{broadcast}" style="margin-top: 1em; width: 7em;float:right" class="btn btn-success">发送</button>
+                            <div id="choose_img" style="float: right; margin-right: 20px; margin-top: 12px">
+                                <span class='btn_addPic glyphicon glyphicon-picture' href="javascript:void(0);"><input id="img_file"  type="file"  class='filePrew' class="glyphicon glyphicon-picture" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{previewImg}"/></span>
+                            </div>
                         </div>
                     </div>
                 </div><!--/span-->

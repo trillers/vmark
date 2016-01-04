@@ -130,7 +130,6 @@
              * nickname, remark, province, city, district, sex, headimgurl, tags
              */
             self.currUser = {};
-            self.removeTags = [];
             self.init = function(){
 
             };
@@ -202,8 +201,9 @@
             }
 
             selectContact(e){
-                console.log(e.item)
                 self.currUser = e.item
+                self.viewModel.mode = 'view';
+                self.newTag.value = "";
             }
             self.formatDate = function(date){
                 var dateStr = new Date(date).toLocaleDateString();

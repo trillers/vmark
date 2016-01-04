@@ -218,6 +218,20 @@ module.exports = function (router) {
         }
     });
 
+    router.put('/group/:id', function* (){
+        try{
+            var groupId = this.params.id;
+            var json = this.request.body;
+            console.log(groupId);
+            console.log(json);
+            var group = yield groupService.updateByIdAsync(groupId, json);
+            this.body = {success: true, group: group};
+        }catch(e){
+            console.error(e);
+            this.body = {error: e};
+        }
+    });
+
     router.post('/group', function* (){
         try{
             var name = this.request.body.name;

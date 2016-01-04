@@ -55,6 +55,10 @@ domain.action('loadGroup').onExecute(function(data){
     apiFactory.get('/bot/group?id=' + data.id).drive(this).send();
 });
 
+domain.action('editGroup').onExecute(function(data){
+    apiFactory.put('/bot/group/' + data.id).drive(this).send(data);
+});
+
 domain.action('delGroup').onExecute(function(data){
     apiFactory.delete('/bot/group?id=' + data.groupId).drive(this).send(data);
 });
