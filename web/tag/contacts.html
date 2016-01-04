@@ -43,10 +43,10 @@
                         </div>
                         <div class="tags_area">
                             <div style="text-align: center; margin-bottom:20px">
-                                <button if="{viewModel.mode==='view'}" onclick="{editTags}" type="button" class="btn btn-default" style="display:inline-block;background: #3C763D; color:white; border: none">
+                                <button if="{viewModel.mode==='view'}" onclick="{editTags}" type="button" class="btn btn-default" style="display:inline-block;background: #269227; color:white; border: none">
                                     编辑标签
                                 </button>
-                                <button if="{viewModel.mode==='edit'}" onclick="{submitTags}" type="button" class="btn btn-default" style="display:inline-block;background: #3C763D; color:white; border: none">
+                                <button if="{viewModel.mode==='edit'}" onclick="{submitTags}" type="button" class="btn btn-default" style="display:inline-block;background: #269227; color:white; border: none">
                                     确认
                                 </button>
                                 <!--<button if="{viewModel.mode==='edit'}" onclick="{cancelTags}" type="button" class="btn btn-default" style="display:inline-block;background: #3C763D; color:white; border: none">-->
@@ -257,8 +257,11 @@
                 }
             }
             removeTag(e){
-                console.log(e.item);
-                self.currUser.tags.splice(e.item.i, 1);
+                self.currUser.tags.forEach(function(item, index){
+                    if(item === e.item.name){
+                        self.currUser.tags.splice(index, 1);
+                    }
+                });
                 return false;
             }
             submitTags(e){
