@@ -17,6 +17,7 @@ var tenantOrgMediaService = context.services.tenantOrgMediaService;
 var orgMediaService = context.services.orgMediaService;
 var groupService = context.services.groupService;
 var groupMemberService = context.services.groupMemberService;
+var tagService = context.services.tagService;
 
 module.exports = function (router) {
     /**
@@ -40,10 +41,57 @@ module.exports = function (router) {
         try{
             var wechatMediaUserId = this.params.id;
             var tags = this.request.body.tags;
+            var tenant = this.request.body.tenant;
+            var deposeTags = [];
+            var fixedTags = [];
+            var wechatMediaUser = yield wechatMediaUserService.loadByIdAsync(wechatMediaUserId);
+            if(wechatMediaUser.tags){
+                wechatMediaUser.tags.forEach(function(oldTag){
+                    console.log(tags)
+                    if(tags && tags.length){
+                        var index = tags.indexOf(oldTag);
+                        if(index<0){
+                            deposeTags.push(oldTag);
+                        }else{
+                            fixedTags = fixedTags.concat(tags.slice(index, index+1));
+                        }
+                    }
+                    else{
+                        deposeTags.push(oldTag);
+                    }
+                })
+            }
+            for(let i=0, len=deposeTags.length; i<len; i++){
+                let tag = deposeTags[i];
+                let tagOrigin = yield tagService.loadByNameAsync(tag, tenant);
+                if(tagOrigin){
+                    let tagUpdated = yield tagService.decreaseAsync(tag, tenant);
+                    if(tagUpdated.uses <=1){
+                        yield tagService.removeAsync(tag, tenant);
+                    }
+                }
+            }
+            if(tags && tags.length){
+                for(let i=0, len=tags.length; i<len; i++){
+                    let tag = tags[i];
+                    if(fixedTags.indexOf(tag)<0){
+                        let tagOrigin = yield tagService.loadByNameAsync(tag, tenant);
+                        if(tagOrigin){
+                            yield tagService.increaseAsync(tag, tenant);
+                        }else{
+                            var json = {
+                                name: tag,
+                                tenant: tenant
+                            };
+                            yield tagService.createAsync(json);
+                        }
+                    }
+                }
+            }
             yield wechatMediaUserService.saveTagsByIdAsync(wechatMediaUserId, tags);
             this.body = {success: true}
         }catch(e){
-            console.error(e)
+            console.error(e);
             this.body = {error: true}
         }
     });

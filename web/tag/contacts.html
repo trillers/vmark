@@ -267,7 +267,8 @@
             submitTags(e){
                 saveTagsById.execute({
                     id: self.currUser._id,
-                    tags: self.currUser.tags
+                    tags: self.currUser.tags,
+                    tenant: __page.bot.org
                 })
             }
         </script>

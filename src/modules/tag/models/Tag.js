@@ -5,6 +5,7 @@ var Model = function(domainBuilder){
         .withLifeFlag()
         .withCreatedOn()
         .withProperties({
+            uses:           {type: Number, required: true, default: 1},
             name:           {type: String, required: true},
             tenant:         {type: String, ref: 'Org', required: true}
         })

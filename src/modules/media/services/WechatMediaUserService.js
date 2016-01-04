@@ -29,6 +29,18 @@ Service.prototype.saveTagsById = function(id, tags, callback){
     });
 };
 
+Service.prototype.loadByTags = function(tags, callback){
+    var WechatMedia = this.context.models.WechatMediaUser;
+    WechatMedia.find({lFlg: 'a', tags: {$all: tags}}, function (err, result) {
+        cbUtil.logCallback(
+            err,
+            'Fail to load by tags: ' + err,
+            'Succeed to load by tags');
+
+        cbUtil.handleSingleValue(callback, err, result);
+    });
+};
+
 Service.prototype.updateByRemark = function(remark, update, callback){
     var WechatMedia = this.context.models.WechatMediaUser;
     WechatMedia.update({remark: remark, lFlg: 'a', type: 'wbc'}, update, function (err, result) {
