@@ -3,40 +3,51 @@
         <div if="{tip}" class="alert {addClass}" style="margin-top: -5px; float: left; width: 100%; text-align: center; margin-bottom: 0; position: absolute; z-index: 9999">
             <strong>{tipInfo}</strong>
         </div>
-        <div class="container" style="width: 100%; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0">
-            <div class="row">
+        <div class="container-fluid">
+            <div class="row-fluid">
                 &nbsp;
             </div>
-            <div class="row">
+            <div class="row-fluid">
                 <div class="col-md-4  col-lg-4" >
-                    <div class="container" style="margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0">
-                        <div class="row">
-                            <div class="col-md-12  col-lg-12" >
-
-
-                                <table class="table table-striped">
-                                    <thead>
-                                    <tr>
-                                        <th></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-
-                                    <tr each="{adLinks}">
-                                        <td>
-                                            <a href="#adlink?id={_id}">
-                                                {name}{ __app.enums.PartyType.values[type] }
-                                            </a>
-                                        </td>
-                                    </tr>
-
-                                    </tbody>
-                                </table>
-
-
+                    <div class="row-fluid">
+                        <div class="col-md-12  col-lg-12" >
+                            <div class="pull-right">
+                                <button class="btn btn-default btn-sm" type="button" onclick={onNewAdlink}>新建</button>
                             </div>
+
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>名称</th>
+                                    <th>广告</th>
+                                    <th>布局</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr each="{adlinks}">
+                                    <td>
+                                        <a onclick={parent.onViewDetail}>
+                                            <input type="hidden" value="{_id}">
+                                            {name}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="{url}">
+                                            {adwords}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        { __app.enums.AdlinkLayoutType.values[layout] }
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
-                    </div>
+                </div>
+                </div>
+                <div class="col-md-8  col-lg-8" >
+                    <adlink-edit id="edit"></adlink-edit>
+                    <adlink-detail id="detail"></adlink-detail>
                 </div>
             </div><!--/row-->
         </div><!--/container-->
@@ -52,25 +63,32 @@
             self.api =  __app.settings.api.url;
             self.tip = false;
             self.tipInfo = "";
+            self.tenantId = __page.tenantId;
+            var edit = self.tags['adlink-edit'];
+            var detail = self.tags['adlink-detail'];
 
-            var findTenants = domain.action('findTenants');
 
-            var onFindTenants = function(tenants){
-                self.tenants = tenants;
+//            riot.mount('broadcast', {filter: ctx.req.query, app: this.parent});
+
+            var findTenantAdlinks = domain.action('findTenantAdlinks');
+
+            var onFindTenantAdlinks = function(adlinks){
+                console.log(adlinks);
+                self.adlinks = adlinks;
                 self.update();
             };
 
             this.on('mount', function(){
-                findTenants.onDone(onFindTenants);
+                findTenantAdlinks.onDone(onFindTenantAdlinks);
             });
             this.on('unmount', function(){
-                findTenants.offDone(onFindTenants);
+                findTenantAdlinks.offDone(onFindTenantAdlinks);
             });
             this.on('open', function(options){
-                console.info('tag tenants is opening');
+                console.info('tag adlink-index is opening');
                 self.trigger('ready', false);
                 self.trigger('view-route-to');
-                findTenants.execute({});
+                findTenantAdlinks.execute({});
             });
 
             this.on('leave', function(){
@@ -84,10 +102,20 @@
             });
 
             this.on('refresh', function(){
-                console.info('tag tenants is refreshing');
+                console.info('tag adlink-index is refreshing');
                 //_refresh();
             });
 
+            onNewAdlink(e){
+                detail.trigger('close');
+                edit.trigger('open', self.tenantId);
+            }
+
+            onViewDetail(e){
+                var id = $(e.currentTarget).find('input[type=hidden]').val();
+                edit.trigger('close');
+                detail.trigger('open', id);
+            }
         </script>
     </div>
 </adlink-index>

@@ -68,5 +68,10 @@ registry
     .addChild('Tenant','t', '租户')
     .addChild('Operator','o', '运营者')
 
+    .up().item('AdlinkLayoutType', 'AdlinkLayoutType', '广告布局')
+    .addChild('Bottom','bottom', '底部')
+    .addChild('Top','top', '顶部')
+
+
 
 module.exports = registry;
