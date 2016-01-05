@@ -1,17 +1,37 @@
 <contacts>
-    <div if="{!hidden}">
+    <div if="{!hidden}" onclick="{hideMenu}">
         <div if="{tip}" class="alert {addClass}" style="margin-top: -5px; float: left; width: 100%; text-align: center; margin-bottom: 0; position: absolute; z-index: 9999">
             <strong>{tipInfo}</strong>
         </div>
         <div class="container" style="width: 100%; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0">
             <div class="row-fluid">
                 <div class="col-md-4 col-xs-4 col-sm-4" style="padding-right: 0; padding-left: 0; margin-top: -5px; width: 30%">
-                    <div class="row-fluid" style="overflow: hidden; background: #2E3238;">
-                        <div onclick="{selectContacts}" class="{left_nav_sel: viewModel.nav === CONST.NAV.CONTACT, left_nav_def: viewModel.nav != CONST.NAV.CONTACT} col-md-6 col-xs-6 col-sm-6" style="text-align: center;height:50px; line-height: 50px;border-right:1px solid #1C2129">
+                    <div class="row-fluid" style="height:50px; background: #2E3238;">
+                        <div onclick="{selectContacts}" class="{left_nav_sel: viewModel.nav === CONST.NAV.CONTACT, left_nav_def: viewModel.nav != CONST.NAV.CONTACT} col-md-5 col-xs-5 col-sm-5" style="text-align: center;height:50px; line-height: 50px;border-right:1px solid #1C2129">
                             <span class="glyphicon glyphicon-user" aria-hidden="true"></span> &nbsp联系人
                         </div>
-                        <div onclick="{selectGroups}" class="{left_nav_sel: viewModel.nav === CONST.NAV.GROUP,left_nav_def: viewModel.nav != CONST.NAV.GROUP} col-md-6 col-xs-6 col-sm-6" style="text-align: center;height:50px; line-height: 50px">
+                        <div onclick="{selectGroups}" class="{left_nav_sel: viewModel.nav === CONST.NAV.GROUP,left_nav_def: viewModel.nav != CONST.NAV.GROUP} col-md-5 col-xs-5 col-sm-5" style="border-right:1px solid #1C2129;text-align: center;height:50px; line-height: 50px">
                             <span class="glyphicon glyphicon-th" aria-hidden="true"></span> &nbsp群
+                        </div>
+                        <div id="menuBtn" onclick="{toggleMenu}" class="{menu_open: menuOpen} col-md-2 col-xs-2 col-sm-2" style="overflow:visible;position:relative;height:50px;line-height: 50px;color:white;font-size:16px;text-align: center">
+                            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                            <div if="{menuOpen===true}" id="menu" style="position: absolute;top:50px;left:0px;width:170px;height:100px">
+                                <ul style="list-style-type: none;margin: 0px;padding:0px;">
+                                    <li if="{!syncingContacts}" style="background: #4D5767;border-bottom: 1px solid #3F4650;text-align: left;padding-left:20px" onclick="{syncContact}">
+                                        <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> &nbsp<span style="font-size: 14px">同步联系人</span>
+                                    </li>
+                                    <li if="{syncingContacts}" style="background: #4D5767;border-bottom: 1px solid #3F4650;text-align: left;padding-left:20px">
+                                        <span class="sync glyphicon glyphicon-refresh" aria-hidden="true"></span> &nbsp<span style="font-size: 14px">正在同步联系人...</span>
+                                    </li>
+                                    <li if="{!syncingGroups}" style="background: #4D5767;border-bottom: 1px solid #3F4650;text-align: left;padding-left:20px" onclick="{syncGroup}">
+                                        <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> &nbsp<span style="font-size: 14px">同步群</span>
+                                    </li>
+                                    <li if="{syncingGroups}" style="background: #4D5767;border-bottom: 1px solid #3F4650;text-align: left;padding-left:20px">
+                                        <span class="sync glyphicon glyphicon-refresh" aria-hidden="true"></span> &nbsp<span style="font-size: 14px">正在同步群...</span>
+                                    </li>
+
+                                </ul>
+                            </div>
                         </div>
                     </div>
                     <div class="well sidebar-nav" style="padding-top: 0; padding-right: 0; padding-left: 0;height: 48em; background-color:  #2E3238; border: 1px solid #080808; overflow: scroll; border-radius: 0">
@@ -74,6 +94,13 @@
         </div><!--/container-->
 
         <style scoped>
+            .sync{
+                animation:rotation 2.5s linear infinite;
+                -webkit-animation:rotation 2.5s linear infinite;
+            }
+            .menu_open{
+                background: #4D5767;
+            }
             input,textarea{
                 outline:none;
             }
@@ -126,6 +153,7 @@
                 nav: CONST.NAV.CONTACT,
                 mode: 'view'
             };
+            self.menuOpen = false;
             /**
              * nickname, remark, province, city, district, sex, headimgurl, tags
              */
@@ -135,9 +163,23 @@
             };
             var loadContacts = domain.action('loadContacts');
             var saveTagsById = domain.action('saveTagsById');
+            var syncContacts = domain.action('syncContacts');
+            var syncGroups = domain.action('syncGroups');
 
             var onLoadContacts = function(data){
                 self.update({contacts: data.contacts, groups: data.groups});
+            };
+            var onSyncContacts = function(data){
+                setTimeout(function(){
+                    self.syncingContacts = false;
+                    self.update();
+                }, 5*3600*1000);
+            };
+            var onSyncGroups = function(data){
+                setTimeout(function(){
+                    self.syncingGroups = false;
+                    self.update();
+                }, 5*3600*1000);
             };
             var onSaveTagsById = function(data){
                 if(data.success){
@@ -150,11 +192,15 @@
 
             this.on('mount', function(){
                 console.info('tag contacts index is mounted');
+                syncContacts.onDone(onSyncContacts);
+                syncGroups.onDone(onSyncGroups);
                 loadContacts.onDone(onLoadContacts);
                 saveTagsById.onDone(onSaveTagsById);
             });
             this.on('unmount', function(){
                 console.info('tag contacts index is unmounted');
+                syncContacts.offDone(onSyncContacts);
+                syncGroups.offDone(onSyncGroups);
                 loadContacts.offDone(onLoadContacts);
                 saveTagsById.offDone(onSaveTagsById);
             });
@@ -218,6 +264,9 @@
                     result = (self.currUser.province || '') + ' ' + (self.currUser.city || '');
                 }
                 return result;
+            };
+            hideMenu(e){
+                self.menuOpen = false;
             }
             selectContacts(e){
                 self.viewModel.nav = CONST.NAV.CONTACT;
@@ -238,7 +287,6 @@
                 $target.find('>li>input').focus();
             }
             newTagInput(e){
-                e.preventDefault();
                 if(e.which === 32 && (self.newTag.value.trim() != '')){
                     if(!self.currUser.tags){
                         self.currUser.tags = [];
@@ -270,6 +318,24 @@
                     tags: self.currUser.tags,
                     tenant: __page.bot.org
                 })
+            }
+            toggleMenu(e){
+                self.menuOpen = !self.menuOpen;
+                e.stopPropagation();
+            }
+            syncContact(e){
+                syncContacts.execute({
+                    botid: __page.bot.customId
+                });
+                self.syncingContacts = true;
+                e.stopPropagation();
+            }
+            syncGroup(e){
+                syncGroups.execute({
+                    botid: __page.bot.customId
+                });
+                self.syncingGroups = true;
+                e.stopPropagation();
             }
         </script>
     </div>

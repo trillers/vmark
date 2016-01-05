@@ -10,7 +10,12 @@ domain.action('startBot').onExecute(function(data){
 domain.action('stopBot').onExecute(function(data){
     apiFactory.get('/bot/stop/' + data.openid).drive(this).send();
 });
-
+domain.action('syncContacts').onExecute(function(data){
+    apiFactory.post('/bot/sync/contacts').drive(this).send(data);
+});
+domain.action('syncGroups').onExecute(function(data){
+    apiFactory.post('/bot/sync/groups').drive(this).send(data);
+});
 
 /**
  * status actions

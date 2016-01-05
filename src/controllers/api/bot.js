@@ -325,6 +325,26 @@ module.exports = function (router) {
     /**
      * operate bot routers
      */
+    router.post('/sync/contacts', function*(){
+        var openId = this.request.body.botid;
+        var bot = wechatBotManager.getWechatBot(openId);
+        if(bot){
+            bot.syncContacts();
+            this.body = {success: true}
+            return;
+        }
+        this.body = {error: 'no_such_bot'};
+    });
+    router.post('/sync/groups', function*(){
+        var openId = this.request.body.botid;
+        var bot = wechatBotManager.getWechatBot(openId);
+        if(bot){
+            bot.syncGroups();
+            this.body = {success: true}
+            return;
+        }
+        this.body = {error: 'no_such_bot'};
+    });
     router.post('/start', function*(){
         try{
             var json = this.request.body;
@@ -332,13 +352,6 @@ module.exports = function (router) {
             var media = yield wechatMediaService.findBotByOpenidAsync(json.openid);
             var orgMedia = yield orgMediaService.loadByMediaIdAsync(media._id);
             yield orgMediaService.updateByIdAsync(orgMedia._id, {intentionStatus: IntentionStatus.Logged.value()});
-            //var bot = wechatBotManager.getWechatBot(json.openid);
-            //bot.start({
-            //    intention: json.intention,
-            //    mode: json.mode,
-            //    nickname: json.nickname,
-            //    sex: json.sex
-            //});
             this.body = {success: true, error: null};
         }catch(e){
             console.error(e);
@@ -351,8 +364,6 @@ module.exports = function (router) {
             var media = yield wechatMediaService.findBotByOpenidAsync(openid);
             var orgMedia = yield orgMediaService.loadByMediaIdAsync(media._id);
             yield orgMediaService.updateByIdAsync(orgMedia._id, {intentionStatus: IntentionStatus.Exited.value()});
-            //var bot = wechatBotManager.getWechatBot(openid);
-            //bot.stop();
             this.body = {success: true, error: null};
         }catch(e){
             console.error(e);
