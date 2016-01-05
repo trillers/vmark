@@ -7,44 +7,54 @@
 </div>
 <div if="{nav===0}" class="profile">
     <div class="profile_item row-fluid">
-        <div class="primary col-md-5 col-xs-5 col-sm-5">
+        <div class="primary col-md-6 col-xs-6 col-sm-6">
             <label>名称</label>
         </div>
-        <div class="primary col-md-7 col-xs-7 col-sm-7">
-            <label>{parent.group.name}</label>
+        <div class="primary col-md-6 col-xs-6 col-sm-6">
+            <div if="{viewModel.mode === 'view'}">
+                <label>{parent.group.name}</label>&nbsp&nbsp
+                <span onclick="{editGroupName}" style="color:#45cc10;font-size:16px;" class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+            </div>
+            <form if="{viewModel.mode==='edit'}" class="form-inline">
+                <input onblur="{checkGroupName}" class="form-control" name="groupName" type="text" value="{parent.group.name}" style="width:100px"/>
+                <button onclick="{submitGroupName}" type="button" class="btn btn-default" style="background: #18c54b;border:none">
+                    <span class="glyphicon glyphicon-ok" style="color:white" aria-hidden="true"></span>
+                </button>
+            </form>
+
         </div>
     </div>
     <div class="profile_item row-fluid">
-        <div class="secondary col-md-5 col-xs-5 col-sm-5">
+        <div class="secondary col-md-6 col-xs-6 col-sm-6">
             <label>类型</label>
         </div>
-        <div class="secondary col-md-7 col-xs-7 col-sm-7">
+        <div class="secondary col-md-6 col-xs-6 col-sm-6">
             <label>{__app.enums.GroupType.values[parent.group.type]}</label>
         </div>
     </div>
     <div class="profile_item row-fluid">
-        <div class="secondary col-md-5 col-xs-5 col-sm-5">
+        <div class="secondary col-md-6 col-xs-6 col-sm-6">
             <label>范围</label>
         </div>
-        <div class="secondary col-md-7 col-xs-7 col-sm-7">
+        <div class="secondary col-md-6 col-xs-6 col-sm-6">
             <label>{__app.enums.GroupScope.values[parent.group.scope]}</label>
         </div>
     </div>
     <div class="profile_item row-fluid">
-        <div class="secondary col-md-5 col-xs-5 col-sm-5">
+        <div class="secondary col-md-6 col-xs-6 col-sm-6">
             <label>包含微信号</label>
         </div>
-        <div class="secondary col-md-7 col-xs-7 col-sm-7">
+        <div class="secondary col-md-6 col-xs-6 col-sm-6">
             <button each="{parent.group.medias}" onclick="{backToView}" type="button" class="btn btn-default" style="display:inline-block;background: #CCC; color:white; border: none">
                 {name}
             </button>
         </div>
     </div>
     <div class="profile_item row-fluid">
-        <div class="secondary col-md-5 col-xs-5 col-sm-5">
+        <div class="secondary col-md-6 col-xs-6 col-sm-6">
             <label>负责人</label>
         </div>
-        <div class="secondary col-md-7 col-xs-7 col-sm-7">
+        <div class="secondary col-md-6 col-xs-6 col-sm-6">
             <label>{parent.group.operator.remark}</label>
         </div>
     </div>
@@ -58,6 +68,12 @@
     <div class="wrapper">
         <div style="margin-bottom: 10px; overflow: hidden">
             <span>共 ( <strong style="color:#65cc2b">{parent.groupMembers.length}</strong> ) 人</span>
+            <button onclick="{selectContact}" class="{select_contact: status['contact']}">
+                <span class="glyphicon glyphicon-user" aria-hidden="true"></span> 联系人
+            </button>
+            <button onclick="{selectGroup}" class="{select_contact: status['group']}">
+                <span class="glyphicon glyphicon-th" aria-hidden="true"></span> 群组
+            </button>
             <div style="float:right">
                 <button if="{currentStatus === 'view'}" onclick="{addMember}"  style="background: #52B918; color:white" type="button" class="btn" aria-label="Left Align">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 添加成员
@@ -75,7 +91,7 @@
         </div>
         <div class="list_container">
             <ul class="user_list" >
-                <li onclick="{parent.selectMember}" each="{parent.groupMembers}" remark="{member.remark}" mid="{member._id}">
+                <li onclick="{parent.selectMember}" each="{parent.groupMembers}" if="{parent.status[member.contacttype]}" remark="{member.remark}" mid="{member._id}">
                     <img class="{img_sel: parent.currentStatus === 'edit'}" src="{parent.app.settings.api.url + '/file?media_id=' + member.headimgurl}" />
                     <p style="overflow: hidden;height:24px">{member.remark}</p>
                 </li>
@@ -85,6 +101,26 @@
     </div>
 </div>
 <style scoped>
+    input,textarea{
+        outline:none;
+    }
+    .select_contact{
+        background: #5B6779;
+        border:1px solid #2E3238;
+        color:white;
+    }
+    .profile_item .primary:nth-child(1){
+        padding-left:25%
+    }
+    .profile_item .primary:nth-child(2){
+        padding-left:15%
+    }
+    .profile_item .secondary:nth-child(1){
+        padding-left:25%
+    }
+    .profile_item .secondary:nth-child(2){
+        padding-left:15%
+    }
     .list_container{
         overflow: scroll;
         height:500px;
@@ -117,7 +153,7 @@
         height:64px;
     }
     .profile{
-        padding-top:80px;
+        padding-top:30px;
         margin:0px auto;
         width:80%
     }
@@ -131,10 +167,9 @@
         font-size: 16px;
     }
     .profile_item >div:first-child{
-        text-align: right;
+        text-align: left;
     }
     .profile_item >div:nth-child(2){
-        text-indent: 3em;
         text-align: left;
     }
     .profile_item label{
@@ -169,6 +204,7 @@
 <script>
     var self = this;
     var loadAllGroupMediaUsers = domain.action('loadAllGroupMediaUsers');
+    var editGroup = domain.action('editGroup');
     var delGroup = domain.action('delGroup');
     var delGroupMember = domain.action('delGroupMember');
     var navNameToIndex = {
@@ -181,15 +217,21 @@
     };
     self.page = __page;
     self.app = __app;
+    self.viewModel={};
+    self.status = {};
     self.init = function(){
         self.currentStatus = status.VIEW;
         self.members = {};
         self.nav = 0;
+        self.viewModel.mode = 'view';
+        self.status = {};
+        self.status['contact'] = 'contact';
     };
     self.init();
     function onLoadAllGroupMediaUsers(data){
         self.parent.panel.status = 'add_m';
         self.parent.mediaUsers = data.users;
+        self.parent.tags['add-group-member'].init();
         self.parent.update();
     }
     function onDelGroupMember(data){
@@ -218,16 +260,44 @@
         self.parent.panel.start();
         self.parent.update();
     }
+    function onEditGroup(data){
+        if(data.success){
+            self.parent.group.name = data.group.name;
+            self.parent.groups.forEach(function(group){
+                if(group._id === data.group._id){
+                    group.name = data.group.name;
+                }
+            })
+            self.parent.panel.view();
+            self.parent.update();
+        }
+    }
     this.on('mount', function(){
         delGroup.onDone(onDelGroup);
         delGroupMember.onDone(onDelGroupMember);
+        editGroup.onDone(onEditGroup);
         loadAllGroupMediaUsers.onDone(onLoadAllGroupMediaUsers);
     });
     this.on('unmount', function(){
         delGroup.offDone(onDelGroup);
-        delMember.onDone(onDelMember);
+        delGroupMember.offDone(onDelGroupMember);
+        editGroup.offDone(onEditGroup);
         loadAllGroupMediaUsers.offDone(onLoadAllGroupMediaUsers);
     });
+    selectContact(e){
+        if(self.status['contact']){
+            delete self.status['contact']
+            return;
+        }
+        self.status['contact'] = 'contact';
+    }
+    selectGroup(e){
+        if(self.status['group']){
+            delete self.status['group']
+            return;
+        }
+        self.status['group'] = 'group';
+    }
     clickNav(e){
         self.nav = navNameToIndex[e.target.innerText];
     }
@@ -252,12 +322,37 @@
         });
         delGroupMember.execute({groupId: self.parent.group._id, mids: JSON.stringify(Object.keys(self.members))});
     }
+    submitGroupName(e){
+        var groupName = self.groupName.value.trim();
+        if(groupName === ''){
+            alert('请输入名称')
+            return;
+        }
+        editGroup.execute({
+            id: self.parent.group._id,
+            name: groupName
+        });
+    }
     cancelDelMember(e){
         self.members = {};
         [].forEach.call(document.querySelectorAll('ul.user_list >li >div.select'), function(i){
             i.parentNode.removeChild(i);
         });
         self.currentStatus = status.VIEW;
+    }
+    checkGroupName(e){
+        var groupName = self.groupName.value;
+        if(groupName.trim() === ''){
+            e.target.parentNode.classList.add('has-error');
+            e.target.focus();
+        }
+        else{
+            e.target.parentNode.classList.remove('has-error');
+        }
+    }
+    editGroupName(e){
+        self.viewModel.mode = 'edit';
+        self.groupName.focus();
     }
     selectMember(e){
         if(self.currentStatus != status.EDIT){

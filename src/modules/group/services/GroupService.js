@@ -11,6 +11,11 @@ Service.prototype.loadById = function(id, callback){
     Group.findById(id, null, {lean: true}).populate({path: 'operator'}).exec(callback);
 };
 
+Service.prototype.updateById = function(id, json, callback){
+    var Group = this.context.models.Group;
+    Group.findByIdAndUpdate(id, json, {lean: true, new: true}).exec(callback);
+};
+
 Service.prototype.removeGroupById = function(id, callback){
     var Group = this.context.models.Group;
     var groupKv = this.context.kvs.group;

@@ -12,11 +12,20 @@
     </div>
     <div>
         <div class="wrapper" attr="{parent.mediaUsers}">
+            <div style="margin-bottom: 10px">
+                <button onclick="{selectContact}" class="{select_contact: status['contact']}">
+                    <span class="glyphicon glyphicon-user" aria-hidden="true"></span> 联系人
+                </button>
+                <button onclick="{selectGroup}" class="{select_contact: status['group']}">
+                    <span class="glyphicon glyphicon-th" aria-hidden="true"></span> 群组
+                </button>
+            </div>
+
             <div each="{parent.mediaUsers}">
                 <div class="list_container">
                     <div style="height:24px;line-height: 24px;margin-bottom: 10px;border-bottom:1px solid #ddd">{media.name}<strong>({mediaUsers.length})</strong></div>
                     <ul class="user_list">
-                        <li onclick="{parent.parent.selectMember}" each="{mediaUsers}" id="{_id}" media="{parent.media._id}" group="{parent.parent.parent.group._id}">
+                        <li onclick="{parent.parent.selectMember}" each="{mediaUsers}" if="{parent.parent.status[contacttype]}" id="{_id}" media="{parent.media._id}" group="{parent.parent.parent.group._id}">
                             <img src="{parent.parent.app.settings.api.url + '/file?media_id=' + headimgurl}"/>
                             <p style="overflow: hidden;height:24px">{remark}</p>
                         </li>
@@ -27,6 +36,11 @@
         </div>
     </div>
     <style scoped>
+        .select_contact{
+            background: #5B6779;
+            border:1px solid #2E3238;
+            color:white;
+        }
         .list_container{
             overflow: scroll;
             height:500px;
@@ -82,6 +96,10 @@
         self.app = __app;
         self.nav = 0;
         self.members = {};
+        self.init = function(){
+            self.status = {};
+            self.status['contact'] = 'contact';
+        };
         var navNameToIndex = {
             '基本信息': 0,
             '成员': 1
@@ -105,6 +123,20 @@
         this.on('unmount', function(){
             addGroupMembers.offDone(onAddGroupMembers);
         });
+        selectContact(e){
+            if(self.status['contact']){
+                delete self.status['contact']
+                return;
+            }
+            self.status['contact'] = 'contact';
+        }
+        selectGroup(e){
+            if(self.status['group']){
+                delete self.status['group']
+                return;
+            }
+            self.status['group'] = 'group';
+        }
         clickNav(e){
             self.nav = navNameToIndex[e.target.innerText];
         }

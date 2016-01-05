@@ -10,13 +10,25 @@ domain.action('startBot').onExecute(function(data){
 domain.action('stopBot').onExecute(function(data){
     apiFactory.get('/bot/stop/' + data.openid).drive(this).send();
 });
-
+domain.action('syncContacts').onExecute(function(data){
+    apiFactory.post('/bot/sync/contacts').drive(this).send(data);
+});
+domain.action('syncGroups').onExecute(function(data){
+    apiFactory.post('/bot/sync/groups').drive(this).send(data);
+});
 
 /**
  * status actions
  */
 domain.action('loadBotByMediaId').onExecute(function(data){
     apiFactory.get('/bot/' + data.botId).drive(this).send();
+});
+
+/**
+ * tags actions
+ */
+domain.action('saveTagsById').onExecute(function(data){
+    apiFactory.post('/bot/tags/user/' + data.id).drive(this).send(data);
 });
 
 /**
@@ -46,6 +58,10 @@ domain.action('loadContacts').onExecute(function(id){
  */
 domain.action('loadGroup').onExecute(function(data){
     apiFactory.get('/bot/group?id=' + data.id).drive(this).send();
+});
+
+domain.action('editGroup').onExecute(function(data){
+    apiFactory.put('/bot/group/' + data.id).drive(this).send(data);
 });
 
 domain.action('delGroup').onExecute(function(data){

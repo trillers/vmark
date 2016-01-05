@@ -10,6 +10,7 @@ _exports.tenant = {};
 _exports.tenant.org = require('./tenant/org');
 _exports.tenant.main = require('./tenant/main');
 _exports.group = require('./group');
+_exports.tag = require('./tag');
 _exports.recontent = require('./recontent');
 _exports.boss = {};
 _exports.boss.main = require('./boss/main');

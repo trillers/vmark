@@ -17,6 +17,7 @@ var tenantOrgMediaService = context.services.tenantOrgMediaService;
 var orgMediaService = context.services.orgMediaService;
 var groupService = context.services.groupService;
 var groupMemberService = context.services.groupMemberService;
+var tagService = context.services.tagService;
 
 module.exports = function (router) {
     /**
@@ -30,6 +31,68 @@ module.exports = function (router) {
             this.body = {success: true, err: null, media: media};
         }catch(e){
             this.body = {success: false, err: e};
+        }
+    });
+
+    /**
+     * tags routers
+     */
+    router.post('/tags/user/:id', function* (){
+        try{
+            var wechatMediaUserId = this.params.id;
+            var tags = this.request.body.tags;
+            var tenant = this.request.body.tenant;
+            var deposeTags = [];
+            var fixedTags = [];
+            var wechatMediaUser = yield wechatMediaUserService.loadByIdAsync(wechatMediaUserId);
+            if(wechatMediaUser.tags){
+                wechatMediaUser.tags.forEach(function(oldTag){
+                    console.log(tags)
+                    if(tags && tags.length){
+                        var index = tags.indexOf(oldTag);
+                        if(index<0){
+                            deposeTags.push(oldTag);
+                        }else{
+                            fixedTags = fixedTags.concat(tags.slice(index, index+1));
+                        }
+                    }
+                    else{
+                        deposeTags.push(oldTag);
+                    }
+                })
+            }
+            for(let i=0, len=deposeTags.length; i<len; i++){
+                let tag = deposeTags[i];
+                let tagOrigin = yield tagService.loadByNameAsync(tag, tenant);
+                if(tagOrigin){
+                    let tagUpdated = yield tagService.decreaseAsync(tag, tenant);
+                    if(tagUpdated.uses <=1){
+                        yield tagService.removeAsync(tag, tenant);
+                    }
+                }
+            }
+            if(tags && tags.length){
+                for(let i=0, len=tags.length; i<len; i++){
+                    let tag = tags[i];
+                    if(fixedTags.indexOf(tag)<0){
+                        let tagOrigin = yield tagService.loadByNameAsync(tag, tenant);
+                        if(tagOrigin){
+                            yield tagService.increaseAsync(tag, tenant);
+                        }else{
+                            var json = {
+                                name: tag,
+                                tenant: tenant
+                            };
+                            yield tagService.createAsync(json);
+                        }
+                    }
+                }
+            }
+            yield wechatMediaUserService.saveTagsByIdAsync(wechatMediaUserId, tags);
+            this.body = {success: true}
+        }catch(e){
+            console.error(e);
+            this.body = {error: true}
         }
     });
 
@@ -155,6 +218,20 @@ module.exports = function (router) {
         }
     });
 
+    router.put('/group/:id', function* (){
+        try{
+            var groupId = this.params.id;
+            var json = this.request.body;
+            console.log(groupId);
+            console.log(json);
+            var group = yield groupService.updateByIdAsync(groupId, json);
+            this.body = {success: true, group: group};
+        }catch(e){
+            console.error(e);
+            this.body = {error: e};
+        }
+    });
+
     router.post('/group', function* (){
         try{
             var name = this.request.body.name;
@@ -248,6 +325,26 @@ module.exports = function (router) {
     /**
      * operate bot routers
      */
+    router.post('/sync/contacts', function*(){
+        var openId = this.request.body.botid;
+        var bot = wechatBotManager.getWechatBot(openId);
+        if(bot){
+            bot.syncContacts();
+            this.body = {success: true}
+            return;
+        }
+        this.body = {error: 'no_such_bot'};
+    });
+    router.post('/sync/groups', function*(){
+        var openId = this.request.body.botid;
+        var bot = wechatBotManager.getWechatBot(openId);
+        if(bot){
+            bot.syncGroups();
+            this.body = {success: true}
+            return;
+        }
+        this.body = {error: 'no_such_bot'};
+    });
     router.post('/start', function*(){
         try{
             var json = this.request.body;
@@ -255,13 +352,6 @@ module.exports = function (router) {
             var media = yield wechatMediaService.findBotByOpenidAsync(json.openid);
             var orgMedia = yield orgMediaService.loadByMediaIdAsync(media._id);
             yield orgMediaService.updateByIdAsync(orgMedia._id, {intentionStatus: IntentionStatus.Logged.value()});
-            //var bot = wechatBotManager.getWechatBot(json.openid);
-            //bot.start({
-            //    intention: json.intention,
-            //    mode: json.mode,
-            //    nickname: json.nickname,
-            //    sex: json.sex
-            //});
             this.body = {success: true, error: null};
         }catch(e){
             console.error(e);
@@ -274,8 +364,6 @@ module.exports = function (router) {
             var media = yield wechatMediaService.findBotByOpenidAsync(openid);
             var orgMedia = yield orgMediaService.loadByMediaIdAsync(media._id);
             yield orgMediaService.updateByIdAsync(orgMedia._id, {intentionStatus: IntentionStatus.Exited.value()});
-            //var bot = wechatBotManager.getWechatBot(openid);
-            //bot.stop();
             this.body = {success: true, error: null};
         }catch(e){
             console.error(e);

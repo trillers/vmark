@@ -45,7 +45,7 @@
                                     <div class="col-md-3 col-lg-3" style="">
 
                                         <div class="row" >
-                                            <div class="col-md-4 col-lg-4" style="height: 60px;">
+                                            <div class="col-md-4 col-lg-4" style="height: 60px">
                                                 <img if="{!botActioning && botKeepLogged}" src="/web/images/stop-active.png" alt="退出" onclick="{goExiting}" class="bot-action-icon bot-logged" style="">
                                                 <img if="{botActioning && botKeepLogged}" src="/web/images/start.png" alt="启动中..." class="bot-action-icon bot-logging" style="">
                                                 <img if="{!botActioning && botKeepExited}" src="/web/images/start-active.png" alt="启动" onclick="{goLogging}" class="bot-action-icon bot-exited" style="">
@@ -78,6 +78,9 @@
         </div><!--/container-->
 
         <style scoped>
+            .panel-body{
+                line-height: 70px;
+            }
             .bot-action-icon{
                 border: 0px;
                 width: 60px;
