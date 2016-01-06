@@ -36,7 +36,7 @@ Service.prototype.findTenants = function(params, callback) {
         query.find(params.conditions);
     }
 
-    if (params.populatations) {
+    if (params.populations) {
         params.populate.forEach(function(item){
             query.populate(item);
         })
@@ -44,11 +44,12 @@ Service.prototype.findTenants = function(params, callback) {
     query.lean(true);
     query.exec(function (err, docs) {
         if (err) {
-            callback(err);
+            logger.error('Fail to filter tenants: ' + err);
+            if(callback) callback(err);
             return;
         }
 
-        if (callback) callback(null, docs);
+        if(callback) callback(null, docs);
     });
 };
 

@@ -119,7 +119,7 @@ describe('enterSite', function() {
 
 })
 
-describe('scanSite', function() {
+describe.only('scanSite', function() {
     it('succeed to scanSite to trigger qrsubscribe event', function (done) {
         var platform = new Wechat.Platform();
         var client = wxutil.newSignedInClient(platform);
