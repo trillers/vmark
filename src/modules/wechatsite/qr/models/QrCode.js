@@ -1,4 +1,4 @@
-var DomainBuilder = require('../../../../../../src/framework/model/DomainBuilder');
+var DomainBuilder = require('../../../../../src/framework/model/DomainBuilder');
 var schema = DomainBuilder
     .i('QrCode')
     .withBasis()

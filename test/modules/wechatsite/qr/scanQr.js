@@ -3,6 +3,8 @@ var wxutil = require('../../../framework/wechat/util');
 var Wechat = require('../../../../src/framework/wechat/index');
 var contextLoader = require('../../../../src/context');
 var wechatemitter = null;
+var QrTypeRegistry = require('../../../../src/modules/wechatsite/qr/QrTypeRegistry');
+var qrTypeRegistry = new QrTypeRegistry();
 
 before(function(done){
     contextLoader.check(function(){
@@ -16,8 +18,19 @@ describe('scanQr', function() {
     var openid = 'okvXqsw1VG76eVVJrKivWDgps_gA';//包三哥的错题本openid
     before(function(done){
         //create qr
-        sceneId = 100; //TODO
-        done();
+        var loginQrType = qrTypeRegistry.newType('login', {temp:true});
+        loginQrType.onAccess(function(qr){
+            console.log('qr access successful');
+            console.log('qr id is ' + qr._id);
+            console.log('do some business...');
+        });
+        loginQrType.onExpire(function(qr){
+
+        });
+        loginQrType.createQr(function(err, qr){
+            sceneId = qr.sceneId;
+            done();
+        });
     });
 
     it('scan a newly created qrcode to trigger events', function (done) {
@@ -28,7 +41,7 @@ describe('scanQr', function() {
 
         site.on('qrsubscribe', function(message){
             console.log('===subscribe===');
-            console.log(message);
+            qrTypeRegistry.handle(message.SceneId);
             console.log('\r\n');
         });
         var api = site.getApi();

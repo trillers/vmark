@@ -1,7 +1,7 @@
-var redis = require('../../../../../../src/app/redis');
-var logger = require('../../../../../../src/app/logging').logger;
+var redis = require('../../../../../src/app/redis');
+var logger = require('../../../../../src/app/logging').logger;
 var Promise = require('bluebird');
-var cbUtil = require('../../../../../../src/framework/callback');
+var cbUtil = require('../../../../../src/framework/callback');
 
 var sceneSequenceKey = function(id){
     return 'mc:scene:seq';

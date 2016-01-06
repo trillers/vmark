@@ -1,9 +1,7 @@
-var logger = require('../../../../../../src/app/logging').logger;
+var logger = require('../../../../../src/app/logging').logger;
 var QrCode = require('../models/QrCode').model;
-var wechat = require('../../../../../../src/modules/wechat/common/api');
+var wechat = require('../../../../../src/modules/wechat/common/api');
 var _ = require('underscore');
-
-var u = require('../../../../../../src/app/util');
 var Promise = require('bluebird');
 var Service = {};
 

@@ -1,9 +1,10 @@
 var u = require('util');
 var Promise = require('bluebird');
 var EventEmitter = require('events').EventEmitter;
-var wechatApi = require('../../../wechat/common/api').api;
+var wechatApi = require('../../wechat/common/api').api;
 var kvs = require('./kvs/QrCode');
 var service = require('./services/QrCodeService');
+var _ = require('underscore');
 var co = require('co');
 
 /**
@@ -44,16 +45,18 @@ QrTypeRegistry.genSceneId = function(qr){
 /**
  * Generate a qr type
  * @param type string
+ * @param options
  * @param listeners Object<function...>
  * @returns {QrType}
  */
-QrTypeRegistry.prototype.newType = function(type, listeners){
+QrTypeRegistry.prototype.newType = function(type, options, listeners){
     var json = {};
     if(typeof type === 'string'){
         json.type = type;
     }else{
         throw new Error('Failed to register qr to qr manager input error, first argument must be string or Qr')
     }
+    _.extend(json, options);
     if(listeners && typeof listeners != 'object'){
         throw new Error('Failed to register qr to qr manager input error, second arguments must be object')
     }
@@ -101,11 +104,14 @@ QrTypeRegistry.prototype.handle = function(sceneId){
 
 /**
  * Responsible for binding events and generate qr code
- * @param qrtype Object
+ * @param qr Object
  * @constructor
  */
-function QrType(qrtype){
-    this.type = qrtype.type;
+function QrType(qr){
+    this.registry = null;
+    this.temp = qr && qr.temp || false;
+    this.type = qr && qr.type || null;
+    this.expire = qr && qr.expire || null;
 }
 u.inherits(QrType, EventEmitter);
 
@@ -122,7 +128,7 @@ QrType.prototype.onAccess = function(handler){
  * @param handler
  */
 QrType.prototype.onExpire = function(handler){
-    this.on('access', handler);
+    this.on('expire', handler);
 };
 
 /**
@@ -130,20 +136,22 @@ QrType.prototype.onExpire = function(handler){
  * @param qrData
  * @param callback
  */
-QrType.prototype.createQr = function(qrData, callback){
+QrType.prototype.createQr = function(qrData, cb){
     var me = this;
+    var callback = cb ? cb.bind(me) : null;
     co(function*(){
         try{
             if(typeof qrData === 'function'){
-                callback = qrData
+                callback = qrData.bind(me);
                 qrData = {};
             }
             var qr = qrData;
             var defaultExpire = 30*24*3600;
             qr.type = me.type;
-            qr.temp = (qr && qr.temp)? true : false;
+            qr.temp = (qr && qr.temp)? true : me.temp;
+
             if(qr.temp){
-                qr.expire = qr && qr.expire || defaultExpire;
+                qr.expire = qr && qr.expire || me.expire || defaultExpire;
             }
             qr._events = me._events;
             var createQrMethod = qr.temp ? 'createTmpQRCode' : 'createLimitQRCode';
@@ -172,11 +180,11 @@ QrType.prototype.createQr = function(qrData, callback){
             qr.ticket = result.ticket;
             qr.scene_id = sceneId;
             yield service.createAsync(qr);
-            callback(null, new Qr(qr));
+            callback && callback(null, new Qr(qr));
         }
         catch(e){
             console.error(e);
-            callback(e)
+            callback && callback(e)
         }
     })
 };
@@ -223,24 +231,30 @@ Qr.prototype.isInvalid = function(){
 
 /**
  * Allow the qr code expired
- * @param callback Function<Error, *>
+ * @param qrType QrType
+ * @param cb Function<Error, *>
  */
-Qr.prototype.invalidQr = function(callback){
+Qr.prototype.invalid = function(qrType, cb){
     var me = this;
-    co(function*(){
-        try{
-            me.expire = 0;
-            yield service.updateBySceneIdAsync(me.sceneId, me);
-            if(!me.registry){
-                return callback(new Error('has no such registry in current qr'));
-            }
-            var qrType = me.registry.getQrType(me.type);
+    var callback = null;
+    if(typeof qrType === 'function'){
+        callback = qrType
+    }else{
+        callback = cb ? cb : function noop(){};
+    }
+    if(me.expire <=0){
+        return callback(null);
+    }
+    me.expire = 0;
+    service.updateBySceneIdAsync(me.sceneId, me)
+        .then(function(){
             qrType.emit('expire', me);
             callback(null);
-        }catch(e){
-            callback(e);
-        }
-    })
+        })
+        .catch(function(e){
+            console.error(e);
+            callback(e)
+        })
 };
 
 module.exports = QrTypeRegistry;
