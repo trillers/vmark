@@ -68,9 +68,13 @@ registry
     .addChild('Tenant','t', '租户')
     .addChild('Operator','o', '运营者')
 
-    .up().item('AdlinkLayoutType', 'AdlinkLayoutType', '广告布局')
+    .up().item('AdlinkLayout', 'AdlinkLayout', '广告布局')
     .addChild('Bottom','bottom', '底部')
     .addChild('Top','top', '顶部')
+
+    .up().item('AdlinkTheme', 'AdlinkTheme', '广告条主题')
+    .addChild('Dark','dark', '深色')
+    .addChild('Light','light', '浅色')
 
 
 

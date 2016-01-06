@@ -52,10 +52,14 @@ module.exports = function (router) {
 
     router.get('/_:id', function*(){
         try{
-            var params = this.request.params;
-            console.log(params);
-            //var adlink = yield adlinkService.loadByIdAsync(json);
-            this.body = {_id: 'sdf'};
+            var id = this.params.id;
+            var adlink = yield adlinkService.loadByIdAsync(id);
+            if(adlink){
+                this.body = adlink;
+            }
+            else{
+                this.body = {_id: id};
+            }
         }catch(e){
             context.logger.error(e);
             this.body = {error: e};

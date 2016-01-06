@@ -12,7 +12,7 @@
                     <div class="row-fluid">
                         <div class="col-md-12  col-lg-12" >
                             <div class="pull-right">
-                                <button class="btn btn-default btn-sm" type="button" onclick={onNewAdlink}>新建</button>
+                                <button class="btn btn-default btn-sm" type="button" onclick={onNew}>新建</button>
                             </div>
 
                             <table class="table table-striped">
@@ -37,7 +37,7 @@
                                         </a>
                                     </td>
                                     <td>
-                                        { __app.enums.AdlinkLayoutType.values[layout] }
+                                        { __app.enums.AdlinkLayout.values[layout] }
                                     </td>
                                 </tr>
                                 </tbody>
@@ -106,9 +106,9 @@
                 //_refresh();
             });
 
-            onNewAdlink(e){
+            onNew(e){
                 detail.trigger('close');
-                edit.trigger('open', self.tenantId);
+                edit.trigger('open', 'new', self.tenantId);
             }
 
             onViewDetail(e){
@@ -116,6 +116,12 @@
                 edit.trigger('close');
                 detail.trigger('open', id);
             }
+
+            this.onEdit = function(id){
+                detail.trigger('close');
+                edit.trigger('open', 'edit', id);
+            };
+
         </script>
     </div>
 </adlink-index>

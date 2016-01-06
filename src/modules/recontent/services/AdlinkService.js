@@ -22,6 +22,21 @@ Service.prototype.create = function(json, callback){
     });
 };
 
+Service.prototype.loadById = function(id, callback){
+    var Adlink = this.context.models.Adlink;
+    Adlink.findById(id, function (err, doc) {
+        cbUtil.logCallback(
+            err,
+            'Fail to load adlink by id ' +id+': ' + err,
+            'Succeed to load adlink by id ' +id);
+
+        cbUtil.handleSingleValue(function(err, doc){
+            var obj = !err && doc && doc.toObject({virtuals: true});
+            if(callback) callback(err, obj);
+        }, err, doc);
+    });
+};
+
 Service.prototype.findTenantAdlinks = function(tenantId, callback){
     var params = {
         conditions: {
