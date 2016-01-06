@@ -14,7 +14,9 @@ module.exports = function (emitter) {
             var userOpenid = context.weixin.FromUserName;
             try {
                 var user = null, reply = '[系统]: 系统繁忙，请稍后重试！';
+
                 var qr = yield QrChannelService.loadBySceneIdAsync(sceneId);
+                
                 logger.error(qr);
                 if (qr) {
                     switch (qr.type) {
