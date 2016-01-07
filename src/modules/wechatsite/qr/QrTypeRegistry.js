@@ -119,6 +119,7 @@ QrTypeRegistry.prototype.handle = function(sceneId, openid){
                 return me.getQrType('default').emit('access', {sceneId: sceneId}, openid);
             }
             var qrType = qrDoc.type;
+            qrDoc.sceneId = qrDoc.scene_id;
             var qr = new Qr(qrDoc);
             qr.setRegistry(me);
             qr.typeObj = me.getQrType(qrType);
