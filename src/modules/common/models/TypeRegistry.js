@@ -43,7 +43,7 @@ registry
     .up().item('WechatBotStatus', 'WechatBotStatus', '状态') //助手号状态
     .addChild('Starting','starting', '启动中')
     .addChild('Logging','logging', '登录中')
-    .addChild('Mislogged','mislogged', '未登录')
+    .addChild('Mislogged','mislogged', '错误登录')
     .addChild('Logged','logged', '已登录')
     .addChild('Exceptional','exceptional', '异常中')
     .addChild('Aborted','aborted', '已崩溃')

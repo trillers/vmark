@@ -150,7 +150,7 @@
             }
 
             var onLoadBroadcastHistory = function(data){
-                self.broadcastHistory = data.history;
+                self.broadcastHistory = data.history || [];
                 self.update();
             }
 

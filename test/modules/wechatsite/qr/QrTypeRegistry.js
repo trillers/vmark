@@ -4,7 +4,7 @@ var assert = require('chai').assert;
 var QrTypeRegistry = require('../../../../src/modules/wechatsite/qr/QrTypeRegistry');
 
 describe('qr', function(){
-    var registry = new QrTypeRegistry();;
+    var registry = new QrTypeRegistry();
     beforeEach(function(done){
         ar.add('redis', ar.redis(require('../../../../src/app/redis-client')()));
         ar.add('mongoose', ar.mongoose(require('../../../../src/app/mongoose')));
@@ -39,7 +39,7 @@ describe('qr', function(){
 
     it('access qr', function(done){
         var testType = registry.getQrType('test');
-        testType.createQr(function(err, qr){
+        testType.createQr({data: 'xxx'}, function(err, qr){
             registry.handle(qr.sceneId);
             assert.ok(qr.temp);
             assert.ok(qr.sceneId.toString().length>5);
@@ -58,7 +58,7 @@ describe('qr', function(){
             assert.ok(qr.sceneId.toString().length>5);
             assert.ok(qr.ticket);
             assert.ok(qr.type);
-            qr.invalid(this);
+            qr.invalid();
             setTimeout(function(){
                 done();
             }, 2000)

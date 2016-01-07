@@ -67,6 +67,8 @@ var hasRole = function(posts, role) {
  *  }
  */
 Service.prototype.authenticate = function (openid, callback) {
+    console.error('start auth');
+    console.error(this);
     var self = this;
     var logger = this.context.logger;
     var platformUserService = this.context.services.platformUserService;
@@ -78,6 +80,7 @@ Service.prototype.authenticate = function (openid, callback) {
         /*
          *  no user found, so authentication fails
          */
+        console.error(user);
         if(!user){
             if (callback) callback(null, {
                 result: authResults.NO_USER
@@ -130,6 +133,7 @@ Service.prototype.authenticate = function (openid, callback) {
         /*
          * no bound bot found, so authentication fails
          */
+        console.error(wechatBot);
         if(!wechatBot){
             if (callback) callback(null, {
                 user: user,

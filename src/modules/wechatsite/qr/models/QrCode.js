@@ -8,7 +8,7 @@ var schema = DomainBuilder
         type: {type: String},
         ticket:{type:String},
         scene_id:{type: String},
-        custom_id:{type: String},
+        data:{type: String},
         expire:{type: Number},
         views:{type: Number, default: 0}
     }).build();
