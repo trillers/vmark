@@ -38,7 +38,11 @@ tenantBotType.onAccess(function(qr, openid){
         try{
             var reply = '';
             console.info('qr handler: bind a personal bot');
+            console.error('**************');
+            console.error(qr);
+            console.error(openid);
             var result = yield tenantService.bindPersonalBotAsync(qr.data, openid);
+            console.error(result);
             if(result.result == bindBotResults.NO_OPERATOR){
                 reply = '[系统]: 微信号绑定失败：没有可绑定的管理员用户！';
             }
