@@ -184,7 +184,7 @@ QrType.prototype.createQr = function(qrData, cb){
             if(qr.temp){
                 qr.expire = qr && qr.expire || me.expire || defaultExpire;
             }
-            qr._events = me._events;
+            //qr._events = me._events;
             var createQrMethod = qr.temp ? 'createTmpQRCode' : 'createLimitQRCode';
             var sceneId = null;
             if(qr.sceneId){
