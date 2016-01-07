@@ -60,8 +60,11 @@ tenantBotType.onExpire(function(qr, openid){
 loginType.onAccess(function(qr, openid){
     co(function*(){
         try{
-            var sceneId = qr.sceneId;
             console.log("***************")
+            console.log(qr);
+            console.log(qr.scene_id);
+            console.log(wsConns);
+            var sceneId = qr.scene_id;
             var conn = wsConns[sceneId];
             console.log(conn);
             if(conn){
