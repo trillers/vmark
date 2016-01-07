@@ -68,6 +68,7 @@ loginType.onAccess(function(qr, openid){
             var conn = wsConns[sceneId];
             console.log(conn);
             if(conn){
+                var result = {};
                 var reply = {};
                 var auth = yield securityService.authenticateAsync(openid);
                 context.logger.debug(auth);
