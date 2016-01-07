@@ -236,6 +236,7 @@ QrType.prototype.getQr = function(sceneId, callback){
     co(function*(){
         try{
             var qrDoc = yield service.loadBySceneIdAsync(sceneId);
+            qrDoc.sceneId = qrDoc.scene_id;
             var qr = new Qr(qrDoc);
             qr.typeObj = me;
             callback(null, qr);
