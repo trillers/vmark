@@ -10,9 +10,10 @@ var Model = function(domainBuilder){
         .withProperties({
             org:                {type: String, ref: 'Org', required: false}
             , originalUrl:      {type: String, required: true}
+            , originalTitle:    {type: String, required: false}
             , newUrl:           {type: String, required: false}
-            //, adLayout:         {type: String, enum: AdLayout.valueList(), default: AdLayout.Bottom.value(), required: true}
-            //, adLink:       {type: String, ref: 'AdLink', required: true}
+            , adLink:           {type: String, ref: 'Adlink', required: false}
+            , adName:           {type: String, required: false}
         })
         .build();
     return schema.model(true);

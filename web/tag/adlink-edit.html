@@ -49,7 +49,7 @@
                         <div class="col-sm-10 col-md-10 col-lg-10">
                             <div class="btn-group" data-toggle="buttons">
                                 <input type="hidden" id="layout" name="layout" value="{adlink.layout ? adlink.layout : 'bottom'}">
-                                <label class="btn btn-default {adlink.layout=='bottom' ? 'active': ''}" onclick={onSyncLayout}>
+                                <label class="btn btn-default {!adlink.layout || adlink.layout=='bottom' ? 'active': ''}" onclick={onSyncLayout}>
                                     <input type="radio" name="layoutRadio" id="layoutBottom" autocomplete="off" value="bottom">底部
                                 </label>
                                 <label class="btn btn-default {adlink.layout=='top' ? 'active': ''}" onclick={onSyncLayout}>
@@ -63,7 +63,7 @@
                         <div class="col-sm-10 col-md-10 col-lg-10">
                             <div class="btn-group" data-toggle="buttons">
                                 <input type="hidden" id="theme" name="theme" value="{adlink.theme ? adlink.theme : 'dark'}">
-                                <label class="btn btn-default {adlink.theme=='dark' ? 'active': ''}" onclick={onSyncTheme}>
+                                <label class="btn btn-default {!adlink.theme || adlink.theme=='dark' ? 'active': ''}" onclick={onSyncTheme}>
                                     <input type="radio" name="themeRadio" id="themeDark" autocomplete="off" value="dark">深色
                                 </label>
                                 <label class="btn btn-default {adlink.theme=='light' ? 'active': ''}" onclick={onSyncTheme}>

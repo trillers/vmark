@@ -48,7 +48,7 @@ module.exports = function (router) {
 
     router.get('/filter', function*(){
         try{
-            var tenantId = 'MLeds'; //this.query.tenantId;
+            //var tenantId = 'MLeds'; //this.query.tenantId;
             var auth = this.session && this.session.auth;
             if(!auth){
                 this.redirect('/login');
@@ -57,6 +57,7 @@ module.exports = function (router) {
 
             var tenantId = auth.tenantId;
             var adlinks = yield adlinkService.findTenantAdlinksAsync(tenantId);
+
             this.body = adlinks;
         }catch(e){
             context.logger.error(e);
