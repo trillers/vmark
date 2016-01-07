@@ -15,13 +15,18 @@ var defaultType =     qrRegistry.getQrType('default');
 
 tenantAdminType.onAccess(function(qr, openid){
     co(function*(){
-        var reply = '';
-        logger.debug('qr handler: register a personal tenant');
-        reply = '[系统]: 个人账户注册成功！';
-        yield tenantService.registerPersonalTenantAsync(openid);
-        wechatApi.sendText(openid, reply, function (err) {
-            if(err) logger.error(err);
-        });
+        try{
+            var reply = '';
+            console.log('qr handler: register a personal tenant');
+            reply = '[系统]: 个人账户注册成功！';
+            yield tenantService.registerPersonalTenantAsync(openid);
+            wechatApi.sendText(openid, reply, function (err) {
+                if(err) logger.error(err);
+            });
+        }
+        catch(e){
+            console.error(e);
+        }
     });
 });
 tenantAdminType.onExpire(function(){
