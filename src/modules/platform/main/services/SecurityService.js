@@ -79,6 +79,7 @@ Service.prototype.authenticate = function (openid, callback) {
         /*
          *  no user found, so authentication fails
          */
+        console.error(user);
         if(!user){
             if (callback) callback(null, {
                 result: authResults.NO_USER
@@ -131,6 +132,7 @@ Service.prototype.authenticate = function (openid, callback) {
         /*
          * no bound bot found, so authentication fails
          */
+        console.error(wechatBot);
         if(!wechatBot){
             if (callback) callback(null, {
                 user: user,
