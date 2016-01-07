@@ -62,9 +62,9 @@ loginType.onAccess(function(qr, openid){
         try{
             console.log("***************")
             console.log(qr);
-            console.log(qr.scene_id);
+            console.log(qr.sceneId);
             console.log(wsConns);
-            var sceneId = qr.scene_id;
+            var sceneId = qr.sceneId;
             var conn = wsConns[sceneId];
             console.log(conn);
             if(conn){
