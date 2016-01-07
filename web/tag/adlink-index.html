@@ -1,8 +1,5 @@
 <adlink-index>
     <div if="{!hidden}">
-        <div if="{tip}" class="alert {addClass}" style="margin-top: -5px; float: left; width: 100%; text-align: center; margin-bottom: 0; position: absolute; z-index: 9999">
-            <strong>{tipInfo}</strong>
-        </div>
         <div class="container-fluid">
             <div class="row-fluid">
                 &nbsp;
@@ -12,6 +9,7 @@
                     <div class="row-fluid">
                         <div class="col-md-12  col-lg-12" >
                             <div class="pull-right">
+                                <button class="btn btn-default btn-sm" type="button" onclick={onRefresh}>刷新</button>
                                 <button class="btn btn-default btn-sm" type="button" onclick={onNew}>新建</button>
                             </div>
 
@@ -26,7 +24,7 @@
                                 <tbody>
                                 <tr each="{adlinks}">
                                     <td>
-                                        <a onclick={parent.onViewDetail}>
+                                        <a onclick={parent.onView}>
                                             <input type="hidden" value="{_id}">
                                             {name}
                                         </a>
@@ -58,24 +56,17 @@
 
         <script>
             "use strict";
-            this.app = this.opts.app; //keep spa object
+            this.app = this.opts.app;
             var self = nest.presentable(this);
             self.api =  __app.settings.api.url;
-            self.tip = false;
-            self.tipInfo = "";
             self.tenantId = __page.tenantId;
             var edit = self.tags['adlink-edit'];
             var detail = self.tags['adlink-detail'];
 
-
-//            riot.mount('broadcast', {filter: ctx.req.query, app: this.parent});
-
             var findTenantAdlinks = domain.action('findTenantAdlinks');
 
             var onFindTenantAdlinks = function(adlinks){
-                console.log(adlinks);
-                self.adlinks = adlinks;
-                self.update();
+                self.update({adlinks: adlinks});
             };
 
             this.on('mount', function(){
@@ -102,24 +93,32 @@
             });
 
             this.on('refresh', function(){
-                console.info('tag adlink-index is refreshing');
-                //_refresh();
+                onRefresh();
             });
+
+            onRefresh(e){
+                findTenantAdlinks.execute({});
+            }
 
             onNew(e){
                 detail.trigger('close');
-                edit.trigger('open', 'new', self.tenantId);
+                edit.trigger('open', {action: 'new', tenantId: self.tenantId});
             }
 
-            onViewDetail(e){
+            onView(e){
                 var id = $(e.currentTarget).find('input[type=hidden]').val();
                 edit.trigger('close');
-                detail.trigger('open', id);
+                detail.trigger('open', {id: id});
             }
 
-            this.onEdit = function(id){
+            this.showEditView = function(id){
                 detail.trigger('close');
-                edit.trigger('open', 'edit', id);
+                edit.trigger('open', {action: 'edit', id: id});
+            };
+
+            this.showDetailView = function(model){
+                edit.trigger('close');
+                detail.trigger('open', {model: model});
             };
 
         </script>

@@ -16,9 +16,25 @@ Service.prototype.create = function(json, callback){
             'Succeed to save adlink');
 
         cbUtil.handleAffected(function(err, doc){
-            var obj = doc.toObject({virtuals: true});
+            var obj = !err && doc && doc.toObject({virtuals: true});
             if(callback) callback(err, obj);
         }, err, result, affected);
+    });
+};
+
+
+Service.prototype.updateById = function(id, update, callback){
+    var Adlink = this.context.models.Adlink;
+    Adlink.findByIdAndUpdate(id, update, {new: true}, function (err, result) {
+        cbUtil.logCallback(
+            err,
+            'Fail to update adlink: ' + err,
+            'Succeed to update adlink');
+
+        cbUtil.handleSingleValue(function(err, doc){
+            var obj = !err && doc && doc.toObject({virtuals: true});
+            if(callback) callback(err, obj);
+        }, err, result);
     });
 };
 

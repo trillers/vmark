@@ -43,7 +43,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 col-md-2 col-lg-2 control-label">位置</label>
                             <div class="col-sm-10 col-md-10 col-lg-10">
-                                <div class="btn-group" data-toggle="buttons">
+                                <div class="btn-group">
                                     <p class="form-control-static">{ __app.enums.AdlinkLayout.values[adlink.layout] }</p>
                                 </div>
                             </div>
@@ -51,8 +51,16 @@
                         <div class="form-group">
                             <label class="col-sm-2 col-md-2 col-lg-2 control-label">主题</label>
                             <div class="col-sm-10 col-md-10 col-lg-10">
-                                <div class="btn-group" data-toggle="buttons">
-                                    <p class="form-control-static block ext-overflow">{ __app.enums.AdlinkTheme.values[adlink.theme] }</p>
+                                <div class="btn-group">
+                                    <p class="form-control-static">{ __app.enums.AdlinkTheme.values[adlink.theme] }</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 col-lg-2 control-label">创建时间</label>
+                            <div class="col-sm-10 col-md-10 col-lg-10">
+                                <div class="btn-group">
+                                    <p class="form-control-static">{ adlink.crtOnText }</p>
                                 </div>
                             </div>
                         </div>
@@ -77,23 +85,28 @@
         var self = nest.presentable(this);
         self.api =  __app.settings.api.url;
         self.adlink = {};
-        var loadAdlink = domain.action('loadAdlink');
 
+        var loadAdlink = domain.action('loadAdlink');
         var onLoadAdlink = function(adlink){
-            console.log(adlink);
-            self.adlink = adlink;
-            self.update({hidden: false});
+            adlink.crtOnText = formateDate(new Date(adlink.crtOn));
+            self.update({hidden: false, adlink: adlink});
         };
 
         this.on('mount', function(){
             loadAdlink.onDone(onLoadAdlink);
         });
+
         this.on('unmount', function(){
             loadAdlink.offDone(onLoadAdlink);
         });
 
-        self.on('open', function(id){
-            loadAdlink.execute(id);
+        self.on('open', function(params){
+            if(params.id){
+                loadAdlink.execute(params.id);
+            }
+            else{
+                onLoadAdlink(params.model);
+            }
         });
 
         self.on('close', function(){self.update({hidden: true});});
@@ -103,8 +116,12 @@
             return str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
         }
 
+        function formateDate(date) {
+            return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+        }
+
         onEdit(e){
-            parent.
+            self.parent.showEditView(self.adlink._id);
         }
 
         onSyncLayout(e){

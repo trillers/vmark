@@ -13,22 +13,24 @@
             <div class="col-sm-12  col-md-12  col-lg-12" >
 
                 <form class="form-horizontal" id="adlink-edit">
+                    <input if={action=='edit'} type="hidden" id="id" name="id" value="{adlink._id}">
+                    <input if={action=='new'} type="hidden" id="org" name="org" value="{tenantId}">
                     <div class="form-group">
                         <label for="name" class="col-sm-2 col-md-2 col-lg-2 control-label">名称</label>
                         <div class="col-sm-10 col-md-10 col-lg-10">
-                            <input type="text" class="form-control" id="name" placeholder="">
+                            <input type="text" class="form-control" id="name" placeholder="" value="{adlink.name}">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="adwords" class="col-sm-2 col-md-2 col-lg-2 control-label">广告标题</label>
                         <div class="col-sm-10 col-md-10 col-lg-10">
-                            <input type="text" class="form-control" id="adwords" placeholder="">
+                            <input type="text" class="form-control" id="adwords" placeholder="" value="{adlink.adwords}">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="url" class="col-sm-2 col-md-2 col-lg-2 control-label">广告链接</label>
                         <div class="col-sm-10">
-                            <input type="url" class="form-control" id="url" placeholder="">
+                            <input type="url" class="form-control" id="url" placeholder="" value="{adlink.url}">
                         </div>
                     </div>
                     <div class="form-group">
@@ -36,9 +38,9 @@
                         <div class="col-sm-10 col-md-10 col-lg-10">
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <input type="checkbox" aria-label="..." id="hasPhone">
+                                    <input type="checkbox" aria-label="..." id="hasPhone" checked="{adlink.phone=='' ? 'false':'true'}">
                                 </span>
-                                <input type="phone" class="form-control" id="phone" placeholder="" onblur={onPhoneBlur}>
+                                <input type="phone" class="form-control" id="phone" placeholder="" onblur={onPhoneBlur} value="{adlink.phone}">
                             </div><!-- /input-group -->
                         </div>
                     </div>
@@ -46,11 +48,11 @@
                         <label for="layout" class="col-sm-2 col-md-2 col-lg-2 control-label">位置</label>
                         <div class="col-sm-10 col-md-10 col-lg-10">
                             <div class="btn-group" data-toggle="buttons">
-                                <input type="hidden" id="layout" name="layout" value="bottom">
-                                <label class="btn btn-default active" onclick={onSyncLayout}>
-                                    <input type="radio" name="layoutRadio" id="layoutBottom" autocomplete="off" checked value="bottom">底部
+                                <input type="hidden" id="layout" name="layout" value="{adlink.layout ? adlink.layout : 'bottom'}">
+                                <label class="btn btn-default {adlink.layout=='bottom' ? 'active': ''}" onclick={onSyncLayout}>
+                                    <input type="radio" name="layoutRadio" id="layoutBottom" autocomplete="off" value="bottom">底部
                                 </label>
-                                <label class="btn btn-default" onclick={onSyncLayout}>
+                                <label class="btn btn-default {adlink.layout=='top' ? 'active': ''}" onclick={onSyncLayout}>
                                     <input type="radio" name="layoutRadio" id="layoutTop" autocomplete="off" value="top">顶部
                                 </label>
                             </div>
@@ -60,19 +62,26 @@
                         <label for="theme" class="col-sm-2 col-md-2 col-lg-2 control-label">主题</label>
                         <div class="col-sm-10 col-md-10 col-lg-10">
                             <div class="btn-group" data-toggle="buttons">
-                                <input type="hidden" id="theme" name="theme" value="dark">
-                                <label class="btn btn-default active" onclick={onSyncTheme}>
-                                    <input type="radio" name="themeRadio" id="themeDark" autocomplete="off" checked value="dark">深色
+                                <input type="hidden" id="theme" name="theme" value="{adlink.theme ? adlink.theme : 'dark'}">
+                                <label class="btn btn-default {adlink.theme=='dark' ? 'active': ''}" onclick={onSyncTheme}>
+                                    <input type="radio" name="themeRadio" id="themeDark" autocomplete="off" value="dark">深色
                                 </label>
-                                <label class="btn btn-default" onclick={onSyncTheme}>
+                                <label class="btn btn-default {adlink.theme=='light' ? 'active': ''}" onclick={onSyncTheme}>
                                     <input type="radio" name="themeRadio" id="themeLight" autocomplete="off" value="light">浅色
                                 </label>
                             </div>
                         </div>
                     </div>
+                    <div if={action=='edit'} class="form-group">
+                        <label for="url" class="col-sm-2 col-md-2 col-lg-2 control-label">广告链接</label>
+                        <div class="btn-group">
+                            <p class="form-control-static">{ adlink.crtOnText }</p>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-md-offset-2 col-lg-offset-2 col-sm-10 col-md-10 col-lg-10">
-                            <button type="button" class="btn btn-primary" onclick={onSave}>保存</button>
+                            <button if={action=='new'} type="button" class="btn btn-primary" onclick={onSave}>创建</button>
+                            <button if={action=='edit'} type="button" class="btn btn-primary" onclick={onSave}>更新</button>
                         </div>
                     </div>
                 </form>
@@ -89,42 +98,58 @@
         var self = nest.presentable(this);
         self.api =  __app.settings.api.url;
         self.adlink = {};
-        var saveAdlink = domain.action('saveAdlink');
 
+        var createAdlink = domain.action('createAdlink');
+        var updateAdlink = domain.action('updateAdlink');
         var onSaveAdlink = function(adlink){
-            self.adlink = adlink;
-            self.update();
+            self.parent.showDetailView(adlink);
+            self.parent.onRefresh();
+        };
+
+        var loadAdlink = domain.action('loadAndEditAdlink');
+        var onLoadAdlink = function(adlink){
+            adlink.crtOnText = formateDate(new Date(adlink.crtOn));
+            self.update({hidden: false, adlink: adlink});
         };
 
         this.on('mount', function(){
-            saveAdlink.onDone(onSaveAdlink);
+            createAdlink.onDone(onSaveAdlink);
+            updateAdlink.onDone(onSaveAdlink);
+            loadAdlink.onDone(onLoadAdlink);
         });
         this.on('unmount', function(){
-            saveAdlink.offDone(onSaveAdlink);
+            createAdlink.offDone(onSaveAdlink);
+            updateAdlink.offDone(onSaveAdlink);
+            loadAdlink.offDone(onLoadAdlink);
         });
 
-        self.on('open', function(tenantId){
-            self.tenantId = tenantId;
-            self.adlink.org = tenantId;
-            self.hidden = false;
-            self.update();
+        self.on('open', function(params){
+            self.action = params.action;
+            if(params.action=='new'){
+                self.tenantId = params.tenantId;
+                self.adlink = {org: params.tenantId};
+                self.update({hidden: false});
+            }
+            else if(params.action=='edit'){
+                loadAdlink.execute(params.id);
+            }
         });
 
-        self.on('close', function(){
-            self.hidden = true;
-            self.update();
-        });
+        self.on('close', function(){self.update({hidden: true});});
 
         function trim(str) {
             if(!str) return '';
             return str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
         }
 
+        function formateDate(date) {
+            return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+        }
+
         var model = {};
 
         onSave(e){
             var msgs = [];
-            model.org = self.tenantId;
 
             model.name = $('#adlink-edit #name').val();
             if(trim(model.name)=='') msgs.push('<p>"名称"不能为空</p>');
@@ -143,13 +168,21 @@
             if(msgs.length){
                 $('#adlink-msg #msgs').html(msgs.join(''));
                 $('#adlink-msg').removeClass('hidden');
+                return;
             }
             else{
                 $('#adlink-msg #msgs').html('');
                 $('#adlink-msg').addClass('hidden');
-                saveAdlink.execute(model);
             }
-            console.log(model);
+
+            if(self.action=='new'){
+                model.org = self.tenantId;
+                createAdlink.execute(model);
+            }
+            else if(self.action=='edit'){
+                model._id = $('#adlink-edit #id').val();
+                updateAdlink.execute(model);
+            }
         }
 
         onSyncLayout(e){
