@@ -21,7 +21,7 @@ tenantAdminType.onAccess(function(qr, openid){
             reply = '[系统]: 个人账户注册成功！';
             yield tenantService.registerPersonalTenantAsync(openid);
             wechatApi.sendText(openid, reply, function (err) {
-                if(err) logger.error(err);
+                if(err) console.error(err);
             });
         }
         catch(e){
@@ -81,7 +81,7 @@ loginType.onAccess(function(qr, openid){
                 var result = {};
                 var reply = {};
                 var auth = yield securityService.authenticateAsync(openid);
-                context.logger.debug(auth);
+                console.info(auth);
                 if(!auth){
                     result.auth = 'failed';
                     result.msg = '登陆失败';
@@ -105,7 +105,7 @@ loginType.onAccess(function(qr, openid){
                 reply = '[系统]: 登陆后台系统失败！';
             }
             wechatApi.sendText(openid, reply, function (err) {
-                if(err) logger.error(err);
+                if(err) console.error(err);
             });
         }catch(e){
             console.error(e);
