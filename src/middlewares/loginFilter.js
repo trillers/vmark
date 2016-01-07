@@ -34,6 +34,7 @@ var filterFn = function*(next){
         yield next;
     }
     catch(err){
+        console.error(err)
         logger.error('Fail to create qr code in login filter: ' + err);
     }
 }

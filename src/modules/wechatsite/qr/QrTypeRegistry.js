@@ -258,7 +258,7 @@ function Qr(qr){
     this.expire = qr && qr.expire || null;
     this.data = qr && qr.data || null;
     this.views = 0;
-    this._events = qr._events || null;
+    this._events = qr && qr._events || null;
     this.crtOn = qr && qr.crtOn || null;
     this.typeObj = qr && qr.typeObj || null
 }
