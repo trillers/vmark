@@ -35,27 +35,32 @@ tenantAdminType.onExpire(function(){
 
 tenantBotType.onAccess(function(qr, openid){
     co(function*(){
-        var reply = '';
-        logger.debug('qr handler: bind a personal bot');
-        var result = yield tenantService.bindPersonalBotAsync(qr.data, openid);
-        if(result.result == bindBotResults.NO_OPERATOR){
-            reply = '[系统]: 微信号绑定失败：没有可绑定的管理员用户！';
+        try{
+            var reply = '';
+            console.info('qr handler: bind a personal bot');
+            var result = yield tenantService.bindPersonalBotAsync(qr.data, openid);
+            if(result.result == bindBotResults.NO_OPERATOR){
+                reply = '[系统]: 微信号绑定失败：没有可绑定的管理员用户！';
+            }
+            else if(result.result == bindBotResults.NOT_ADMIN){
+                reply = '[系统]: 微信号绑定失败：请绑定到管理员用户上！';
+            }
+            //else if(result.result == bindBotResults.OTHER_ROLE){
+            //    reply = '[系统]: 微信号绑定失败：待绑定微信号已经有其他身份！';
+            //}
+            else if(result.result == bindBotResults.BOUND){
+                reply = '[系统]: 微信号绑定失败：待绑定微信号已经绑定过！';
+            }
+            else{
+                reply = '[系统]: 微信号绑定成功！';
+            }
+            wechatApi.sendText(openid, reply, function (err) {
+                if(err) console.error(err);
+            });
+        }catch(e){
+            console.error(e)
         }
-        else if(result.result == bindBotResults.NOT_ADMIN){
-            reply = '[系统]: 微信号绑定失败：请绑定到管理员用户上！';
-        }
-        //else if(result.result == bindBotResults.OTHER_ROLE){
-        //    reply = '[系统]: 微信号绑定失败：待绑定微信号已经有其他身份！';
-        //}
-        else if(result.result == bindBotResults.BOUND){
-            reply = '[系统]: 微信号绑定失败：待绑定微信号已经绑定过！';
-        }
-        else{
-            reply = '[系统]: 微信号绑定成功！';
-        }
-        wechatApi.sendText(openid, reply, function (err) {
-            if(err) logger.error(err);
-        });
+
     });
 });
 tenantBotType.onExpire(function(qr, openid){
