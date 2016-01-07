@@ -60,24 +60,23 @@ tenantBotType.onExpire(function(qr, openid){
 loginType.onAccess(function(qr, openid){
     co(function*(){
         console.log("***************")
-        console.error(qr)
-        console.error(openid)
         var conn = wsConns[sceneId];
+        console.log(conn);
         if(conn){
-            var result = {};
+            var reply = {};
             var auth = yield securityService.authenticateAsync(openid);
             context.logger.debug(auth);
             if(!auth){
                 result.auth = 'failed';
                 result.msg = '登陆失败';
                 conn.write(JSON.stringify(result));
-                return '[系统]: 登陆后台系统失败！';
+                reply = '[系统]: 登陆后台系统失败！';
             }
             else if(auth.result != authResults.OK && auth.result != authResults.NO_BOUND_BOT){
                 result.auth = 'failed';
                 result.msg = '登陆失败';
                 conn.write(JSON.stringify(result));
-                return '[系统]: 登陆后台系统失败！';
+                reply = '[系统]: 登陆后台系统失败！';
             }
             result.auth = 'success';
             result.msg = '登陆成功';
@@ -85,10 +84,13 @@ loginType.onAccess(function(qr, openid){
             result.sceneId = sceneId;
 
             conn.write(JSON.stringify(result));
-            return '[系统]: 登陆后台系统成功！';
+            reply = '[系统]: 登陆后台系统成功！';
         }else{
-            return '[系统]: 登陆后台系统失败！';
+            reply = '[系统]: 登陆后台系统失败！';
         }
+        wechatApi.sendText(openid, reply, function (err) {
+            if(err) logger.error(err);
+        });
     });
 });
 loginType.onExpire(function(){
