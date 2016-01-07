@@ -30,6 +30,8 @@ var filterFn = function*(next){
             qr = yield loginQrType.createQrAsync();
         }
         this.qrCodeUrl = wechatApi.showQRCodeURL(qr.ticket);
+        console.log("*******************")
+        console.error(qr)
         this.connId = qr.sceneId || qr.scene_id;
         yield next;
     }
