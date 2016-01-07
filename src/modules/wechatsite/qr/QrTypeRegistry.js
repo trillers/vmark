@@ -16,7 +16,9 @@ function QrTypeRegistry(option){
     var option = option || {};
     this.appId = option.appId || null;
     this.appSecret = option.appSecret || null;
-    this.typeHm = {}
+    this.typeHm = {
+        default:new QrType('default')
+    }
 }
 
 /**
@@ -31,6 +33,7 @@ QrTypeRegistry.prototype.createQr = function(qrData, callback){
     }
     this.getQrType(qrData.type).createQr(qrData, callback);
 };
+QrTypeRegistry.prototype.createQrAsync = Promise.promisify(QrTypeRegistry.prototype.createQr);
 
 /**
  * helper for generate scene_id
@@ -79,23 +82,50 @@ QrTypeRegistry.prototype.getQrType = function(type){
 };
 
 /**
- * handle the qr that own given sceneId, load it from db,
- * get the corresponding qr type, trigger corresponding events
+ * get qr from db
  * @param sceneId string
- * @return null
+ * @param callback function
+ * @returns {Qr|null}
  */
-QrTypeRegistry.prototype.handle = function(sceneId){
+QrTypeRegistry.prototype.getQr = function(sceneId, callback){
     var me = this;
     co(function*(){
         try{
             var qrDoc = yield service.loadBySceneIdAsync(sceneId);
+            var qr = new Qr(qrDoc);
+            qr.setRegistry(me);
+            qr.typeObj = me.getQrType(qrDoc.type);
+            callback(null, qr);
+        }catch(e){
+            callback(e);
+        }
+    })
+};
+QrTypeRegistry.prototype.getQrAsync = Promise.promisify(QrTypeRegistry.prototype.createQr);
+
+/**
+ * handle the qr that own given sceneId, load it from db,
+ * get the corresponding qr type, trigger corresponding events
+ * @param sceneId string
+ * @param openid string
+ * @return null
+ */
+QrTypeRegistry.prototype.handle = function(sceneId, openid){
+    var me = this;
+    co(function*(){
+        try{
+            var qrDoc = yield service.loadBySceneIdAsync(sceneId);
+            if(!qrDoc){
+                return me.getQrType('default').emit('access', {sceneId: sceneId}, openid);
+            }
             var qrType = qrDoc.type;
             var qr = new Qr(qrDoc);
             qr.setRegistry(me);
+            qr.typeObj = me.getQrType(qrType);
             if(qr.temp && qr.isInvalid()){
-                return me.getQrType(qrType).emit('expire', qr);
+                return qr.typeObj.emit('expire', qr, openid);
             }
-            me.getQrType(qrType).emit('access', qr);
+            me.getQrType(qrType).emit('access', qr, openid);
         }catch(e){
             console.error(e)
         }
@@ -109,6 +139,7 @@ QrTypeRegistry.prototype.handle = function(sceneId){
  */
 function QrType(qr){
     this.registry = null;
+    this.data = qr && qr.data || null;
     this.temp = qr && qr.temp || false;
     this.type = qr && qr.type || null;
     this.expire = qr && qr.expire || null;
@@ -134,7 +165,7 @@ QrType.prototype.onExpire = function(handler){
 /**
  * Generate qr
  * @param qrData
- * @param callback
+ * @param cb
  */
 QrType.prototype.createQr = function(qrData, cb){
     var me = this;
@@ -179,6 +210,7 @@ QrType.prototype.createQr = function(qrData, cb){
             var result = yield fn.apply(null, createQrArgs);
             qr.ticket = result.ticket;
             qr.scene_id = sceneId;
+            qr.typeObj = me;
             yield service.createAsync(qr);
             callback && callback(null, new Qr(qr));
         }
@@ -188,6 +220,28 @@ QrType.prototype.createQr = function(qrData, cb){
         }
     })
 };
+QrType.prototype.createQrAsync = Promise.promisify(QrType.prototype.createQr);
+
+/**
+ * get qr from db
+ * @param sceneId string
+ * @param callback function
+ * @returns {Qr|null}
+ */
+QrType.prototype.getQr = function(sceneId, callback){
+    var me = this;
+    co(function*(){
+        try{
+            var qrDoc = yield service.loadBySceneIdAsync(sceneId);
+            var qr = new Qr(qrDoc);
+            qr.typeObj = me;
+            callback(null, qr);
+        }catch(e){
+            callback(e);
+        }
+    })
+};
+QrType.prototype.getQrAsync = Promise.promisify(QrType.prototype.getQr);
 
 /**
  * Qr
@@ -202,9 +256,11 @@ function Qr(qr){
     this.ticket = qr && qr.ticket || null;
     this.sceneId = qr && qr.sceneId || null;
     this.expire = qr && qr.expire || null;
+    this.data = qr && qr.data || null;
     this.views = 0;
     this._events = qr._events || null;
     this.crtOn = qr && qr.crtOn || null;
+    this.typeObj = qr && qr.typeObj || null
 }
 u.inherits(Qr, EventEmitter);
 
@@ -231,24 +287,18 @@ Qr.prototype.isInvalid = function(){
 
 /**
  * Allow the qr code expired
- * @param qrType QrType
- * @param cb Function<Error, *>
+ * @param callback Function<Error, *>
  */
-Qr.prototype.invalid = function(qrType, cb){
+Qr.prototype.invalid = function(callback){
     var me = this;
-    var callback = null;
-    if(typeof qrType === 'function'){
-        callback = qrType
-    }else{
-        callback = cb ? cb : function noop(){};
-    }
+    callback = callback ? callback : function noop(){};
     if(me.expire <=0){
         return callback(null);
     }
     me.expire = 0;
     service.updateBySceneIdAsync(me.sceneId, me)
         .then(function(){
-            qrType.emit('expire', me);
+            me.typeObj.emit('expire', me);
             callback(null);
         })
         .catch(function(e){
@@ -256,5 +306,6 @@ Qr.prototype.invalid = function(qrType, cb){
             callback(e)
         })
 };
+Qr.prototype.invalidAsync = Promise.promisify(Qr.prototype.invalid);
 
 module.exports = QrTypeRegistry;

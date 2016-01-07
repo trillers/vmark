@@ -1,12 +1,106 @@
+var co = require('co');
 var QrTypeRegistry = require('./QrTypeRegistry');
 var qrRegistry = new QrTypeRegistry();
+var context = require('../../../context/context');
+var wsConns = require('../../../app/wsConns');
+var tenantService = context.services.tenantService;
+var bindBotResults = tenantService.bindBotResults;
+var securityService = context.services.securityService;
+var authResults = securityService.authResults;
 
-var testType = qrRegistry.newType('test');
-testType.onAccess(function(){
+var tenantAdminType = qrRegistry.newType('ta', {temp: true});
+var tenantBotType = qrRegistry.newType('tb', {temp: true});
+var loginType = qrRegistry.newType('lg', {temp: true});
+var defaultType = qrRegistry.getQrType('default');
+
+tenantAdminType.onAccess(function(qr, openid){
+    co(function*(){
+        var reply = '';
+        logger.debug('qr handler: register a personal tenant');
+        reply = '[系统]: 个人账户注册成功！';
+        yield tenantService.registerPersonalTenantAsync(openid);
+        wechatApi.sendText(openid, reply, function (err) {
+            if(err) logger.error(err);
+        });
+    });
+});
+tenantAdminType.onExpire(function(){
 
 });
-testType.onExpire(function(){
+
+tenantBotType.onAccess(function(qr, openid){
+    co(function*(){
+        var reply = '';
+        logger.debug('qr handler: bind a personal bot');
+        var result = yield tenantService.bindPersonalBotAsync(qr.custom_id, openid);
+        if(result.result == bindBotResults.NO_OPERATOR){
+            reply = '[系统]: 微信号绑定失败：没有可绑定的管理员用户！';
+        }
+        else if(result.result == bindBotResults.NOT_ADMIN){
+            reply = '[系统]: 微信号绑定失败：请绑定到管理员用户上！';
+        }
+        //else if(result.result == bindBotResults.OTHER_ROLE){
+        //    reply = '[系统]: 微信号绑定失败：待绑定微信号已经有其他身份！';
+        //}
+        else if(result.result == bindBotResults.BOUND){
+            reply = '[系统]: 微信号绑定失败：待绑定微信号已经绑定过！';
+        }
+        else{
+            reply = '[系统]: 微信号绑定成功！';
+        }
+        wechatApi.sendText(openid, reply, function (err) {
+            if(err) logger.error(err);
+        });
+    });
+});
+tenantBotType.onExpire(function(qr, openid){
 
 });
+
+loginType.onAccess(function(qr, openid){
+    co(function*(){
+        var conn = wsConns[sceneId];
+        if(conn){
+            var result = {};
+            var auth = yield securityService.authenticateAsync(openid);
+            context.logger.debug(auth);
+            if(!auth){
+                result.auth = 'failed';
+                result.msg = '登陆失败';
+                conn.write(JSON.stringify(result));
+                return '[系统]: 登陆后台系统失败！';
+            }
+            else if(auth.result != authResults.OK && auth.result != authResults.NO_BOUND_BOT){
+                result.auth = 'failed';
+                result.msg = '登陆失败';
+                conn.write(JSON.stringify(result));
+                return '[系统]: 登陆后台系统失败！';
+            }
+            result.auth = 'success';
+            result.msg = '登陆成功';
+            result.openid = auth.user.openid;
+            result.sceneId = sceneId;
+
+            conn.write(JSON.stringify(result));
+            return '[系统]: 登陆后台系统成功！';
+        }else{
+            return '[系统]: 登陆后台系统失败！';
+        }
+    });
+});
+loginType.onExpire(function(){
+
+});
+
+defaultType.onAccess(function(qr, openid){
+    var reply = '[系统]: 该二维码已失效';
+    wechatApi.sendText(openid, reply, function (err) {
+        console.log(err);
+        //TODO
+    });
+});
+
+
+
 
 module.exports = qrRegistry;
