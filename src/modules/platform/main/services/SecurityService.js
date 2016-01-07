@@ -67,6 +67,7 @@ var hasRole = function(posts, role) {
  *  }
  */
 Service.prototype.authenticate = function (openid, callback) {
+    console.error('start auth');
     var self = this;
     var logger = this.context.logger;
     var platformUserService = this.context.services.platformUserService;

@@ -80,6 +80,7 @@ loginType.onAccess(function(qr, openid){
             if(conn){
                 var result = {};
                 var reply = {};
+                console.error(securityService.authenticate);
                 var auth = yield securityService.authenticateAsync(openid);
                 console.info(auth);
                 if(!auth){
