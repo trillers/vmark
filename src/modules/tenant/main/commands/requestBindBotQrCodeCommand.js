@@ -11,7 +11,7 @@ var tenantBotQrType = qrRegistry.getQrType('tb');
 module.exports = function (context) {
     var openid = context.weixin.FromUserName;
     try{
-        tenantBotQrType.createQr(function(err, qr){
+        tenantBotQrType.createQr({data: openid}, function(err, qr){
             var url = wechatApi.showQRCodeURL(qr.ticket);
             var qrCodePath = os.tmpdir() + openid + '.png';
             request(url).pipe(fs.createWriteStream(qrCodePath)).on('close', function () {

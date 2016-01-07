@@ -9,9 +9,9 @@ var securityService = context.services.securityService;
 var authResults = securityService.authResults;
 
 var tenantAdminType = qrRegistry.newType('ta', {temp: true});
-var tenantBotType = qrRegistry.newType('tb', {temp: true});
-var loginType = qrRegistry.newType('lg', {temp: true});
-var defaultType = qrRegistry.getQrType('default');
+var tenantBotType =   qrRegistry.newType('tb', {temp: true});
+var loginType =       qrRegistry.newType('lg', {temp: true});
+var defaultType =     qrRegistry.getQrType('default');
 
 tenantAdminType.onAccess(function(qr, openid){
     co(function*(){
@@ -32,7 +32,7 @@ tenantBotType.onAccess(function(qr, openid){
     co(function*(){
         var reply = '';
         logger.debug('qr handler: bind a personal bot');
-        var result = yield tenantService.bindPersonalBotAsync(qr.custom_id, openid);
+        var result = yield tenantService.bindPersonalBotAsync(qr.data, openid);
         if(result.result == bindBotResults.NO_OPERATOR){
             reply = '[系统]: 微信号绑定失败：没有可绑定的管理员用户！';
         }

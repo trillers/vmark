@@ -39,7 +39,7 @@ describe('qr', function(){
 
     it('access qr', function(done){
         var testType = registry.getQrType('test');
-        testType.createQr(function(err, qr){
+        testType.createQr({data: 'xxx'}, function(err, qr){
             registry.handle(qr.sceneId);
             assert.ok(qr.temp);
             assert.ok(qr.sceneId.toString().length>5);
