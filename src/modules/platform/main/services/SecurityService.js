@@ -16,8 +16,9 @@ var authResults = {
 Service.prototype.authResults = authResults;
 
 var authSupportRoles = {};
+authSupportRoles[OrgMemberRole.PlatformAdmin.value()] = true;
+authSupportRoles[OrgMemberRole.PlatformOperation.value()] = true;
 authSupportRoles[OrgMemberRole.TenantAdmin.value()] = true;
-//authSupportRoles[OrgMemberRole.TenantOperation.value()] = true; //no operation added for personal tenant
 authSupportRoles[OrgMemberRole.TenantWechatBot.value()] = true;
 
 var hasRole = function(posts, role) {
@@ -67,20 +68,15 @@ var hasRole = function(posts, role) {
  *  }
  */
 Service.prototype.authenticate = function (openid, callback) {
-    console.error('start auth');
-    console.error(this);
-    var self = this;
     var logger = this.context.logger;
     var platformUserService = this.context.services.platformUserService;
     var tenantOrgMediaService = this.context.services.tenantOrgMediaService;
-    var wechatMediaService = this.context.services.wechatMediaService;
     co(function*() {
         var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
 
         /*
          *  no user found, so authentication fails
          */
-        console.error(user);
         if(!user){
             if (callback) callback(null, {
                 result: authResults.NO_USER
@@ -121,7 +117,17 @@ Service.prototype.authenticate = function (openid, callback) {
             return;
         }
 
-        if(post.role == OrgMemberRole.TenantAdmin.value()) {
+        if(post.role == OrgMemberRole.PlatformAdmin.value() || post.role == OrgMemberRole.PlatformOperation.value()){
+            if (callback) callback(null, {
+                platform: true,
+                user: user,
+                post: post,
+                tenantId: tenantId,
+                result: authResults.OK
+            });
+            return;
+        }
+        else if(post.role == OrgMemberRole.TenantAdmin.value()) {
             var wechatBots = yield tenantOrgMediaService.loadAllMyManagedMediasAsync(tenantId, post.member);
             wechatBot = wechatBots.length > 0 ? wechatBots[0] : null;
             wechatBot.id = wechatBot._id;
@@ -133,7 +139,6 @@ Service.prototype.authenticate = function (openid, callback) {
         /*
          * no bound bot found, so authentication fails
          */
-        console.error(wechatBot);
         if(!wechatBot){
             if (callback) callback(null, {
                 user: user,

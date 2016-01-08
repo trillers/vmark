@@ -21,7 +21,7 @@
 
                         <tr each="{tenants}">
                             <td>
-                                <a href="#tenant?id={_id}">
+                                <a href="/tenant-recontent-{_id}">
                                     {name}
                                 </a>
                             </td>
@@ -52,8 +52,8 @@
             self.tipInfo = "";
 
             var findTenants = domain.action('findTenants');
-
             var onFindTenants = function(tenants){
+                console.log(tenants);
                 self.tenants = tenants;
                 self.update();
             };
@@ -65,10 +65,10 @@
                 findTenants.offDone(onFindTenants);
             });
             this.on('open', function(options){
-                console.info('tag tenants is opening');
                 self.trigger('ready', false);
                 self.trigger('view-route-to');
                 findTenants.execute({});
+                console.info('tag tenants is opening');
             });
 
             this.on('leave', function(){

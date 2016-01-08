@@ -21,6 +21,19 @@ app.routeView('adlink-index', nest.viewable({
   }
 }));
 
+app.routeView('recontent-index', nest.viewable({
+  name: 'recontent-index',
+  mount: function(ctx){
+    var tags = riot.mount('recontent-index', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx.req.query);
+  }
+}));
+
+
 app.on('init', function(){
   var attentionUrl = util.getCookie('attentionUrl');
   var hash = attentionUrl || window.location.hash;
