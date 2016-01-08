@@ -91,13 +91,17 @@ Service.prototype.authenticate = function (openid, callback) {
         if(user.posts && user.posts.length>0){
             var adminPost = hasRole(user.posts, OrgMemberRole.TenantAdmin.value());
             var botPost = hasRole(user.posts, OrgMemberRole.TenantWechatBot.value());
-            post = adminPost || botPost;
+            var paPost = hasRole(user.posts, OrgMemberRole.PlatformAdmin.value());
+            var poPost = hasRole(user.posts, OrgMemberRole.PlatformOperation.value());
+
+
+            post = adminPost || botPost || paPost || poPost;
             tenantId = post.org;
 
             /*
              *  no legal roles found, so authentication fails
              */
-            if(!authSupportRoles[post.role]){
+            if(!post || !authSupportRoles[post.role]){
                 if (callback) callback(null, {
                     user: user,
                     post: post,
