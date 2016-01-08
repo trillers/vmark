@@ -103,14 +103,14 @@ loginType.onAccess(function(qr, openid){
                     result.msg = '登陆失败';
                     conn.write(JSON.stringify(result));
                     reply = '[系统]: 登陆后台系统失败！';
+                }else{
+                    result.auth = 'success';
+                    result.msg = '登陆成功';
+                    result.openid = auth.user.openid;
+                    result.sceneId = sceneId;
+                    conn.write(JSON.stringify(result));
+                    reply = '[系统]: 登陆后台系统成功！';
                 }
-                result.auth = 'success';
-                result.msg = '登陆成功';
-                result.openid = auth.user.openid;
-                result.sceneId = sceneId;
-
-                conn.write(JSON.stringify(result));
-                reply = '[系统]: 登陆后台系统成功！';
             }else{
                 reply = '[系统]: 登陆后台系统失败！';
             }

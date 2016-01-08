@@ -31,7 +31,7 @@ module.exports = function(msg){
             request(mediaUrl).pipe(fs.createWriteStream(loginQrCodePath)).on('close', function () {
                 wechatApi.uploadMedia(loginQrCodePath, 'image', function (err, data) {
                     if (err) {
-                        logger.error('Fail to update login qr code: ' + err);
+                        console.error('Fail to update login qr code: ' + err);
                         return;
                     }
                     var mediaId = data.media_id;
