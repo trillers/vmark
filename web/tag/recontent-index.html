@@ -5,7 +5,7 @@
                 &nbsp;
             </div>
             <div class="row-fluid">
-                <div class="col-md-4  col-lg-4" >
+                <div class="col-md-6  col-lg-6" >
                     <div class="row-fluid">
                         <div class="col-md-12  col-lg-12" >
                             <div class="pull-right">
@@ -18,24 +18,24 @@
                                 <tr>
                                     <th>名称</th>
                                     <th>广告</th>
-                                    <th>布局</th>
+                                    <th>预览</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr each="{adlinks}">
+                                <tr each="{recontents}">
                                     <td>
                                         <a onclick={parent.onView}>
                                             <input type="hidden" value="{_id}">
-                                            {name}
+                                            {originalTitle}
                                         </a>
                                     </td>
                                     <td>
-                                        <a href="{url}">
-                                            {adwords}
-                                        </a>
+                                        {adName}
                                     </td>
                                     <td>
-                                        { __app.enums.AdlinkLayout.values[layout] }
+                                        <a href="{newUrl}" target="_blank">
+                                            预览
+                                        </a>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -43,12 +43,15 @@
                         </div>
                 </div>
                 </div>
-                <div class="col-md-8  col-lg-8" >
+                <div class="col-md-6  col-lg-6" >
                     <adlink-edit id="edit"></adlink-edit>
                     <adlink-detail id="detail"></adlink-detail>
                 </div>
             </div><!--/row-->
         </div><!--/container-->
+        <form id="newForm" method="post" action="recontent-set" target="_blank">
+            <input type="hidden" id="tenantId" name="tenantId" value="{tenantId}">
+        </form>
 
         <style scoped>
 
@@ -63,23 +66,24 @@
             var edit = self.tags['adlink-edit'];
             var detail = self.tags['adlink-detail'];
 
-            var findTenantAdlinks = domain.action('findTenantAdlinks');
+            var findTenantRecontents = domain.action('findTenantRecontents');
 
-            var onFindTenantAdlinks = function(adlinks){
-                self.update({adlinks: adlinks});
+            var onFindTenantRecontents = function(recontents){
+                console.log(recontents);
+                self.update({recontents: recontents});
             };
 
             this.on('mount', function(){
-                findTenantAdlinks.onDone(onFindTenantAdlinks);
+                findTenantRecontents.onDone(onFindTenantRecontents);
             });
             this.on('unmount', function(){
-                findTenantAdlinks.offDone(onFindTenantAdlinks);
+                findTenantRecontents.offDone(onFindTenantRecontents);
             });
             this.on('open', function(options){
                 console.info('tag adlink-index is opening');
                 self.trigger('ready', false);
                 self.trigger('view-route-to');
-                findTenantAdlinks.execute(self.tenantId);
+                findTenantRecontents.execute(self.tenantId);
             });
 
             this.on('leave', function(){
@@ -97,18 +101,20 @@
             });
 
             onRefresh(e){
-                findTenantAdlinks.execute(self.tenantId);
+                findTenantRecontents.execute(self.tenantId);
             }
 
             onNew(e){
-                detail.trigger('close');
-                edit.trigger('open', {action: 'new', tenantId: self.tenantId});
+//                detail.trigger('close');
+//                edit.trigger('open', {action: 'new', tenantId: self.tenantId});
+                $('#newForm').submit();
+//                window.open('/recontent-set');
             }
 
             onView(e){
-                var id = $(e.currentTarget).find('input[type=hidden]').val();
-                edit.trigger('close');
-                detail.trigger('open', {id: id});
+//                var id = $(e.currentTarget).find('input[type=hidden]').val();
+//                edit.trigger('close');
+//                detail.trigger('open', {id: id});
             }
 
             this.showEditView = function(id){

@@ -38,7 +38,8 @@
     </div>
     <div class="row">
         <div class="col-xs-offset-0 col-xs-12 col-sm-offset-2 col-sm-8 col-md-offset-2 col-md-8 col-lg-offset-2 col-lg-8" >
-            <form class="" action="recontent-gen">
+            <form method="post" action="recontent-gen">
+                <input type="hidden" id="tenantId" name="tenantId" value="{{tenantId}}">
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">文章：</div>
@@ -93,7 +94,7 @@
                     }
                     var pwidth = '' + width + '%';
                     pgbar.width(pwidth).text(pwidth);
-                }, 100);
+                }, 300);
             });
         });
     </script>

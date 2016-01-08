@@ -80,7 +80,13 @@ module.exports = function(app){
 
         this.session.auth = auth;
         this.cookies.set('sceneId', sceneId, {maxAge: 3600000*24*30});
-        this.redirect('/');
+
+        if(auth.platform){
+            this.redirect('/boss');
+        }
+        else{
+            this.redirect('/');
+        }
     });
 
     app.use(router.routes());

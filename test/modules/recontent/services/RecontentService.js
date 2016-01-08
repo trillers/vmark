@@ -28,4 +28,15 @@ describe('RecontentService', function(){
         });
     });
 
+    describe.only('findTenantRecontents', function(){
+        var tenantId = 'MTAxM';
+        it('Succeed to find recontents of a tenant', function(done){
+            var service = context.services.recontentService;
+            service.findTenantRecontents(tenantId, function(err, recontents){
+                console.error(err);
+                console.info(recontents);
+                done();
+            });
+        });
+    });
 });

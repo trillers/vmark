@@ -45,4 +45,10 @@ module.exports = function(app){
     require('./adlink')(router);
     app.use(router.routes());
 
+    //recontent
+    router = new Router();
+    router.prefix('/api/recontent');
+    require('./recontent')(router);
+    app.use(router.routes());
+
 }
