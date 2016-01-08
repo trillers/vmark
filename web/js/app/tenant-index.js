@@ -7,7 +7,7 @@ var agent = require('./agent-tenant').init();
 var util = require('./util');
 
 var Spa = require('./spa');
-var app = new Spa({defaultHash: 'adlink-index'});
+var app = new Spa({defaultHash: 'recontent-index'});
 
 app.routeView('adlink-index', nest.viewable({
   name: 'adlink-index',
