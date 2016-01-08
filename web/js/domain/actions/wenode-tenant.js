@@ -1,6 +1,11 @@
 var domain = require('../domain');
 var apiFactory = domain.restApi();
 
+
+domain.action('findTenantAdlinks').onExecute(function(data){
+    apiFactory.get('/adlink/tenant-' + data).drive(this).send();
+});
+
 domain.action('loadAdlink').onExecute(function(data){
     apiFactory.get('/adlink/_' + data).drive(this).send();
 });

@@ -3,13 +3,14 @@ var Router = require('koa-router');
 var context = require('../../context/context');
 var recontentService = context.services.recontentService;
 var adlinkService = context.services.adlinkService;
+
 module.exports = function(){
     var router = new Router();
     require('../../app/routes-spa')(router);
 
     router.get('/tenant-recontent-:id', function *(){
-        var tenant = {name: '包三哥', type: 'p'};
-        yield this.render('tenant-recontent', {tenant: tenant});
+        var tenantId = this.params.id;
+        yield this.render('tenant-recontent', {tenantId: tenantId});
     });
 
     router.get('/recontent-set', function *(){

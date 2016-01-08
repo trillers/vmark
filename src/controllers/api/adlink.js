@@ -46,19 +46,18 @@ module.exports = function (router) {
         }
     });
 
-    router.get('/filter', function*(){
+    router.get('/tenant-:id', function*(){
         try{
+            var tenantId = this.params.id;
             //var tenantId = 'MLeds'; //this.query.tenantId;
-            var auth = this.session && this.session.auth;
-            if(!auth){
-                this.redirect('/login');
-                return;
-            }
+            //var auth = this.session && this.session.auth;
+            //if(!auth){
+            //    this.redirect('/login');
+            //    return;
+            //}
+            //var tenantId = auth.tenantId;
 
-            var tenantId = auth.tenantId;
-            var adlinks = yield adlinkService.findTenantAdlinksAsync(tenantId);
-
-            this.body = adlinks;
+            this.body = yield adlinkService.findTenantAdlinksAsync(tenantId);
         }catch(e){
             context.logger.error(e);
             this.body = {error: e};

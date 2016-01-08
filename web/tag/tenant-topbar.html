@@ -18,6 +18,7 @@
     <script>
         this.headimgurl = __page.user.headimgurl;
         this.nickname = __page.user.nickname;
+        this.tenantId = this.opts.tenant;
 
         this.on('mount', function(){
             if(window.location.hash) {
