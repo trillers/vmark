@@ -85,7 +85,6 @@ loginType.onAccess(function(qr, openid){
             console.log(wsConns);
             var sceneId = qr.sceneId;
             var conn = wsConns[sceneId];
-            console.log(conn);
             if(conn){
                 var result = {};
                 var reply = {};
