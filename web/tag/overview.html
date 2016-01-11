@@ -107,10 +107,12 @@
             self.botKeepExited = false;
             self.botActioning = true;
             self.needLoginFlg = false;
+            var loadBotByMediaId = domain.action('loadBotByMediaId');
+            var startBot = domain.action('startBot');
+            var stopBot = domain.action('stopBot');
             var IntentionStatus = __app.enums.IntentionStatus.names;
             var Status = __app.enums.WechatBotStatus.names;
             var statusValues = __app.enums.WechatBotStatus.values;
-
             var BotState = function(id, intentionStatus, status){
                 this.id = id;
                 this.intentionStatus = intentionStatus || IntentionStatus.Logged;
@@ -194,7 +196,6 @@
             });
 
             ws.subscribe('/bot/need_login', function(data){
-                console.warn(data);
                 var json = data;
                 if(json.agentId === self.bot.customId){
                     self.loginQR = json.mediaUrl;
@@ -203,10 +204,6 @@
                 }
             });
 
-            var loadBotByMediaId = domain.action('loadBotByMediaId');
-            var startBot = domain.action('startBot');
-            var stopBot = domain.action('stopBot');
-console.log(self.bot);
             goLogging(e){
                 startBot.execute({
                     openid: self.bot.customId,
