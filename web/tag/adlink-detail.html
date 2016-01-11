@@ -20,10 +20,18 @@
                                 <p class="form-control-static">{adlink.name}</p>
                             </div>
                         </div>
+                        <!--<div class="form-group">-->
+                            <!--<label class="col-sm-2 col-md-2 col-lg-2 control-label">广告标题</label>-->
+                            <!--<div class="col-sm-10 col-md-10 col-lg-10">-->
+                                <!--<p class="form-control-static">{adlink.adwords}</p>-->
+                            <!--</div>-->
+                        <!--</div>-->
                         <div class="form-group">
-                            <label class="col-sm-2 col-md-2 col-lg-2 control-label">广告标题</label>
+                            <label class="col-sm-2 col-md-2 col-lg-2 control-label">广告图片</label>
                             <div class="col-sm-10 col-md-10 col-lg-10">
-                                <p class="form-control-static">{adlink.adwords}</p>
+                                <div class="{hidden: !adlink.adpicUrl}">
+                                    <img src="{adlink.adpicUrl}" style="width: 100%;"/>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group">

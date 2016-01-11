@@ -11,7 +11,9 @@ var Model = function(domainBuilder){
         .withProperties({
             org:                {type: String, ref: 'Org', required: true}
             , name:             {type: String, required: true}
-            , adwords:          {type: String, required: true}
+            , adwords:          {type: String, required: false}
+            , adpic:            {type: String, ref: 'File', required: false}
+            , adpicUrl:         {type: String, required: false}
             , url:              {type: String, required: true}
             , phone:            {type: String, required: false}
             , layout:           {type: String, enum: AdlinkLayout.valueList(), default: AdlinkLayout.Bottom.value(), required: true}

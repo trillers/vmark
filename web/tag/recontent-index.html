@@ -44,8 +44,8 @@
                 </div>
                 </div>
                 <div class="col-md-6  col-lg-6" >
-                    <adlink-edit id="edit"></adlink-edit>
-                    <adlink-detail id="detail"></adlink-detail>
+                    <!--<adlink-edit id="edit"></adlink-edit>-->
+                    <!--<adlink-detail id="detail"></adlink-detail>-->
                 </div>
             </div><!--/row-->
         </div><!--/container-->
@@ -63,8 +63,8 @@
             var self = nest.presentable(this);
             self.api =  __app.settings.api.url;
             self.tenantId = this.opts.tenant;
-            var edit = self.tags['adlink-edit'];
-            var detail = self.tags['adlink-detail'];
+//            var edit = self.tags['adlink-edit'];
+//            var detail = self.tags['adlink-detail'];
 
             var findTenantRecontents = domain.action('findTenantRecontents');
 
@@ -108,7 +108,6 @@
 //                detail.trigger('close');
 //                edit.trigger('open', {action: 'new', tenantId: self.tenantId});
                 $('#newForm').submit();
-//                window.open('/recontent-set');
             }
 
             onView(e){

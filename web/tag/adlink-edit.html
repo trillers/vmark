@@ -21,10 +21,48 @@
                             <input type="text" class="form-control" id="name" placeholder="" value="{adlink.name}">
                         </div>
                     </div>
+                    <!--<div class="form-group">-->
+                        <!--<label for="adwords" class="col-sm-2 col-md-2 col-lg-2 control-label">广告标题</label>-->
+                        <!--<div class="col-sm-10 col-md-10 col-lg-10">-->
+                            <!--<input type="text" class="form-control" id="adwords" placeholder="" value="{adlink.adwords}">-->
+                        <!--</div>-->
+                    <!--</div>-->
                     <div class="form-group">
-                        <label for="adwords" class="col-sm-2 col-md-2 col-lg-2 control-label">广告标题</label>
+                        <label for="adwords" class="col-sm-2 col-md-2 col-lg-2 control-label">广告图片</label>
                         <div class="col-sm-10 col-md-10 col-lg-10">
-                            <input type="text" class="form-control" id="adwords" placeholder="" value="{adlink.adwords}">
+                            <!--<input type="hidden" id="adpic" name="adpic" value="{adlink.adpic}">-->
+                            <!--<input type="hidden" id="adpicUrl" name="adpicUrl" value="{adlink.adpic}">-->
+
+                            <div class="{hidden: adpicMode!='select'}">
+                            <span class="btn btn-default btn-file">
+                                浏览<input id="img_file" type="file" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{previewImg}">
+                            </span>
+
+                            <div class="{hidden: !adlink.adpicUrl}">
+                                <img src="{adlink.adpicUrl}" style="width: 100%;"/>
+                            </div>
+
+                            </div>
+                            <div class="{hidden: adpicMode!='preview'}" class="panel panel-default" id="img_prew" style="margin-bottom: 10px">
+                                <table class="table table-condensed" style="border: 0px; text-align: center; vertical-align: middle;">
+                                    <tbody>
+                                    <tr>
+                                        <td colspan="3"><img src="{img_url}" style="width: 100%;"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{img_name}</td>
+                                        <td>{img_size}</td>
+                                        <td>{img_width}*{img_height}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <input class="btn btn-default" type="button"  style="margin-right: 50px" value="取消" onclick="{cancel_send_img}"/>
+                                            <input class="btn btn-success" type="button" value="发送" onclick="{send_img}"/>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -73,7 +111,7 @@
                         </div>
                     </div>
                     <div if={action=='edit'} class="form-group">
-                        <label for="url" class="col-sm-2 col-md-2 col-lg-2 control-label">广告链接</label>
+                        <label for="url" class="col-sm-2 col-md-2 col-lg-2 control-label">创建时间</label>
                         <div class="btn-group">
                             <p class="form-control-static">{ adlink.crtOnText }</p>
                         </div>
@@ -91,13 +129,32 @@
     </div>
     </div>
     <style scoped>
-
+        .btn-file {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-file input[type=file] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            font-size: 100px;
+            text-align: right;
+            filter: alpha(opacity=0);
+            opacity: 0;
+            outline: none;
+            background: white;
+            cursor: inherit;
+            display: block;
+        }
     </style>
 
     <script>
         var self = nest.presentable(this);
         self.api =  __app.settings.api.url;
         self.adlink = {};
+        self.adpicMode = 'select'; //select | preview
 
         var createAdlink = domain.action('createAdlink');
         var updateAdlink = domain.action('updateAdlink');
@@ -146,16 +203,70 @@
             return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
         }
 
-        var model = {};
+        cancel_send_img(e){
+            self.adpicMode = 'select';
+            self.update();
+        }
+        previewImg(e){
+            var file = e.target.files[0];
+            var kSize = Math.round(file.size/1024);
+            self.img_size = kSize>=1024 ? Math.round(kSize/1024) + 'm' : kSize + 'k';
+            self.img_name = file.name;
+            self.img_width = 0;
+            self.img_height = 0;
+            var reader = new FileReader();
+            reader.onload = function(data){
+                self.img_url = data.target.result;
 
+                var image = new Image();
+                image.src = data.target.result;
+                image.onload = function() {
+                    self.img_width = this.width;
+                    self.img_height = this.height;
+                    self.update();
+                };
+
+                self.adpicMode = 'preview';
+                self.update();
+            }
+            reader.readAsDataURL(file);
+        }
+        send_img(e){
+            var formData = new FormData();
+            var files = $('#img_file')[0].files;
+            formData.append('file', files[0]);
+            $.ajax({
+                url: self.api + '/file/upload',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (body) {
+                    self.adlink.adpic = body.media_id;
+                    self.adlink.adpicUrl = '/api/file?media_id=' + body.media_id;
+                    self.adpicMode = 'select';
+                    self.update();
+                },
+                error: function (responseStr) {
+                    console.error("失败:" + JSON.stringify(responseStr));
+                }
+            });
+        }
+
+        var model = {};
         onSave(e){
             var msgs = [];
 
             model.name = $('#adlink-edit #name').val();
             if(trim(model.name)=='') msgs.push('<p>"名称"不能为空</p>');
 
-            model.adwords = $('#adlink-edit #adwords').val();
-            if(trim(model.adwords)=='') msgs.push('<p>"广告标题"不能为空</p>');
+//            model.adwords = $('#adlink-edit #adwords').val();
+//            if(trim(model.adwords)=='') msgs.push('<p>"广告标题"不能为空</p>');
+
+            console.log(self.adlink);
+            model.adpic = self.adlink.adpic;
+            model.adpicUrl = self.adlink.adpicUrl;
+            if(trim(model.adpic)=='') msgs.push('<p>"广告图片"不能为空</p>');
 
             model.url = $('#adlink-edit #url').val();
             if(trim(model.url)=='') msgs.push('<p>"广告链接"不能为空</p>');
