@@ -48,7 +48,7 @@ module.exports = function(){
         yield new Promise(function(resolve, reject){
             setTimeout(function(){
                 resolve();
-            }, 3000);
+            }, 2000);
         });
         me.redirect(contentUri);
     });
