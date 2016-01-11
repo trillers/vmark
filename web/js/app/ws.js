@@ -2,10 +2,7 @@
 var SockJS = require('sockjs');
 var riot = require('seedriot');
 var base_Url = '/bot';
-console.log(__page.bot)
-console.log(__page.user)
 var orgId = __page.user.posts[0].org;
-console.log(orgId)
 var default_Url = '/bot?r=' + orgId;
 
 function WebSocket(client){
@@ -25,7 +22,7 @@ WebSocket.prototype.send = function(data){
 };
 WebSocket.prototype.onOpen = function(cb){
     var me = this;
-    this.ws.onopen = function(){
+    me.ws.onopen = function(){
         me.ready = true;
         me.receiveCache.forEach(function(msg){
             me._handleMsg(msg);
@@ -34,6 +31,12 @@ WebSocket.prototype.onOpen = function(cb){
             me._handleSend(msg);
         });
         me._listenServer();
+        cb();
+    };
+};
+WebSocket.prototype.onClose = function(cb){
+    var me = this;
+    me.ws.onclose = function(){
         cb();
     };
 };

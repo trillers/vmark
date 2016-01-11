@@ -131,7 +131,9 @@ WechatBotManager.prototype._routines = function(){
                 if(orgMedia.intentionStatus === IntentionStatus.Logged.value() &&
                     (botInfo.status === WechatBotStatus.Exceptional.value() ||
                     botInfo.status === WechatBotStatus.Exited.value() ||
-                    botInfo.status === WechatBotStatus.Aborted.value())){
+                    botInfo.status === WechatBotStatus.Aborted.value() ||
+                    botInfo.status === WechatBotStatus.Mislogged.value()
+                    )){
                     var options = {
                         intention: 'login',
                         mode: 'untrusted',
