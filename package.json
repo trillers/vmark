@@ -9,7 +9,7 @@
     "bluebird": "2.9.34",
     "co": "4.6.0",
     "co-wechat": "0.0.4",
-    "koa": "0.2.0",
+    "koa": "1.1.2",
     "koa-body": "1.2.1",
     "koa-generic-session": "1.9.0",
     "koa-logger": "1.1.0",
