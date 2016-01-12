@@ -19,9 +19,16 @@ var processor = function* (next) {
         }
     }
 
-    basics.originalUrl = this.request.originalUrl;
-    basics.origin = this.request.origin;
-    basics.href = this.request.href;
+    //basics.url = this.request.url;
+    //basics.originalUrl = this.request.originalUrl;
+    //basics.origin = this.request.origin;
+    //basics.href = this.request.href;
+    //basics.path = this.request.path;
+    //basics.search = this.request.search;
+    //basics.host = this.request.host;
+    //basics.hostname = this.request.hostname;
+    //basics.querystring = this.request.querystring;
+    //basics.fresh = this.request.fresh;
 
     console.info(basics);//TODO: remove it
 
