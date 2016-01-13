@@ -8,6 +8,9 @@ var openidToIdKey = function(openid){
     return 'plf:usr:id:oid:' + openid;
 };
 
+var atToOpenidKey = function(at){
+    return 'plf:usr:oid:at:' + at;
+};
 
 var Kv = function(context){
     this.context = context;
@@ -107,4 +110,39 @@ Kv.prototype.unlinkOpenid = function(openid, callback){
     });
 };
 
+Kv.prototype.loadOpenidByAt = function(at, callback){
+    var redis = this.context.redis.main;
+    var key = atToOpenidKey(at);
+    redis.get(key, function(err, result){
+        cbUtil.logCallback(
+            err,
+            'Fail to get platform user openid by agent token ' + at + ': ' + err,
+            'Succeed to get platform user openid ' + result + ' by agent token ' + at);
+        cbUtil.handleSingleValue(callback, err, result);
+    });
+};
+
+Kv.prototype.linkAtToOpenid = function(at, openid, callback){
+    var redis = this.context.redis.main;
+    var key = atToOpenidKey(at);
+    redis.set(key, openid, function(err, result){
+        cbUtil.logCallback(
+            err,
+            'Fail to link agent token ' + at + ' to openid ' + openid + ': ' + err,
+            'Succeed to link agent token ' + at + ' to openid ' + openid);
+        cbUtil.handleOk(callback, err, result);
+    });
+};
+
+Kv.prototype.unlinkAtToOpenid = function(at, callback){
+    var redis = this.context.redis.main;
+    var key = atToOpenidKey(at);
+    redis.del(key, function(err, result){
+        cbUtil.logCallback(
+            err,
+            'Fail to unlink platform user openid by agent token ' + at + ': ' + err,
+            'Succeed to unlink platform user openid by agent token ' + at);
+        cbUtil.handleSingleValue(callback, err, result);
+    });
+};
 module.exports = Kv;
