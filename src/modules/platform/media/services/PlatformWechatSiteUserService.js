@@ -4,6 +4,7 @@ var cbUtil = require('../../../../framework/callback');
 var WechatMediaUserType = require('../../../common/models/TypeRegistry').item('WechatMediaUserType');
 var WechatMediaUserService = require('../../../media/services/WechatMediaUserService');
 var Kv = require('../kvs/PlatformWechatSiteUser');
+var agentToken = require('../../../auth/agentToken');
 
 var Service = function(context){
     this.context = context;
@@ -17,6 +18,7 @@ Service.prototype.createPlatformWechatSiteUser = function(mediaUserJson, callbac
     var logger = this.context.logger;
     var platformWechatSiteService = this.context.services.platformWechatSiteService;
     var kv = this.context.kvs.platformWechatSiteUser;
+    var platformUserKv = this.context.kvs.platformUser;
     var me = this;
     platformWechatSiteService.ensurePlatformWechatSite(function(err, wechatSite){
         if(err){
@@ -26,9 +28,16 @@ Service.prototype.createPlatformWechatSiteUser = function(mediaUserJson, callbac
         }
         mediaUserJson.host = wechatSite.id;
         mediaUserJson.type = WechatMediaUserType.WechatSiteUser.value();
+        var openid = mediaUserJson.openid;
+        var at = agentToken.generate(openid);
+        mediaUserJson.at = at;
         me.create(mediaUserJson, function(err, json){
-            kv.saveByOpenid(json, function(err, obj){
-                if(callback) callback(err, obj);
+            platformUserKv.linkAtToOpenid(at, openid, function(err){
+                if(err) {
+                    if(callback) callback(err);
+                    return;
+                }
+                kv.saveByOpenid(json, callback);
             });
         });
     });
@@ -37,6 +46,7 @@ Service.prototype.createPlatformWechatSiteUser = function(mediaUserJson, callbac
 Service.prototype.deletePlatformWechatSiteUserByOpenid = function(openid, callback){
     var logger = this.context.logger;
     var kv = this.context.kvs.platformWechatSiteUser;
+    var platformUserKv = this.context.kvs.platformUser;
     var wechatMediaUserService = this.context.services.wechatMediaUserService;
     co(function* (){
         var json = yield kv.loadByOpenidAsync(openid);
@@ -46,8 +56,13 @@ Service.prototype.deletePlatformWechatSiteUserByOpenid = function(openid, callba
         }
         var wechatSiteUserId = json.id;
         var userId = json.user;
-        yield kv.deleteByOpenidAsync(openid);
+        var at = json.at;
         try{
+            if(at){
+                yield platformUserKv.unlinkAtToOpenidAsync(at);
+            }
+
+            yield kv.deleteByOpenidAsync(openid);
             yield wechatMediaUserService.deleteByIdAsync(wechatSiteUserId);
         }
         catch(e){

@@ -1,26 +1,27 @@
-var crypto = require('crypto');
-var settings = require('vmark-settings');
-var logger = require('../../app/logging').logger;
-var salt = settings.security.salt;
-var TOKEN_KEY = 'token'; //key of agent token for auto-login
+var logger = require('../../../app/logging').logger;
 
-var AgentTokenizer = function(options){
-    this.options
+var CookieField = function(o){
+    this.field = o.field;
+    this.key = o.key;
+    this.options = o.options;
 };
-var AgentTokenizer = {
+
+CookieField.prototype = {
     get: function(ctx){
-        logger.debug('Get agent token: ' + ctx.cookies.get(TOKEN_KEY));
-        return ctx.cookies.get(TOKEN_KEY);
+        var val = ctx.cookies.get(this.key);
+        logger.debug('Get cookie [ ' + this.key + ' = ' + val + ' ] - ' + this.field);
+        return val;
     },
-    set: function(ctx, token){
-        logger.debug('Set agent token: ' + token);
-        ctx.cookies.set(TOKEN_KEY, token, {maxAge: 3600000*24*366}); //TODO
+    set: function(ctx, val){
+        ctx.cookies.set(this.key, val, this.options);
+        logger.debug('Set cookie [ ' + this.key + ' = ' + val + ' ] - ' + this.field);
     },
-    generate: function(openid){
-        var token = crypto.createHash('sha1').update(openid).update(salt).digest('hex');
-        logger.debug('Generate agent token: ' + token + ' for openid: ' + openid);
-        return token;
+    delete: function(ctx){
+        var val = ctx.cookies.get(this.key);
+        ctx.cookies.set(this.key);
+        logger.debug('Delete cookie [ ' + this.key + ' = ' + val + ' ] - ' + this.field);
     }
+
 };
 
-module.exports = AgentTokenizer;
+module.exports = CookieField;

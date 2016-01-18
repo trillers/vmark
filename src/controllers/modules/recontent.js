@@ -3,11 +3,11 @@ var util = require('../../app/util');
 var context = require('../../context/context');
 var recontentService = context.services.recontentService;
 var adlinkService = context.services.adlinkService;
-//var authChecker = require('../../modules/system/auth/middlewares/authChecker');
+var authChecker = require('../../modules/auth/middlewares/check-auth');
 module.exports = function(){
     var router = new Router();
     require('../../app/routes-spa')(router);
-    //router.use(authChecker); //add auth checker
+    router.use(authChecker); //add auth checker
 
     router.get('/tenant-recontent-:id', function *(){
         var tenantId = this.params.id;

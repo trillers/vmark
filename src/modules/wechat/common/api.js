@@ -1,5 +1,13 @@
 var settings = require('vmark-settings');
-var Wechat = require('../../wechat/services/Wechat');
-var wechat = new Wechat(settings.wechat.appKey, settings.wechat.appSecret);
+var WechatApi = require('./WechatApi');
+var context = require('../../../context/context');
+var WechatToken = require('../kvs/WechatToken');
+var wechatTokenKv = new WechatToken(context);
 
-module.exports = wechat;
+var wechatApi = new WechatApi(
+    settings.wechat.appKey,
+    settings.wechat.appSecret,
+    wechatTokenKv
+);
+
+module.exports = wechatApi;

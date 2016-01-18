@@ -23,7 +23,12 @@ Service.prototype.loadPlatformUserByOpenid = function(openid, callback) {
         var user = null;
         if(userId){
             user = yield me.loadByIdAsync(userId);
+            user.wechatSiteUser = wechatSiteUser;
         }
+        else{
+            logger.error('WechatSite User is not linked to PlatformUser:' + JSON.stringify(wechatSiteUser));
+        }
+
         if(callback) callback(null, user);
     }).catch(Error, function(err){
         logger.error('Fail to load platform user by wechat site user\'s openid '+openid+' : ' + err);
@@ -93,7 +98,10 @@ Service.prototype.createPlatformUser = function(openid, callback) {
         var wechatSiteUserJson = {};
         wechatSiteUserJson.user = user.id;
         helper.copyUserInfo(wechatSiteUserJson, wechatSiteUserInfo);
-        yield platformWechatSiteUserService.createPlatformWechatSiteUserAsync(wechatSiteUserJson);
+        wechatSiteUser = yield platformWechatSiteUserService.createPlatformWechatSiteUserAsync(wechatSiteUserJson);
+        if(wechatSiteUser){
+            user.wechatSiteUser = wechatSiteUser;
+        }
         if(callback) callback(null, user);
     }).catch(Error, function(err){
         logger.error('Fail to create platform user linked to wechat site user: ' + err);

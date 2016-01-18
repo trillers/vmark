@@ -104,6 +104,7 @@ Service.prototype.authenticate = function (openid, callback) {
             if(!post || !authSupportRoles[post.role]){
                 if (callback) callback(null, {
                     user: user,
+                    wechatSiteUser: user.wechatSiteUser,
                     post: post,
                     result: authResults.NO_RIGHTS
                 });
@@ -116,6 +117,7 @@ Service.prototype.authenticate = function (openid, callback) {
              */
             if (callback) callback(null, {
                 user: user,
+                wechatSiteUser: user.wechatSiteUser,
                 result: authResults.UNREGISTERED_USER
             });
             return;
@@ -125,6 +127,7 @@ Service.prototype.authenticate = function (openid, callback) {
             if (callback) callback(null, {
                 platform: true,
                 user: user,
+                wechatSiteUser: user.wechatSiteUser,
                 post: post,
                 tenantId: tenantId,
                 result: authResults.OK
@@ -134,7 +137,7 @@ Service.prototype.authenticate = function (openid, callback) {
         else if(post.role == OrgMemberRole.TenantAdmin.value()) {
             var wechatBots = yield tenantOrgMediaService.loadAllMyManagedMediasAsync(tenantId, post.member);
             wechatBot = wechatBots.length > 0 ? wechatBots[0] : null;
-            wechatBot.id = wechatBot._id;
+            wechatBot && (wechatBot.id=wechatBot._id);
         }
         else if(post.role == OrgMemberRole.TenantWechatBot.value()){
             wechatBot = yield tenantOrgMediaService.loadBoundMediaByIdAsync(post.member);
@@ -146,6 +149,7 @@ Service.prototype.authenticate = function (openid, callback) {
         if(!wechatBot){
             if (callback) callback(null, {
                 user: user,
+                wechatSiteUser: user.wechatSiteUser,
                 post: post,
                 bot: wechatBot,
                 tenantId: tenantId,
@@ -156,6 +160,7 @@ Service.prototype.authenticate = function (openid, callback) {
 
         if (callback) callback(null, {
             user: user,
+            wechatSiteUser: user.wechatSiteUser,
             post: post,
             bot: wechatBot,
             tenantId: tenantId,

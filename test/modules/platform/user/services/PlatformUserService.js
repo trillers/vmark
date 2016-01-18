@@ -34,7 +34,7 @@ describe('PlatformUserService', function(){
         });
     });
 
-    describe('deletePlatformUserByOpenid', function(){
+    describe.only('deletePlatformUserByOpenid', function(){
         it('Succeed to delete a platform user', function(done){
             var service = context.services.platformUserService;
             service.deletePlatformUserByOpenid(openid, function(err){

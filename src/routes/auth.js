@@ -89,5 +89,10 @@ module.exports = function(app){
         }
     });
 
+    //for wechat web
+    router.get('/login-feedback', function *(){
+        yield this.render('login-feedback', {});
+    });
+
     app.use(router.routes());
 };

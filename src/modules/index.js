@@ -15,6 +15,7 @@ _exports.recontent = require('./recontent');
 _exports.boss = {};
 _exports.boss.main = require('./boss/main');
 _exports.websocket = require('./websocket');
+_exports.websocket = require('./wechat');
 
 require('./system/wechatbot');
 module.exports = _exports;
