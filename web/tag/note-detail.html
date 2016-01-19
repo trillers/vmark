@@ -1,0 +1,61 @@
+<note-detail>
+
+    <note-menu></note-menu>
+    <div>
+        hello world.
+        <a href="javascript:;" class="weui_btn weui_btn_mini weui_btn_primary" onclick="{share}">分享</a>
+    </div>
+    <script>
+        var self = this;
+        var loadPost = domain.action('loadPost');
+        share(e){
+            wx.onMenuShareTimeline({
+                title: '测试分享主题',
+                link: getLink(),
+                imgUrl: '',
+                success: function(){
+
+                },
+                cancel: function(){
+
+                }
+            })
+        }
+        function getLink(){
+            return '111';
+        }
+        function onLoadPost(data){
+
+        }
+        this.on('mount', function(){
+            loadPost.onDone(onLoadPost);
+            loadPost.execute({
+                userId: '',
+                noteId: ''
+            })
+        });
+        this.on('unmount', function(){
+            loadPost.offDone(onLoadPost);
+        });
+        this.on('open', function(options){
+            console.info('tag group index is opening');
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+        });
+
+        this.on('leave', function(){
+            self.mask = true;
+            self.update();
+        });
+
+        this.on('reenter', function(){
+            self.mask = false;
+            self.update();
+        });
+
+        this.on('refresh', function(){
+            console.info('tag group index is refreshing');
+            //_refresh();
+        });
+    </script>
+</note-detail>

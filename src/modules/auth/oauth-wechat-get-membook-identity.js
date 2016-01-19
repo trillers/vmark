@@ -26,7 +26,7 @@ var errorHandler = function*(ctx, next){
 };
 
 module.exports = function(hub){
-    hub.GET_MEMBOOK_IDENTITY = 'get_membook-identity';
+    hub.GET_MEMBOOK_IDENTITY = 'get_membook_identity';
     hub.route(hub.GET_MEMBOOK_IDENTITY, {
         state: hub.GET_MEMBOOK_IDENTITY,
         scope: scopes.base,
