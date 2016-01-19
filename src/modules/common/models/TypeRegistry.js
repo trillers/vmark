@@ -76,6 +76,9 @@ registry
     .addChild('Dark','dark', '深色')
     .addChild('Light','light', '浅色')
 
+    .item('UserType', 'UserType', '用户分类')
+    .addChild('Registered','r', '已注册')
+    .addChild('Anonymous','a', '匿名')
 
 
 module.exports = registry;
