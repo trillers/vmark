@@ -11,7 +11,9 @@ module.exports = function (router) {
             var id = this.params.id;
             console.error(id)
             var note = yield noteService.loadByIdAsync(id);
-            note.mates = yield noteService.loadMatesByIdAsync(id);
+            if(note){
+                note.mates = yield noteService.loadMatesByIdAsync(id);
+            }
             console.warn(note);
             this.body = note;
         }catch(e){
