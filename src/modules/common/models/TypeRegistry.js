@@ -76,9 +76,16 @@ registry
     .addChild('Dark','dark', '深色')
     .addChild('Light','light', '浅色')
 
+<<<<<<< HEAD
     .up().item('NoteType', 'NoteType', '笔记类型')
     .addChild('Container','con', '容器')
     .addChild('Plain','pl', '笔记')
     .addChild('Comment','com', '评论')
+=======
+    .item('UserType', 'UserType', '用户分类')
+    .addChild('Registered','r', '已注册')
+    .addChild('Anonymous','a', '匿名')
+
+>>>>>>> 81b69a8a33c798efa2f69f771fd7ac098be663f1
 
 module.exports = registry;
