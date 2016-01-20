@@ -76,6 +76,9 @@ registry
     .addChild('Dark','dark', '深色')
     .addChild('Light','light', '浅色')
 
-
+    .up().item('NoteType', 'NoteType', '笔记类型')
+    .addChild('Container','con', '容器')
+    .addChild('Plain','pl', '笔记')
+    .addChild('Comment','com', '评论')
 
 module.exports = registry;

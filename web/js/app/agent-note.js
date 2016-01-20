@@ -12,14 +12,12 @@ riot = require('seedriot');
 nest = require('./nest');
 $ = jquery;
 require('./jssdk');
-console.log(wx);
 domain = require('../domain/index');
 /*
 * wechat js config
 */
 var jsConfig = __page.jc;
 if(jsConfig){
-  console.warn(jsConfig)
   wx.config(jsConfig);
   wx.error(function(res){
     console.log(res);
@@ -33,8 +31,6 @@ var agent = {
   init: function(){return this;}
 };
 
-
-//init agent window
 (function($){
   function onStart(event) {
     util.forbidOperation();

@@ -21,7 +21,7 @@ module.exports = function(){
     router.get('/_:id', function *(){
         var id = this.params.id;
         yield this.render('note', {id: id});
-    })
+    });
 
     return router.routes();
 };
