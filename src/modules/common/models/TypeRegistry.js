@@ -75,7 +75,7 @@ registry
     .up().item('AdlinkTheme', 'AdlinkTheme', '广告条主题')
     .addChild('Dark','dark', '深色')
     .addChild('Light','light', '浅色')
-    
+
     .up().item('NoteType', 'NoteType', '笔记类型')
     .addChild('Container','con', '容器')
     .addChild('Plain','pl', '笔记')
