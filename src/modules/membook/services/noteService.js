@@ -3,7 +3,7 @@ var OrgType = require('../../common/models/TypeRegistry').item('OrgType');
 
 var Service = function(context){
     this.context = context;
-};
+};    
 
 Service.prototype.create = function(groupJson, callback){
     var kv = this.context.kvs.note;
