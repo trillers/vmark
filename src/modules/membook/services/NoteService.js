@@ -5,10 +5,10 @@ var Service = function(context){
     this.context = context;
 };
 
-Service.prototype.create = function(groupJson, callback){
+Service.prototype.create = function(noteJson, callback){
     var kv = this.context.kvs.note;
     var Note = this.context.models.Note;
-    var note = new Note(groupJson);
+    var note = new Note(noteJson);
     note.save(function (err, result, affected) {
         cbUtil.logCallback(
             err,
@@ -43,5 +43,20 @@ Service.prototype.loadMatesById = function(id, callback){
     var Note = this.context.models.Note;
     Note.find({parent: id}, null, {lean: true}).exec(callback);
 };
+
+Service.prototype.updateById =function(id, json, callback){
+    var kv = this.context.kvs.note;
+    var Note = this.context.models.Note;
+    Note.findByIdAndUpdate(id, json, {new: true}, function (err, doc) {
+        if(err){
+            return callback(err);
+        }
+        var obj = doc.toObject({virtuals: true});
+        return kv.saveById(obj, function(err, obj){
+            if(callback) callback(err, obj);
+        });
+    });
+};
+
 
 module.exports = Service;

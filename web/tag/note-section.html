@@ -1,0 +1,179 @@
+<note-section>
+    <div class="note_section" sectionId="{_id}">
+        <div style="line-height: 48px;height:48px;border-bottom: 1px solid #ddd;margin-bottom: 20px">
+            <img style="width:32px;height:32px" src="/public/images/111.jpeg"/>&nbsp&nbsp
+            <label>包三哥</label> &nbsp&nbsp
+            <span>{formatDate(new Date())}</span>
+            <input onclick="{submitSectionNote}" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_primary" if="{!section.parent || (section.parent && section.status === 'dr')}" value="提交"/>
+        </div>
+        <div class="noteItems">
+            <div each="{section.mates}" noteId="{_id}">
+                <div if="{txt}" class="">{txt}</div>
+                <div if="{img}" class="">{img}</div>
+                <div if="{voi}" class="">{voi}</div>
+            </div>
+        </div>
+        <div class="featureArea" if="{!section.parent || (section && section.status === 'dr')}">
+            <input onclick="{viewModel.toggleTxtVoiBtn.toggle}" class="toggleBtn_txt_voi" />
+            <textarea if="{viewModel.toggleTxtVoiBtn.txt}" oninput="{noteEditInput}" placeholder="点击添加文字..." type="text" name="txtInput"></textarea>
+            <input if="{viewModel.toggleTxtVoiBtn.voi}" class="recordBtn" type="button" value="按住  说话"/>
+            <input if="{viewModel.input.editTxt}" onclick="{addItem}" class="send_btn weui_btn weui_btn_mini weui_btn_primary" type="button" value="发送"/>
+            <input if="{viewModel.input.wait}" class="menuBtn"/>
+        </div>
+    </div>
+    <style>
+        .noteItems div{
+            height: 32px;
+            line-height: 32px;
+        }
+        .note_section{
+            width: 80%;
+            border: 1px solid #ddd;
+            margin: 15px auto;
+            background: white;
+            padding: 10px;
+        }
+        .note_section .featureArea{
+            position: relative;
+        }
+        .note_section .featureArea .send_btn{
+            display: block;
+            float: right;
+            height: 32px;
+        }
+        .note_section textarea{
+            height: 32px;
+            line-height: 32px;
+            position: absolute;
+            bottom: 2px;
+            margin: 0px auto;
+            left: 50px;
+            display: block;
+            width: -webkit-calc(100% - 100px);
+            width: -moz-calc(100% - 100px);
+            width: calc(100% - 100px);
+            border: none;
+            border-bottom: 1px solid #18c54b;
+            font-size: 14px;
+        }
+        .recordBtn{
+            position: absolute;
+            bottom: 2px;
+            margin: 0px auto;
+            left: 50px;
+            display: block;
+            width: -webkit-calc(100% - 100px);
+            width: -moz-calc(100% - 100px);
+            width: calc(100% - 100px);
+            border: 1px solid #b2b2b2;
+            height: 32px;
+            color: #888;
+            line-height: 32px;
+            background: none;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+        .toggleBtn_txt_voi{
+            width: 32px;
+            height: 32px;
+            border-radius: 50em;
+            border: 1px solid #ddd;
+        }
+        .menuBtn{
+            width: 32px;
+            height: 32px;
+            border-radius: 50em;
+            border: 1px solid #ddd;
+            display: block;
+            float: right;
+        }
+    </style>
+    <script>
+        //private properties
+        var self = this;
+        var saveNoteInSection = domain.action('saveSectionNote');
+        var updateNode = domain.action('updateNode');
+        //private method
+        var mixin = function(t, s){
+            for(var p in s){
+                t[p] = s[p]
+            }
+        };
+        //instance properties
+        self.section = this.opts.section;
+        //instance method
+        self.init = function(){
+            self.txtInput.value = '';
+            self.section = {
+                mates: []
+            }
+        };
+        self.formatDate = function(date){
+            return new Date(date).toLocaleString();
+        };
+        self.viewModel = {
+            toggleTxtVoiBtn: {
+                txt: true,
+                voi: false,
+                toggle: function(){
+                    var me = self.viewModel.toggleTxtVoiBtn;
+                    me.txt = !me.txt;
+                    me.voi = !me.voi;
+                }
+            },
+            input: {
+                wait: true,
+                editTxt: false,
+                doWait: function(){
+                    this.wait = true;
+                    this.editTxt = false;
+                },
+                doEdit: function(){
+                    this.wait = false;
+                    this.editTxt = true;
+                }
+            }
+        };
+        noteEditInput(e){
+            var txtVal = e.currentTarget.value.trim();
+            if(txtVal){
+                self.viewModel.input.doEdit();
+            }else{
+                self.viewModel.input.doWait();
+            }
+
+        }
+        addItem(e){
+            if(self.txtInput.value.trim() === ''){
+                return;
+            }
+            saveNoteInSection.newInvocation({
+                txt: self.txtInput.value,
+                parent: self.section.parent || '',
+                pageNoteId: self.parent.pageNote._id
+            }).onDone(function(data){
+                mixin(self.section, data.sectionNote);
+                self.section.mates.push(data.note);
+                self.txtInput.value = '';
+                self.viewModel.input.doWait();
+                self.update();
+            }).execute();
+        }
+        submitSectionNote(e){
+            if(!self.section._id
+                || (self.section && self.section.mates && self.section.mates.length <=0)){
+                return;
+            }
+            updateNode.newInvocation({
+                status: 'pb',
+                id: self.section._id
+            }).onDone(function(data){
+                mixin(self.section, data);
+                self.parent.pageNote.mates.push(self.section);
+                self.init();
+                self.parent.viewModel.doView();
+                self.parent.update();
+            }).execute();
+        }
+    </script>
+</note-section>

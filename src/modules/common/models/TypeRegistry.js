@@ -77,12 +77,18 @@ registry
     .addChild('Light','light', '浅色')
 
     .up().item('NoteType', 'NoteType', '笔记类型')
-    .addChild('Container','con', '容器')
+    .addChild('Page', 'pg', '页')
+    .addChild('Section','sc', '容器')
     .addChild('Plain','pl', '笔记')
     .addChild('Comment','com', '评论')
+
+    .up().item('NoteStatus', 'NoteStatus', '笔记状态')
+    .addChild('Draft','dr', '草稿')
+    .addChild('Publish','pb', '发布')
 
     .item('UserType', 'UserType', '用户分类')
     .addChild('Registered','r', '已注册')
     .addChild('Anonymous','a', '匿名')
+
 
 module.exports = registry;
