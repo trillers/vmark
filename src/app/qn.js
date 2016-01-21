@@ -10,7 +10,7 @@ var qn = function(accessKey, secretKey, bucket, origin){
 }
 
 qn.prototype.uptoken = function(bucketname, transOpt){
-    var putPolicy = new qn.rs.PutPolicy(bucketname);
+    var putPolicy = new qiniu.rs.PutPolicy(bucketname);
     //putPolicy.callbackUrl = callbackUrl;
     //putPolicy.callbackBody = callbackBody;
     //putPolicy.returnUrl = returnUrl;
@@ -27,7 +27,7 @@ qn.prototype.uptoken = function(bucketname, transOpt){
 
 qn.prototype.uploadVoiceBuf = function(buf, key, transOpt, cb){
     var self = this;
-    var extra = new qn.io.PutExtra();
+    var extra = new qiniu.io.PutExtra();
     //extra.params = params;
     //extra.mimeType = mimeType;
     //extra.crc32 = crc32;
