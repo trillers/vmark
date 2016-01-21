@@ -9,7 +9,7 @@
         <div class="noteItems">
             <div each="{section.mates}" noteId="{_id}">
                 <div if="{txt}" class="note_txt">{txt}</div>
-                <div if="{img}" class="note_img">{img}</div>
+                <div if="{img}" class="note_img"><img style="width: 100%" riot-src="{img}"/></div>
                 <div if="{voi}" class="note_voi">{voi}</div>
             </div>
         </div>
@@ -171,7 +171,7 @@
                 success: function(res){
                     var notes = res.localIds.map(function(localId){
                         return {
-                            image: localId,
+                            img: localId,
                             parentNote: self.section._id || '',
                             pageNoteId: self.parent.pageNote._id
                         }
@@ -181,6 +181,7 @@
                     }).onDone(function(data){
                         //TODO show image on page
                         self.section.mates.concat(data);
+                        self.update();
                     }).execute();
                 }
             });
@@ -200,7 +201,7 @@
                 self.parent.viewModel.doView();
                 self.parent.update();
             }).execute();
-        }
+        };
 
         //                    wx.uploadImages({
         //                        localIds: res.localIds,
