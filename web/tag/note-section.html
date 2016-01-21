@@ -168,11 +168,11 @@
             wx.chooseImageAsync({
                 count: 9,
                 sizeType: ['compressed'],
-                sourceType: ['album', 'camera'],
-                success: function(){
-                    console.log(1111);
-                }
+                sourceType: ['album', 'camera']
             })
+            .then(function(localIds){
+                alert(localIds)
+            });
 //            wx.chooseImageAsync({
 //                count: 9,
 //                sizeType: ['compressed'],
