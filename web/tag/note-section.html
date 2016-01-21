@@ -165,7 +165,10 @@
         };
         self.addImgs = function(e){
             self.imagesForCreate = [];
-            wx.chooseImage({
+            wx.chooseImageAsync({
+                count: 9,
+                sizeType: ['compressed'],
+                sourceType: ['album', 'camera'],
                 success: function(){
                     console.log(1111);
                 }
