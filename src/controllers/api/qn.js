@@ -24,6 +24,7 @@ module.exports = function(router){
             //qnClient.uploadVoiceBuf(voiceBuffer[0], 'qn/test/voice/' + media_id + '.amr', {key: 'qn/test/voice/' + media_id + '.mp3', persistentOps: 'avthumb/mp3'}, function(err, res){
             //    console.error(res);
             //})
+            console.error(res);
             self.body = res && res.url;
         }catch(err){
             console.log(err);
