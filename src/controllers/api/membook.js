@@ -32,6 +32,8 @@ module.exports = function (router) {
         }
     });
 
+
+
     router.post('/note', function*(){
         try{
             var json = this.request.body;
@@ -40,6 +42,28 @@ module.exports = function (router) {
             var note = yield noteService.createAsync(json);
             console.warn(note);
             this.body = note;
+        }catch(e){
+            context.logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.post('/notes', function*(){
+        try{
+            var notes = this.request.body.notes;
+            this.session['draftId'] && (this.session['draftId'] = null);
+            var asyncArr = [];
+            if(!notes[0].parentNote){
+                var sectionNote = yield noteService.createAsync({
+                    parentNote: json.pageNoteId,
+                    type: NoteType.Section.value()
+                });
+            }
+            notes.forEach(function(note){
+                note.parentNote = sectionNote._id;
+                asyncArr.push(noteService.createAsync(note));
+            });
+            this.body = yield Promise.all(asyncArr);
         }catch(e){
             context.logger.error(e);
             this.body = {error: e};

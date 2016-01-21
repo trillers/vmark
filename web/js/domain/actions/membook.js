@@ -13,3 +13,6 @@ domain.action('saveSectionNote').onExecute(function(data){
 domain.action('updateNode').onExecute(function(data){
     apiFactory.put('/membook/note/_' + data.id).drive(this).send(data);
 });
+domain.action('saveNotesInSection').onExecute(function(data){
+    apiFactory.post('/membook/notes').drive(this).send(data);
+});
