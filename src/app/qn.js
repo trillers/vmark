@@ -25,7 +25,7 @@ qn.prototype.uptoken = function(bucketname, transOpt){
     return putPolicy.token();
 }
 
-qn.prototype.uploadVoiceBuf = function(buf, key, transOpt, cb){
+qn.prototype.uploadBuf = function(buf, key, transOpt, cb){
     var self = this;
     var extra = new qiniu.io.PutExtra();
     //extra.params = params;

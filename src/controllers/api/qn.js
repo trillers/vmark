@@ -20,15 +20,15 @@ module.exports = function(router){
             console.error(media_id);
             var voiceBuffer = yield wechatApi.getMediaAsync(media_id);
             console.log(voiceBuffer[0]);
-            //var uploadVoiceBufAsync = thunkify(qnClient.uploadVoiceBuf);
-            //var res = yield uploadVoiceBufAsync(voiceBuffer[0], 'qn/test/voice/' + media_id + '.amr', {key: 'qn/test/voice/' + media_id + '.mp3', persistentOps: 'avthumb/mp3'}).(qnClient);
-            qnClient.uploadVoiceBuf(voiceBuffer[0], 'qn/test/voice/' + media_id + '.amr', {key: 'qn/test/voice/' + media_id + '.mp3', persistentOps: 'avthumb/mp3'}, function(err, res){
-                console.error(res);
-            })
-            //self.body = res;
+            var res = yield qnClient.uploadBufAsync(voiceBuffer[0], 'qn/test/voice/' + media_id + '.amr', {key: 'qn/test/voice/' + media_id + '.mp3', persistentOps: 'avthumb/mp3'});
+            //qnClient.uploadVoiceBuf(voiceBuffer[0], 'qn/test/voice/' + media_id + '.amr', {key: 'qn/test/voice/' + media_id + '.mp3', persistentOps: 'avthumb/mp3'}, function(err, res){
+            //    console.error(res);
+            //})
+            console.error(res);
+            this.body = res.url;
         }catch(err){
             console.log(err);
-            self.body = '404';
+            this.body = '404';
         }
     });
 };
