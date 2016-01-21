@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <title>voice</title>
+    <script src="/public/components/jquery/jquery.min.js"></script>
+    <script type="text/javascript">
+        window.__app = {{ JSON.stringify(__app) }};
+        window.__page = {{ JSON.stringify(__page) }};
+        window.prdOrNot =( __app.settings.env.NODE_ENV === "production" );
+    </script>
+    <script src="/web/js/app/jssdk.js"></script>
+    <script>
+        wx.config(window.__page.jc);
+        wx.ready(function(){
+            console.log('ready');
+            wx.onVoiceRecordEnd({
+                // 录音时间超过一分钟没有停止的时候会执行 complete 回调
+                complete: function (res) {
+                    console.error('end');
+                    var localId = res.localId;
+                }
+            });
+            wx.onVoicePlayEnd({
+                success: function (res) {
+                    var localId = res.localId; // 返回音频的本地ID
+                }
+            });
+        })
+        wx.error(function(res){
+            console.error(res);
+        });
+    </script>
+    <script>
+        var voice = {
+            localId: '',
+            serverId: ''
+        };
+        $(function(){
+            var uploadVoice = function(localId){
+                wx.uploadVoice({
+                    localId: localId, // 需要上传的音频的本地ID，由stopRecord接口获得
+                    isShowProgressTips: 0, // 默认为1，显示进度提示
+                    success: function (res) {
+                        //把录音在微信服务器上的id（res.serverId）发送到自己的服务器供下载。
+                        $.ajax({
+                            url: '/api/qn/voice',
+                            type: 'post',
+                            data: {media_id: res.serverId},
+                            dataType: "json",
+                            success: function (data) {
+                                $('#dis').append($('<span>' + data + '</span>'));
+                            },
+                            error: function (xhr, errorType, error) {
+                                console.log(error);
+                            }
+                        });
+                        console.error(res);
+                        $('#dis').append($('<span>upload</span>'));
+                    }
+                });
+            }
+            var recordGap, START, END;
+            $('#record').on('touchstart', function(event){
+                //$('#mask').show();
+                //event.preventDefault();
+                START = new Date().getTime();
+                $('#dis').append($('<span>down</span>'));
+                recordGap = setTimeout(function(){
+                    wx.startRecord({
+                        success: function(){
+                            localStorage.rainAllowRecord = 'true';
+                        },
+                        cancel: function () {
+                            alert('用户拒绝授权录音');
+                        }
+                    });
+                    $('#dis').append($('<span>out</span>'));
+                }, 300);
+            });
+            $('#record').on('touchmove', function(e){
+                e.preventDefault();
+                $('#dis').append($('<span>move</span>'));
+            });
+            $('#record').on('touchend', function(event){
+                //$('#mask').hide();
+                event.preventDefault();
+                END = new Date().getTime();
+
+//                if((END - START) < 300){
+//                    END = 0;
+//                    START = 0;
+//                    //小于300ms，不录音
+                    clearTimeout(recordGap);
+                //}else {
+                    $('#dis').append($('<span>up</span>'));
+                    //$('#mask').hide();
+                    wx.stopRecord({
+                        success: function (res) {
+                            console.log(res);
+                            var localId = res.localId;
+                            console.error('localId:' + localId);
+                            voice.localId = localId;
+                            $('#voiceList').append($('<button class="btn" onclick="playVoice()" localId="' + localId + '">音频</button>'))
+                            uploadVoice(localId);
+                        }
+                    });
+               // }
+            });
+        });
+        var playVoice = function(){
+            wx.playVoice({
+                localId: voice.localId
+            })
+        }
+    </script>
+    <style type="text/css">
+        .btn {
+            width: 100%;
+            margin-top: 5px;
+            height: 60px;
+            font-size: 40px;
+        }
+        .recordBtn {
+            height: 180px;
+            line-height: 180px;
+            margin-bottom: 10px;
+            background-color: #4E9197;
+            text-align: center;
+            font-size: 3em;
+            -webkit-user-select: none;
+            box-shadow: 0 2px 5px #aaa;
+            border-radius: 5px;
+            margin-top: 250px;
+        }
+        #mask {
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background: grey;
+            opacity: 0.3;
+            position: absolute;
+            z-index: 1000;
+            -webkit-user-select: none;
+        }
+    </style>
+</head>
+<body>
+<div id="voiceList">
+
+</div>
+<div id="mask" style="display: none"></div>
+<div id="record" class="recordBtn">录音</div>
+<div id="dis"></div>
+
+</body>
+</html>
