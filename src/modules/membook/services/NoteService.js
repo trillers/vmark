@@ -41,7 +41,7 @@ Service.prototype.loadById = function(id, callback){
 
 Service.prototype.loadMatesById = function(id, callback){
     var Note = this.context.models.Note;
-    Note.find({parent: id}, null, {lean: true}).exec(callback);
+    Note.find({parentNote: id}, null, {lean: true}).exec(callback);
 };
 
 Service.prototype.updateById =function(id, json, callback){

@@ -1,29 +1,45 @@
 <note-edit>
     <div if="{!hidden}">
         <note-menu></note-menu>
-        <div>
-            <input onblur="{updatePageNote}" type="text" value="{pageNote.title}" placeholder="添加标题" name="titleInput"/>
-            <hr/>
+        <div class="wrapper">
+            <div>
+                <input class="title" onblur="{updatePageNote}" type="text" value="{pageNote.title}" placeholder="添加标题" name="titleInput"/>
+                <hr style="margin-bottom: 10px"/>
+            </div>
+            <div>
+                <img style="width:32px;height:32px" src="/public/images/111.jpeg"/>
+                <label>包三哥</label>
+                <span>{formatDate(new Date())}</span>
+            </div>
+            <div>
+                <note-section each="{pageNote.mates}" section="{this}"></note-section>
+                <note-section section="{newSection}" if="{viewModel.EDIT}"></note-section>
+                <ul class="btn-group" onclick="{selectOperate}">
+                    <li><a class="weui_btn weui_btn_mini weui_btn_primary">文字</a></li>
+                    <li><a class="weui_btn weui_btn_mini weui_btn_primary">图片</a></li>
+                    <li><a class="weui_btn weui_btn_mini weui_btn_primary">语音</a></li>
+                    <li><a class="weui_btn weui_btn_mini weui_btn_primary">小视频</a></li>
+                </ul>
+            </div>
+            <div>
+                <span if="{pageNote.parentNote}">{pageNote.txt}</span>
+            </div>
         </div>
-        <div>
-            <img style="width:32px;height:32px" src="/public/images/111.jpeg"/>
-            <label>包三哥</label>
-            <span>{formatDate(new Date())}</span>
-        </div>
-        <div>
-            <note-section each="{pageNote.mates}" section="{this}"></note-section>
-            <note-section section="{newSection}" if="{viewModel.EDIT}"></note-section>
-            <ul class="btn-group" onclick="{selectOperate}">
-                <li><a class="weui_btn weui_btn_mini weui_btn_primary">文字</a></li>
-                <li><a class="weui_btn weui_btn_mini weui_btn_primary">图片</a></li>
-                <li><a class="weui_btn weui_btn_mini weui_btn_primary">语音</a></li>
-                <li><a class="weui_btn weui_btn_mini weui_btn_primary">小视频</a></li>
-            </ul>
-        </div>
-        <div>
-            <span if="{pageNote.parent}">{pageNote.txt}</span>
-        </div>
-        <style>
+        <style scoped>
+            :focus{
+                outline: none;
+            }
+            .wrapper{
+                padding: 10px;
+            }
+            .title{
+                font-size: 16px;
+                display: inline-block;
+                height:30px;
+                line-height: 30px;
+                background: transparent;
+                border: none;
+            }
             .note_items div{
                 height: 40px;
                 line-height: 40px;
@@ -38,9 +54,20 @@
         </style>
         <script>
             "use strict";
+            //private properties
             var self = nest.presentable(this);
             var loadNote = domain.action('loadNote');
             var updateNote = domain.action('updateNode');
+            var onLoadNote = function(data){
+                if(data){
+                    self.pageNote = data;
+                }
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+                self.update();
+            };
+            //instance properties
+            self.pageNote = null;
             self.newSection = {};
             self.newSection.mates = [];
             self.viewModel = {
@@ -55,12 +82,11 @@
                     self.viewModel.VIEW = true;
                 }
             };
+            //instance methods
             self.formatDate = function(date){
-                var dateStr = new Date(date).toLocaleString();
-                return dateStr;
+                return new Date(date).toLocaleString();
             };
             self.formatDateForMates = util.formatDateForComments;
-            self.pageNote = null;
             self.init = function(){
                 self.pageNote = {
                     title: null,
@@ -83,7 +109,7 @@
                 function getLink(){
                 }
             };
-            updatePageNote(e){
+            self.updatePageNote = function(e){
                 var title = e.currentTarget.value;
                 if(!title){
                     return;
@@ -92,33 +118,24 @@
                     id: self.pageNote._id,
                     title: title
                 });
-            }
-            selectOperate(e){
+            };
+            self.selectOperate = function(e){
                 if(e.target.nodeName === 'A'){
                     var liNode = e.target;
                     self.viewModel.doEdit();
                     self.update();
                 }
-            }
-            function onLoadNote(data){
-                if(data){
-                    self.pageNote = data;
-                }
-                self.trigger('ready', false);
-                self.trigger('view-route-to');
-                self.update();
-            }
-            this.on('mount', function(){
+            };
+            self.on('mount', function(){
                 loadNote.onDone(onLoadNote);
             });
-            this.on('unmount', function(){
+            self.on('unmount', function(){
                 loadNote.offDone(onLoadNote);
             });
-            this.on('open', function(options){
+            self.on('open', function(options){
                 self.init();
                 try{
                     self.pageNote._id = window.location.pathname.match(/_(\w+)/g)[0].substr(1);
-                    console.log(self.pageNote._id)
                 }catch(e){
                     alert('无效的链接');
                 }
@@ -127,18 +144,15 @@
                     noteId: self.pageNote._id
                 });
             });
-
-            this.on('leave', function(){
+            self.on('leave', function(){
                 self.mask = true;
                 self.update();
             });
-
-            this.on('reenter', function(){
+            self.on('reenter', function(){
                 self.mask = false;
                 self.update();
             });
-
-            this.on('refresh', function(){
+            self.on('refresh', function(){
                 console.info('tag group index is refreshing');
                 //_refresh();
             });

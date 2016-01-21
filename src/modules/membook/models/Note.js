@@ -17,7 +17,9 @@ var Model = function(domainBuilder){
 
             txt: {type: String},
 
-            parent: {type: String, ref: 'Note', required: true, default: 'root'},
+            initiator: {type: String, ref: 'User'},
+
+            parentNote: {type: String, ref: 'Note', required: true, default: 'root'},
 
             type: {type: String, enum: NoteType.valueList(), default: NoteType.Plain.value()},
 

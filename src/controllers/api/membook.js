@@ -9,7 +9,6 @@ module.exports = function (router) {
     router.get('/note/_:id', function*(){
         try{
             var id = this.params.id;
-            console.error(id)
             var note = yield noteService.loadByIdAsync(id);
             if(note){
                 note.mates = yield noteService.loadMatesByIdAsync(id);
@@ -18,7 +17,6 @@ module.exports = function (router) {
                     arr.push(noteService.loadMatesByIdAsync(n._id));
                 });
                 yield Promise.all(arr).then(function(results){
-                    console.warn(results);
                     if(note.mates.length){
                         note.mates.forEach(function(n, index){
                             !n.mates && (n.mates=[]);
@@ -33,13 +31,7 @@ module.exports = function (router) {
             this.body = {error: e};
         }
     });
-    function* getChildren(node){
-        var children = yield noteService.loadMatesByIdAsync(node._id);
-        node.mates = children;
-        for(let i=0, len=children.length; i<len; i++){
-            yield getChildren(children[i]);
-        }
-    }
+
     router.post('/note', function*(){
         try{
             var json = this.request.body;
@@ -57,15 +49,16 @@ module.exports = function (router) {
     router.post('/section/note', function*(){
         try{
             var json = this.request.body;
-            if(!json.parent){
+            this.session['draftId'] && (this.session['draftId'] = null);
+            if(!json.parentNote){
                 if(!json.pageNoteId){
                     throw new Error('Fail to save section note, page note id lose.');
                 }
                 var sectionNote = yield noteService.createAsync({
-                    parent: json.pageNoteId,
+                    parentNote: json.pageNoteId,
                     type: NoteType.Section.value()
                 });
-                json.parent = sectionNote._id;
+                json.parentNote = sectionNote._id;
                 json.new = true;
             }
             var note = yield noteService.createAsync(json);
@@ -86,5 +79,4 @@ module.exports = function (router) {
             this.body = {error: e};
         }
     });
-
 };
