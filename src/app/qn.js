@@ -33,7 +33,7 @@ qn.prototype.uploadVoiceBuf = function(buf, key, transOpt, cb){
     //extra.crc32 = crc32;
     //extra.checkCrc = checkCrc;
     var uptoken = this.uptoken('china', transOpt);
-    qiniu.io.put(uptoken, key, body, extra, function(err, ret) {
+    qiniu.io.put(uptoken, key, buf, extra, function(err, ret) {
         if (!err) {
             // 上传成功， 处理返回值
             console.log(ret.key, ret.hash);
