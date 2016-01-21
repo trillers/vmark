@@ -166,6 +166,7 @@
         self.addImgs = function(e){
             self.imagesForCreate = [];
             wx.chooseImage({
+                count: 2,
                 success: function(res){
                     alert(res.localIds);
                 }
