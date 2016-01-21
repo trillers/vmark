@@ -87,13 +87,13 @@ var agent = {
 };
 
 (function($){
-    function onStart(event) {
-        util.forbidOperation();
-    }
-    function onComplete(event, xhr, settings) {
-        util.removeforbidOperation();
-    }
-    $(document).ajaxStart(onStart).ajaxComplete(onComplete);
+    //function onStart(event) {
+    //    util.forbidOperation();
+    //}
+    //function onComplete(event, xhr, settings) {
+    //    util.removeforbidOperation();
+    //}
+    //$(document).ajaxStart(onStart).ajaxComplete(onComplete);
     window.newActivity = {};
     window.revokedActivity = {};
     riot.observable(window.newActivity);
