@@ -7,17 +7,17 @@ var agent = require('./agent-note').init();
 var util = require('./util');
 
 var Spa = require('./spa');
-var app = new Spa({defaultHash: 'note'});
+var app = new Spa({defaultHash: '/'});
 
-app.routeView('note', nest.viewable({
-  name: 'note/index',
+app.routeView('/', nest.viewable({
+  name: '/',
   mount: function(ctx){
-    var tags = riot.mount('note-detail', {filter: ctx.req.query, app: this.parent});
+    var tags = riot.mount('note-edit', {filter: ctx.req.query, app: this.parent});
     this.tag = tags[0];
   },
   route: function(ctx){
     this.context = ctx;
-    this.tag.trigger('open', ctx.req.query);
+    this.tag.trigger('open', {_id: ctx.req.params.id});
   }
 }));
 

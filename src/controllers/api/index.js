@@ -51,4 +51,15 @@ module.exports = function(app){
     require('./recontent')(router);
     app.use(router.routes());
 
+    //recontent
+    router = new Router();
+    router.prefix('/api/membook');
+    require('./membook')(router);
+    app.use(router.routes());
+
+    //qn voice img api
+    router = new Router();
+    router.prefix('/api/qn');
+    require('./qn')(router);
+    app.use(router.routes());
 }

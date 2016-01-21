@@ -18,4 +18,8 @@ module.exports = function(router){
         this.session.auth = null;
         this.body = null;
     });
+
+    router.get('/voice', function *(){
+        yield this.render('voice');
+    });
 };

@@ -1,0 +1,126 @@
+<note-new>
+    <div if="{!hidden}">
+        <note-menu></note-menu>
+        <div>
+            <input type="text" placeholder="添加标题" name="titleInput"/>
+
+        </div>
+        <div>
+            <img />
+            <label>包三哥</label>
+            <span>{formatDate(new Date())}</span>
+        </div>
+        <div>
+            <input type="text" value="" name="txtInput"/>
+            <ul>
+                <!--<li><a class="weui_btn weui_btn_mini weui_btn_primary">文字</a></li>-->
+                <!--<li><a class="weui_btn weui_btn_mini weui_btn_primary">图片</a></li>-->
+                <!--<li><a class="weui_btn weui_btn_mini weui_btn_primary">语音</a></li>-->
+            </ul>
+
+        </div>
+        <note-footer cmds="{footerCmds}"></note-footer>
+        <style>
+            .headimg_size_m{
+                width: 48px;
+                height: 48px;
+            }
+        </style>
+        <script>
+            var self = nest.presentable(this);
+            var saveNote = domain.action('saveNote');
+            self.formatDate = function(date){
+                var dateStr = new Date(date).toLocaleString();
+                return dateStr.replace(/\//g, '-');
+            };
+            self.note = null;
+            self.state = {
+                'EDIT': false,
+                'VIEW': false
+            };
+            //method
+            self.save = function(){
+                if(!self.titleInput.value || !self.txtInput.value){
+                    alert('请输入标题和文字');
+                    return;
+                }
+                saveNote.execute({
+                    txt: self.txtInput.value,
+                    title: self.titleInput.value
+                });
+            };
+            self.cancel = function(){
+                self.init();
+            };
+            self.footerCmds = [
+                {
+                    name: '保存',
+                    method: self.save
+                },
+                {
+                    name: '取消',
+                    method: self.cancel
+                }
+            ];
+            self.init = function(){
+                self.note = {
+                    title: null,
+                    comments: null,
+                    crtOn: null,
+                    _id: null
+                };
+                self.txtInput.value = '';
+                self.titleInput.value = '';
+                wx.onMenuShareTimeline({
+                    title: '测试分享主题',
+                    link: getLink(),
+                    imgUrl: '',
+                    success: function(){
+
+                    },
+                    cancel: function(){
+
+                    }
+                });
+                function getLink(){
+                }
+            };
+            function onSaveNote(data){
+                console.error(data);
+                if(data){
+                    return riot.route('note/_' + data._id);
+                }
+                alert('failed to save note');
+            }
+            this.on('mount', function(){
+                saveNote.onDone(onSaveNote);
+            });
+            this.on('unmount', function(){
+                saveNote.offDone(onSaveNote);
+            });
+            this.on('open', function(options){
+                self.init();
+                self.note._id = options._id;
+                console.info('tag note new is opening');
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+                self.update();
+            });
+
+            this.on('leave', function(){
+                self.mask = true;
+                self.update();
+            });
+
+            this.on('reenter', function(){
+                self.mask = false;
+                self.update();
+            });
+
+            this.on('refresh', function(){
+                console.info('tag group index is refreshing');
+                //_refresh();
+            });
+        </script>
+    </div>
+</note-new>
