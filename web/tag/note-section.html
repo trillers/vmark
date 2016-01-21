@@ -165,13 +165,10 @@
         };
         self.addImgs = function(e){
             self.imagesForCreate = [];
-            wx.chooseImageAsync({
-                count: 1,
-                sizeType: ['compressed'],
-                sourceType: ['album', 'camera']
-            })
-            .then(function(localIds){
-                alert(localIds)
+            wx.chooseImage({
+                success: function(res){
+                    alert(res.localIds);
+                }
             });
 //            wx.chooseImageAsync({
 //                count: 9,
@@ -187,7 +184,7 @@
 //                })
 //                .then(function(serverIds){
 //                    self.imagesForCreate = [];
-//                    console.error(serverIds);
+//                    alert(serverIds);
 ////                    saveNotesInSection.newInvocation({
 ////                        images: serverIds,
 ////                        parentNote: self.section._id || '',
