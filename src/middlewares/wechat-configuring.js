@@ -5,7 +5,7 @@ var token = require('../modules/wechat/common/token');
 var jsApiList = ['checkJsApi','chooseImage','previewImage','uploadImage','downloadImage','onMenuShareTimeline','onMenuShareAppMessage','onMenuShareQQ','onMenuShareWeibo','getNetworkType','startRecord','stopRecord','onVoiceRecordEnd','playVoice','pauseVoice','stopVoice','onVoicePlayEnd','uploadVoice','downloadVoice'];
 
 var env = settings.env.NODE_ENV;
-var debug = true;
+var debug = false;
 
 var wechatConfiguring = function*(next) {
     var url = this.protocol + '://' + this.get('host') + this.originalUrl;
