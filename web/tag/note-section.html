@@ -167,8 +167,17 @@
             self.imagesForCreate = [];
             wx.chooseImage({
                 count: 2,
+                sizeType: ['compressed'],
+                sourceType: ['album', 'camera'],
                 success: function(res){
                     alert(res.localIds);
+                    wx.uploadImages({
+                        localIds: res.localIds,
+                        isShowProgressTips: 0,
+                        success: function(serverIds){
+                            alert(serverIds);
+                        }
+                    })
                 }
             });
 //            wx.chooseImageAsync({
