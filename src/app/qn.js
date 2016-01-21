@@ -5,8 +5,8 @@ var qn = function(accessKey, secretKey, bucket, origin){
     this.secretKey = secretKey;
     this.bucket = bucket;
     this.origin = origin;
-    qiniu.conf.accessKey = accessKey;
-    qiniu.conf.secretKey = secretKey;
+    qiniu.conf.ACCESS_KEY = accessKey;
+    qiniu.conf.SECRET_KEY = secretKey;
 }
 
 qn.prototype.uptoken = function(bucketname, transOpt){
