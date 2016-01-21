@@ -25,7 +25,7 @@ module.exports = function(router){
             //    console.error(res);
             //})
             console.error(res);
-            self.body = res && res.url;
+            self.body = res.url;
         }catch(err){
             console.log(err);
             self.body = '404';
