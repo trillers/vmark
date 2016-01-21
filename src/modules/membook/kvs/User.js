@@ -1,4 +1,4 @@
-var cbUtil = require('../../../../framework/callback');
+var cbUtil = require('../../../framework/callback');
 
 var idToObjKey = function(id){
     return 'usr:o:id:' + id;
