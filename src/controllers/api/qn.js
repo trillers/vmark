@@ -25,10 +25,10 @@ module.exports = function(router){
             //    console.error(res);
             //})
             console.error(res);
-            self.body = res.url;
+            this.body = res.url;
         }catch(err){
             console.log(err);
-            self.body = '404';
+            this.body = '404';
         }
     });
 };
