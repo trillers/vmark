@@ -171,7 +171,7 @@
                 sourceType: ['album', 'camera']
                 })
                 .then(function(localIds){
-                    self.imagesForCreate = res.localIds;
+                    self.imagesForCreate = localIds;
                     return wx.uploadImagesAsync({
                         localIds: self.imagesForCreate,
                         isShowProgressTips: 0
