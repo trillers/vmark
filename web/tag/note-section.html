@@ -18,7 +18,7 @@
             <textarea if="{viewModel.toggleTxtVoiBtn.txt}" oninput="{noteEditInput}" placeholder="点击添加文字..." type="text" name="txtInput"></textarea>
             <input if="{viewModel.toggleTxtVoiBtn.voi}" class="recordBtn" type="button" value="按住  说话"/>
             <input if="{viewModel.input.editTxt}" onclick="{addTxt}" class="send_btn weui_btn weui_btn_mini weui_btn_primary" type="button" value="发送"/>
-            <input if="{viewModel.input.wait}" onclick="{addImgs}" class="menuBtn"/>
+            <input if="{viewModel.input.wait}" onclick="{addImgs}" type="button" class="menuBtn"/>
         </div>
     </div>
     <style scoped>
@@ -165,29 +165,34 @@
         };
         self.addImgs = function(e){
             self.imagesForCreate = [];
-            wx.chooseImageAsync({
-                count: 9,
-                sizeType: ['compressed'],
-                sourceType: ['album', 'camera']
-                })
-                .then(function(localIds){
-                    self.imagesForCreate = localIds;
-                    return wx.uploadImagesAsync({
-                        localIds: self.imagesForCreate,
-                        isShowProgressTips: 0
-                    })
-                })
-                .then(function(serverIds){
-                    self.imagesForCreate = [];
-                    console.error(serverIds);
-//                    saveNotesInSection.newInvocation({
-//                        images: serverIds,
-//                        parentNote: self.section._id || '',
-//                        pageNoteId: self.parent.pageNote._id
-//                    }).onDone(function(data){
-//                        //TODO noting todo
-//                    }).execute();
-                });
+            wx.chooseImage({
+                success: function(){
+                    console.log(1111);
+                }
+            })
+//            wx.chooseImageAsync({
+//                count: 9,
+//                sizeType: ['compressed'],
+//                sourceType: ['album', 'camera']
+//                })
+//                .then(function(localIds){
+//                    self.imagesForCreate = localIds;
+//                    return wx.uploadImagesAsync({
+//                        localIds: self.imagesForCreate,
+//                        isShowProgressTips: 0
+//                    })
+//                })
+//                .then(function(serverIds){
+//                    self.imagesForCreate = [];
+//                    console.error(serverIds);
+////                    saveNotesInSection.newInvocation({
+////                        images: serverIds,
+////                        parentNote: self.section._id || '',
+////                        pageNoteId: self.parent.pageNote._id
+////                    }).onDone(function(data){
+////                        //TODO noting todo
+////                    }).execute();
+//                });
         };
         self.submitSectionNote = function(e){
             if(!self.section._id
