@@ -12,15 +12,15 @@
                 <span>{formatDate(new Date())}</span>
             </div>
             <div>
-                <note-section each="{pageNote.mates}" section="{this}"></note-section>
+                <note-section onclick="{parent.selectSectionNote}" each="{pageNote.mates}" section="{this}"></note-section>
                 <note-section section="{newSection}" if="{viewModel.EDIT}"></note-section>
-                <ul class="btn-group" onclick="{selectOperate}">
-                    <li><a class="weui_btn weui_btn_mini weui_btn_primary">文字</a></li>
-                    <li><a class="weui_btn weui_btn_mini weui_btn_primary">图片</a></li>
-                    <li><a class="weui_btn weui_btn_mini weui_btn_primary">语音</a></li>
-                    <li><a class="weui_btn weui_btn_mini weui_btn_primary">小视频</a></li>
-                </ul>
             </div>
+            <ul class="btn-group" onclick="{selectOperate}">
+                <li><a class="weui_btn weui_btn_mini weui_btn_primary">文字</a></li>
+                <li><a class="weui_btn weui_btn_mini weui_btn_primary">图片</a></li>
+                <li><a class="weui_btn weui_btn_mini weui_btn_primary">语音</a></li>
+                <li><a class="weui_btn weui_btn_mini weui_btn_primary">小视频</a></li>
+            </ul>
             <div>
                 <span if="{pageNote.parentNote}">{pageNote.txt}</span>
             </div>
@@ -118,6 +118,9 @@
                     id: self.pageNote._id,
                     title: title
                 });
+            };
+            self.selectSectionNote = function(e){
+                
             };
             self.selectOperate = function(e){
                 if(e.target.nodeName === 'A'){
