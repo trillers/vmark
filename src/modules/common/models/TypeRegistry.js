@@ -86,7 +86,7 @@ registry
     .addChild('Draft','dr', '草稿')
     .addChild('Publish','pb', '发布')
 
-    .item('UserStatus', 'UserStatus', '用户状态')
+    .up().item('UserStatus', 'UserStatus', '用户状态')
     .addChild('Anonymous','a', '匿名')
     .addChild('Registered','r', '已注册')
 

@@ -18,8 +18,8 @@ Service.prototype.signupWithBaseInfo = function(openid, callback){
     var logger = this.context.logger;
     var wechatSiteUserService = this.context.services.wechatSiteUserService;
     var userService = this.context.services.userService;
-    var openidToIdKv = this.context.services.openidToId;
-    var atToOpenidKv = this.context.services.atToOpenid;
+    var openidToIdKv = this.context.kvs.openidToId;
+    var atToOpenidKv = this.context.kvs.atToOpenid;
 
     co(function*(){
         var wechatSiteUser = null;
@@ -36,12 +36,13 @@ Service.prototype.signupWithBaseInfo = function(openid, callback){
                 nickname: '匿名',
             };
             user = yield userService.createAsync(createUserJson);
+            userId = user.id;
 
             /*
              * Create wechat site user
              */
             var createWechatSiteUserJson = {
-                user: user.id,
+                user: userId,
                 status: status,
                 openid: openid,
                 nickname: '匿名'

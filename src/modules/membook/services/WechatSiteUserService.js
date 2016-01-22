@@ -1,7 +1,7 @@
 var cbUtil = require('../../../framework/callback');
 var typeRegistry = require('../../common/models/TypeRegistry')
 var UserStatus = typeRegistry.item('UserStatus');
-
+var agentToken = require('../../auth/agentToken');
 var Service = function(context){
     this.context = context;
 };
@@ -9,6 +9,7 @@ var Service = function(context){
 Service.prototype.create = function(json, callback){
     var kv = this.context.kvs.wechatSiteUser;
     var WechatSiteUser = this.context.models.WechatSiteUser;
+    json.at = agentToken.generate(json.openid);
     var wechatSiteUser = new WechatSiteUser(json);
     wechatSiteUser.save(function (err, result, affected) {
         cbUtil.logCallback(
