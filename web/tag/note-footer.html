@@ -244,11 +244,17 @@
                     saveNotesInSection.newInvocation({
                         notes: notes
                     }).onDone(function(data){
-                        if(!self.parent.currNote.mates){
-                            self.parent.currNote.mates=[];
+                        if(data){
+                            if(!self.parent.currNote.mates){
+                                self.parent.currNote.mates=[];
+                            }
+                            self.parent.currNote._id = data[0].parentNote;
+                            self.parent.currNote.mates = self.parent.currNote.mates.concat(data);
+                            self.parent.trigger('noteSave', data);
                         }
-                        self.parent.currNote.mates = self.parent.currNote.mates.concat(data);
-                        self.parent.trigger('noteSave', data);
+                        else{
+                            alert('error occur.');
+                        }
                     }).execute();
                 }
             });
