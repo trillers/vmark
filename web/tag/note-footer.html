@@ -224,7 +224,7 @@
                 self.parent.currNote.mates.push(data.note);
                 self.txtInput.value = '';
                 self.viewModel.input.doWait();
-                self.parent.trigger('txtNoteSave', data.note);
+                self.parent.trigger('noteSave', data.note);
             }).execute();
         };
         self.addImgs = function(e){
@@ -254,7 +254,7 @@
                             self.parent.currNote.mates=[];
                         }
                         self.parent.currNote.mates = self.parent.currNote.mates.concat(data);
-                        self.parent.trigger('txtNoteSave', data.note);
+                        self.parent.trigger('noteSave', data.note);
                     }).execute();
                 }
             });

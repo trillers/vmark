@@ -156,16 +156,8 @@
                 self.newSection.mates = [];
                 self.update();
             });
-            self.on('txtNoteSave', function(note){
-                var updated = false;
-                for(var key in self.tags){
-                    var tag = self.tags[key];
-                    if(tag && tag.section && tag.section._id && (tag.section._id === note._id)){
-                        updated = true;
-                        return tag.update();
-                    }
-                }
-                !updated && self.update();
+            self.on('noteSave', function(note){
+                self.update();
             });
             self.on('active', function(tag){
                 self.selectNote(tag.section, tag)
