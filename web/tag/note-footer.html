@@ -357,6 +357,7 @@
         }
         self.stopRecord = function(e){
             stopRecord = true;
+            end = new Date().getTime();
             wx.stopRecord({
                 success: function (res) {
                     console.log(res);
@@ -400,6 +401,7 @@
         var note = {
                 type: 'voi',
                 url: voice.localId,
+                seconds: end - start,
                 parentNote: self.parent.currNote._id || '',
                 pageNoteId: self.parent.pageNote._id
             }
