@@ -206,6 +206,7 @@
             }
 
             self.playVoice = function(url, status){
+                alert('play');
                 if(status === 'dr'){
                     wx.playVoice({
                         localId: url
