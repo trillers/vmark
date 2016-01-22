@@ -265,7 +265,7 @@
         self.toggleSubMenu = function(e){
             self.viewModel.subMenu.toggle();
         };
-        var recordGap, start, end, voice;
+        var recordGap, start, end, voice = {};
         wx.ready(function(){
             console.log('ready');
             wx.onVoiceRecordEnd({
