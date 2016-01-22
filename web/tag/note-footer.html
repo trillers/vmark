@@ -1,6 +1,18 @@
 <note-footer>
     <div class="record_detail_area">
-
+        <div class="record-el-container">
+            <div class="recording-gif voi_area-el">
+                <img src="/public/images/111.jpeg" style="width: 30px; height: 60px" alt="">
+            </div>
+            <div class="voice-func-btn voi_area-el">
+                <input type="button" value="停止" id="stop-record" onclick="{stopRecord}">
+                <input type="button" value="播放" id="play-record" onclick="{playRecord}">
+                <input type="button" value="暂停" id="pause-record" onclick="{pauseRecord}">
+            </div>
+            <div class="voice-confirm-area voi_area-el">
+                <input type="button" value="确认">
+            </div>
+        </div>
     </div>
     <div class="feature_area">
         <div>
@@ -10,8 +22,8 @@
             <div if="{viewModel.toggleTxtVoiBtn.txt}" class="txt_area">
                 <input oninput="{noteEditInput}" name="txtInput" placeholder="点击输入文字" value=""/>
             </div>
-            <div if="{viewModel.toggleTxtVoiBtn.voi}" class="voi_area">
-                <input value="点击录音"/>
+            <div if="{viewModel.toggleTxtVoiBtn.voi}" class="voi_area" ontouchstart="{voiceAreaTouchStart}" ontouchend="{voiceAreaTouchEnd}">
+                <input type="button" value="长按录音"/>
             </div>
             <div class="toggle_menu">
                 <div onclick="{toggleSubMenu}" class="toggle_btn menu_btn" if="{viewModel.input.wait}">菜单</div>
@@ -27,6 +39,16 @@
         </ul>
     </div>
     <style scoped>
+        .record_detail_area{
+            -webkit-user-select: none;
+            display: none;
+            position: absolute;
+            float: left;
+            bottom: 48px;
+            width: 100%;
+            height: 120px;
+            background-color: rgba(51, 51, 51, 0.5);
+        }
         .scale_area{
             height: 96px;
             border-top: 1px solid #ccc;
@@ -121,6 +143,24 @@
         }
         .feature_area .scale_area{
             height: 48px;
+        }
+        .voi_area-el{
+            margin-top: 40px;
+            float: left;
+            margin-left: 49px;
+        }
+        .record-el-container{
+            width: 80%;
+            margin: 0 auto;
+        }
+        #stop-record{
+
+        }
+        #play-record{
+            display: none;
+        }
+        #pause-record{
+            display: none;
         }
     </style>
     <script>
@@ -225,5 +265,65 @@
         self.toggleSubMenu = function(e){
             self.viewModel.subMenu.toggle();
         };
+        var recordGap, start, end, voice;
+        wx.ready(function(){
+            console.log('ready');
+            wx.onVoiceRecordEnd({
+                // 录音时间超过一分钟没有停止的时候会执行 complete 回调
+                complete: function (res) {
+                    console.error('end');
+                    voice.localId = res.localId;
+                }
+            });
+            wx.onVoicePlayEnd({
+                success: function (res) {
+                    var localId = res.localId; // 返回音频的本地ID
+                }
+            });
+        })
+        self.voiceAreaTouchStart = function(e){
+            console.error('startRecord');
+            start = new Date().getTime();
+            recordGap = setTimeout(function(){
+                //wx.startRecord();
+                $('.record_detail_area').show();
+            }, 300);
+        }
+        self.voiceAreaTouchEnd = function(e){
+            console.error('touchend');
+            end = new Date().getTime();
+
+            if((end - start) < 300){
+                end = 0;
+                start = 0;
+                //小于300ms，不录音
+                clearTimeout(recordGap);
+            }
+        }
+        self.stopRecord = function(e){
+            wx.stopRecord({
+                success: function (res) {
+                    console.log(res);
+                    $('#stop-record').hide();
+                    $('#play-record').show();
+                    var localId = res.localId;
+                    voice.localId = localId;
+                }
+            });
+        }
+        self.playRecord = function(e){
+            wx.playVoice({
+                localId: voice.localId
+            })
+            $('#play-record').hide();
+            $('#pause-record').show();
+        }
+        self.pauseRecord = function(e){
+            wx.pauseVoice({
+                localId: voice.localId
+            })
+            $('#pause-record').hide();
+            $('#play-record').show();
+        }
     </script>
 </note-footer>
