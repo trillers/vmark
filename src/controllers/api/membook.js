@@ -93,7 +93,7 @@ module.exports = function (router) {
                 });
             }
             notes.forEach(function(note){
-                note.parentNote = sectionNote._id;
+                note.parentNote = note.parentNote || sectionNote._id;
                 asyncArr.push(noteService.createAsync(note));
             });
             this.body = yield Promise.all(asyncArr);
