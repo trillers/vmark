@@ -34,7 +34,7 @@
     </div>
     <div if="{viewModel.subMenu.showState}" class="scale_area">
         <ul>
-            <li class="img_btn">图片</li>
+            <li class="img_btn" onclick="{addImgs}">图片</li>
             <li class="video_btn">视频</li>
         </ul>
     </div>
@@ -165,7 +165,7 @@
     </style>
     <script>
         var self = this;
-        var saveNoteInSection = domain.action('saveNoteInSection');
+        var saveNotesInSection = domain.action('saveNotesInSection');
         var mixin = function(t, s){
             for(var p in s){
                 t[p] = s[p]
@@ -213,18 +213,45 @@
             if(self.txtInput.value.trim() === ''){
                 return;
             }
-            saveNoteInSection.newInvocation({
-                txt: self.txtInput.value,
+            saveNotesInSection.newInvocation({
+                type: 'txt',
+                content: self.txtInput.value.trim(),
                 parentNote: self.parent.currNote._id || '',
                 pageNoteId: self.parent.pageNote._id
             }).onDone(function(data){
                 mixin(self.parent.currNote, data.sectionNote);
-                console.error(self.parent.currNote);
                 self.parent.currNote.mates.push(data.note);
                 self.txtInput.value = '';
                 self.viewModel.input.doWait();
-                self.parent.update();
+                self.parent.trigger('txtNoteSave', data.note);
             }).execute();
+        };
+        self.addImgs = function(e){
+            wx.chooseImage({
+                count: 9,
+                sizeType: ['compressed'],
+                sourceType: ['album', 'camera'],
+                success: function(res){
+                    alert(res.localIds);
+                    var notes = res.localIds.map(function(localId){
+                        return {
+                            type: 'img',
+                            url: localId,
+                            parentNote: self.parent.currNote._id || '',
+                            pageNoteId: self.parent.pageNote._id
+                        }
+                    });
+                    alert(JSON.stringify(notes));
+                    saveNotesInSection.newInvocation({
+                        notes: notes
+                    }).onDone(function(data){
+                        alert(JSON.stringify(data));
+                        //TODO show image on page
+                        self.parent.currNote.mates.concat(data);
+                        self.parent.trigger('txtNoteSave', data.note);
+                    }).execute();
+                }
+            });
         };
         self.noteEditInput = function(e){
             var txtVal = e.currentTarget.value.trim();

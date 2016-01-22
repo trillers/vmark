@@ -21,7 +21,7 @@ var Model = function(domainBuilder){
 
             parentNote: {type: String, ref: 'Note', required: true, default: 'root'},
 
-            type: {type: String, enum: NoteType.valueList(), default: NoteType.Plain.value()},
+            type: {type: String, enum: NoteType.valueList(), default: NoteType.Page.value()},
 
             status: {type: String, enum: NoteStatus.valueList(), default: NoteStatus.Draft.value()}
         })
