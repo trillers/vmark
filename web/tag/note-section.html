@@ -4,7 +4,7 @@
             <img style="width:32px;height:32px" src="/public/images/111.jpeg"/>&nbsp&nbsp
             <label>包三哥</label> &nbsp&nbsp
             <span if="{section.parentNote && section.status != 'dr'}">{formatDate(new Date(section.crtOn))}</span>
-            <input onclick="{submitSectionNote}" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_primary" if="{!section.parentNote || (section.parentNote && section.status === 'dr')}" value="提交"/>
+            <input onclick="{submitSectionNote}" if="{!section.parentNote || (section.parentNote && section.status === 'dr')}" value="提交" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_primary"/>
         </div>
         <div class="noteItems">
             <div each="{section.mates}" noteId="{_id}">
