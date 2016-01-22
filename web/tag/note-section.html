@@ -138,7 +138,7 @@
             self.section = self.opts.section;
         });
         self.submitSectionNote = function(e){
-            alert(self.section);
+            alert(JSON.stringify(self.section));
             if(!self.section._id
                     || (self.section && self.section.mates && self.section.mates.length <=0)){
                 return;
