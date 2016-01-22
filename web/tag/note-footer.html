@@ -390,6 +390,13 @@
             $('.voice-seconds-container').css({'padding-left': '0%'});
             $('#voice-seconds').text(0);
             stopRecord = false;
+            $('#stop-record').show();
+            $('#play-record').hide();
+            $('#confirm-sub-voice').hide();
+            $('#pause-record').hide();
+            wx.pauseVoice({
+                localId: voice.localId
+            })
         var note = {
                 type: 'voi',
                 url: voice.localId,
