@@ -250,19 +250,6 @@
                 self.parent.trigger('noteSave', data.note);
             }).execute();
         };
-        var updateNote = function(data){
-            if(data){
-                if(!self.parent.currNote.mates){
-                    self.parent.currNote.mates=[];
-                }
-                self.parent.currNote._id = data[0].parentNote;
-                self.parent.currNote.mates = self.parent.currNote.mates.concat(data);
-                self.parent.trigger('noteSave', data);
-            }
-            else{
-                alert('error occur.');
-            }
-        }
         self.addImgs = function(e){
             wx.chooseImage({
                 count: 9,
@@ -273,6 +260,7 @@
                         return {
                             type: 'img',
                             url: localId,
+                            seconds: end - start,
                             parentNote: self.parent.currNote._id || '',
                             pageNoteId: self.parent.pageNote._id
                         }
@@ -280,7 +268,17 @@
                     saveNotesInSection.newInvocation({
                         notes: notes
                     }).onDone(function(data){
-                        updateNote(data);
+                        if(data){
+                            if(!self.parent.currNote.mates){
+                                self.parent.currNote.mates=[];
+                            }
+                            self.parent.currNote._id = data[0].parentNote;
+                            self.parent.currNote.mates = self.parent.currNote.mates.concat(data);
+                            self.parent.trigger('noteSave', data);
+                        }
+                        else{
+                            alert('error occur.');
+                        }
                     }).execute();
                 }
             });
@@ -391,7 +389,17 @@
             }
             saveNoteInSection.newInvocation(note).onDone(function(data){
                 alert(JSON.stringify(data));
-                updateNote(data);
+                if(data){
+                    if(!self.parent.currNote.mates){
+                        self.parent.currNote.mates=[];
+                    }
+                    self.parent.currNote._id = data.parentNote;
+                    self.parent.currNote.mates.push(data);
+                    self.parent.trigger('noteSave', data);
+                }
+                else{
+                    alert('error occur.');
+                }
             }).execute();
         }
     </script>
