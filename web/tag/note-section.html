@@ -167,7 +167,7 @@
                             localId: mate.url,
                             isShowProgressTips: 0,
                             success: function(res){
-                                uploadImage.newInvocation({media_id: res.serverId})
+                                uploadVoice.newInvocation({media_id: res.serverId})
                                     .onDone(function(data){
                                         mate.url = data;
                                         if(++index === self.section.mates.length){
