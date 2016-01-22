@@ -153,10 +153,6 @@
                             success: function(res){
                                 uploadImage.newInvocation({media_id: res.serverId})
                                     .onDone(function(data){
-                                        alert("&&&&");
-                                        alert(data);
-                                        alert(index);
-                                        alert(self.section.mates.length);
                                         mate.url = data.url;
                                         if(++index === self.section.mates.length){
                                             submitWholeSection();
@@ -196,15 +192,20 @@
             function submitWholeSection(){
                 alert("********");
                 publishNote.newInvocation(self.section)
-                        .onDone(function(data){
-                            alert(data);
+                    .onDone(function(data){
+                        try {
+                            alert(JSON.stringify(data));
                             mixin(self.section, data);
+                            alert(JSON.stringify(self.section));
                             self.parent.pageNote.mates.push(self.section);
-                            self.init();
                             self.parent.viewModel.doView();
+                            self.init();
                             self.parent.trigger('noteSubmit', self.section);
-                        })
-                        .execute();
+                        } catch (e){
+                            alert(JSON.stringify(e))
+                        }
+                    })
+                    .execute();
             }
         }
     </script>
