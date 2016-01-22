@@ -126,6 +126,7 @@
     <script>
         var self = this;
         var saveNotesInSection = domain.action('saveNotesInSection');
+        var saveNoteInSection = domain.action('saveNoteInSection');
         var mixin = function(t, s){
             for(var p in s){
                 t[p] = s[p]
@@ -173,7 +174,7 @@
             if(self.txtInput.value.trim() === ''){
                 return;
             }
-            saveNotesInSection.newInvocation({
+            saveNoteInSection.newInvocation({
                 type: 'txt',
                 content: self.txtInput.value.trim(),
                 parentNote: self.parent.currNote._id || '',
