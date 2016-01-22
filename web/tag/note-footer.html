@@ -383,14 +383,19 @@
             $('#play-record').show();
         }
         self.confirmSubVoice = function(e){
-            var note = {
+            $('.record_detail_area').hide();
+            start = 0;
+            end = 0;
+            $('.js_progress').css({width: '0%'});
+            $('.voice-seconds-container').css({'padding-left': '0%'});
+            $('#voice-seconds').text(0);
+        var note = {
                 type: 'voi',
                 url: voice.localId,
                 parentNote: self.parent.currNote._id || '',
                 pageNoteId: self.parent.pageNote._id
             }
             saveNoteInSection.newInvocation(note).onDone(function(data){
-                alert(JSON.stringify(data));
                 if(data){
                     mixin(self.parent.currNote, data.sectionNote);
                     self.parent.currNote.mates.push(data.note);
