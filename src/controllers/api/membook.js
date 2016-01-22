@@ -83,6 +83,8 @@ module.exports = function (router) {
 
     router.post('/notes', function*(){
         try{
+            console.error("**************")
+            console.error(this.request.body.notes);
             var notes = this.request.body.notes;
             this.session['draftId'] && (this.session['draftId'] = null);
             var asyncArr = [];
