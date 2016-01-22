@@ -64,10 +64,11 @@
             display: none;
             position: absolute;
             float: left;
-            bottom: 48px;
+            bottom: 0px;
             width: 100%;
             height: 120px;
             background-color: rgba(51, 51, 51, 0.5);
+            z-index: 999;
         }
         .scale_area{
             height: 96px;
@@ -250,19 +251,6 @@
                 self.parent.trigger('noteSave', data.note);
             }).execute();
         };
-        var updateNote = function(data){
-            if(data){
-                if(!self.parent.currNote.mates){
-                    self.parent.currNote.mates=[];
-                }
-                self.parent.currNote._id = data[0].parentNote;
-                self.parent.currNote.mates = self.parent.currNote.mates.concat(data);
-                self.parent.trigger('noteSave', data);
-            }
-            else{
-                alert('error occur.');
-            }
-        }
         self.addImgs = function(e){
             wx.chooseImage({
                 count: 9,
@@ -273,6 +261,7 @@
                         return {
                             type: 'img',
                             url: localId,
+                            seconds: end - start,
                             parentNote: self.parent.currNote._id || '',
                             pageNoteId: self.parent.pageNote._id
                         }
@@ -280,7 +269,19 @@
                     saveNotesInSection.newInvocation({
                         notes: notes
                     }).onDone(function(data){
-                        updateNote(data);
+                        if(data){
+                            if(!self.parent.currNote.mates){
+                                self.parent.currNote.mates=[];
+                            }
+                            if(data.parentNote){
+                                mixin(self.parent.currNote, data.parentNote);
+                            }
+                            self.parent.currNote.mates = self.parent.currNote.mates.concat(data.mates);
+                            self.parent.trigger('noteSave', data);
+                        }
+                        else{
+                            alert('error occur.');
+                        }
                     }).execute();
                 }
             });
@@ -357,6 +358,7 @@
         }
         self.stopRecord = function(e){
             stopRecord = true;
+            end = new Date().getTime();
             wx.stopRecord({
                 success: function (res) {
                     console.log(res);
@@ -383,15 +385,36 @@
             $('#play-record').show();
         }
         self.confirmSubVoice = function(e){
-            var note = {
+            $('.record_detail_area').hide();
+            start = 0;
+            end = 0;
+            $('.js_progress').css({width: '0%'});
+            $('.voice-seconds-container').css({'padding-left': '0%'});
+            $('#voice-seconds').text(0);
+            stopRecord = false;
+            $('#stop-record').show();
+            $('#play-record').hide();
+            $('#confirm-sub-voice').hide();
+            $('#pause-record').hide();
+            wx.pauseVoice({
+                localId: voice.localId
+            })
+        var note = {
                 type: 'voi',
                 url: voice.localId,
+                seconds: end - start,
                 parentNote: self.parent.currNote._id || '',
                 pageNoteId: self.parent.pageNote._id
             }
             saveNoteInSection.newInvocation(note).onDone(function(data){
-                alert(JSON.stringify(data));
-                updateNote(data);
+                if(data){
+                    mixin(self.parent.currNote, data.sectionNote);
+                    self.parent.currNote.mates.push(data.note);
+                    self.parent.trigger('noteSave', data.note);
+                }
+                else{
+                    alert('error occur.');
+                }
             }).execute();
         }
     </script>

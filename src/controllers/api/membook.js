@@ -84,10 +84,11 @@ module.exports = function (router) {
     router.post('/notes', function*(){
         try{
             var notes = this.request.body.notes;
+            var sectionNote = null;
             this.session['draftId'] && (this.session['draftId'] = null);
             var asyncArr = [];
             if(!notes[0].parentNote){
-                var sectionNote = yield noteService.createAsync({
+                sectionNote = yield noteService.createAsync({
                     parentNote: notes[0].pageNoteId,
                     type: NoteType.Section.value()
                 });
@@ -96,7 +97,8 @@ module.exports = function (router) {
                 note.parentNote = note.parentNote || sectionNote._id;
                 asyncArr.push(noteService.createAsync(note));
             });
-            this.body = yield Promise.all(asyncArr);
+            var mates = yield Promise.all(asyncArr);
+            this.body = {mates: mates, parentNote: sectionNote};
         }catch(e){
             context.logger.error(e);
             this.body = {error: e};
