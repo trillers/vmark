@@ -194,7 +194,8 @@
                 success: function(res){
                     var notes = res.localIds.map(function(localId){
                         return {
-                            img: localId,
+                            type: 'img',
+                            url: localId,
                             parentNote: self.parent.currNote._id || '',
                             pageNoteId: self.parent.pageNote._id
                         }

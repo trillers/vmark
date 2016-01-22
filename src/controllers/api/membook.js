@@ -2,6 +2,7 @@
 var context = require('../../context/context');
 var typeRegistry = require('../../modules/common/models/TypeRegistry');
 var NoteType = typeRegistry.item('NoteType');
+var NoteStatus = typeRegistry.item('NoteStatus');
 var noteService = context.services.noteService;
 
 module.exports = function (router) {
@@ -41,6 +42,38 @@ module.exports = function (router) {
             this.session['draftId'] = null;
             var note = yield noteService.createAsync(json);
             console.warn(note);
+            this.body = note;
+        }catch(e){
+            context.logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.put('/note/publish/_:id', function* (){
+        try{
+            var note = this.request.body;
+            if(!note.status || note.status === NoteStatus.Draft.value()){
+                note.status = NoteStatus.Publish.value();
+                yield noteService.updateByIdAsync(note._id, note);
+            }
+            if(note.mates && note.mates.length){
+                var asyncArr = [];
+                note.mates.forEach(function(mate){
+                    if(!mate.status || (mate.status === NoteStatus.Draft.value())){
+                        mate.status = NoteStatus.Publish.value();
+                        asyncArr.push(noteService.updateByIdAsync(mate._id, mate))
+                    }
+                });
+                yield Promise.all(asyncArr).then(function(arr){
+                    arr.map(function(newMate){
+                        note.mates.forEach(function(mate, index){
+                            if(newMate._id === mate._id){
+                                note.mates.splice(index, 1, newMate);
+                            }
+                        })
+                    })
+                });
+            }
             this.body = note;
         }catch(e){
             context.logger.error(e);
