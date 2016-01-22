@@ -174,17 +174,40 @@
                 return;
             }
             saveNoteInSection.newInvocation({
-                txt: self.txtInput.value,
+                type: 'txt',
+                content: self.txtInput.value.trim(),
                 parentNote: self.parent.currNote._id || '',
                 pageNoteId: self.parent.pageNote._id
             }).onDone(function(data){
                 mixin(self.parent.currNote, data.sectionNote);
-                console.error(self.parent.currNote);
                 self.parent.currNote.mates.push(data.note);
                 self.txtInput.value = '';
                 self.viewModel.input.doWait();
-                self.parent.update();
+                self.parent.trigger('txtNoteSave', data.note);
             }).execute();
+        };
+        self.addImgs = function(e){
+            wx.chooseImage({
+                count: 9,
+                sizeType: ['compressed'],
+                sourceType: ['album', 'camera'],
+                success: function(res){
+                    var notes = res.localIds.map(function(localId){
+                        return {
+                            img: localId,
+                            parentNote: self.parent.currNote._id || '',
+                            pageNoteId: self.parent.pageNote._id
+                        }
+                    });
+                    saveNotesInSection.newInvocation({
+                        notes: notes
+                    }).onDone(function(data){
+                        //TODO show image on page
+                        self.parent.currNote.mates.concat(data);
+                        self.parent.trigger('txtNoteSave', data.note);
+                    }).execute();
+                }
+            });
         };
         self.noteEditInput = function(e){
             var txtVal = e.currentTarget.value.trim();
@@ -196,6 +219,6 @@
         };
         self.toggleSubMenu = function(e){
             self.viewModel.subMenu.toggle();
-        }
+        };
     </script>
 </note-footer>

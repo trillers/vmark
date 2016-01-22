@@ -66,7 +66,20 @@
             var onLoadNote = function(data){
                 if(data){
                     self.pageNote = data;
-                    
+                    //TODO init new section
+                    if(self.pageNote.mates && self.pageNote.mates.length){
+                        var draftSections = self.pageNote.mates.filter(function(sectionNote){
+                            if(sectionNote.status === 'dr'){
+                                return sectionNote;
+                            }
+                        });
+                        if(draftSections && draftSections.length){
+                            self.pageNote.mates = util.arr.rest(self.pageNote.mates, draftSections);
+                            self.newSection = draftSections[0];
+                            self.viewModel.doEdit();
+                            self.selectNote(self.newSection);
+                        }
+                    }
                 }
                 self.trigger('ready', false);
                 self.trigger('view-route-to');
@@ -137,6 +150,23 @@
                     self.update();
                 }
             };
+            self.on('noteSubmit', function(){
+                self.currNote = null;
+                self.newSection = {};
+                self.newSection.mates = [];
+                self.update();
+            });
+            self.on('txtNoteSave', function(note){
+                var updated = false;
+                for(var key in self.tags){
+                    var tag = self.tags[key];
+                    if(tag && tag.section && tag.section._id && (tag.section._id === note._id)){
+                        updated = true;
+                        return tag.update();
+                    }
+                }
+                !updated && self.update();
+            });
             self.on('active', function(tag){
                 self.selectNote(tag.section, tag)
             });

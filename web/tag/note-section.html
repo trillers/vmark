@@ -8,17 +8,10 @@
         </div>
         <div class="noteItems">
             <div each="{section.mates}" noteId="{_id}">
-                <div if="{txt}" class="note_txt">{txt}</div>
-                <div if="{img}" class="note_img"><img style="width: 100%" riot-src="{img}"/></div>
-                <div if="{voi}" class="note_voi">{voi}</div>
+                <div if="{type==='txt'}" class="note_txt">{content}</div>
+                <div if="{type==='img'}" class="note_img"><img style="width: 100%" riot-src="{url}"/></div>
+                <div if="{type==='voi'}" class="note_voi"><span>{url}</span></div>
             </div>
-        </div>
-        <div class="featureArea" if="{section && !section.parentNote || (section && section.status === 'dr')}">
-            <input onclick="{viewModel.toggleTxtVoiBtn.toggle}" class="toggleBtn_txt_voi" />
-            <textarea if="{viewModel.toggleTxtVoiBtn.txt}" oninput="{noteEditInput}" placeholder="点击添加文字..." type="text" name="txtInput"></textarea>
-            <input if="{viewModel.toggleTxtVoiBtn.voi}" class="recordBtn" type="button" value="按住  说话"/>
-            <input if="{viewModel.input.editTxt}" onclick="{addTxt}" class="send_btn weui_btn weui_btn_mini weui_btn_primary" type="button" value="发送"/>
-            <input if="{viewModel.input.wait}" onclick="{addImgs}" type="button" class="menuBtn"/>
         </div>
     </div>
     <style scoped>
@@ -131,61 +124,14 @@
         };
         //instance methods
         self.init = function(){
-            self.txtInput.value = '';
             self.section = {
                 mates: []
             }
         };
         self.formatDate = util.formatDateForComments;
-        self.noteEditInput = function(e){
-            var txtVal = e.currentTarget.value.trim();
-            if(txtVal){
-                self.viewModel.input.doEdit();
-            }else{
-                self.viewModel.input.doWait();
-            }
-
-        };
-
-        self.addTxt = function(e){
-            if(self.txtInput.value.trim() === ''){
-                return;
-            }
-            saveNoteInSection.newInvocation({
-                txt: self.txtInput.value,
-                parentNote: self.section._id || '',
-                pageNoteId: self.parent.pageNote._id
-            }).onDone(function(data){
-                mixin(self.section, data.sectionNote);
-                self.section.mates.push(data.note);
-                self.txtInput.value = '';
-                self.viewModel.input.doWait();
-                self.update();
-            }).execute();
-        };
-        self.addImgs = function(e){
-            wx.chooseImage({
-                count: 9,
-                sizeType: ['compressed'],
-                sourceType: ['album', 'camera'],
-                success: function(res){
-                    var notes = res.localIds.map(function(localId){
-                        return {
-                            img: localId,
-                            parentNote: self.section._id || '',
-                            pageNoteId: self.parent.pageNote._id
-                        }
-                    });
-                    saveNotesInSection.newInvocation({
-                        notes: notes
-                    }).onDone(function(data){
-                        //TODO show image on page
-                        self.section.mates.concat(data);
-                        self.update();
-                    }).execute();
-                }
-            });
-        };
+        self.on('update', function(){
+            self.section = self.opts.section;
+        });
         self.submitSectionNote = function(e){
             if(!self.section._id
                     || (self.section && self.section.mates && self.section.mates.length <=0)){
@@ -199,10 +145,9 @@
                 self.parent.pageNote.mates.push(self.section);
                 self.init();
                 self.parent.viewModel.doView();
-                self.parent.update();
+                self.parent.trigger('noteSubmit', self.section);
             }).execute();
         };
-
         //                    wx.uploadImages({
         //                        localIds: res.localIds,
         //                        isShowProgressTips: 0,
