@@ -87,8 +87,8 @@ registry
     .addChild('Publish','pb', '发布')
 
     .item('UserStatus', 'UserStatus', '用户状态')
-    .addChild('Registered','r', '已注册')
     .addChild('Anonymous','a', '匿名')
+    .addChild('Registered','r', '已注册')
 
 
 module.exports = registry;

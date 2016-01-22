@@ -1,6 +1,6 @@
 var cbUtil = require('../../../framework/callback');
 var typeRegistry = require('../../common/models/TypeRegistry')
-var UserType = typeRegistry.item('UserType');
+var UserStatus = typeRegistry.item('UserStatus');
 
 var Service = function(context){
     this.context = context;

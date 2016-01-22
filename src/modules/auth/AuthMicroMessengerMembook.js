@@ -7,9 +7,12 @@ var oauthHub = require('./oauth-wechat');
 var oauthGetIdentity = oauthHub.route(oauthHub.GET_IDENTITY);
 //var oauthUpdateUser = oauthHub.route(oauthHub.UPDATE_USER);
 
-var platformUserKv = context.kvs.platformUser;
-var securityService = context.services.securityService;
-var authResults = securityService.authResults;
+//var platformUserKv = context.kvs.platformUser;
+//var securityService = context.services.securityService;
+//var authResults = securityService.authResults;
+var authenticationService = context.services.authenticationService;
+var authResults = authenticationService.authResults;
+var atToOpenidKv = context.kvs.atToOpenid;
 
 var Authenticator = function(options){};
 
@@ -22,7 +25,7 @@ Authenticator.prototype = {
         }
         else{ //not signed up yet
             co(function*(){
-                var openid = yield platformUserKv.loadOpenidByAtAsync(at);
+                var openid = yield atToOpenidKv.getAsync(at);
 
                 if(!openid){
                     agentToken.delete(ctx);
@@ -30,14 +33,14 @@ Authenticator.prototype = {
                     return;
                 }
 
-                var auth = yield securityService.authenticateAsync(openid);
+                var auth = yield authenticationService.signupWithBaseInfo(openid);
                 logger.debug(auth);
                 if(!auth){
                     agentToken.delete(ctx);
                     this.render('/login-feedback', auth);
                     return;
                 }
-                else if(auth.result != authResults.OK && auth.result != authResults.NO_BOUND_BOT){
+                else if(auth.result != authResults.ok){
                     this.render('/login-feedback', auth);
                     return;
                 }

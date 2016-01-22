@@ -11,4 +11,7 @@ module.exports.wechatSiteUserService = Promise.promisifyAll(new WechatSiteUserSe
 var UserService = require('./UserService');
 module.exports.userService = Promise.promisifyAll(new UserService(context));
 
+var AuthenticationService = require('./AuthenticationService');
+module.exports.authenticationService = Promise.promisifyAll(new AuthenticationService(context));
+
 u.extend(context.services, module.exports);
