@@ -2,34 +2,33 @@ var settings = require('vmark-settings');
 var scopes = require('../wechat/common/oauth').scopes;
 var authentication = require('./authentication');
 var context = require('../../context/context');
-var securityService = context.services.securityService;
-var authResults = securityService.authResults;
+var authenticationService = context.services.authenticationService;
+var authResults = authenticationService.authResults;
 
 var handler = function*(ctx, next){
     var oauthBasicInfo = ctx.oauth.data;
     var openid = oauthBasicInfo.openid;
 
     /*
-     * authenticate user by openid
+     * sign up with full user info by openid
      */
-    var auth = yield membookService.authenticateAsync(openid);
+    var auth = yield authenticationService.signupWithUserInfoAsync(openid);
 
     authentication.setAuthentication(ctx, auth);
     authentication.redirectReturnUrl(ctx);
-
 };
 
 var errorHandler = function*(ctx, next){
     var err = ctx.oauth.error;
-    context.logger.error('Fail to authenticate: ' + err);
+    context.logger.error('Fail to sign up with user info: ' + err);
     yield ctx.render('error', {error: err});
 };
 
 module.exports = function(hub){
-    hub.GET_MEMBOOK_IDENTITY = 'get_membook_identity';
-    hub.route(hub.GET_MEMBOOK_IDENTITY, {
-        state: hub.GET_MEMBOOK_IDENTITY,
-        scope: scopes.base,
+    hub.MEMBOOK_GET_USER_INFO = 'get_user_info';
+    hub.route(hub.MEMBOOK_GET_USER_INFO, {
+        state: hub.MEMBOOK_GET_USER_INFO,
+        scope: scopes.userinfo,
         handler: handler,
         errorHandler: errorHandler
     });

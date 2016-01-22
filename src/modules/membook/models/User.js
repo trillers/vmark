@@ -1,5 +1,5 @@
 var typeRegistry = require('../../common/models/TypeRegistry');
-var UserType = typeRegistry.item('UserType');
+var UserStatus = typeRegistry.item('UserStatus');
 
 var Model = function(domainBuilder){
     var schema = domainBuilder
@@ -8,7 +8,7 @@ var Model = function(domainBuilder){
         .withLifeFlag()
         .withCreatedOn()
         .withProperties({
-            type:         {type: String, enum: UserType.valueList(), default: UserType.Anonymous.value(), required: true}
+            status:         {type: String, enum: UserStatus.valueList(), default: UserStatus.Anonymous.value(), required: true}
             , nickname:     {type: String, required: true}
             , headimgurl:   {type: String}
             , sex:          {type: Number, default: 0} //0: unknown, 1: male, 2: female
