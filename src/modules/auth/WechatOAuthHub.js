@@ -1,6 +1,9 @@
 var WechatOAuth = require('co-wechat-oauth');
 var u = require('../../app/util');
+var logger = require('../../app/logging').logger;
 var errorUtil = require('../wechat/common/error');
+var scopes = require('../wechat/common/oauth').scopes;
+var languages = require('../wechat/common/oauth').languages;
 
 var defaultConfig = {
     appKey: '', //the client id in oauth2, which needs to be applied from service provider
@@ -69,9 +72,30 @@ Hub.prototype.route = function (name, route) {
     return this.routes[name];
 };
 
+var RETURN_URL_KEY = 'returnUrl';
+
+Hub.prototype.authorize = function* (ctx){
+    var routeName = ctx.query.route;
+    var returnUrl = ctx.query.returnUrl;
+
+    //save return url
+    ctx.session && (ctx.session[RETURN_URL_KEY] = returnUrl);
+
+    //TODO check routeName correctness and existence
+    var route = this.routes[routeName];
+    if(route){
+        route.authorize(ctx);
+    }
+    else{
+        ctx.response.body = 'no route: ' + routeName;
+    }
+};
+
 Hub.prototype.exchange = function* (ctx, next){
-    var state = ctx.query.state;
     var code = ctx.query.code;
+    var rawState = ctx.query.state;
+    var parts = rawState && rawState.split('+');
+    var state = parts && parts[0] || '';
     var route = this.routes[state];
     ctx.oauth = {};
 
@@ -89,9 +113,21 @@ Hub.prototype.exchange = function* (ctx, next){
         var result = yield this.client.getAccessToken(code);
         ctx.oauth.data = result.data;
         ctx.oauth.error = errorUtil.getResultError(result, 'getAccessToken');
+
+        if(route.scope==scopes.userinfo){
+            var options = {
+                openid: result.data.openid,
+                lang: languages.zh_CN
+            };
+            result = yield this.client.getUser(options, result.data.access_token);
+            ctx.oauth.data = result;
+            ctx.oauth.error = errorUtil.getResultError(result, 'getUser');
+        }
     }
     catch(err){
-        ctx.oauth.error = err;
+        var errmsg = errorUtil.getErrorMessage(err, 'getUser');
+        logger.error('Fail to wechat oauth: ' + errmsg);
+        ctx.oauth.error = new Error(errmsg);
     }
 
     if(ctx.oauth.error){
@@ -103,7 +139,8 @@ Hub.prototype.exchange = function* (ctx, next){
 };
 
 Hub.prototype.getAuthorizeUrl = function(state, scope) {
-    return this.client.getAuthorizeURL(this.options.redirectUrl, state, scope);
+    var stateWithTimestamp = state + '+' + (new Date().getTime());
+    return this.client.getAuthorizeURL(this.options.redirectUrl, stateWithTimestamp, scope);
 };
 
 module.exports = Hub;
