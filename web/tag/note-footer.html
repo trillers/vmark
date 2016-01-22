@@ -246,8 +246,13 @@
                     saveNotesInSection.newInvocation({
                         notes: notes
                     }).onDone(function(data){
+                        alert("**************");
                         alert(JSON.stringify(data));
                         //TODO show image on page
+                        alert(JSON.stringify(self.parent.currNote));
+                        if(!self.parent.currNote.mates){
+                            self.parent.currNote.mates=[];
+                        }
                         self.parent.currNote.mates.concat(data);
                         self.parent.trigger('txtNoteSave', data.note);
                     }).execute();
