@@ -402,6 +402,7 @@
                 pageNoteId: self.parent.pageNote._id
             }
             saveNoteInSection.newInvocation(note).onDone(function(data){
+                alert(JSON.stringify(data));
                 updateNote(data);
             }).execute();
         }
