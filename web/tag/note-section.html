@@ -138,61 +138,66 @@
             self.section = self.opts.section;
         });
         self.submitSectionNote = function(e){
+            alert(self.section);
             if(!self.section._id
                     || (self.section && self.section.mates && self.section.mates.length <=0)){
                 return;
             }
-            if(self.section.mates){
-                var index = 0;
-                self.section.mates.forEach(function(mate){
-                    if(!mate.status || mate.status === 'dr'){
-                        if(mate.type === 'img' && mate.url){
-                            wx.uploadImage({
-                                localId: mate.url,
-                                isShowProgressTips: 0,
-                                success: function(res){
-                                    uploadImage.newInvocation({media_id: res.serverId})
-                                        .onDone(function(data){
-                                            mate.url = data.url;
-                                            if(++index === self.section.mates.length){
-                                                submitWholeSection();
-                                            }
-                                        })
-                                        .execute();
-                                }
-                            })
-                        }
-                        else if(mate.type=== 'voi' && mate.url){
-                            wx.uploadVoice({
-                                localId: mate.url,
-                                isShowProgressTips: 0,
-                                success: function(res){
-                                    uploadImage.newInvocation({media_id: res.serverId})
-                                        .onDone(function(data){
-                                            mate.url = data;
-                                            if(++index === self.section.mates.length){
-                                                submitWholeSection();
-                                            }
-                                        })
-                                        .execute();
-                                }
-                            })
-                        }
-                        else{
-                            if(++index === self.section.mates.length){
-                                submitWholeSection();
+            var index = 0;
+            self.section.mates.forEach(function(mate){
+                if(!mate.status || mate.status === 'dr'){
+                    if(mate.type === 'img' && mate.url){
+                        wx.uploadImage({
+                            localId: mate.url,
+                            isShowProgressTips: 0,
+                            success: function(res){
+                                uploadImage.newInvocation({media_id: res.serverId})
+                                    .onDone(function(data){
+                                        alert("&&&&");
+                                        alert(data);
+                                        alert(index);
+                                        alert(self.section.mates.length);
+                                        mate.url = data.url;
+                                        if(++index === self.section.mates.length){
+                                            submitWholeSection();
+                                        }
+                                    })
+                                    .execute();
                             }
-                        }
-                    }else{
+                        })
+                    }
+                    else if(mate.type=== 'voi' && mate.url){
+                        wx.uploadVoice({
+                            localId: mate.url,
+                            isShowProgressTips: 0,
+                            success: function(res){
+                                uploadImage.newInvocation({media_id: res.serverId})
+                                    .onDone(function(data){
+                                        mate.url = data;
+                                        if(++index === self.section.mates.length){
+                                            submitWholeSection();
+                                        }
+                                    })
+                                    .execute();
+                            }
+                        })
+                    }
+                    else{
                         if(++index === self.section.mates.length){
                             submitWholeSection();
                         }
                     }
-                })
-            }
+                }else{
+                    if(++index === self.section.mates.length){
+                        submitWholeSection();
+                    }
+                }
+            });
             function submitWholeSection(){
+                alert("********");
                 publishNote.newInvocation(self.section)
                         .onDone(function(data){
+                            alert(data);
                             mixin(self.section, data);
                             self.parent.pageNote.mates.push(self.section);
                             self.init();
@@ -201,6 +206,6 @@
                         })
                         .execute();
             }
-        };
+        }
     </script>
 </note-section>

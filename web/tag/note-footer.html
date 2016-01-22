@@ -244,8 +244,6 @@
                     saveNotesInSection.newInvocation({
                         notes: notes
                     }).onDone(function(data){
-                        alert("******");
-                        alert(JSON.stringify(data));
                         if(!self.parent.currNote.mates){
                             self.parent.currNote.mates=[];
                         }
