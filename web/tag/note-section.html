@@ -143,8 +143,8 @@
                 return;
             }
             if(self.section.mates){
-                var index=0;
-                self.section.mates.forEach(function(mate, index){
+                var index = 0;
+                self.section.mates.forEach(function(mate){
                     if(!mate.status || mate.status === 'dr'){
                         if(mate.type === 'img' && mate.url){
                             wx.uploadImage({
@@ -154,8 +154,7 @@
                                     uploadImage.newInvocation({media_id: res.serverId})
                                         .onDone(function(data){
                                             mate.url = data;
-                                            index++;
-                                            if(index === self.section.mates.length){
+                                            if(++index === self.section.mates.length){
                                                 submitWholeSection();
                                             }
                                         })
@@ -171,8 +170,7 @@
                                     uploadImage.newInvocation({media_id: res.serverId})
                                         .onDone(function(data){
                                             mate.url = data;
-                                            index++;
-                                            if(index === self.section.mates.length){
+                                            if(++index === self.section.mates.length){
                                                 submitWholeSection();
                                             }
                                         })
@@ -181,14 +179,12 @@
                             })
                         }
                         else{
-                            index++;
-                            if(index === self.section.mates.length){
+                            if(++index === self.section.mates.length){
                                 submitWholeSection();
                             }
                         }
                     }else{
-                        index++;
-                        if(index === self.section.mates.length){
+                        if(++index === self.section.mates.length){
                             submitWholeSection();
                         }
                     }
