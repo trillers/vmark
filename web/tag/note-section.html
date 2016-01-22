@@ -10,7 +10,7 @@
             <div each="{section.mates}" noteId="{_id}">
                 <div if="{type==='txt'}" class="note_txt">{content}</div>
                 <div if="{type==='img'}" class="note_img"><img style="width: 100%" src="{url}"/></div>
-                <div if="{type==='voi'}" class="note_voi"><input style="width: 100px" type="button" onclick="{parent.playVoice(url, status)}"></div>
+                <div if="{type==='voi'}" class="note_voi"><input style="width: 100px" type="button" onclick="{parent.playVoice}"></div>
             </div>
         </div>
     </div>
@@ -205,8 +205,8 @@
                     .execute();
             }
         }
-        self.playVoice = function (url, status) {
-            alert(url);
+        self.playVoice = function (e) {
+            alert(JSON.stringify(e.item));
             if (status === 'dr') {
                 wx.playVoice({
                     localId: url
