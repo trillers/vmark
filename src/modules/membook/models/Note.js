@@ -11,11 +11,11 @@ var Model = function(domainBuilder){
         .withProperties({
             title: {type: String},
 
-            img: {type: String},
+            url: {type: String},
 
-            voi: {type: String},
+            seconds: {type: Number},
 
-            txt: {type: String},
+            content: {type: String},
 
             initiator: {type: String, ref: 'User'},
 
