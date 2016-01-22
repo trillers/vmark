@@ -233,7 +233,6 @@
                 sizeType: ['compressed'],
                 sourceType: ['album', 'camera'],
                 success: function(res){
-                    alert(res.localIds);
                     var notes = res.localIds.map(function(localId){
                         return {
                             type: 'img',
@@ -242,19 +241,16 @@
                             pageNoteId: self.parent.pageNote._id
                         }
                     });
-                    alert(JSON.stringify(notes));
                     saveNotesInSection.newInvocation({
                         notes: notes
                     }).onDone(function(data){
-                        alert("**************");
+                        alert("******");
                         alert(JSON.stringify(data));
-                        //TODO show image on page
-                        alert(JSON.stringify(self.parent.currNote));
                         if(!self.parent.currNote.mates){
                             self.parent.currNote.mates=[];
                         }
                         self.parent.currNote.mates = self.parent.currNote.mates.concat(data);
-                        self.parent.trigger('noteSave', data.note);
+                        self.parent.trigger('noteSave', data);
                     }).execute();
                 }
             });
