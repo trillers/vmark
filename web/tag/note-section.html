@@ -154,6 +154,8 @@
                                     uploadImage.newInvocation({media_id: res.serverId})
                                         .onDone(function(data){
                                             mate.url = data;
+                                            alert(index);
+                                            alert(self.section.mates.length);
                                             if(++index === self.section.mates.length){
                                                 submitWholeSection();
                                             }
@@ -191,6 +193,7 @@
                 })
             }
             function submitWholeSection(){
+                alert("submit ~~~!")
                 publishNote.newInvocation(self.section)
                         .onDone(function(data){
                             mixin(self.section, data);
