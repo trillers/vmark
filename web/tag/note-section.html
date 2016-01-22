@@ -206,10 +206,10 @@
             }
         }
         self.playVoice = function (e) {
-            alert(JSON.stringify(e.item));
-            if (status === 'dr') {
+            var data = e.item;
+            if (data.status === 'dr') {
                 wx.playVoice({
-                    localId: url
+                    localId: data.url
                 });
             }
         }
