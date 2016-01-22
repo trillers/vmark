@@ -1,15 +1,10 @@
 var co = require('co');
-var agentToken = require('./agentToken');
 var context = require('../../context/context');
 var logger = context.logger;
+var agentToken = require('./agentToken');
 var authentication = require('./authentication');
 var oauthHub = require('./oauth-wechat');
-var oauthGetIdentity = oauthHub.route(oauthHub.GET_IDENTITY);
-//var oauthUpdateUser = oauthHub.route(oauthHub.UPDATE_USER);
-
-//var platformUserKv = context.kvs.platformUser;
-//var securityService = context.services.securityService;
-//var authResults = securityService.authResults;
+var oauthSignupWithBaseInfo = oauthHub.route(oauthHub.MEMBOOK_GET_BASE_INFO);
 var authenticationService = context.services.authenticationService;
 var authResults = authenticationService.authResults;
 var atToOpenidKv = context.kvs.atToOpenid;
@@ -20,33 +15,37 @@ Authenticator.prototype = {
     auth: function(ctx, next){
         var at = agentToken.get(ctx);
         if(!at){ //signed up
-            oauthGetIdentity.authorize(ctx); //TODO
+            oauthSignupWithBaseInfo.authorize(ctx); //TODO
             return;
         }
         else{ //not signed up yet
             co(function*(){
-                var openid = yield atToOpenidKv.getAsync(at);
+                try{
+                    var openid = yield atToOpenidKv.getAsync(at);
+                    if(!openid){
+                        agentToken.delete(ctx);
+                        oauthSignupWithBaseInfo.authorize(ctx); //TODO
+                        return;
+                    }
 
-                if(!openid){
-                    agentToken.delete(ctx);
-                    oauthGetIdentity.authorize(ctx); //TODO
-                    return;
-                }
+                    var auth = yield authenticationService.signinWithOpenid(openid);
+                    logger.debug(auth);
+                    if(!auth){
+                        agentToken.delete(ctx);
+                        yield this.render('/login-feedback', auth);
+                        return;
+                    }
+                    else if(auth.result != authResults.ok){
+                        yield this.render('/login-feedback', auth);
+                        return;
+                    }
 
-                var auth = yield authenticationService.signupWithBaseInfo(openid);
-                logger.debug(auth);
-                if(!auth){
-                    agentToken.delete(ctx);
-                    this.render('/login-feedback', auth);
-                    return;
+                    authentication.setAuthentication(ctx, auth);
+                    authentication.redirectReturnUrl(ctx);
+                }catch(err){
+                    logger.error('Fail to sign in with openid: ' + err);
+                    yield this.render('/error', {error: err}); //TODO
                 }
-                else if(auth.result != authResults.ok){
-                    this.render('/login-feedback', auth);
-                    return;
-                }
-
-                authentication.setAuthentication(ctx, auth);
-                authentication.redirectReturnUrl(ctx);
             });
 
         }

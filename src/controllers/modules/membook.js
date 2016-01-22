@@ -5,13 +5,12 @@ var idGen = require('../../app/id');
 var noteServcie = context.services.noteService;
 var TypeRegistry = require('../../modules/common/models/TypeRegistry');
 var NoteType = TypeRegistry.item('NoteType');
-//var recontentService = context.services.recontentService;
-//var authChecker = require('../../modules/auth/middlewares/check-auth');
+var authFilter = require('../../modules/membook/middlewares/authFilter');
 module.exports = function(){
     var router = new Router();
     router.prefix('/note');
     require('../../app/routes-spa')(router);
-    //router.use(authChecker); //add auth checker
+    router.use(authFilter); //add auth Filter
 
     router.get('/new', function *(){
         try{
