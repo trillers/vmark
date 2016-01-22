@@ -10,7 +10,7 @@ module.exports = function(){
     var router = new Router();
     router.prefix('/note');
     require('../../app/routes-spa')(router);
-    router.use(authFilter); //add auth Filter
+   //router.use(authFilter); //add auth Filter
 
     router.get('/new', function *(){
         try{
