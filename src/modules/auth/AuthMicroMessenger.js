@@ -34,7 +34,6 @@ Authenticator.prototype = {
                 logger.debug(auth);
                 if(!auth){
                     agentToken.delete(ctx);
-                    //this.redirect('/login-feedback?result=' + authResults.NO_USER);
                     this.render('/login-feedback', auth);
                     return;
                 }
@@ -43,7 +42,7 @@ Authenticator.prototype = {
                     return;
                 }
 
-                authentication.auth(ctx, auth);
+                authentication.setAuthentication(ctx, auth);
                 authentication.redirectReturnUrl(ctx);
             });
 

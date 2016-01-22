@@ -1,5 +1,5 @@
 var typeRegistry = require('../../common/models/TypeRegistry');
-var UserType = typeRegistry.item('UserType');
+var UserStatus = typeRegistry.item('UserStatus');
 
 var Model = function(domainBuilder){
     var schema = domainBuilder
@@ -9,7 +9,7 @@ var Model = function(domainBuilder){
         .withCreatedOn()
         .withProperties({
             user:           {type: String, ref: 'User', required: true}
-            , type:         {type: String, enum: UserType.valueList(), default: UserType.Anonymous.value(), required: true}
+            , status:       {type: String, enum: UserStatus.valueList(), default: UserStatus.Anonymous.value(), required: true}
             , openid:       {type: String, required: true}
             , nickname:     {type: String, required: true}
             , remark:       {type: String}
@@ -34,33 +34,3 @@ var Model = function(domainBuilder){
 };
 
 module.exports = Model;
-/**
- 服务号粉丝
- id
- openid
- nickname
- headimgurl
- sex
-
- *language
-
- country
- province
- city
-
- *remark
-
-
- 助手号联系人
- id
- openid / bcid
- nickname
- headimgurl
- sex
-
- country
- province
- city
- district
-
- */

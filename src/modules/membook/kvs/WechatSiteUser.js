@@ -1,148 +1,54 @@
-var cbUtil = require('../../../../framework/callback');
+var cbUtil = require('../../../framework/callback');
 
-var idToObjKey = function(id){
-    return 'usr:o:id:' + id;
-};
-
-var openidToIdKey = function(openid){
-    return 'usr:id:oid:' + openid;
-};
-
-var atToOpenidKey = function(at){
-    return 'usr:oid:at:' + at;
+var openidToObjKey = function(openid){
+    return 'wsu:o:openid:' + openid;
 };
 
 var Kv = function(context){
     this.context = context;
 };
 
-Kv.prototype.loadById = function(id, callback){
-    var logger = this.context.logger;
+Kv.prototype.loadByOpenid = function(openid, callback){
     var redis = this.context.redis.main;
-    var key = idToObjKey(id);
+    var key = openidToObjKey(openid);
     redis.hgetall(key, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to get platform user by id ' + id + ': ' + err,
-            'Succeed to get platform user by id ' + id);
+            'Fail to get wechat user by openid ' + openid + ': ' + err,
+            'Succeed to get wechat user by openid ' + openid);
 
         if(result){
-            if(result.posts && typeof result.posts == 'string'){
-                var posts = result.posts;
-                try{
-                    result.posts = JSON.parse(result.posts);
-                }
-                catch(e){
-                    logger.error('Fail to parse posts: ' + posts);
-                    result.posts = [];
-                }
-            }
             result.crtOn = result.crtOn && result.crtOn !== 'null' ? new Date(result.crtOn) : null;
         }
         cbUtil.handleSingleValue(callback, err, result);
     });
 };
 
-Kv.prototype.saveById = function(json, callback){
+Kv.prototype.saveByOpenid = function(json, callback){
     var redis = this.context.redis.main;
-    var id = json.id;
-    var key = idToObjKey(id);
-
-    if(json.posts && Array.isArray(json.posts)){
-        json.posts = JSON.stringify(json.posts);
-    }
+    var openid = json.openid;
+    var key = openidToObjKey(openid);
 
     redis.hmset(key, json, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to save platform user by id ' + id + ': ' + err,
-            'Succeed to save platform user by id ' + id);
+            'Fail to save wechat user by openid ' + openid + ': ' + err,
+            'Succeed to save wechat user by openid ' + openid);
         cbUtil.handleOk(callback, err, result, json);
     });
 };
 
-Kv.prototype.deleteById = function(id, callback){
+Kv.prototype.deleteByOpenid = function(openid, callback){
     var redis = this.context.redis.main;
-    var key = idToObjKey(id);
+    var key = openidToObjKey(openid);
     redis.del(key, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to delete platform user by id ' + id + ': ' + err,
-            'Succeed to delete platform user by id ' + id);
+            'Fail to delete wechat user by openid ' + openid + ': ' + err,
+            'Succeed to delete wechat user by openid ' + openid);
 
         cbUtil.handleSingleValue(callback, err, result);
     });
 };
 
-Kv.prototype.loadIdByOpenid = function(openid, callback){
-    var redis = this.context.redis.main;
-    var key = openidToIdKey(openid);
-    redis.get(key, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to get platform user id by openid ' + openid + ': ' + err,
-            'Succeed to get platform user id ' + result + ' by openid ' + openid);
-        cbUtil.handleSingleValue(callback, err, result);
-    });
-};
-
-Kv.prototype.linkOpenid = function(openid, id, callback){
-    var redis = this.context.redis.main;
-    var key = openidToIdKey(openid);
-    redis.set(key, id, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to link openid ' + openid + ' to id ' + id + ': ' + err,
-            'Succeed to link openid ' + openid + ' to id ' + id);
-        cbUtil.handleOk(callback, err, result);
-    });
-};
-
-Kv.prototype.unlinkOpenid = function(openid, callback){
-    var redis = this.context.redis.main;
-    var key = openidToIdKey(openid);
-    redis.del(key, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to unlink platform user id by openid ' + openid + ': ' + err,
-            'Succeed to unlink platform user id by openid ' + openid);
-        cbUtil.handleSingleValue(callback, err, result);
-    });
-};
-
-Kv.prototype.loadOpenidByAt = function(at, callback){
-    var redis = this.context.redis.main;
-    var key = atToOpenidKey(at);
-    redis.get(key, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to get platform user openid by agent token ' + at + ': ' + err,
-            'Succeed to get platform user openid ' + result + ' by agent token ' + at);
-        cbUtil.handleSingleValue(callback, err, result);
-    });
-};
-
-Kv.prototype.linkAtToOpenid = function(at, openid, callback){
-    var redis = this.context.redis.main;
-    var key = atToOpenidKey(at);
-    redis.set(key, openid, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to link agent token ' + at + ' to openid ' + openid + ': ' + err,
-            'Succeed to link agent token ' + at + ' to openid ' + openid);
-        cbUtil.handleOk(callback, err, result);
-    });
-};
-
-Kv.prototype.unlinkAtToOpenid = function(at, callback){
-    var redis = this.context.redis.main;
-    var key = atToOpenidKey(at);
-    redis.del(key, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to unlink platform user openid by agent token ' + at + ': ' + err,
-            'Succeed to unlink platform user openid by agent token ' + at);
-        cbUtil.handleSingleValue(callback, err, result);
-    });
-};
 module.exports = Kv;
