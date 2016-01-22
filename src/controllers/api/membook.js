@@ -88,7 +88,7 @@ module.exports = function (router) {
             var asyncArr = [];
             if(!notes[0].parentNote){
                 var sectionNote = yield noteService.createAsync({
-                    parentNote: json.pageNoteId,
+                    parentNote: notes[0].pageNoteId,
                     type: NoteType.Section.value()
                 });
             }

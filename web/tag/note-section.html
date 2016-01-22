@@ -9,19 +9,17 @@
         <div class="noteItems">
             <div each="{section.mates}" noteId="{_id}">
                 <div if="{type==='txt'}" class="note_txt">{content}</div>
-                <div if="{type==='img'}" class="note_img"><img style="width: 100%" riot-src="{url}"/></div>
+                <div if="{type==='img'}" class="note_img"><img style="width: 100%" src="{url}"/></div>
                 <div if="{type==='voi'}" class="note_voi"><span>{url}</span></div>
             </div>
         </div>
     </div>
     <style scoped>
         .noteItems div{
-            height: 32px;
             line-height: 32px;
         }
         .noteItems div .note_img{
             width:100%;
-            height: 100px;
         }
         .note_section{
             width: 80%;
@@ -140,73 +138,75 @@
             self.section = self.opts.section;
         });
         self.submitSectionNote = function(e){
+            alert(JSON.stringify(self.section));
             if(!self.section._id
                     || (self.section && self.section.mates && self.section.mates.length <=0)){
                 return;
             }
-            if(self.section.mates){
-                var index=0;
-                self.section.mates.forEach(function(mate, index){
-                    if(!mate.status || mate.status === 'dr'){
-                        if(mate.type === 'img' && mate.url){
-                            wx.uploadImage({
-                                localId: mate.url,
-                                isShowProgressTips: 0,
-                                success: function(res){
-                                    uploadImage.newInvocation({media_id: res.serverId})
-                                        .onDone(function(data){
-                                            mate.url = data;
-                                            index++;
-                                            if(index === self.section.mates.length){
-                                                submitWholeSection();
-                                            }
-                                        })
-                                        .execute();
-                                }
-                            })
-                        }
-                        else if(mate.type=== 'voi' && mate.url){
-                            wx.uploadVoice({
-                                localId: mate.url,
-                                isShowProgressTips: 0,
-                                success: function(res){
-                                    uploadImage.newInvocation({media_id: res.serverId})
-                                        .onDone(function(data){
-                                            mate.url = data;
-                                            index++;
-                                            if(index === self.section.mates.length){
-                                                submitWholeSection();
-                                            }
-                                        })
-                                        .execute();
-                                }
-                            })
-                        }
-                        else{
-                            index++;
-                            if(index === self.section.mates.length){
-                                submitWholeSection();
+            var index = 0;
+            self.section.mates.forEach(function(mate){
+                if(!mate.status || mate.status === 'dr'){
+                    if(mate.type === 'img' && mate.url){
+                        wx.uploadImage({
+                            localId: mate.url,
+                            isShowProgressTips: 0,
+                            success: function(res){
+                                uploadImage.newInvocation({media_id: res.serverId})
+                                    .onDone(function(data){
+                                        mate.url = data.url;
+                                        if(++index === self.section.mates.length){
+                                            submitWholeSection();
+                                        }
+                                    })
+                                    .execute();
                             }
-                        }
-                    }else{
-                        index++;
-                        if(index === self.section.mates.length){
+                        })
+                    }
+                    else if(mate.type=== 'voi' && mate.url){
+                        wx.uploadVoice({
+                            localId: mate.url,
+                            isShowProgressTips: 0,
+                            success: function(res){
+                                uploadImage.newInvocation({media_id: res.serverId})
+                                    .onDone(function(data){
+                                        mate.url = data;
+                                        if(++index === self.section.mates.length){
+                                            submitWholeSection();
+                                        }
+                                    })
+                                    .execute();
+                            }
+                        })
+                    }
+                    else{
+                        if(++index === self.section.mates.length){
                             submitWholeSection();
                         }
                     }
-                })
-            }
+                }else{
+                    if(++index === self.section.mates.length){
+                        submitWholeSection();
+                    }
+                }
+            });
             function submitWholeSection(){
+                alert("********");
                 publishNote.newInvocation(self.section)
-                        .onDone(function(data){
+                    .onDone(function(data){
+                        try {
+                            alert(JSON.stringify(data));
                             mixin(self.section, data);
+                            alert(JSON.stringify(self.section));
                             self.parent.pageNote.mates.push(self.section);
-                            self.init();
                             self.parent.viewModel.doView();
+                            self.init();
                             self.parent.trigger('noteSubmit', self.section);
-                        })
-                        .execute();
+                        } catch (e){
+                            alert(JSON.stringify(e))
+                        }
+                    })
+                    .execute();
             }
-        };
+        }
     </script>
 </note-section>
