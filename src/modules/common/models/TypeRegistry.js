@@ -79,7 +79,9 @@ registry
     .up().item('NoteType', 'NoteType', '笔记类型')
     .addChild('Page', 'pg', '页')
     .addChild('Section','sc', '容器')
-    .addChild('Plain','pl', '笔记')
+    .addChild('Text','txt', '笔记')
+    .addChild('Image','img', '笔记')
+    .addChild('Voice','voi', '笔记')
     .addChild('Comment','com', '评论')
 
     .up().item('NoteStatus', 'NoteStatus', '笔记状态')

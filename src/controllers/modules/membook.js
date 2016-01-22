@@ -16,9 +16,7 @@ module.exports = function(){
         try{
             var id = this.session['draftId'];
             if(!id){
-                var pageNote = yield noteServcie.createAsync({
-                    type: NoteType.Page.value()
-                });
+                var pageNote = yield noteServcie.createAsync({});
                 id = this.session['draftId'] = pageNote._id;
             }
             this.redirect('/note/_' + id);

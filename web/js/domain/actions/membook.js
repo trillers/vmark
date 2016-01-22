@@ -7,7 +7,7 @@ domain.action('loadNote').onExecute(function(data){
 domain.action('saveNote').onExecute(function(data){
     apiFactory.post('/membook/note').drive(this).send(data);
 });
-domain.action('saveSectionNote').onExecute(function(data){
+domain.action('saveNoteInSection').onExecute(function(data){
     apiFactory.post('/membook/section/note').drive(this).send(data);
 });
 domain.action('updateNode').onExecute(function(data){
@@ -15,4 +15,13 @@ domain.action('updateNode').onExecute(function(data){
 });
 domain.action('saveNotesInSection').onExecute(function(data){
     apiFactory.post('/membook/notes').drive(this).send(data);
+});
+domain.action('publishNote').onExecute(function(data){
+    apiFactory.put('/membook/note/publish/_' + data._id).drive(this).send(data);
+});
+domain.action('uploadImage').onExecute(function(data){
+    apiFactory.post('/qn/image').drive(this).send(data);
+});
+domain.action('uploadVoice').onExecute(function(data){
+    apiFactory.post('/qn/voice').drive(this).send(data);
 });

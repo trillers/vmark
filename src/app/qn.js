@@ -38,7 +38,7 @@ qn.prototype.uploadBuf = function(buf, key, transOpt, cb){
             // 上传成功， 处理返回值
             console.log(ret.key, ret.hash);
             // ret.key & ret.hash
-            ret.url = self.origin + '/' + ret.key;
+            ret.url = 'http://' + self.origin + '/' + ret.key;
             if(cb) cb(null, ret);
         } else {
             // 上传失败， 处理返回代码

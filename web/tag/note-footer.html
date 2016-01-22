@@ -1,22 +1,398 @@
 <note-footer>
-    <div class="footer">
-        <input each="{opts.cmds}" class="weui_btn weui_btn_mini weui_btn_primary {parent.btnNums()}" type="button" value="{name}" onclick="{method}"/>
+    <div class="record_detail_area">
+        <div class="record-el-container">
+            <div class="record_progress_bar">
+                <div class="record_progress_inner_bar js_progress" style="width: 0%;"></div>
+            </div>
+            <div class="voice-seconds-container" style="color: white">
+                <span id="voice-seconds">0</span>"
+            </div>
+            <div class="recording-gif voi_area-el">
+                <img src="/public/images/111.jpeg" style="width: 30px; height: 60px" alt="">
+            </div>
+            <div class="voice-func-btn voi_area-el">
+                <input type="button" value="停止" id="stop-record" onclick="{stopRecord}">
+                <input type="button" value="播放" id="play-record" onclick="{playRecord}">
+                <input type="button" value="暂停" id="pause-record" onclick="{pauseRecord}">
+            </div>
+            <div class="voice-confirm-area voi_area-el">
+                <input type="button" value="确认" id="confirm-sub-voice" onclick="{confirmSubVoice}">
+            </div>
+        </div>
     </div>
-    <style>
-        .footer{
-            overflow: hidden;
-            width:100%;
-            height:60px;
-            line-height: 60px;
-            position: fixed;
-            bottom:0px;
+    <div class="feature_area">
+        <div>
+            <div class="toggle_txt_voi">
+                <div onclick="{viewModel.toggleTxtVoiBtn.toggle}" class="toggle_btn"></div>
+            </div>
+            <div if="{viewModel.toggleTxtVoiBtn.txt}" class="txt_area">
+                <input oninput="{noteEditInput}" name="txtInput" placeholder="点击输入文字" value=""/>
+            </div>
+            <div if="{viewModel.toggleTxtVoiBtn.voi}" class="voi_area" ontouchstart="{voiceAreaTouchStart}" ontouchend="{voiceAreaTouchEnd}">
+                <input type="button" value="长按录音"/>
+            </div>
+            <div class="toggle_menu">
+                <div onclick="{toggleSubMenu}" class="toggle_btn menu_btn" if="{viewModel.input.wait}">菜单</div>
+                <div onclick="{addTxt}" class="send_btn" if="{viewModel.input.editTxt}">发送</div>
+            </div>
+        </div>
+        <div style="clear: both"></div>
+    </div>
+    <div if="{viewModel.subMenu.showState}" class="scale_area">
+        <ul>
+            <li class="img_btn" onclick="{addImgs}">图片</li>
+            <li class="video_btn">视频</li>
+        </ul>
+    </div>
+    <style scoped>
+        .record_progress_bar {
+            margin-top: 10px;
+            background-color: #EBEBEB;
+            height: 3px;
+            -webkit-box-flex: 1;
+            -webkit-flex: 1;
+            -ms-flex: 1;
+            flex: 1;
         }
-        .footer .btn_1{width:100%;}.footer .btn_2{width:50%;}.footer .btn_3{width:33.3333333%;}.footer .btn_4{width:25%;  }
+        .record_progress_inner_bar {
+            width: 0;
+            height: 100%;
+            background-color: #09BB07;
+        }
+        .record_detail_area{
+            -webkit-user-select: none;
+            display: none;
+            position: absolute;
+            float: left;
+            bottom: 48px;
+            width: 100%;
+            height: 120px;
+            background-color: rgba(51, 51, 51, 0.5);
+        }
+        .scale_area{
+            height: 96px;
+            border-top: 1px solid #ccc;
+            background: white;
+        }
+        .scale_area ul{
+            width: 80%;
+            list-style-type: none;
+            margin: 0px auto;
+            padding: 0px;
+            margin-top: 28px;
+            overflow: hidden;
+        }
+        .scale_area ul li{
+            float: left;
+            margin-left: 10%;
+            width: 40px;
+            height: 40px;
+            border: 1px solid #ccc;
+        }
+        .scale_area ul li:first-child{
+            float: left;
+            margin-left: 0px;
+        }
+        .scale_area .img_btn{
+
+        }
+        .feature_area{
+            height: 48px;
+            background: white;
+            width: 100%;
+            overflow: hidden;
+        }
+        .feature_area >div{
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .feature_area >div >div{
+            height: 32px;
+            float:left;
+        }
+        .feature_area .toggle_txt_voi{
+            width:15%;
+        }
+        .feature_area .txt_area{
+            width: 70%;
+        }
+        .feature_area .voi_area{
+            width: 70%;
+        }
+        .feature_area .voi_area input{
+            width: 100%;
+            height: 32px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            border-radius: 5px;
+            text-align: center;
+            color: #ccc;
+        }
+        .feature_area .txt_area input{
+            width: 100%;
+            height: 32px;
+            box-sizing: border-box;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            font-size: 16px;
+        }
+        .feature_area .toggle_menu{
+            width: 15%;
+        }
+        .feature_area .send_btn{
+            margin: 0px auto;
+            width: 60px;
+            height: 32px;
+            line-height: 32px;
+            border: 1px solid #ccc;
+            box-sizing:border-box;
+            border-radius: 5px;
+            background: #18c54b;
+            border: none;
+            text-align: center;
+            color: white;
+        }
+        .feature_area .toggle_btn{
+            margin: 0px auto;
+            width: 32px;
+            height: 32px;
+            border-radius: 50em;
+            border: 1px solid #ccc;
+            box-sizing:border-box;
+        }
+        .feature_area .scale_area{
+            height: 48px;
+        }
+        .voi_area-el{
+            margin-top: 10px;
+            float: left;
+            margin-left: 49px;
+        }
+        .record-el-container{
+            width: 80%;
+            margin: 0 auto;
+        }
+        #stop-record{
+
+        }
+        #play-record{
+            display: none;
+        }
+        #pause-record{
+            display: none;
+        }
+        #confirm-sub-voice{
+            display: none;
+        }
     </style>
     <script>
-        var self = nest.presentable(this);
-        self.btnNums = function(){
-            return 'btn_' + this.opts.cmds.length;
+        var self = this;
+        var saveNotesInSection = domain.action('saveNotesInSection');
+        var saveNoteInSection = domain.action('saveNoteInSection');
+        var mixin = function(t, s){
+            for(var p in s){
+                t[p] = s[p]
+            }
+        };
+        self.viewModel = {
+            toggleTxtVoiBtn: {
+                txt: true,
+                voi: false,
+                toggle: function(){
+                    var me = self.viewModel.toggleTxtVoiBtn;
+                    me.txt = !me.txt;
+                    me.voi = !me.voi;
+                }
+            },
+            subMenu: {
+                showState: false,
+                toggle: function(){
+                    var me = self.viewModel.subMenu;
+                    me.showState = !me.showState;
+                },
+                show: function(){
+                    var me = self.viewModel.subMenu;
+                    me.showState = true;
+                },
+                hide: function(){
+                    var me = self.viewModel.subMenu;
+                    me.showState = false;
+                }
+            },
+            input: {
+                wait: true,
+                editTxt: false,
+                doWait: function(){
+                    this.wait = true;
+                    this.editTxt = false;
+                },
+                doEdit: function(){
+                    this.wait = false;
+                    this.editTxt = true;
+                }
+            }
+        };
+        self.addTxt = function(e){
+            if(self.txtInput.value.trim() === ''){
+                return;
+            }
+            saveNoteInSection.newInvocation({
+                type: 'txt',
+                content: self.txtInput.value.trim(),
+                parentNote: self.parent.currNote._id || '',
+                pageNoteId: self.parent.pageNote._id
+            }).onDone(function(data){
+                mixin(self.parent.currNote, data.sectionNote);
+                self.parent.currNote.mates.push(data.note);
+                self.txtInput.value = '';
+                self.viewModel.input.doWait();
+                self.parent.trigger('noteSave', data.note);
+            }).execute();
+        };
+        var updateNote = function(data){
+            if(data){
+                if(!self.parent.currNote.mates){
+                    self.parent.currNote.mates=[];
+                }
+                self.parent.currNote._id = data[0].parentNote;
+                self.parent.currNote.mates = self.parent.currNote.mates.concat(data);
+                self.parent.trigger('noteSave', data);
+            }
+            else{
+                alert('error occur.');
+            }
+        }
+        self.addImgs = function(e){
+            wx.chooseImage({
+                count: 9,
+                sizeType: ['compressed'],
+                sourceType: ['album', 'camera'],
+                success: function(res){
+                    var notes = res.localIds.map(function(localId){
+                        return {
+                            type: 'img',
+                            url: localId,
+                            parentNote: self.parent.currNote._id || '',
+                            pageNoteId: self.parent.pageNote._id
+                        }
+                    });
+                    saveNotesInSection.newInvocation({
+                        notes: notes
+                    }).onDone(function(data){
+                        updateNote(data);
+                    }).execute();
+                }
+            });
+        };
+        self.noteEditInput = function(e){
+            var txtVal = e.currentTarget.value.trim();
+            if(txtVal){
+                self.viewModel.input.doEdit();
+            }else{
+                self.viewModel.input.doWait();
+            }
+        };
+        self.toggleSubMenu = function(e){
+            self.viewModel.subMenu.toggle();
+        };
+        var recordGap, start, end, voice = {}, stopRecord = false;
+        wx.ready(function(){
+            console.log('ready');
+            wx.onVoiceRecordEnd({
+                // 录音时间超过一分钟没有停止的时候会执行 complete 回调
+                complete: function (res) {
+                    console.error('end');
+                    voice.localId = res.localId;
+                }
+            });
+            wx.onVoicePlayEnd({
+                success: function (res) {
+                    var localId = res.localId; // 返回音频的本地ID
+                }
+            });
+        })
+        self.voiceAreaTouchStart = function(e){
+            console.error('startRecord');
+            start = new Date().getTime();
+            recordGap = setTimeout(function(){
+                wx.startRecord();
+                $('.record_detail_area').show();
+
+                var progress = 0;
+                var $progress = $('.js_progress');
+                var $secondsCon = $('.voice-seconds-container');
+                var seconds = 0;
+
+                function next() {
+                    $progress.css({width: progress + '%'});
+                    $secondsCon.css({'padding-left': progress + '%'});
+
+                    $('#voice-seconds').text(seconds.toFixed(0));
+                    progress = progress + 0.05;
+                    seconds = seconds + 0.03;
+                    if(progress < 100){
+                        if(!stopRecord) {
+                            setTimeout(next, 30);
+                        }
+                    }else{
+                        $progress.css({width: '100%'});
+                        $secondsCon.css({'padding-left': '100%'});
+                        $('#voice-seconds').text(60)
+                    }
+                }
+                next();
+            }, 300);
+        }
+        self.voiceAreaTouchEnd = function(e){
+            console.error('touchend');
+            end = new Date().getTime();
+
+            if((end - start) < 300){
+                end = 0;
+                start = 0;
+                //小于300ms，不录音
+                clearTimeout(recordGap);
+            }
+        }
+        self.stopRecord = function(e){
+            stopRecord = true;
+            wx.stopRecord({
+                success: function (res) {
+                    console.log(res);
+                    $('#stop-record').hide();
+                    $('#play-record').show();
+                    $('#confirm-sub-voice').show();
+                    var localId = res.localId;
+                    voice.localId = localId;
+                }
+            });
+        }
+        self.playRecord = function(e){
+            wx.playVoice({
+                localId: voice.localId
+            })
+            $('#play-record').hide();
+            $('#pause-record').show();
+        }
+        self.pauseRecord = function(e){
+            wx.pauseVoice({
+                localId: voice.localId
+            })
+            $('#pause-record').hide();
+            $('#play-record').show();
+        }
+        self.confirmSubVoice = function(e){
+            var note = {
+                type: 'voi',
+                url: voice.localId,
+                parentNote: self.parent.currNote._id || '',
+                pageNoteId: self.parent.pageNote._id
+            }
+            saveNoteInSection.newInvocation(note).onDone(function(data){
+                alert(JSON.stringify(data));
+                updateNote(data);
+            }).execute();
         }
     </script>
 </note-footer>

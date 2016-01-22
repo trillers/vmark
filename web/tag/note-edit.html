@@ -12,7 +12,7 @@
                 <span>{formatDate(new Date())}</span>
             </div>
             <div>
-                <note-section onclick="{parent.selectSectionNote}" each="{pageNote.mates}" section="{this}"></note-section>
+                <note-section each="{pageNote.mates}" section="{this}"></note-section>
                 <note-section section="{newSection}" if="{viewModel.EDIT}"></note-section>
             </div>
             <ul class="btn-group" onclick="{selectOperate}">
@@ -24,7 +24,9 @@
             <div>
                 <span if="{pageNote.parentNote}">{pageNote.txt}</span>
             </div>
+            <div style="clear: both"></div>
         </div>
+        <note-footer if="{Object.keys(currNote).length}"></note-footer>
         <style scoped>
             :focus{
                 outline: none;
@@ -47,6 +49,9 @@
             body{
                 font-size: 14px;
             }
+            .btn-group{
+                list-style-type: none;
+            }
             .btn-group li{
                 float:left;
                 padding:10px;
@@ -61,6 +66,20 @@
             var onLoadNote = function(data){
                 if(data){
                     self.pageNote = data;
+                    //TODO init new section
+                    if(self.pageNote.mates && self.pageNote.mates.length){
+                        var draftSections = self.pageNote.mates.filter(function(sectionNote){
+                            if(sectionNote.status === 'dr'){
+                                return sectionNote;
+                            }
+                        });
+                        if(draftSections && draftSections.length){
+                            self.pageNote.mates = util.arr.rest(self.pageNote.mates, draftSections);
+                            self.newSection = draftSections[0];
+                            self.viewModel.doEdit();
+                            self.selectNote(self.newSection);
+                        }
+                    }
                 }
                 self.trigger('ready', false);
                 self.trigger('view-route-to');
@@ -70,6 +89,7 @@
             self.pageNote = null;
             self.newSection = {};
             self.newSection.mates = [];
+            self.currNote = {};
             self.viewModel = {
                 'EDIT': false,
                 'VIEW': false,
@@ -119,16 +139,29 @@
                     title: title
                 });
             };
-            self.selectSectionNote = function(e){
-                
+            self.selectNote = function(note, tag){
+                self.currNote = note;
             };
             self.selectOperate = function(e){
                 if(e.target.nodeName === 'A'){
                     var liNode = e.target;
                     self.viewModel.doEdit();
+                    self.selectNote(self.newSection);
                     self.update();
                 }
             };
+            self.on('noteSubmit', function(){
+                self.currNote = null;
+                self.newSection = {};
+                self.newSection.mates = [];
+                self.update();
+            });
+            self.on('noteSave', function(){
+                self.update();
+            });
+            self.on('active', function(tag){
+                self.selectNote(tag.section, tag)
+            });
             self.on('mount', function(){
                 loadNote.onDone(onLoadNote);
             });

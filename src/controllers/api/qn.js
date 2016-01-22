@@ -25,7 +25,20 @@ module.exports = function(router){
             //    console.error(res);
             //})
             console.error(res);
-            this.body = res.url;
+            this.body = {url: res.url};
+        }catch(err){
+            console.log(err);
+            this.body = '404';
+        }
+    });
+    router.post('/image', function* (){
+        var self = this;
+        var media_id = self.request.body.media_id;
+        try {
+            var imageBuffer = yield wechatApi.getMediaAsync(media_id);
+            var res = yield qnClient.uploadBufAsync(imageBuffer[0], media_id + '.jpg', null);
+            console.error(res);
+            this.body = {url: res.url};
         }catch(err){
             console.log(err);
             this.body = '404';
