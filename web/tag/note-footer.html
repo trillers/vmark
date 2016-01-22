@@ -1,6 +1,12 @@
 <note-footer>
     <div class="record_detail_area">
         <div class="record-el-container">
+            <div class="record_progress_bar">
+                <div class="record_progress_inner_bar js_progress" style="width: 0%;"></div>
+            </div>
+            <div class="voice-seconds-container" style="color: white">
+                <span id="voice-seconds">0</span>"
+            </div>
             <div class="recording-gif voi_area-el">
                 <img src="/public/images/111.jpeg" style="width: 30px; height: 60px" alt="">
             </div>
@@ -10,7 +16,7 @@
                 <input type="button" value="暂停" id="pause-record" onclick="{pauseRecord}">
             </div>
             <div class="voice-confirm-area voi_area-el">
-                <input type="button" value="确认">
+                <input type="button" value="确认" id="confirm-sub-voice">
             </div>
         </div>
     </div>
@@ -39,6 +45,20 @@
         </ul>
     </div>
     <style scoped>
+        .record_progress_bar {
+            margin-top: 10px;
+            background-color: #EBEBEB;
+            height: 3px;
+            -webkit-box-flex: 1;
+            -webkit-flex: 1;
+            -ms-flex: 1;
+            flex: 1;
+        }
+        .record_progress_inner_bar {
+            width: 0;
+            height: 100%;
+            background-color: #09BB07;
+        }
         .record_detail_area{
             -webkit-user-select: none;
             display: none;
@@ -145,7 +165,7 @@
             height: 48px;
         }
         .voi_area-el{
-            margin-top: 40px;
+            margin-top: 10px;
             float: left;
             margin-left: 49px;
         }
@@ -160,6 +180,9 @@
             display: none;
         }
         #pause-record{
+            display: none;
+        }
+        #confirm-sub-voice{
             display: none;
         }
     </style>
@@ -272,7 +295,7 @@
         self.toggleSubMenu = function(e){
             self.viewModel.subMenu.toggle();
         };
-        var recordGap, start, end, voice = {};
+        var recordGap, start, end, voice = {}, stopRecord = false;
         wx.ready(function(){
             console.log('ready');
             wx.onVoiceRecordEnd({
@@ -294,6 +317,30 @@
             recordGap = setTimeout(function(){
                 wx.startRecord();
                 $('.record_detail_area').show();
+
+                var progress = 0;
+                var $progress = $('.js_progress');
+                var $secondsCon = $('.voice-seconds-container');
+                var seconds = 0;
+
+                function next() {
+                    $progress.css({width: progress + '%'});
+                    $secondsCon.css({'padding-left': progress + '%'});
+
+                    $('#voice-seconds').text(seconds.toFixed(0));
+                    progress = progress + 0.05;
+                    seconds = seconds + 0.03;
+                    if(progress < 100){
+                        if(!stopRecord) {
+                            setTimeout(next, 30);
+                        }
+                    }else{
+                        $progress.css({width: '100%'});
+                        $secondsCon.css({'padding-left': '100%'});
+                        $('#voice-seconds').text(60)
+                    }
+                }
+                next();
             }, 300);
         }
         self.voiceAreaTouchEnd = function(e){
@@ -308,11 +355,13 @@
             }
         }
         self.stopRecord = function(e){
+            stopRecord = true;
             wx.stopRecord({
                 success: function (res) {
                     console.log(res);
                     $('#stop-record').hide();
                     $('#play-record').show();
+                    $('#confirm-sub-voice').show();
                     var localId = res.localId;
                     voice.localId = localId;
                 }
