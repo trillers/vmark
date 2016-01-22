@@ -190,13 +190,10 @@
                 }
             });
             function submitWholeSection(){
-                alert("********");
                 publishNote.newInvocation(self.section)
                     .onDone(function(data){
                         try {
-                            alert(JSON.stringify(data));
                             mixin(self.section, data);
-                            alert(JSON.stringify(self.section));
                             self.parent.pageNote.mates.push(self.section);
                             self.parent.viewModel.doView();
                             self.init();
