@@ -16,7 +16,7 @@
                 <input type="button" value="暂停" id="pause-record" onclick="{pauseRecord}">
             </div>
             <div class="voice-confirm-area voi_area-el">
-                <input type="button" value="确认" id="confirm-sub-voice">
+                <input type="button" value="确认" id="confirm-sub-voice" onclick="{confirmSubVoice}">
             </div>
         </div>
     </div>
@@ -250,6 +250,19 @@
                 self.parent.trigger('noteSave', data.note);
             }).execute();
         };
+        var updateNote = function(data){
+            if(data){
+                if(!self.parent.currNote.mates){
+                    self.parent.currNote.mates=[];
+                }
+                self.parent.currNote._id = data[0].parentNote;
+                self.parent.currNote.mates = self.parent.currNote.mates.concat(data);
+                self.parent.trigger('noteSave', data);
+            }
+            else{
+                alert('error occur.');
+            }
+        }
         self.addImgs = function(e){
             wx.chooseImage({
                 count: 9,
@@ -380,6 +393,17 @@
             })
             $('#pause-record').hide();
             $('#play-record').show();
+        }
+        self.confirmSubVoice = function(e){
+            var note = {
+                type: 'voi',
+                url: voice.localId,
+                parentNote: self.parent.currNote._id || '',
+                pageNoteId: self.parent.pageNote._id
+            }
+            saveNoteInSection.newInvocation(note).onDone(function(data){
+                updateNote(data);
+            }).execute();
         }
     </script>
 </note-footer>
