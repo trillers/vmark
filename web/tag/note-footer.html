@@ -253,7 +253,7 @@
                         if(!self.parent.currNote.mates){
                             self.parent.currNote.mates=[];
                         }
-                        self.parent.currNote.mates.concat(data);
+                        self.parent.currNote.mates = self.parent.currNote.mates.concat(data);
                         self.parent.trigger('txtNoteSave', data.note);
                     }).execute();
                 }
