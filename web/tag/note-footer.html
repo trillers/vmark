@@ -385,14 +385,8 @@
             $('#play-record').show();
         };
         self.confirmSubVoice = function (e) {
-            var note = {
-                type: 'voi',
-                url: voice.localId,
-                seconds: end - start,
-                parentNote: self.parent.currNote._id || '',
-                pageNoteId: self.parent.pageNote._id
-            };
             $('.record_detail_area').hide();
+            var seconds = ((end - start)/1000).toFixed(0);
             start = 0;
             end = 0;
             $('.js_progress').css({width: '0%'});
@@ -403,6 +397,13 @@
             $('#play-record').hide();
             $('#confirm-sub-voice').hide();
             $('#pause-record').hide();
+            var note = {
+                type: 'voi',
+                url: voice.localId,
+                seconds: seconds,
+                parentNote: self.parent.currNote._id || '',
+                pageNoteId: self.parent.pageNote._id
+            };
             wx.pauseVoice({
                 localId: voice.localId
             });
