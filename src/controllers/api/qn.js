@@ -20,10 +20,7 @@ module.exports = function(router){
             console.error(media_id);
             var voiceBuffer = yield wechatApi.getMediaAsync(media_id);
             console.log(voiceBuffer[0]);
-            var res = yield qnClient.uploadBufAsync(voiceBuffer[0], 'qn/test/voice/' + media_id + '.amr', {key: 'qn/test/voice/' + media_id + '.mp3', persistentOps: 'avthumb/mp3'});
-            //qnClient.uploadVoiceBuf(voiceBuffer[0], 'qn/test/voice/' + media_id + '.amr', {key: 'qn/test/voice/' + media_id + '.mp3', persistentOps: 'avthumb/mp3'}, function(err, res){
-            //    console.error(res);
-            //})
+            var res = yield qnClient.uploadBufAsync(voiceBuffer[0], 'qn/test/voice/' + media_id + '.amr');
             console.error(res);
             this.body = {url: res.url};
         }catch(err){

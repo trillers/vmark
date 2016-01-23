@@ -9,7 +9,7 @@ var qn = function(accessKey, secretKey, bucket, origin){
     qiniu.conf.SECRET_KEY = secretKey;
 }
 
-qn.prototype.uptoken = function(bucketname, transOpt){
+qn.prototype.uptoken = function(bucketname){
     var putPolicy = new qiniu.rs.PutPolicy(bucketname);
     //putPolicy.callbackUrl = callbackUrl;
     //putPolicy.callbackBody = callbackBody;
@@ -17,22 +17,22 @@ qn.prototype.uptoken = function(bucketname, transOpt){
     //putPolicy.returnBody = returnBody;
     //putPolicy.asyncOps = asyncOps;
     //putPolicy.expires = expires;
-    if(transOpt){
-        var entry = bucketname + ':' + transOpt.key;
-        var encodedEntryURI = qiniu.util.urlsafeBase64Encode(entry)
-        putPolicy.persistentOps = transOpt.persistentOps + "|saveas/" + encodedEntryURI;
-    }
+    //if(transOpt){
+    //    var entry = bucketname + ':' + transOpt.key;
+    //    var encodedEntryURI = qiniu.util.urlsafeBase64Encode(entry)
+    //    putPolicy.persistentOps = transOpt.persistentOps + "|saveas/" + encodedEntryURI;
+    //}
     return putPolicy.token();
 }
 
-qn.prototype.uploadBuf = function(buf, key, transOpt, cb){
+qn.prototype.uploadBuf = function(buf, key, cb){
     var self = this;
     var extra = new qiniu.io.PutExtra();
     //extra.params = params;
     //extra.mimeType = mimeType;
     //extra.crc32 = crc32;
     //extra.checkCrc = checkCrc;
-    var uptoken = this.uptoken('china', transOpt);
+    var uptoken = this.uptoken('china');
     qiniu.io.put(uptoken, key, buf, extra, function(err, ret) {
         if (!err) {
             // 上传成功， 处理返回值
