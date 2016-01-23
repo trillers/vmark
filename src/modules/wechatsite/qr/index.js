@@ -8,10 +8,27 @@ var bindBotResults = tenantService.bindBotResults;
 var securityService = context.services.securityService;
 var authResults = securityService.authResults;
 var wechatApi = require('../../wechat/common/api').api;
+var defaultType =     qrRegistry.getQrType('default');
 var tenantAdminType = qrRegistry.newType('ta', {temp: true});
 var tenantBotType =   qrRegistry.newType('tb', {temp: true});
 var loginType =       qrRegistry.newType('lg', {temp: true});
-var defaultType =     qrRegistry.getQrType('default');
+var recontentTenantType = qrRegistry.newType('rec-ta', {temp: true}); //创建文章采集租户
+
+recontentTenantType.onAccess(function(qr, openid){
+    co(function*(){
+        try{
+            var reply = '[系统]: 个人账户注册成功！';
+            yield tenantService.registerPersonalTenantAsync(openid);
+            wechatApi.sendText(openid, reply, function (err) {
+                if(err) console.error(err);
+            });
+        }
+        catch(e){
+            console.error(e);
+        }
+    });
+});
+recontentTenantType.onExpire(function(){});
 
 tenantAdminType.onAccess(function(qr, openid){
     co(function*(){

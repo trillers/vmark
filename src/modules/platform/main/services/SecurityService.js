@@ -72,6 +72,7 @@ Service.prototype.authenticate = function (openid, callback) {
     var logger = this.context.logger;
     var platformUserService = this.context.services.platformUserService;
     var tenantOrgMediaService = this.context.services.tenantOrgMediaService;
+    var tenantPrivilegeKv = this.context.kvs.tenantPrivilege;
     co(function*() {
         var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
 
@@ -125,6 +126,11 @@ Service.prototype.authenticate = function (openid, callback) {
             return;
         }
 
+        //Get and convert privileges
+        var privilegeList = yield tenantPrivilegeKv.getAllPrivilegeAsync(tenantId);
+        var privileges = {};
+        privilegeList.forEach(function(item){privileges[item] = true;});
+
         if(post.role == OrgMemberRole.PlatformAdmin.value() || post.role == OrgMemberRole.PlatformOperation.value()){
             if (callback) callback(null, {
                 platform: true,
@@ -137,9 +143,14 @@ Service.prototype.authenticate = function (openid, callback) {
             return;
         }
         else if(post.role == OrgMemberRole.TenantAdmin.value()) {
-            var wechatBots = yield tenantOrgMediaService.loadAllMyManagedMediasAsync(tenantId, post.member);
-            wechatBot = wechatBots.length > 0 ? wechatBots[0] : null;
-            wechatBot && (wechatBot.id=wechatBot._id);
+            if(privileges['recontent']){
+
+            }
+            else{
+                var wechatBots = yield tenantOrgMediaService.loadAllMyManagedMediasAsync(tenantId, post.member);
+                wechatBot = wechatBots.length > 0 ? wechatBots[0] : null;
+                wechatBot && (wechatBot.id=wechatBot._id);
+            }
         }
         else if(post.role == OrgMemberRole.TenantWechatBot.value()){
             wechatBot = yield tenantOrgMediaService.loadBoundMediaByIdAsync(post.member);
@@ -155,6 +166,7 @@ Service.prototype.authenticate = function (openid, callback) {
                 post: post,
                 bot: wechatBot,
                 tenantId: tenantId,
+                privileges: privileges,
                 result: authResults.NO_BOUND_BOT
             });
             return;
@@ -166,6 +178,7 @@ Service.prototype.authenticate = function (openid, callback) {
             post: post,
             bot: wechatBot,
             tenantId: tenantId,
+            privileges: privileges,
             result: authResults.OK
         });
     }).catch(Error, function (err) {

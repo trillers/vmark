@@ -1,4 +1,3 @@
-var util = require('util');
 var cbUtil = require('../../../../framework/callback');
 
 var botOidToOpOidKey = function(oid){

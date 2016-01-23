@@ -1,75 +1,46 @@
-var util = require('util');
 var cbUtil = require('../../../../framework/callback');
 
-var botOidToOpOidKey = function(oid){
-    return 'op:oid:bot:oid:' + oid;
-};
-
-var opOidToBotOidKey = function(oid){
-    return 'bot:oid:op:oid:' + oid;
+var tntIdToPrivilegeKey = function(id){
+    return 'org:prv:id:' + id;
 };
 
 var Kv = function(context){
     this.context = context;
 };
 
-Kv.prototype.getOperatorOpenid = function(botOpenid, callback){
+Kv.prototype.getAllPrivileges = function(tenantId, callback){
     var redis = this.context.redis.main;
-    var key = botOidToOpOidKey(botOpenid);
-    redis.get(key, function(err, result){
+    var key = tntIdToPrivilegeKey(tenantId);
+    redis.smembers(key, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to get operator openid for bot: ' + botOpenid + ': ' + err,
-            'Succeed to get operator openid for bot: ' + botOpenid);
+            'Fail to get all privileges for tenant '+tenantId+': ' + err,
+            'Succeed to get all privileges for tenant '+tenantId);
         cbUtil.handleSingleValue(callback, err, result);
     });
 };
 
-Kv.prototype.setOperatorOpenid = function(botOpenid, operatorId, callback){
+Kv.prototype.addPrivilege = function(tenantId, privilege, callback){
     var redis = this.context.redis.main;
-    var key = botOidToOpOidKey(botOpenid);
-    redis.set(key, operatorId, function(err, result){
+    var key = tntIdToPrivilegeKey(tenantId);
+    redis.sadd(key, privilege, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to set operator openid for bot: ' + botOpenid + ': ' + err,
-            'Succeed to set operator openid for bot: ' + botOpenid);
-        cbUtil.handleOk(callback, err, result, operatorId);
-    });
-};
-
-/**
- * Get bot openid by operator openid
- * @param operatorId operator's openid
- * @param callback
- */
-Kv.prototype.getBotOpenid = function(operatorId, callback){
-    var redis = this.context.redis.main;
-    var key = opOidToBotOidKey(operatorId);
-    redis.get(key, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to get bot openid for operator: ' + operatorId + ': ' + err,
-            'Succeed to get bot openid for operator: ' + operatorId);
+            'Fail to add privilege '+privilege+' to tenant '+tenantId+': ' + err,
+            'Succeed to add privilege '+privilege+' to tenant '+tenantId);
         cbUtil.handleSingleValue(callback, err, result);
     });
 };
 
-/**
- * Link operator openid to bot openid
- * @param operatorId operator's openid
- * @param botOpenid bot's openid
- * @param callback
- */
-Kv.prototype.setBotOpenid = function(operatorId, botOpenid, callback){
+Kv.prototype.removePrivilege = function(tenantId, privilege, callback){
     var redis = this.context.redis.main;
-    var key = opOidToBotOidKey(operatorId);
-    redis.set(key, botOpenid, function(err, result){
+    var key = tntIdToPrivilegeKey(tenantId);
+    redis.srem(key, privilege, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to set bot openid for operator: ' + operatorId + ': ' + err,
-            'Succeed to set bot openid for operator: ' + operatorId);
-        cbUtil.handleOk(callback, err, result, botOpenid);
+            'Fail to remove privilege '+privilege+' to tenant '+tenantId+': ' + err,
+            'Succeed to remove privilege '+privilege+' to tenant '+tenantId);
+        cbUtil.handleSingleValue(callback, err, result);
     });
 };
-
 module.exports = Kv;
