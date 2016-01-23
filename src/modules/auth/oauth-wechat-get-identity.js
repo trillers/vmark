@@ -18,13 +18,12 @@ var handler = function*(ctx, next){
         yield ctx.render('/login-feedback', {result: authResults.NO_USER});
         return;
     }
-    else if(auth.result != authResults.OK && auth.result != authResults.NO_BOUND_BOT){
+    else if(auth.result != authResults.OK){
         yield ctx.render('/login-feedback', {result: auth.result});
         return;
     }
     authentication.setAuthentication(ctx, auth);
     authentication.redirectReturnUrl(ctx);
-
 };
 
 var errorHandler = function*(ctx, next){

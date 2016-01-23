@@ -16,15 +16,15 @@ var checkAuthentication = function* (next) {
     var browser = this.basics.browser;
     if(browser.MicroMessenger){
         logger.debug('Using micro messenger browser');
-        authMicroMessenger.auth(this, next);
+        yield authMicroMessenger.auth(this, next);
     }
     else if(browser.Mobile){
         logger.debug('Using mobile browser');
-        authMobile.auth(this, next);
+        yield authMobile.auth(this, next);
     }
     else{
         logger.debug('Using PC browser');
-        authPc.auth(this, next);
+        yield authPc.auth(this, next);
     }
 };
 

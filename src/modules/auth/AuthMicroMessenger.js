@@ -14,39 +14,36 @@ var authResults = securityService.authResults;
 var Authenticator = function(options){};
 
 Authenticator.prototype = {
-    auth: function(ctx, next){
+    auth: function* (ctx, next){
         var at = agentToken.get(ctx);
         if(!at){ //signed up
-            oauthGetIdentity.authorize(ctx); //TODO
+            oauthGetIdentity.authorize(ctx);
             return;
         }
         else{ //not signed up yet
-            co(function*(){
-                var openid = yield platformUserKv.loadOpenidByAtAsync(at);
+            var openid = yield platformUserKv.loadOpenidByAtAsync(at);
 
-                if(!openid){
-                    agentToken.delete(ctx);
-                    oauthGetIdentity.authorize(ctx); //TODO
-                    return;
-                }
+            if(!openid){
+                agentToken.delete(ctx);
+                oauthGetIdentity.authorize(ctx);
+                return;
+            }
 
-                var auth = yield securityService.authenticateAsync(openid);
-                logger.debug(auth);
-                if(!auth){
-                    agentToken.delete(ctx);
-                    //this.redirect('/login-feedback?result=' + authResults.NO_USER);
-                    this.render('/login-feedback', auth);
-                    return;
-                }
-                else if(auth.result != authResults.OK && auth.result != authResults.NO_BOUND_BOT){
-                    this.render('/login-feedback', auth);
-                    return;
-                }
+            var auth = yield securityService.authenticateAsync(openid);
+            logger.debug(auth);
+            if(!auth){
+                agentToken.delete(ctx);
+                //this.redirect('/login-feedback?result=' + authResults.NO_USER);
+                yield this.render('/login-feedback', auth);
+                return;
+            }
+            else if(auth.result != authResults.OK && auth.result != authResults.NO_BOUND_BOT){
+                yield this.render('/login-feedback', auth);
+                return;
+            }
 
-                authentication.auth(ctx, auth);
-                authentication.redirectReturnUrl(ctx);
-            });
-
+            authentication.setAuthentication(ctx, auth);
+            yield next;
         }
     }
 }

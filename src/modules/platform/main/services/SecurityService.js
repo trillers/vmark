@@ -19,6 +19,7 @@ var authSupportRoles = {};
 authSupportRoles[OrgMemberRole.PlatformAdmin.value()] = true;
 authSupportRoles[OrgMemberRole.PlatformOperation.value()] = true;
 authSupportRoles[OrgMemberRole.TenantAdmin.value()] = true;
+authSupportRoles[OrgMemberRole.TenantOperation.value()] = true;
 authSupportRoles[OrgMemberRole.TenantWechatBot.value()] = true;
 
 var hasRole = function(posts, role) {
@@ -84,18 +85,19 @@ Service.prototype.authenticate = function (openid, callback) {
             return;
         }
         var post = null;
-        var adminPost = null;
+        var taPost = null;
+        var toPost = null;
         var botPost = null;
         var tenantId = null;
         var wechatBot = null;
         if(user.posts && user.posts.length>0){
-            var adminPost = hasRole(user.posts, OrgMemberRole.TenantAdmin.value());
+            var taPost = hasRole(user.posts, OrgMemberRole.TenantAdmin.value());
+            var toPost = hasRole(user.posts, OrgMemberRole.TenantOperation.value());
             var botPost = hasRole(user.posts, OrgMemberRole.TenantWechatBot.value());
             var paPost = hasRole(user.posts, OrgMemberRole.PlatformAdmin.value());
             var poPost = hasRole(user.posts, OrgMemberRole.PlatformOperation.value());
 
-
-            post = adminPost || botPost || paPost || poPost;
+            post = taPost || toPost || botPost || paPost || poPost;
             tenantId = post.org;
 
             /*
