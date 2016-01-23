@@ -208,7 +208,7 @@
                     .execute();
             }
         }
-        var playing = false;
+        var playing = false, voiceUrl = '';
         self.playVoice = function (e) {
             var data = e.item;
             if (data.status === 'dr') {
@@ -217,9 +217,10 @@
                 });
             }else{
                 $('#voiceMsgPlayer').attr('src', data.url);
-                if(!playing){
+                if(!playing || voiceUrl !== data.url){
                     document.getElementById('voiceMsgPlayer').play();
                     playing = true;
+                    voiceUrl = data.url;
                 }else{
                     playing = false;
                 }
