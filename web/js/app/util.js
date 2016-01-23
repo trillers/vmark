@@ -1,9 +1,9 @@
 /**
  * Created by Administrator on 2015/2/28.
  */
-var $ = require('jquery');
-var riot = require('seedriot');
-var isjs = require('./isjs');
+//var $ = require('jquery');
+//var riot = require('seedriot');
+//var isjs = require('./isjs');
 /**
  * 获取本周、下周、本月、下月的开始日期、停止日期
  */
@@ -92,7 +92,6 @@ var getDefImg = function(type){
         return '/public/images/pabanner.png';
     }
 }
-
 var util = {
     arr: {
         rest: function(full, part){
@@ -102,6 +101,22 @@ var util = {
                 }
             })
         }
+    },
+    obj: {
+        exclude: function(){
+            var args = [].slice.apply(arguments);
+            for(var p in args[0]){
+                if(args.slice(1).indexOf(p) >= 0){
+                    delete args[0][p];
+                }
+            }
+        },
+        deepClone: function(o){
+
+        }
+    },
+    extJson: function(tag){
+        return util.obj.exclude(tag, 'mount', 'off', 'on', 'one', 'opts', 'parent', 'root', 'tags', 'trigger', 'unmount', 'update', '__proto__');
     },
     getDc:function(){
         return DATA_DICT;

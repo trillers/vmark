@@ -44,7 +44,7 @@ Service.prototype.loadMatesById = function(id, callback){
     Note.find({parentNote: id}, null, {lean: true}).exec(callback);
 };
 
-Service.prototype.updateById =function(id, json, callback){
+Service.prototype.updateById = function(id, json, callback){
     var kv = this.context.kvs.note;
     var Note = this.context.models.Note;
     Note.findByIdAndUpdate(id, json, {new: true}, function (err, doc) {
@@ -56,6 +56,19 @@ Service.prototype.updateById =function(id, json, callback){
             if(callback) callback(err, obj);
         });
     });
+};
+
+Service.prototype.deleteNotesById = function(ids, callback){
+    var kv = this.context.kvs.note;
+    var Note = this.context.models.Note;
+    Note.remove({_id: {$in: ids}}, function(err){
+        if(err){
+           return callback(err);
+        }
+        return kv.deleteByIds(ids, function(err, obj){
+            if(callback) callback(err, obj);
+        });
+    })
 };
 
 

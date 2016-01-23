@@ -105,6 +105,18 @@ module.exports = function (router) {
         }
     });
 
+    router.put('/notes', function*(){
+        try{
+            var noteIds = this.request.body.notes;
+            yield noteService.deleteNotesByIdAsync(noteIds);
+            console.log(noteIds)
+            this.body = {success: true};
+        }catch(e){
+            context.logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
     router.post('/section/note', function*(){
         try{
             var json = this.request.body;

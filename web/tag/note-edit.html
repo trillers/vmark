@@ -14,10 +14,9 @@
             <div>
                 <button onclick={goToAuthorize}>去授权</button>
             </div>
-
             <div>
-                <note-section each="{pageNote.mates}" section="{this}"></note-section>
-                <note-section section="{newSection}" if="{viewModel.EDIT}"></note-section>
+                <note-section each="{item in pageNote.mates}" section="{item}"></note-section>
+                <note-section if="{currNote === newSection}" section="{newSection}" new="true"></note-section>
             </div>
             <ul class="btn-group" onclick="{selectOperate}">
                 <li><a class="weui_btn weui_btn_mini weui_btn_primary">文字</a></li>
@@ -65,6 +64,14 @@
             "use strict";
             //private properties
             var self = nest.presentable(this);
+            self.arr = [
+                {
+                    name: '111'
+                },
+                {
+                    name: '111'
+                }
+            ]
             var loadNote = domain.action('loadNote');
             var updateNote = domain.action('updateNode');
             var onLoadNote = function(data){
@@ -80,7 +87,6 @@
                         if(draftSections && draftSections.length){
                             self.pageNote.mates = util.arr.rest(self.pageNote.mates, draftSections);
                             self.newSection = draftSections[0];
-                            self.viewModel.doEdit();
                             self.selectNote(self.newSection);
                         }
                     }
@@ -94,18 +100,6 @@
             self.newSection = {};
             self.newSection.mates = [];
             self.currNote = {};
-            self.viewModel = {
-                'EDIT': false,
-                'VIEW': false,
-                doEdit: function(){
-                    self.viewModel.EDIT = true;
-                    self.viewModel.VIEW = false;
-                },
-                doView: function(){
-                    self.viewModel.EDIT = false;
-                    self.viewModel.VIEW = true;
-                }
-            };
             //instance methods
             self.formatDate = function(date){
                 return new Date(date).toLocaleString();
@@ -145,13 +139,12 @@
             };
             self.selectNote = function(note, tag){
                 self.currNote = note;
+                self.update();
             };
             self.selectOperate = function(e){
                 if(e.target.nodeName === 'A'){
                     var liNode = e.target;
-                    self.viewModel.doEdit();
                     self.selectNote(self.newSection);
-                    self.update();
                 }
             };
             self.on('noteSubmit', function(){
