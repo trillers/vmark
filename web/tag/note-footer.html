@@ -312,7 +312,7 @@
                     var localId = res.localId; // 返回音频的本地ID
                 }
             });
-        })
+        });
         self.voiceAreaTouchStart = function(e){
             console.error('startRecord');
             start = new Date().getTime();
@@ -344,7 +344,7 @@
                 }
                 next();
             }, 300);
-        }
+        };
         self.voiceAreaTouchEnd = function(e){
             console.error('touchend');
             end = new Date().getTime();
@@ -355,7 +355,7 @@
                 //小于300ms，不录音
                 clearTimeout(recordGap);
             }
-        }
+        };
         self.stopRecord = function(e){
             stopRecord = true;
             end = new Date().getTime();
@@ -369,21 +369,21 @@
                     voice.localId = localId;
                 }
             });
-        }
+        };
         self.playRecord = function(e){
             wx.playVoice({
                 localId: voice.localId
-            })
+            });
             $('#play-record').hide();
             $('#pause-record').show();
-        }
+        };
         self.pauseRecord = function(e){
             wx.pauseVoice({
                 localId: voice.localId
-            })
+            });
             $('#pause-record').hide();
             $('#play-record').show();
-        }
+        };
         self.confirmSubVoice = function(e){
             $('.record_detail_area').hide();
             start = 0;
@@ -398,14 +398,14 @@
             $('#pause-record').hide();
             wx.pauseVoice({
                 localId: voice.localId
-            })
+            });
         var note = {
                 type: 'voi',
                 url: voice.localId,
                 seconds: end - start,
                 parentNote: self.parent.currNote._id || '',
                 pageNoteId: self.parent.pageNote._id
-            }
+            };
             saveNoteInSection.newInvocation(note).onDone(function(data){
                 if(data){
                     mixin(self.parent.currNote, data.sectionNote);

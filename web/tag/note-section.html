@@ -172,7 +172,7 @@
                             success: function(res){
                                 uploadVoice.newInvocation({media_id: res.serverId})
                                     .onDone(function(data){
-                                        mate.url = data;
+                                        mate.url = data.url;
                                         if(++index === self.section.mates.length){
                                             submitWholeSection();
                                         }
