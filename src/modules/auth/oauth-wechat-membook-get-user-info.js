@@ -6,14 +6,12 @@ var authenticationService = context.services.authenticationService;
 var authResults = authenticationService.authResults;
 
 var handler = function*(ctx, next){
-    var oauthBasicInfo = ctx.oauth.data;
-    var openid = oauthBasicInfo.openid;
+    var oauthUserInfo = ctx.oauth.data;
 
     /*
-     * sign up with full user info by openid
+     * sign up with full user info
      */
-    var auth = yield authenticationService.signupWithUserInfoAsync(openid);
-
+    var auth = yield authenticationService.signupWithUserInfoAsync(oauthUserInfo);
     authentication.setAuthentication(ctx, auth);
     authentication.redirectReturnUrl(ctx);
 };
