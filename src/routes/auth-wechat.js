@@ -7,5 +7,10 @@ module.exports = function(app){
     router.get('/auth/callback', function*(next){
         yield oauth.exchange(this, next);
     });
+
+    router.get('/auth/authorize', function*(next){
+        yield oauth.authorize(this);
+    });
+
     app.use(router.routes());
 };

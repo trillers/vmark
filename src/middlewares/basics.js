@@ -30,8 +30,6 @@ var processor = function* (next) {
     //basics.querystring = this.request.querystring;
     //basics.fresh = this.request.fresh;
 
-    console.error(basics);//TODO: remove it
-
     yield next;
 };
 

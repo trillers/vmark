@@ -12,6 +12,10 @@
                 <span>{formatDate(new Date())}</span>
             </div>
             <div>
+                <button onclick={goToAuthorize}>去授权</button>
+            </div>
+
+            <div>
                 <note-section each="{pageNote.mates}" section="{this}"></note-section>
                 <note-section section="{newSection}" if="{viewModel.EDIT}"></note-section>
             </div>
@@ -192,6 +196,12 @@
                 console.info('tag group index is refreshing');
                 //_refresh();
             });
+
+            goToAuthorize(e){
+                var getUserInfoUrl = '/auth/authorize?';
+                getUserInfoUrl += 'route=get_user_info&returnUrl='+location.href;
+                location.href = getUserInfoUrl;
+            }
         </script>
     </div>
 </note-edit>

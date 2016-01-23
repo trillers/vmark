@@ -80,14 +80,15 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
     var userKv = this.context.kvs.user;
     var wechatSiteUserService = this.context.services.wechatSiteUserService;
     var userService = this.context.services.userService;
-    var openidToIdKv = this.context.services.openidToId;
-    var atToOpenidKv = this.context.services.atToOpenid;
-
+    var openidToIdKv = this.context.kvs.openidToId;
+    var atToOpenidKv = this.context.kvs.atToOpenid;
     co(function*(){
+        var openid = userInfo.openid;
         var wechatSiteUser = null;
         var user = null;
         var userId = null;
         var status = UserStatus.Registered.value();
+
         try{
             wechatSiteUser = yield wechatSiteUserKv.loadByOpenidAsync(openid);
             user = wechatSiteUser && (yield userKv.loadByIdAsync(wechatSiteUser.user));
@@ -101,7 +102,9 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
                 user.headimgurl = userInfo.headimgurl;
                 user.sex = userInfo.sex;
                 helper.copyLocation(user, userInfo);
-                user = yield userService.updateByIdAsync(user.id, user);
+                userId = user.id;
+                user._id && (delete user._id);
+                user = yield userService.updateByIdAsync(userId, user);
             }
             else{
                 var createUserJson = {};
@@ -111,8 +114,8 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
                 createUserJson.sex = userInfo.sex;
                 helper.copyLocation(createUserJson, userInfo);
                 user = yield userService.createAsync(createUserJson);
+                userId = user.id;
             }
-            userId = user.id;
 
             /*
              * Ensure wechat site user created or updated
@@ -121,7 +124,8 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
                 helper.copyUserInfo(wechatSiteUser, userInfo);
                 wechatSiteUser.user = userId;
                 wechatSiteUser.status = status;
-                wechatSiteUser = yield wechatSiteUserService.updateByIdAsync(wechatSiteUser.id, wechatSiteUser);
+                wechatSiteUser._id && (delete wechatSiteUser._id);
+                wechatSiteUser = yield wechatSiteUserService.updateByOpenidAsync(openid, wechatSiteUser);
             }
             else{
                 var createWechatSiteUserJson = {};
@@ -129,7 +133,6 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
                 createWechatSiteUserJson.user = userId;
                 createWechatSiteUserJson.status = status;
                 wechatSiteUser = yield wechatSiteUserService.createAsync(createWechatSiteUserJson);
-
             }
 
             /*
