@@ -384,8 +384,9 @@
             $('#pause-record').hide();
             $('#play-record').show();
         };
-        self.confirmSubVoice = function(e){
+        self.confirmSubVoice = function (e) {
             $('.record_detail_area').hide();
+            var seconds = ((end - start)/1000).toFixed(0);
             start = 0;
             end = 0;
             $('.js_progress').css({width: '0%'});
@@ -396,23 +397,23 @@
             $('#play-record').hide();
             $('#confirm-sub-voice').hide();
             $('#pause-record').hide();
-            wx.pauseVoice({
-                localId: voice.localId
-            });
-        var note = {
+            var note = {
                 type: 'voi',
                 url: voice.localId,
-                seconds: end - start,
+                seconds: seconds,
                 parentNote: self.parent.currNote._id || '',
                 pageNoteId: self.parent.pageNote._id
             };
-            saveNoteInSection.newInvocation(note).onDone(function(data){
-                if(data){
+            wx.pauseVoice({
+                localId: voice.localId
+            });
+            saveNoteInSection.newInvocation(note).onDone(function (data) {
+                if (data) {
                     mixin(self.parent.currNote, data.sectionNote);
                     self.parent.currNote.mates.push(data.note);
                     self.parent.trigger('noteSave', data.note);
                 }
-                else{
+                else {
                     alert('error occur.');
                 }
             }).execute();
