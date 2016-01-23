@@ -64,6 +64,8 @@
             "use strict";
             //private properties
             var self = nest.presentable(this);
+            var url = window.location.href;
+            console.log(__page)
             self.arr = [
                 {
                     name: '111'
@@ -114,8 +116,8 @@
                 };
                 self.titleInput.value = '';
                 wx.onMenuShareTimeline({
-                    title: '测试分享主题',
-                    link: getLink(),
+                    title: self.pageNote.title || '记易',
+                    link: url,
                     imgUrl: '',
                     success: function(){
 
@@ -124,8 +126,6 @@
 
                     }
                 });
-                function getLink(){
-                }
             };
             self.updatePageNote = function(e){
                 var title = e.currentTarget.value;

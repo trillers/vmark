@@ -10,7 +10,7 @@
         <div class="noteItems">
             <div each="{section.mates}" noteId="{_id}">
                 <div if="{parent.isOnEdit()}" style="float: left">
-                    <b class="chb {note_sel : parent.inTrash(_id), note_def: !parent.inTrash(_id)}" onclick="{parent.pushToTrash}"></b>
+                    <b class="{weui_icon_cancel : parent.inTrash(_id), weui_icon_circle: !parent.inTrash(_id)}" onclick="{parent.pushToTrash}"></b>
                 </div>
                 <div if="{type==='txt'}" class="note_txt">{content}</div>
                 <div if="{type==='img'}" class="note_img"><img style="width: 100%" src="{url}"/></div>
@@ -82,37 +82,6 @@
             border: none;
             border-bottom: 1px solid #18c54b;
             font-size: 14px;
-        }
-        .recordBtn{
-            position: absolute;
-            bottom: 2px;
-            margin: 0px auto;
-            left: 50px;
-            display: block;
-            width: -webkit-calc(100% - 100px);
-            width: -moz-calc(100% - 100px);
-            width: calc(100% - 100px);
-            border: 1px solid #b2b2b2;
-            height: 32px;
-            color: #888;
-            line-height: 32px;
-            background: none;
-            border-radius: 3px;
-            font-size: 14px;
-        }
-        .toggleBtn_txt_voi{
-            width: 32px;
-            height: 32px;
-            border-radius: 50em;
-            border: 1px solid #ddd;
-        }
-        .menuBtn{
-            width: 32px;
-            height: 32px;
-            border-radius: 50em;
-            border: 1px solid #ddd;
-            display: block;
-            float: right;
         }
     </style>
     <script>
