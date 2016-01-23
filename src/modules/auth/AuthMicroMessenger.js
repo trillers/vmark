@@ -43,6 +43,7 @@ Authenticator.prototype = {
             }
 
             authentication.setAuthentication(ctx, auth);
+            authentication.deleteReturnUrl(ctx);
             yield next;
         }
     }
