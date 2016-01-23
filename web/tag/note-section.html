@@ -210,7 +210,7 @@
         }
         var playing = false, voiceUrl = '', playEndTimeout;
         self.playVoice = function (e) {
-            alert(1);
+            debugger;
             var data = e.item;
             if (data.status === 'dr') {
                 wx.playVoice({
