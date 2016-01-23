@@ -219,6 +219,7 @@
                 $('#voiceMsgPlayer').attr('src', data.url);
                 if(!playing){
                     document.getElementById('voiceMsgPlayer').play();
+                    playing = true;
                 }
             }
         }
