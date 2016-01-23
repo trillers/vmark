@@ -13,6 +13,9 @@
                 <div if="{type==='voi'}" class="note_voi"><input style="width: 100px" type="button" onclick="{parent.playVoice}"></div>
             </div>
         </div>
+        <div style="position:absolute;top:0;left:0;width:0;height:0;">
+            <audio id="voiceMsgPlayer" class="voicePlayer"></audio>
+        </div>
     </div>
     <style scoped>
         .noteItems div{
@@ -205,12 +208,18 @@
                     .execute();
             }
         }
+        var playing = false;
         self.playVoice = function (e) {
             var data = e.item;
             if (data.status === 'dr') {
                 wx.playVoice({
                     localId: data.url
                 });
+            }else{
+                $('#voiceMsgPlayer').attr('src', data.url);
+                if(!playing){
+                    document.getElementById('#voiceMsgPlayer').play();
+                }
             }
         }
     </script>
