@@ -1,11 +1,11 @@
 <note-section>
     <div class="note_section" sectionId="{_id}">
         <div style="line-height: 48px;height:48px;border-bottom: 1px solid #ddd;margin-bottom: 10px">
-            <img style="width:32px;height:32px" src="/public/images/111.jpeg"/>&nbsp&nbsp
-            <label>包三哥</label> &nbsp&nbsp
+            <img style="width:32px;height:32px" riot-src="{initiator.headimgurl}"/>&nbsp&nbsp
+            <label>{initiator.nickname}</label> &nbsp&nbsp
             <span if="{section.parentNote && section.status != 'dr'}">{formatDate(new Date(section.crtOn))}</span>
             <input onclick="{submitSectionNote}" if="{isOnEdit()}" value="提交" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_primary"/>
-            <input onclick="{editSectionNote}" if="{!isOnEdit()}" value="编辑" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
+            <input onclick="{editSectionNote}" if="{!isOnEdit() && (initiator._id === parent.user._id)}" value="编辑" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
         </div>
         <div class="noteItems">
             <div each="{section.mates}" noteId="{_id}">
@@ -35,19 +35,6 @@
         }
         .noteItems div{
             line-height: 32px;
-        }
-        .chb{
-            display: block;
-            float: left;
-            width: 16px;
-            height:16px;
-            border:1px solid #ccc;
-        }
-        .noteItems .note_sel{
-            background: red;
-        }
-        .noteItems .note_def{
-            background: green;
         }
         .noteItems div .note_img{
             width:100%;
@@ -104,6 +91,8 @@
         self.section = this.opts.section;
         self.isNew = !!this.opts.new;
         self.parent = self.isNew ? self.parent : self.parent.parent;
+        self.initiator = self.section.initiator || self.parent.user;
+        self.initiator.headimgurl = self.initiator.headimgurl || 'public/images/def-avatar.png';
         self.isOnEdit = function(){
             if(self.isNew){
                 return !self.section.parentNote || (self.section.parentNote && self.section.status === 'dr')

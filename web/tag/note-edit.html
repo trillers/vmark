@@ -7,8 +7,8 @@
                 <hr style="margin-bottom: 10px"/>
             </div>
             <div>
-                <img style="width:32px;height:32px" src="/public/images/111.jpeg"/>
-                <label>包三哥</label>
+                <img style="width:32px;height:32px" riot-src="{user.headimgurl}"/>
+                <label>{user.nickname}</label>
                 <span>{formatDate(new Date())}</span>
             </div>
             <div>
@@ -65,15 +65,6 @@
             //private properties
             var self = nest.presentable(this);
             var url = window.location.href;
-            console.log(__page)
-            self.arr = [
-                {
-                    name: '111'
-                },
-                {
-                    name: '111'
-                }
-            ]
             var loadNote = domain.action('loadNote');
             var updateNote = domain.action('updateNote');
             var onLoadNote = function(data){
@@ -102,6 +93,8 @@
             self.newSection = {};
             self.newSection.mates = [];
             self.currNote = {};
+            self.user = __page.user;
+            self.user.headimgurl = self.user.headimgurl || '/public/images/def-avatar';
             //instance methods
             self.formatDate = function(date){
                 return new Date(date).toLocaleString();
@@ -118,7 +111,7 @@
                 wx.onMenuShareTimeline({
                     title: self.pageNote.title || '记易',
                     link: url,
-                    imgUrl: '',
+                    imgUrl: '/public/images/share.jpeg',
                     success: function(){
 
                     },
