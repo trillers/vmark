@@ -15,7 +15,8 @@
                 </div>
                 <div if="{type==='txt'}" class="note_txt">{content}</div>
                 <div if="{type==='img'}" class="note_img"><img style="width: 100%" src="{url}"/></div>
-                <div if="{type==='voi'}" class="note_voi"><input style="width: {seconds + 10}%" type="button" onclick="{parent.playVoice}"><span>{seconds}"</span></div>
+                <div if="{type==='voi'}" class="note_voi" style="float:left"><div style="width: {seconds * 3 + 30}px" class="voice" onclick="{parent.playVoice}"><i class="playIcon"></i></div><span class="seconds">{seconds}"</span></div>
+                <div style="clear: both;"></div>
             </div>
         </div>
         <div style="position:absolute;top:0;left:0;width:0;height:0;">
@@ -35,7 +36,7 @@
             border-top: 1px solid #ddd;
         }
         .noteItems div{
-            line-height: 32px;
+            line-height: 31px;
         }
         .noteItems div .note_img{
             width:100%;
@@ -70,6 +71,24 @@
             border: none;
             border-bottom: 1px solid #18c54b;
             font-size: 14px;
+        }
+        .voice{
+            float: left;
+            background-color: #04BE02;
+            border-radius: 7px;
+        }
+        .seconds{
+            float: left;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        .playIcon{
+            background: url('/web/images/wx-icon.png') 0 -2428px;
+            background-size: 150px 2489px;
+            width: 23px;
+            height: 23px;
+            vertical-align: middle;
+            display: inline-block;
         }
     </style>
     <script>
@@ -295,7 +314,6 @@
         };
         var playing = false, voiceUrl = '', playEndTimeout;
         self.playVoice = function (e) {
-            debugger;
             var data = e.item;
             if (data.status === 'dr') {
                 wx.playVoice({
