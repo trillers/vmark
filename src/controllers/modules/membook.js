@@ -23,6 +23,7 @@ module.exports = function(){
 
     router.get('/new', needSubscriptionFilter, function *(){
         try{
+            //TODO oauth
             var id = this.session['draftId'];
             if(!id){
                 var pageNote = yield noteServcie.createAsync({});
@@ -38,6 +39,16 @@ module.exports = function(){
     router.get('/_:id', needBaseInfoFilter, function *(){
         var id = this.params.id;
         yield this.render('note', {id: id});
+    });
+
+    router.get('/list', function *(){
+        var auth = this.session && this.session['auth'];
+        if(auth && auth.user && auth.user.id){
+            var noteList = yield noteServcie.loadByUserIdAsync(auth.user.id)
+            yield this.render('note-list', {noteList: noteList});
+        }else{
+            //TODO
+        }
     });
 
     return router.routes();

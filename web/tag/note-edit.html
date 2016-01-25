@@ -7,8 +7,8 @@
                 <hr style="margin-bottom: 10px"/>
             </div>
             <div>
-                <img style="width:32px;height:32px" src="/public/images/111.jpeg"/>
-                <label>包三哥</label>
+                <img style="width:32px;height:32px" riot-src="{user.headimgurl}"/>
+                <label>{user.nickname}</label>
                 <span>{formatDate(new Date())}</span>
             </div>
             <div>
@@ -64,14 +64,7 @@
             "use strict";
             //private properties
             var self = nest.presentable(this);
-            self.arr = [
-                {
-                    name: '111'
-                },
-                {
-                    name: '111'
-                }
-            ]
+            var url = window.location.href;
             var loadNote = domain.action('loadNote');
             var updateNote = domain.action('updateNote');
             var onLoadNote = function(data){
@@ -100,6 +93,8 @@
             self.newSection = {};
             self.newSection.mates = [];
             self.currNote = {};
+            self.user = __page.user;
+            self.user.headimgurl = self.user.headimgurl || '/public/images/def-avatar.png';
             //instance methods
             self.formatDate = function(date){
                 return new Date(date).toLocaleString();
@@ -114,9 +109,9 @@
                 };
                 self.titleInput.value = '';
                 wx.onMenuShareTimeline({
-                    title: '测试分享主题',
-                    link: getLink(),
-                    imgUrl: '',
+                    title: self.pageNote.title || '记易',
+                    link: url,
+                    imgUrl: '/public/images/share.jpeg',
                     success: function(){
 
                     },
@@ -124,8 +119,6 @@
 
                     }
                 });
-                function getLink(){
-                }
             };
             self.updatePageNote = function(e){
                 var title = e.currentTarget.value;

@@ -1,20 +1,22 @@
 <note-section>
     <div class="note_section" sectionId="{_id}">
         <div style="line-height: 48px;height:48px;border-bottom: 1px solid #ddd;margin-bottom: 10px">
-            <img style="width:32px;height:32px" src="/public/images/111.jpeg"/>&nbsp&nbsp
-            <label>包三哥</label> &nbsp&nbsp
+            <img style="width:32px;height:32px" riot-src="{initiator.headimgurl}"/>&nbsp&nbsp
+            <label>{initiator.nickname}</label> &nbsp&nbsp
             <span if="{section.parentNote && section.status != 'dr'}">{formatDate(new Date(section.crtOn))}</span>
             <input onclick="{submitSectionNote}" if="{isOnEdit()}" value="提交" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_primary"/>
-            <input onclick="{editSectionNote}" if="{!isOnEdit()}" value="编辑" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
+            <input onclick="{clearTrash}" if="{isOnEdit() && trash.length>0}" value="删除" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_warn"/>
+            <input onclick="{editSectionNote}" if="{!isOnEdit() && (initiator._id === parent.user._id)}" value="编辑" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
         </div>
         <div class="noteItems">
-            <div each="{section.mates}" noteId="{_id}">
+            <div each="{section.mates}" noteId="{_id}" style="margin-top: 2px">
                 <div if="{parent.isOnEdit()}" style="float: left">
-                    <b class="chb {note_sel : parent.inTrash(_id), note_def: !parent.inTrash(_id)}" onclick="{parent.pushToTrash}"></b>
+                    <b class="{weui_icon_cancel : parent.inTrash(_id), weui_icon_circle: !parent.inTrash(_id)}" onclick="{parent.pushToTrash}"></b>
                 </div>
                 <div if="{type==='txt'}" class="note_txt">{content}</div>
                 <div if="{type==='img'}" class="note_img"><img style="width: 100%" src="{url}"/></div>
-                <div if="{type==='voi'}" class="note_voi"><input style="width: {seconds + 10}%" type="button" onclick="{parent.playVoice}"><span>{seconds}"</span></div>
+                <div if="{type==='voi'}" class="note_voi" style="float:left"><div style="width: {seconds * 3 + 30}px" class="voice" onclick="{parent.playVoice}"><i class="playIcon"></i></div><span class="seconds">{seconds}"</span></div>
+                <div style="clear: both;"></div>
             </div>
         </div>
         <div style="position:absolute;top:0;left:0;width:0;height:0;">
@@ -34,20 +36,7 @@
             border-top: 1px solid #ddd;
         }
         .noteItems div{
-            line-height: 32px;
-        }
-        .chb{
-            display: block;
-            float: left;
-            width: 16px;
-            height:16px;
-            border:1px solid #ccc;
-        }
-        .noteItems .note_sel{
-            background: red;
-        }
-        .noteItems .note_def{
-            background: green;
+            line-height: 31px;
         }
         .noteItems div .note_img{
             width:100%;
@@ -83,36 +72,23 @@
             border-bottom: 1px solid #18c54b;
             font-size: 14px;
         }
-        .recordBtn{
-            position: absolute;
-            bottom: 2px;
-            margin: 0px auto;
-            left: 50px;
-            display: block;
-            width: -webkit-calc(100% - 100px);
-            width: -moz-calc(100% - 100px);
-            width: calc(100% - 100px);
-            border: 1px solid #b2b2b2;
-            height: 32px;
-            color: #888;
-            line-height: 32px;
-            background: none;
-            border-radius: 3px;
-            font-size: 14px;
+        .voice{
+            float: left;
+            background-color: #04BE02;
+            border-radius: 7px;
         }
-        .toggleBtn_txt_voi{
-            width: 32px;
-            height: 32px;
-            border-radius: 50em;
-            border: 1px solid #ddd;
+        .seconds{
+            float: left;
+            font-size: 12px;
+            margin-left: 5px;
         }
-        .menuBtn{
-            width: 32px;
-            height: 32px;
-            border-radius: 50em;
-            border: 1px solid #ddd;
-            display: block;
-            float: right;
+        .playIcon{
+            background: url('/web/images/wx-icon.png') 0 -2428px;
+            background-size: 150px 2489px;
+            width: 23px;
+            height: 23px;
+            vertical-align: middle;
+            display: inline-block;
         }
     </style>
     <script>
@@ -135,6 +111,8 @@
         self.section = this.opts.section;
         self.isNew = !!this.opts.new;
         self.parent = self.isNew ? self.parent : self.parent.parent;
+        self.initiator = self.section.initiator || self.parent.user;
+        self.initiator.headimgurl = self.initiator.headimgurl || 'public/images/def-avatar.png';
         self.isOnEdit = function(){
             if(self.isNew){
                 return !self.section.parentNote || (self.section.parentNote && self.section.status === 'dr')
@@ -201,6 +179,32 @@
         self.editSectionNote = function(e){
             self.init();
             self.parent.selectNote(self.section);
+        };
+        self.clearTrash = function(){
+            var ids = self.trash.map(function(note){
+                return note._id;
+            });
+            deleteNotes.newInvocation({
+                        notes: ids
+                    })
+                    .onDone(function(data){
+                        if(data.success){
+                            self.section.mates = self.section.mates.filter(function(note){
+                                for(var i= 0, len=self.trash.length; i<len; i++){
+                                    if(self.trash[i]._id === note._id){
+                                        return false;
+                                    }
+                                }
+                                return true;
+                            });
+                            self.trash = [];
+                            self.update();
+                        }
+                        else{
+                            alert(data.error);
+                        }
+                    })
+                    .execute();
         };
         self.submitSectionNote = function(e){
             if(!self.section._id
@@ -310,7 +314,6 @@
         };
         var playing = false, voiceUrl = '', playEndTimeout;
         self.playVoice = function (e) {
-            debugger;
             var data = e.item;
             if (data.status === 'dr') {
                 wx.playVoice({

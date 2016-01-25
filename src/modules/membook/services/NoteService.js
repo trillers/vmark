@@ -58,6 +58,11 @@ Service.prototype.updateById = function(id, json, callback){
     });
 };
 
+Service.prototype.loadByUserId = function(id, callback){
+    var Note = this.context.models.Note;
+    Note.find({initiator: id}, null, {lean: true}).exec(callback);
+};
+
 Service.prototype.deleteNotesById = function(ids, callback){
     var kv = this.context.kvs.note;
     var Note = this.context.models.Note;
@@ -70,6 +75,5 @@ Service.prototype.deleteNotesById = function(ids, callback){
         });
     })
 };
-
 
 module.exports = Service;

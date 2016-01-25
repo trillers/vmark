@@ -39,6 +39,7 @@ module.exports = function (router) {
         try{
             var json = this.request.body;
             json._id = this.session['draftId'];
+            json.initiator = this.session.auth.user._id;
             this.session['draftId'] = null;
             var note = yield noteService.createAsync(json);
             console.warn(note);
@@ -89,11 +90,13 @@ module.exports = function (router) {
             var asyncArr = [];
             if(!notes[0].parentNote){
                 sectionNote = yield noteService.createAsync({
+                    initiator: this.session.auth.user._id,
                     parentNote: notes[0].pageNoteId,
                     type: NoteType.Section.value()
                 });
             }
             notes.forEach(function(note){
+                note.initiator = this.session.auth.user._id;
                 note.parentNote = note.parentNote || sectionNote._id;
                 asyncArr.push(noteService.createAsync(note));
             });
@@ -109,7 +112,6 @@ module.exports = function (router) {
         try{
             var noteIds = this.request.body.notes;
             yield noteService.deleteNotesByIdAsync(noteIds);
-            console.log(noteIds)
             this.body = {success: true};
         }catch(e){
             context.logger.error(e);
@@ -126,6 +128,7 @@ module.exports = function (router) {
                     throw new Error('Fail to save section note, page note id lose.');
                 }
                 var sectionNote = yield noteService.createAsync({
+                    initiator: this.session.auth.user._id,
                     parentNote: json.pageNoteId,
                     type: NoteType.Section.value()
                 });

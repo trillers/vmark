@@ -115,6 +115,11 @@ var util = {
 
         }
     },
+    mixin: function(t, s){
+        for(var p in s){
+            t[p] = s[p]
+        }
+    },
     extJson: function(tag){
         return util.obj.exclude(tag, 'mount', 'off', 'on', 'one', 'opts', 'parent', 'root', 'tags', 'trigger', 'unmount', 'update', '__proto__');
     },
