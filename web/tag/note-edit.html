@@ -127,8 +127,9 @@
                 self.update();
             });
             self.on('comment', function(section){
-                self.currNote = null;
+                self.trigger('initSection');
                 self.currComment = section;
+                self.currNote = null;
                 self.update();
             });
             self.on('noteComment', function(comment){
@@ -147,6 +148,7 @@
             };
             self.selectNote = function(note, tag){
                 self.currNote = note;
+                self.currComment = null;
                 self.update();
             };
             self.selectOperate = function(e){

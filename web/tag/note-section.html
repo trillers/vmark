@@ -28,7 +28,7 @@
             <label>{section.likes.length || 0}</label>
             <input onclick="{comment}" value="评" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
             <label>{section.comments.length || 0}</label>
-            <div class="comments" if="{viewModel.comment.open}">
+            <div class="comments {hide: !viewModel.comment.open}" if="{parent.currComment._id === section._id}">
                 <ul>
                     <li each="{section.comments}">
                         <img riot-src="{initiator.headimgurl}"/>
@@ -46,6 +46,12 @@
         .interact_box{
             line-height: 40px;
             border-top: 1px solid #ddd;
+        }
+        .interact_box .comments{
+            -webkit-transition: all .5s ease-in-out 1s;
+        }
+        .interact_box .comments .hide{
+            height: 0px;
         }
         .interact_box .comments img{
             width: 32px;
@@ -79,7 +85,7 @@
             width:100%;
         }
         .note_section{
-            width: 80%;
+            width: 96%;
             border: 1px solid #ddd;
             margin: 15px auto;
             background: white;
@@ -169,15 +175,6 @@
             })(self.trash);
         };
         self.viewModel = {
-            comment: {
-                open: false,
-                show: function(){
-                    self.viewModel.comment.open = true;
-                },
-                hide: function(){
-                    self.viewModel.comment.open = false;
-                }
-            },
             toggleTxtVoiBtn: {
                 txt: true,
                 voi: false,
@@ -208,8 +205,6 @@
                 }
             }
             self.trash = [];
-            self.viewModel.comment.hide();
-            self.parent.currComment = null;
         };
         self.formatDate = util.formatDateForComments;
         self.on('update', function(){
@@ -350,7 +345,6 @@
             function submitWholeSection(){
                 publishNote.newInvocation(self.section)
                     .onDone(function(data){
-                        console.error(data);
                         try {
                             mixin(self.section, data);
                             if(self.isNew){
@@ -365,8 +359,10 @@
                     .execute();
             }
         };
+        self.parent.on('initSection', function(){
+            self.init();
+        });
         self.comment = function(e){
-            self.viewModel.comment.show();
             self.parent.trigger('comment', self.section);
         };
         self.like = function(e){
