@@ -304,7 +304,11 @@
                 // 录音时间超过一分钟没有停止的时候会执行 complete 回调
                 complete: function (res) {
                     console.error('end');
-                    voice.localId = res.localId;
+                    $('#stop-record').hide();
+                    $('#play-record').show();
+                    $('#confirm-sub-voice').show();
+                    var localId = res.localId;
+                    voice.localId = localId;
                 }
             });
             wx.onVoicePlayEnd({
