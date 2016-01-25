@@ -30,6 +30,7 @@
             <div style="clear: both"></div>
         </div>
         <note-footer if="{Object.keys(currNote).length}"></note-footer>
+        <note-comment if="{currComment}"></note-comment>
         <style scoped>
             :focus{
                 outline: none;
@@ -93,6 +94,7 @@
             self.newSection = {};
             self.newSection.mates = [];
             self.currNote = {};
+            self.currComment = null;
             self.user = __page.user;
             self.user.headimgurl = self.user.headimgurl || '/public/images/def-avatar.png';
             //instance methods
@@ -120,6 +122,19 @@
                     }
                 });
             };
+            self.on('cancel', function(section){
+                self.currNote = null;
+                self.update();
+            });
+            self.on('comment', function(section){
+                self.currNote = null;
+                self.currComment = section;
+                self.update();
+            });
+            self.on('noteComment', function(comment){
+                self.currComment.comments.push(comment);
+                self.update();
+            });
             self.updatePageNote = function(e){
                 var title = e.currentTarget.value;
                 if(!title){

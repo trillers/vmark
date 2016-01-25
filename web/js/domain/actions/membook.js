@@ -22,6 +22,15 @@ domain.action('saveNotesInSection').onExecute(function(data){
 domain.action('publishNote').onExecute(function(data){
     apiFactory.put('/membook/note/publish/_' + data._id).drive(this).send(data);
 });
+domain.action('saveComment').onExecute(function(data){
+    apiFactory.post('/membook/note/comment').drive(this).send(data);
+});
+domain.action('likeNote').onExecute(function(data){
+    apiFactory.post('/membook/note/like').drive(this).send(data);
+});
+domain.action('unlikeNote').onExecute(function(data){
+    apiFactory.post('/membook/note/unlike').drive(this).send(data);
+});
 domain.action('uploadImage').onExecute(function(data){
     apiFactory.post('/qn/image').drive(this).send(data);
 });

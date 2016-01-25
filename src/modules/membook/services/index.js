@@ -5,6 +5,9 @@ var context = require('../../../context/context');
 var NoteService = require('./NoteService');
 module.exports.noteService = Promise.promisifyAll(new NoteService(context));
 
+var InteractService = require('./InteractService');
+module.exports.interactService = Promise.promisifyAll(new InteractService(context));
+
 var WechatSiteUserService = require('./WechatSiteUserService');
 module.exports.wechatSiteUserService = Promise.promisifyAll(new WechatSiteUserService(context));
 

@@ -79,10 +79,13 @@ registry
     .up().item('NoteType', 'NoteType', '笔记类型')
     .addChild('Page', 'pg', '页')
     .addChild('Section','sc', '容器')
-    .addChild('Text','txt', '笔记')
-    .addChild('Image','img', '笔记')
-    .addChild('Voice','voi', '笔记')
-    .addChild('Comment','com', '评论')
+    .addChild('Text','txt', '文本')
+    .addChild('Image','img', '图片')
+    .addChild('Voice','voi', '音频')
+
+    .up().item('InteractType', 'InteractType', '交互类型')
+    .addChild('Comment', 'comment', '评论')
+    .addChild('Like','like', '点赞')
 
     .up().item('NoteStatus', 'NoteStatus', '笔记状态')
     .addChild('Draft','dr', '草稿')

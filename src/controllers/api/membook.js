@@ -3,7 +3,9 @@ var context = require('../../context/context');
 var typeRegistry = require('../../modules/common/models/TypeRegistry');
 var NoteType = typeRegistry.item('NoteType');
 var NoteStatus = typeRegistry.item('NoteStatus');
+var InteractType = typeRegistry.item('InteractType');
 var noteService = context.services.noteService;
+var interactService = context.services.interactService;
 
 module.exports = function (router) {
 
@@ -42,7 +44,6 @@ module.exports = function (router) {
             json.initiator = this.session.auth.user._id;
             this.session['draftId'] = null;
             var note = yield noteService.createAsync(json);
-            console.warn(note);
             this.body = note;
         }catch(e){
             context.logger.error(e);
@@ -53,6 +54,7 @@ module.exports = function (router) {
     router.put('/note/publish/_:id', function* (){
         try{
             var note = this.request.body;
+            console.log(note);
             if(!note.status || note.status === NoteStatus.Draft.value()){
                 note.status = NoteStatus.Publish.value();
                 yield noteService.updateByIdAsync(note._id, note);
@@ -75,7 +77,53 @@ module.exports = function (router) {
                     })
                 });
             }
+            if(typeof note.initiator === 'string'){
+                note.initiator = this.session.auth.user;
+            }
             this.body = note;
+        }catch(e){
+            context.logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.post('/note/like', function*(){
+        try{
+            var noteId = this.request.body.note;
+            var originalInteraction = this.request.body.interaction;
+            originalInteraction.type = InteractType.Like.value();
+            var interaction = yield interactService.createAsync(originalInteraction);
+            var note = yield noteService.likeAsync(noteId, interaction);
+            interaction.initiator = note.initiator;
+            this.body = {like: interaction};
+        }catch(e){
+            context.logger.error(e);
+            this.body = {error: e};
+        }
+    });
+    router.post('/note/comment', function*(){
+        try{
+            var noteId = this.request.body.note;
+            var originalInteraction = this.request.body.interaction;
+            originalInteraction.type = InteractType.Comment.value();
+            var interaction = yield interactService.createAsync(originalInteraction);
+            var note = yield noteService.addCommentAsync(noteId, interaction);
+            interaction.initiator = note.initiator;
+            this.body = {comment: interaction};
+        }catch(e){
+            context.logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.post('/note/unlike', function*(){
+        try{
+            var noteId = this.request.body.note;
+            var userId = this.session.auth.user._id;
+            var interactId = this.request.body.interaction;
+            yield interactService.deleteByIdAsync(interactId);
+            yield noteService.unlikeAsync(noteId, userId);
+            this.body = {success: true};
         }catch(e){
             context.logger.error(e);
             this.body = {error: e};
