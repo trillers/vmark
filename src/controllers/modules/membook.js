@@ -14,6 +14,7 @@ module.exports = function(){
 
     router.get('/new', function *(){
         try{
+            //TODO oauth
             var id = this.session['draftId'];
             if(!id){
                 var pageNote = yield noteServcie.createAsync({});

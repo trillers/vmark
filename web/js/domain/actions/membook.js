@@ -10,7 +10,10 @@ domain.action('saveNote').onExecute(function(data){
 domain.action('saveNoteInSection').onExecute(function(data){
     apiFactory.post('/membook/section/note').drive(this).send(data);
 });
-domain.action('updateNode').onExecute(function(data){
+domain.action('deleteNotes').onExecute(function(data){
+    apiFactory.put('/membook/notes').drive(this).send(data);
+});
+domain.action('updateNote').onExecute(function(data){
     apiFactory.put('/membook/note/_' + data.id).drive(this).send(data);
 });
 domain.action('saveNotesInSection').onExecute(function(data){

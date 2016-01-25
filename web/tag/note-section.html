@@ -1,13 +1,18 @@
 <note-section>
     <div class="note_section" sectionId="{_id}">
         <div style="line-height: 48px;height:48px;border-bottom: 1px solid #ddd;margin-bottom: 10px">
-            <img style="width:32px;height:32px" src="/public/images/111.jpeg"/>&nbsp&nbsp
-            <label>包三哥</label> &nbsp&nbsp
+            <img style="width:32px;height:32px" riot-src="{initiator.headimgurl}"/>&nbsp&nbsp
+            <label>{initiator.nickname}</label> &nbsp&nbsp
             <span if="{section.parentNote && section.status != 'dr'}">{formatDate(new Date(section.crtOn))}</span>
-            <input onclick="{submitSectionNote}" if="{!section.parentNote || (section.parentNote && section.status === 'dr')}" value="提交" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_primary"/>
+            <input onclick="{submitSectionNote}" if="{isOnEdit()}" value="提交" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_primary"/>
+            <input onclick="{clearTrash}" if="{isOnEdit() && trash.length>0}" value="删除" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_warn"/>
+            <input onclick="{editSectionNote}" if="{!isOnEdit() && (initiator._id === parent.user._id)}" value="编辑" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
         </div>
         <div class="noteItems">
             <div each="{section.mates}" noteId="{_id}">
+                <div if="{parent.isOnEdit()}" style="float: left">
+                    <b class="{weui_icon_cancel : parent.inTrash(_id), weui_icon_circle: !parent.inTrash(_id)}" onclick="{parent.pushToTrash}"></b>
+                </div>
                 <div if="{type==='txt'}" class="note_txt">{content}</div>
                 <div if="{type==='img'}" class="note_img"><img style="width: 100%" src="{url}"/></div>
                 <div if="{type==='voi'}" class="note_voi"><input style="width: {seconds + 10}%" type="button" onclick="{parent.playVoice}"><span>{seconds}"</span></div>
@@ -16,8 +21,19 @@
         <div style="position:absolute;top:0;left:0;width:0;height:0;">
             <audio id="voiceMsgPlayer" class="voicePlayer"></audio>
         </div>
+        <div class="interact_box" if="{!isNew}">
+            <input onclick="{like}" value="赞" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
+            <label>{section.likes || 0}</label>
+            <input value="评" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
+            <label>{section.comments}</label>
+        </div>
     </div>
     <style scoped>
+        .interact_box{
+            height: 40px;
+            line-height: 40px;
+            border-top: 1px solid #ddd;
+        }
         .noteItems div{
             line-height: 32px;
         }
@@ -55,43 +71,13 @@
             border-bottom: 1px solid #18c54b;
             font-size: 14px;
         }
-        .recordBtn{
-            position: absolute;
-            bottom: 2px;
-            margin: 0px auto;
-            left: 50px;
-            display: block;
-            width: -webkit-calc(100% - 100px);
-            width: -moz-calc(100% - 100px);
-            width: calc(100% - 100px);
-            border: 1px solid #b2b2b2;
-            height: 32px;
-            color: #888;
-            line-height: 32px;
-            background: none;
-            border-radius: 3px;
-            font-size: 14px;
-        }
-        .toggleBtn_txt_voi{
-            width: 32px;
-            height: 32px;
-            border-radius: 50em;
-            border: 1px solid #ddd;
-        }
-        .menuBtn{
-            width: 32px;
-            height: 32px;
-            border-radius: 50em;
-            border: 1px solid #ddd;
-            display: block;
-            float: right;
-        }
     </style>
     <script>
         //private properties
         var self = this;
         var saveNoteInSection = domain.action('saveNoteInSection');
-        var updateNode = domain.action('updateNode');
+        var updateNote = domain.action('updateNote');
+        var deleteNotes = domain.action('deleteNotes');
         var publishNote = domain.action('publishNote');
         var saveNotesInSection = domain.action('saveNotesInSection');
         var uploadImage = domain.action('uploadImage');
@@ -104,9 +90,24 @@
         };
         //instance properties
         self.section = this.opts.section;
-        self.imagesForCreate = [];
-        self.txtForCreate = {};
-        self.voicesForCreate = {};
+        self.isNew = !!this.opts.new;
+        self.parent = self.isNew ? self.parent : self.parent.parent;
+        self.initiator = self.section.initiator || self.parent.user;
+        self.initiator.headimgurl = self.initiator.headimgurl || 'public/images/def-avatar.png';
+        self.isOnEdit = function(){
+            if(self.isNew){
+                return !self.section.parentNote || (self.section.parentNote && self.section.status === 'dr')
+            }
+            return self.parent.currNote === self.section;
+        };
+        self.trash = [];
+        self.inTrash = function(id){
+            return (function lambda(arr){
+                if(arr[0]._id === id) return true;
+                    if(arr.slice(1).length>0) return lambda(arr.slice(1));
+                        return false;
+            })(self.trash);
+        };
         self.viewModel = {
             toggleTxtVoiBtn: {
                 txt: true,
@@ -132,73 +133,153 @@
         };
         //instance methods
         self.init = function(){
-            self.section = {
-                mates: []
+            if(self.isNew){
+                self.section = {
+                    mates: []
+                }
             }
+            self.trash = [];
         };
         self.formatDate = util.formatDateForComments;
         self.on('update', function(){
             self.section = self.opts.section;
         });
+        self.pushToTrash = function(e){
+            if(self.trash.length<=0){
+                self.trash.push(e.item);
+                return
+            }
+            self.trash.forEach(function(t, index){
+                if(t._id === e.item._id){
+                    self.trash.splice(index, 1);
+                }else if(index === self.trash.length-1){
+                    self.trash.push(e.item);
+                }
+            });
+        };
+        self.editSectionNote = function(e){
+            self.init();
+            self.parent.selectNote(self.section);
+        };
+        self.clearTrash = function(){
+            var ids = self.trash.map(function(note){
+                return note._id;
+            });
+            deleteNotes.newInvocation({
+                        notes: ids
+                    })
+                    .onDone(function(data){
+                        if(data.success){
+                            self.section.mates = self.section.mates.filter(function(note){
+                                for(var i= 0, len=self.trash.length; i<len; i++){
+                                    if(self.trash[i]._id === note._id){
+                                        return false;
+                                    }
+                                }
+                                return true;
+                            });
+                            self.trash = [];
+                            self.update();
+                        }
+                        else{
+                            alert(data.error);
+                        }
+                    })
+                    .execute();
+        };
         self.submitSectionNote = function(e){
-            alert(JSON.stringify(self.section));
             if(!self.section._id
                     || (self.section && self.section.mates && self.section.mates.length <=0)){
                 return;
             }
-            var index = 0;
-            self.section.mates.forEach(function(mate){
-                if(!mate.status || mate.status === 'dr'){
-                    if(mate.type === 'img' && mate.url){
-                        wx.uploadImage({
-                            localId: mate.url,
-                            isShowProgressTips: 0,
-                            success: function(res){
-                                uploadImage.newInvocation({media_id: res.serverId})
-                                    .onDone(function(data){
-                                        mate.url = data.url;
-                                        if(++index === self.section.mates.length){
-                                            submitWholeSection();
-                                        }
-                                    })
-                                    .execute();
-                            }
-                        })
-                    }
-                    else if(mate.type=== 'voi' && mate.url){
-                        wx.uploadVoice({
-                            localId: mate.url,
-                            isShowProgressTips: 0,
-                            success: function(res){
-                                uploadVoice.newInvocation({media_id: res.serverId})
-                                    .onDone(function(data){
-                                        mate.url = data.url;
-                                        if(++index === self.section.mates.length){
-                                            submitWholeSection();
-                                        }
-                                    })
-                                    .execute();
-                            }
-                        })
+            if(self.trash.length>0){
+                var ids = self.trash.map(function(note){
+                    return note._id;
+                });
+                deleteNotes.newInvocation({
+                    notes: ids
+                })
+                .onDone(function(data){
+                    if(data.success){
+                        clearTrashDone();
                     }
                     else{
+                        alert(data.error);
+                    }
+                })
+                .execute();
+            }else{
+                clearTrashDone();
+            }
+            function clearTrashDone(){
+                self.section.mates = self.section.mates.filter(function(note){
+                    for(var i= 0, len=self.trash.length; i<len; i++){
+                        if(self.trash[i]._id === note._id){
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+                if(self.section.mates.length<=0){
+                    self.init();
+                    self.parent.trigger('noteSubmit', self.section);
+                    return;
+                }
+                var index = 0;
+                self.section.mates.forEach(function(mate){
+                    if(!mate.status || mate.status === 'dr'){
+                        if(mate.type === 'img' && mate.url){
+                            wx.uploadImage({
+                                localId: mate.url,
+                                isShowProgressTips: 0,
+                                success: function(res){
+                                    uploadImage.newInvocation({media_id: res.serverId})
+                                        .onDone(function(data){
+                                            mate.url = data.url;
+                                            if(++index === self.section.mates.length){
+                                                submitWholeSection();
+                                            }
+                                        })
+                                        .execute();
+                                }
+                            })
+                        }
+                        else if(mate.type=== 'voi' && mate.url){
+                            wx.uploadVoice({
+                                localId: mate.url,
+                                isShowProgressTips: 0,
+                                success: function(res){
+                                    uploadVoice.newInvocation({media_id: res.serverId})
+                                        .onDone(function(data){
+                                            mate.url = data.url;
+                                            if(++index === self.section.mates.length){
+                                                submitWholeSection();
+                                            }
+                                        })
+                                        .execute();
+                                }
+                            })
+                        }
+                        else{
+                            if(++index === self.section.mates.length){
+                                submitWholeSection();
+                            }
+                        }
+                    }else{
                         if(++index === self.section.mates.length){
                             submitWholeSection();
                         }
                     }
-                }else{
-                    if(++index === self.section.mates.length){
-                        submitWholeSection();
-                    }
-                }
-            });
+                });
+            }
             function submitWholeSection(){
                 publishNote.newInvocation(self.section)
                     .onDone(function(data){
                         try {
                             mixin(self.section, data);
-                            self.parent.pageNote.mates.push(self.section);
-                            self.parent.viewModel.doView();
+                            if(self.isNew){
+                                self.parent.pageNote.mates.push(self.section);
+                            }
                             self.init();
                             self.parent.trigger('noteSubmit', self.section);
                         } catch (e){
@@ -207,7 +288,11 @@
                     })
                     .execute();
             }
-        }
+        };
+        self.like = function(e){
+            !self.section.likes && (self.section.likes = 0);
+            self.section.likes+=1;
+        };
         var playing = false, voiceUrl = '', playEndTimeout;
         self.playVoice = function (e) {
             debugger;

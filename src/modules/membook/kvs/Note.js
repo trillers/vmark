@@ -31,4 +31,18 @@ Kv.prototype.saveById = function(json, callback){
     });
 };
 
+Kv.prototype.deleteByIds = function(ids, callback){
+    var redis = this.context.redis.main;
+    var keys = ids.map(function(id){
+        return idToObjKey(id)
+    });
+    redis.del(keys, function(err, result){
+        cbUtil.logCallback(
+            err,
+            'Fail to delete notes by ids ' + err,
+            'Succeed to delete notes by ids');
+        cbUtil.handleSingleValue(callback, err, result);
+    });
+};
+
 module.exports = Kv;

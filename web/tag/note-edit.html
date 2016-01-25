@@ -7,17 +7,16 @@
                 <hr style="margin-bottom: 10px"/>
             </div>
             <div>
-                <img style="width:32px;height:32px" src="/public/images/111.jpeg"/>
-                <label>包三哥</label>
+                <img style="width:32px;height:32px" riot-src="{user.headimgurl}"/>
+                <label>{user.nickname}</label>
                 <span>{formatDate(new Date())}</span>
             </div>
             <div>
                 <button onclick={goToAuthorize}>去授权</button>
             </div>
-
             <div>
-                <note-section each="{pageNote.mates}" section="{this}"></note-section>
-                <note-section section="{newSection}" if="{viewModel.EDIT}"></note-section>
+                <note-section each="{item in pageNote.mates}" section="{item}"></note-section>
+                <note-section if="{currNote === newSection}" section="{newSection}" new="true"></note-section>
             </div>
             <ul class="btn-group" onclick="{selectOperate}">
                 <li><a class="weui_btn weui_btn_mini weui_btn_primary">文字</a></li>
@@ -65,8 +64,9 @@
             "use strict";
             //private properties
             var self = nest.presentable(this);
+            var url = window.location.href;
             var loadNote = domain.action('loadNote');
-            var updateNote = domain.action('updateNode');
+            var updateNote = domain.action('updateNote');
             var onLoadNote = function(data){
                 if(data){
                     self.pageNote = data;
@@ -80,7 +80,6 @@
                         if(draftSections && draftSections.length){
                             self.pageNote.mates = util.arr.rest(self.pageNote.mates, draftSections);
                             self.newSection = draftSections[0];
-                            self.viewModel.doEdit();
                             self.selectNote(self.newSection);
                         }
                     }
@@ -94,18 +93,8 @@
             self.newSection = {};
             self.newSection.mates = [];
             self.currNote = {};
-            self.viewModel = {
-                'EDIT': false,
-                'VIEW': false,
-                doEdit: function(){
-                    self.viewModel.EDIT = true;
-                    self.viewModel.VIEW = false;
-                },
-                doView: function(){
-                    self.viewModel.EDIT = false;
-                    self.viewModel.VIEW = true;
-                }
-            };
+            self.user = __page.user;
+            self.user.headimgurl = self.user.headimgurl || '/public/images/def-avatar.png';
             //instance methods
             self.formatDate = function(date){
                 return new Date(date).toLocaleString();
@@ -120,9 +109,9 @@
                 };
                 self.titleInput.value = '';
                 wx.onMenuShareTimeline({
-                    title: '测试分享主题',
-                    link: getLink(),
-                    imgUrl: '',
+                    title: self.pageNote.title || '记易',
+                    link: url,
+                    imgUrl: '/public/images/share.jpeg',
                     success: function(){
 
                     },
@@ -130,8 +119,6 @@
 
                     }
                 });
-                function getLink(){
-                }
             };
             self.updatePageNote = function(e){
                 var title = e.currentTarget.value;
@@ -145,13 +132,12 @@
             };
             self.selectNote = function(note, tag){
                 self.currNote = note;
+                self.update();
             };
             self.selectOperate = function(e){
                 if(e.target.nodeName === 'A'){
                     var liNode = e.target;
-                    self.viewModel.doEdit();
                     self.selectNote(self.newSection);
-                    self.update();
                 }
             };
             self.on('noteSubmit', function(){
