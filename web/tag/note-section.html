@@ -28,7 +28,7 @@
             <label>{section.likes.length || 0}</label>
             <input onclick="{comment}" value="评" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
             <label>{section.comments.length || 0}</label>
-            <div class="comments {hide: !viewModel.comment.open}" if="{parent.currComment._id === section._id}">
+            <div class="comments" if="{parent.currComment._id === section._id}">
                 <ul>
                     <li each="{section.comments}">
                         <img riot-src="{initiator.headimgurl}"/>
@@ -46,12 +46,6 @@
         .interact_box{
             line-height: 40px;
             border-top: 1px solid #ddd;
-        }
-        .interact_box .comments{
-            -webkit-transition: all .5s ease-in-out 1s;
-        }
-        .interact_box .comments .hide{
-            height: 0px;
         }
         .interact_box .comments img{
             width: 32px;
@@ -85,7 +79,7 @@
             width:100%;
         }
         .note_section{
-            width: 96%;
+            width: 94%;
             border: 1px solid #ddd;
             margin: 15px auto;
             background: white;
