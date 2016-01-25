@@ -20,6 +20,7 @@ Service.prototype.signupWithBaseInfo = function(openid, callback){
     var userService = this.context.services.userService;
     var openidToIdKv = this.context.kvs.openidToId;
     var atToOpenidKv = this.context.kvs.atToOpenid;
+    var otToOpenidKv = this.context.kvs.otToOpenid;
 
     co(function*(){
         var wechatSiteUser = null;
@@ -53,10 +54,11 @@ Service.prototype.signupWithBaseInfo = function(openid, callback){
             /*
              * Link wechat site user openid to user id
              * Link wechat web agent token to openid
+             * Link wechat web open token to openid
              */
-            var at = wechatSiteUser.at;
             yield openidToIdKv.setAsync(openid, userId);
-            yield atToOpenidKv.setAsync(at, openid);
+            yield atToOpenidKv.setAsync(wechatSiteUser.at, openid);
+            yield otToOpenidKv.setAsync(wechatSiteUser.ot, openid);
 
             logger.info('Succeed to sign up with base info: ' + JSON.stringify(wechatSiteUser));
             if(callback) callback(null, {
@@ -82,6 +84,8 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
     var userService = this.context.services.userService;
     var openidToIdKv = this.context.kvs.openidToId;
     var atToOpenidKv = this.context.kvs.atToOpenid;
+    var otToOpenidKv = this.context.kvs.otToOpenid;
+
     co(function*(){
         var openid = userInfo.openid;
         var wechatSiteUser = null;
@@ -138,10 +142,11 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
             /*
              * Link wechat site user openid to user id
              * Link wechat web agent token to openid
+             * Link wechat web open token to openid
              */
-            var at = wechatSiteUser.at;
             yield openidToIdKv.setAsync(openid, userId);
-            yield atToOpenidKv.setAsync(at, openid);
+            yield atToOpenidKv.setAsync(wechatSiteUser.at, openid);
+            yield otToOpenidKv.setAsync(wechatSiteUser.ot, openid);
 
             if(callback) callback(null, {
                 user: user,

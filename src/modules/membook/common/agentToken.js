@@ -1,10 +1,10 @@
 var crypto = require('crypto');
 var settings = require('vmark-settings');
 var salt = settings.security.salt;
-var CookieField = require('./common/CookieField');
-var logger = require('../../app/logging').logger;
+var CookieField = require('./../../common/web/CookieField');
+var logger = require('../../../app/logging').logger;
 
-var agentToken = new CookieField({
+var field = new CookieField({
     field: 'wechat agent token'
     , key: 'wxat'
     , options: {
@@ -12,10 +12,10 @@ var agentToken = new CookieField({
     }
 });
 
-agentToken.generate = function(openid){
+field.generate = function(openid){
     var token = crypto.createHash('sha1').update(openid).update(salt).digest('hex');
     logger.debug('Generate wechat agent token ' + token + ' for openid ' + openid);
     return token;
 };
 
-module.exports = agentToken;
+module.exports = field;

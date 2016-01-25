@@ -4,7 +4,7 @@ var cbUtil = require('../../../../framework/callback');
 var WechatMediaUserType = require('../../../common/models/TypeRegistry').item('WechatMediaUserType');
 var WechatMediaUserService = require('../../../media/services/WechatMediaUserService');
 var Kv = require('../kvs/PlatformWechatSiteUser');
-var agentToken = require('../../../auth/agentToken');
+var agentToken = require('../../../membook/common/agentToken');
 
 var Service = function(context){
     this.context = context;
