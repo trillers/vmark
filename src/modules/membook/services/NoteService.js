@@ -58,5 +58,9 @@ Service.prototype.updateById =function(id, json, callback){
     });
 };
 
+Service.prototype.loadByUserId = function(id, callback){
+    var Note = this.context.models.Note;
+    Note.find({initiator: id}, null, {lean: true}).exec(callback);
+};
 
 module.exports = Service;

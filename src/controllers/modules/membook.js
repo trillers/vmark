@@ -10,7 +10,7 @@ module.exports = function(){
     var router = new Router();
     router.prefix('/note');
     require('../../app/routes-spa')(router);
-    //router.use(authFilter); //add auth Filter
+    router.use(authFilter); //add auth Filter
 
     router.get('/new', function *(){
         try{
@@ -29,6 +29,16 @@ module.exports = function(){
     router.get('/_:id', function *(){
         var id = this.params.id;
         yield this.render('note', {id: id});
+    });
+
+    router.get('/list', function *(){
+        var auth = this.session && this.session['auth'];
+        if(auth && auth.user && auth.user.id){
+            var noteList = yield noteServcie.loadByUserIdAsync(auth.user.id)
+            yield this.render('note-list', {noteList: noteList});
+        }else{
+            //TODO
+        }
     });
 
     return router.routes();
