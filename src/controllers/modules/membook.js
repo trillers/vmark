@@ -17,6 +17,10 @@ module.exports = function(){
     require('../../app/routes-spa')(router);
     //router.use(authFilter); //add auth Filter
 
+    router.get('/welcome', function *(){
+        yield this.render('/welcome', {});
+    });
+
     router.get('/new', needSubscriptionFilter, function *(){
         try{
             var id = this.session['draftId'];

@@ -17,7 +17,7 @@ var generate = function(level){
         }
 
         if(level==3){//guide user to subscribe wechat site
-            yield this.redirect('/welcome');
+            this.redirect('/note/welcome');
             return;
         }
 
