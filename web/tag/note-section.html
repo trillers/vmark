@@ -9,7 +9,7 @@
             <input onclick="{editSectionNote}" if="{!isOnEdit() && (initiator._id === parent.user._id)}" value="编辑" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
         </div>
         <div class="noteItems">
-            <div each="{section.mates}" noteId="{_id}">
+            <div each="{section.mates}" noteId="{_id}" style="margin-top: 2px">
                 <div if="{parent.isOnEdit()}" style="float: left">
                     <b class="{weui_icon_cancel : parent.inTrash(_id), weui_icon_circle: !parent.inTrash(_id)}" onclick="{parent.pushToTrash}"></b>
                 </div>
