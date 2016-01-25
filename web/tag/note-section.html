@@ -5,6 +5,7 @@
             <label>{initiator.nickname}</label> &nbsp&nbsp
             <span if="{section.parentNote && section.status != 'dr'}">{formatDate(new Date(section.crtOn))}</span>
             <input onclick="{submitSectionNote}" if="{isOnEdit()}" value="提交" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_primary"/>
+            <input onclick="{clearTrash}" if="{isOnEdit() && trash.length>0}" value="删除" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_warn"/>
             <input onclick="{editSectionNote}" if="{!isOnEdit() && (initiator._id === parent.user._id)}" value="编辑" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
         </div>
         <div class="noteItems">
@@ -159,6 +160,32 @@
         self.editSectionNote = function(e){
             self.init();
             self.parent.selectNote(self.section);
+        };
+        self.clearTrash = function(){
+            var ids = self.trash.map(function(note){
+                return note._id;
+            });
+            deleteNotes.newInvocation({
+                        notes: ids
+                    })
+                    .onDone(function(data){
+                        if(data.success){
+                            self.section.mates = self.section.mates.filter(function(note){
+                                for(var i= 0, len=self.trash.length; i<len; i++){
+                                    if(self.trash[i]._id === note._id){
+                                        return false;
+                                    }
+                                }
+                                return true;
+                            });
+                            self.trash = [];
+                            self.update();
+                        }
+                        else{
+                            alert(data.error);
+                        }
+                    })
+                    .execute();
         };
         self.submitSectionNote = function(e){
             if(!self.section._id
