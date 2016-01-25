@@ -17,4 +17,7 @@ module.exports.openidToId = Promise.promisifyAll(new OpenidToId(context));
 var AtToOpenid = require('./AtToOpenid');
 module.exports.atToOpenid = Promise.promisifyAll(new AtToOpenid(context));
 
+var OtToOpenid = require('./OtToOpenid');
+module.exports.otToOpenid = Promise.promisifyAll(new OtToOpenid(context));
+
 u.extend(context.kvs, module.exports);
