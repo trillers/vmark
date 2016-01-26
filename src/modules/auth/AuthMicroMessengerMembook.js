@@ -54,7 +54,7 @@ Authenticator.prototype = {
                 }
                 else if(level==3){
                     //TODO  generate qr and link url and mark open token
-                    yield this.redirect('/note/welcome');
+                    yield ctx.redirect('/note/welcome');
                 }
                 else if(level==2){
                     oauthSignupWithUserInfo.authorize(ctx);
@@ -65,7 +65,7 @@ Authenticator.prototype = {
             }catch(err){
                 logger.error('Fail to sign in with openid: ' + err);
                 logger.error(err.stack);
-                yield this.render('/error', {error: err}); //TODO
+                yield ctx.render('/error', {error: err}); //TODO
             }
         }
     }

@@ -95,6 +95,7 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
         var user = null;
         var userId = null;
         var status = UserStatus.Registered.value();
+        var statusVerfied = UserStatus.Verified.value();
 
         try{
             wechatSiteUser = yield wechatSiteUserKv.loadByOpenidAsync(openid);
@@ -104,7 +105,7 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
              * Ensure user created or updated
              */
             if(user){
-                user.status = status;
+                statusVerfied!=user.status && (user.status = status);
                 user.nickname = userInfo.nickname;
                 user.headimgurl = userInfo.headimgurl;
                 user.sex = userInfo.sex;
@@ -128,17 +129,17 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
              * Ensure wechat site user created or updated
              */
             if(wechatSiteUser){
-                helper.copyUserInfo(wechatSiteUser, userInfo);
                 wechatSiteUser.user = userId;
-                wechatSiteUser.status = status;
+                statusVerfied!=wechatSiteUser.status && (wechatSiteUser.status = status);
+                helper.copyUserInfo(wechatSiteUser, userInfo);
                 wechatSiteUser._id && (delete wechatSiteUser._id);
                 wechatSiteUser = yield wechatSiteUserService.updateByOpenidAsync(openid, wechatSiteUser);
             }
             else{
                 var createWechatSiteUserJson = {};
-                helper.copyUserInfo(createWechatSiteUserJson, userInfo);
                 createWechatSiteUserJson.user = userId;
                 createWechatSiteUserJson.status = status;
+                helper.copyUserInfo(createWechatSiteUserJson, userInfo);
                 wechatSiteUser = yield wechatSiteUserService.createAsync(createWechatSiteUserJson);
             }
 
