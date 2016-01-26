@@ -142,12 +142,6 @@
         var uploadVoice = domain.action('uploadVoice');
         var likeNote = domain.action('likeNote');
         var unlikeNote = domain.action('unlikeNote');
-        //private methods
-        var mixin = function(t, s){
-            for(var p in s){
-                t[p] = s[p]
-            }
-        };
         //instance properties
         self.section = this.opts.section;
         self.isNew = !!this.opts.new;
@@ -340,7 +334,7 @@
                 publishNote.newInvocation(self.section)
                     .onDone(function(data){
                         try {
-                            mixin(self.section, data);
+                            util.mixin(self.section, data);
                             if(self.isNew){
                                 self.parent.pageNote.mates.push(self.section);
                             }
@@ -353,9 +347,6 @@
                     .execute();
             }
         };
-        self.parent.on('initSection', function(){
-            self.init();
-        });
         self.comment = function(e){
             self.parent.trigger('comment', self.section);
         };

@@ -22,6 +22,7 @@ var processor = function* (next) {
     this.state.__page.url = this.request.href;
     this.state.__page.baseUrl = this.request.origin;
     this.state.__page.user = this.session.auth ? this.session.auth.user : {};
+    this.state.__page.wechatSiteUser = this.session.auth ? this.session.auth.wechatSiteUser : {};
     this.state.__page.bot = this.session.auth ? this.session.auth.bot : {};
     this.state.__page.tenantId = this.session.auth ? this.session.auth.tenantId : '';
     yield next;

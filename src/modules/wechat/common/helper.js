@@ -48,19 +48,33 @@ helper.copyLocation = function(dest, src){
 };
 
 helper.copyUserInfo = function(dest, src){
-    dest.openid   = src.openid;
+    dest.openid     = src.openid;
+    dest.unionid    = src.unionid;
     dest.nickname   = src.nickname;
     dest.headimgurl = src.headimgurl;
     dest.sex        = src.sex;
 
     helper.copyLocation(dest, src);
-    src.language && (dest.language = src.language);
-    src.remark   && (dest.remark = src.remark);
+};
+
+helper.copySubscriptionOnly = function(dest, src){
+    dest.subscribe = src.subscribe;
+    if(src.subscribe){
+        dest.subscribe_time = new Date(src.subscribe_time*1000);
+        dest.language       = src.language;
+        dest.remark         = src.remark;
+        dest.groupid        = src.groupid;
+    }
+};
+
+helper.copySubscription = function(dest, src){
+    helper.copyUserInfo(dest, src);
+    helper.copySubscriptionOnly(dest, src);
 };
 
 helper.getUserInfo = function (api, openid, language, callback) {
     var input = {openid: openid, lang: language};
-    api.getUser(input, function (err, userInfo) {
+    api.api.getUser(input, function (err, userInfo) {
         if (err) {
             if (callback) callback(err);
         }

@@ -21,9 +21,8 @@ module.exports = function(){
         yield this.render('/welcome', {});
     });
 
-    router.get('/new', needSubscriptionFilter, function *(){
+    router.get('/new', needBaseInfoFilter, needSubscriptionFilter, function *(){
         try{
-            //TODO oauth
             var id = this.session['draftId'];
             if(!id){
                 var pageNote = {};
@@ -40,12 +39,12 @@ module.exports = function(){
 
     });
 
-    router.get('/_:id', function *(){
+    router.get('/_:id', needBaseInfoFilter, function *(){
         var id = this.params.id;
         yield this.render('note', {id: id});
     });
 
-    router.get('/mine', function *(){
+    router.get('/mine', needBaseInfoFilter, needSubscriptionFilter, function *(){
         var auth = this.session && this.session['auth'];
         if(auth && auth.user && auth.user.id){
             var noteList = yield noteServcie.loadByUserIdAsync(auth.user.id)

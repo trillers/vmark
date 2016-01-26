@@ -11,8 +11,8 @@ var Model = function(domainBuilder){
             user:           {type: String, ref: 'User', required: true}
             , status:       {type: String, enum: UserStatus.valueList(), default: UserStatus.Anonymous.value(), required: true}
             , openid:       {type: String, required: true}
+            , unionid:       {type: String, required: false}
             , nickname:     {type: String, required: true}
-            , remark:       {type: String}
             , headimgurl:   {type: String}
             , sex:          {type: Number, default: 0} //0: unknown, 1: male, 2: female
 
@@ -22,9 +22,11 @@ var Model = function(domainBuilder){
             , district:     {type: String}
 
             //公众号特有
-            , language:         {type: String, default: 'zh_CN'}    //公众号 - 使用语言
             , subscribe:        {type: Number, default: 0}          //公众号 - 用户是否关注
             , subscribe_time:   {type: Date}                        //公众号 - 用户最近一次关注时间
+            , language:         {type: String, default: 'zh_CN'}    //公众号 - 使用语言
+            , remark:           {type: String}                      //公众号 - 使用语言
+            , groupid:          {type: String}                      //公众号 - 使用语言
 
             //agent token for 公众号 - 微站, 参见 agentToken.generate()
             , at:     {type: String}

@@ -208,11 +208,6 @@
         var self = this;
         var saveNotesInSection = domain.action('saveNotesInSection');
         var saveNoteInSection = domain.action('saveNoteInSection');
-        var mixin = function(t, s){
-            for(var p in s){
-                t[p] = s[p]
-            }
-        };
         self.viewModel = {
             toggleTxtVoiBtn: {
                 txt: true,
@@ -261,7 +256,7 @@
                 parentNote: self.parent.currNote._id || '',
                 pageNoteId: self.parent.pageNote._id
             }).onDone(function(data){
-                mixin(self.parent.currNote, data.sectionNote);
+                util.mixin(self.parent.currNote, data.sectionNote);
                 self.parent.currNote.mates.push(data.note);
                 self.txtInput.value = '';
                 self.viewModel.input.doWait();
@@ -291,7 +286,7 @@
                                 self.parent.currNote.mates=[];
                             }
                             if(data.parentNote){
-                                mixin(self.parent.currNote, data.parentNote);
+                                util.mixin(self.parent.currNote, data.parentNote);
                             }
                             self.parent.currNote.mates = self.parent.currNote.mates.concat(data.mates);
                             self.parent.trigger('noteSave', data);
@@ -431,7 +426,7 @@
             });
             saveNoteInSection.newInvocation(note).onDone(function (data) {
                 if (data) {
-                    mixin(self.parent.currNote, data.sectionNote);
+                    util.mixin(self.parent.currNote, data.sectionNote);
                     self.parent.currNote.mates.push(data.note);
                     self.parent.trigger('noteSave', data.note);
                 }

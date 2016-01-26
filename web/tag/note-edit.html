@@ -127,7 +127,6 @@
                 self.update();
             });
             self.on('comment', function(section){
-                self.trigger('initSection');
                 self.currComment = section;
                 self.currNote = null;
                 self.update();
