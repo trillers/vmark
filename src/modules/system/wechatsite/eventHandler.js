@@ -14,9 +14,6 @@ module.exports = function (emitter) {
     });
 
     var signup = function signup(event, context){
-        console.log('sign up handler');
-        console.log(context);
-
         co(function*() {
             var openid = context.weixin.FromUserName;
             var auth = null;

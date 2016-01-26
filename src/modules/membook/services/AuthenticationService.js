@@ -185,7 +185,6 @@ Service.prototype.signupOnSubscription = function(openid, callback){
         var status = UserStatus.Verified.value();
 
         try{
-
             wechatSiteUser = yield wechatSiteUserKv.loadByOpenidAsync(openid);
             user = wechatSiteUser && (yield userKv.loadByIdAsync(wechatSiteUser.user));
 

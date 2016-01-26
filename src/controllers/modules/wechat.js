@@ -3,8 +3,6 @@ var Frankon = require('../../framework/frankon');
 var Router = require('koa-router');
 var wechat = require('co-wechat');
 var productionMode = settings.env.mode == 'production';
-var logger = require('../../app/logging').logger;
-var request = require('request');
 var tokenConfig = productionMode ? {
     token: settings.wechat.token,
     appid: settings.wechat.appKey,
@@ -18,7 +16,6 @@ module.exports = function() {
 
     frankon.use(require('../../modules/wechat/middlewares/user-heartbeat'));
     frankon.use(function* (next) {
-        //oldEmitter.relay(this);
         emitter.relay(this);
         this.body = '';
     });
