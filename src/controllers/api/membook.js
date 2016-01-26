@@ -13,7 +13,6 @@ module.exports = function (router) {
         try{
             var openid = this.query.openid;
             var auth = yield authenticationService.signupOnSubscriptionAsync(openid);
-console.log(auth);
             this.session = null;
             this.body = {ok: true};
         }catch(e){

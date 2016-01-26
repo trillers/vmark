@@ -19,8 +19,8 @@ module.exports = function (emitter) {
             var auth = null;
             try{
                 auth = yield authenticationService.signupWithSubscriptionAsync(openid);
-console.warn(auth);
                 logger.info('Sign up with subscription for openid ' + openid);
+                logger.debug(auth);
             }catch(err){
                 logger.error('Fail to sign up with subscription: ' + err);
             }

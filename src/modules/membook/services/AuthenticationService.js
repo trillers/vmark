@@ -1,6 +1,8 @@
 var co = require('co');
 var helper = require('../../wechat/common/helper');
-//var wechatApi = require('../../wechat/common/api');
+var languages = require('../../wechat/common/oauth').languages;
+var wechatApi = require('../../wechat/common/api');
+
 var typeRegistry = require('../../common/models/TypeRegistry')
 var UserStatus = typeRegistry.item('UserStatus');
 var Service = function(context){
@@ -187,9 +189,7 @@ Service.prototype.signupOnSubscription = function(openid, callback){
             user = wechatSiteUser && (yield userKv.loadByIdAsync(wechatSiteUser.user));
 
             //get user info from subscription
-            if(!wechatSiteUser || wechatSiteUser.status != status){
-                userInfo = yield helper.getUserInfoAsync(openid);
-            }
+            userInfo = yield helper.getUserInfoAsync(wechatApi, openid, languages.zh_CN);
 
             /*
              * Ensure user created or updated

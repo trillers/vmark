@@ -60,8 +60,6 @@ helper.copyUserInfo = function(dest, src){
 helper.copySubscriptionOnly = function(dest, src){
     dest.subscribe = src.subscribe;
     if(src.subscribe){
-        console.warn('subscribe_time');
-        console.warn(src.subscribe_time);
         dest.subscribe_time = new Date(src.subscribe_time*1000);
         dest.language       = src.language;
         dest.remark         = src.remark;
@@ -76,7 +74,7 @@ helper.copySubscription = function(dest, src){
 
 helper.getUserInfo = function (api, openid, language, callback) {
     var input = {openid: openid, lang: language};
-    api.getUser(input, function (err, userInfo) {
+    api.api.getUser(input, function (err, userInfo) {
         if (err) {
             if (callback) callback(err);
         }
