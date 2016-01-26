@@ -13,7 +13,8 @@ module.exports = function (emitter) {
         });
     });
 
-    emitter.subscribe(function(event, context){
+
+    var signup = function(event, context){
         co(function*() {
             var openid = context.weixin.FromUserName;
             var auth = null;
@@ -25,6 +26,8 @@ module.exports = function (emitter) {
                 logger.error('Fail to sign up with subscription: ' + err);
             }
         });
+    };
+    emitter.subscribe(signup);
+    emitter.qr(signup);
 
-    });
 };
