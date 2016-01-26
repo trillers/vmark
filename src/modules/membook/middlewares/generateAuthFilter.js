@@ -17,10 +17,10 @@ var generate = function(level){
             return;
         }
 
-        if(level==3){//guide user to subscribe wechat site
-            this.redirect('/note/welcome');
-            return;
-        }
+        //if(level==3){//guide user to subscribe wechat site
+        //    this.redirect('/note/welcome');
+        //    return;
+        //}
 
         authentication.saveReturnUrl(this);
         var browser = this.basics.browser;
