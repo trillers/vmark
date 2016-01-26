@@ -19,7 +19,8 @@ module.exports = function (emitter) {
             var openid = context.weixin.FromUserName;
             var auth = null;
             try{
-                auth = yield authenticationService.signupWithSubscriptionAsync(openid);
+                auth = yield authenticationService.signupOnSubscriptionAsync(openid);
+                context.wxsession = auth;
                 logger.info('Sign up with subscription for openid ' + openid);
                 logger.debug(auth);
             }catch(err){

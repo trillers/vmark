@@ -35,7 +35,8 @@ Authenticator.prototype = {
                 }
 
                 var auth = yield authenticationService.signinWithOpenidAsync(openid);
-                logger.debug(auth);
+                console.log('signin auth');
+                console.log(auth);
                 if(!auth){
                     agentToken.delete(ctx);
                     yield this.render('/login-feedback', auth);

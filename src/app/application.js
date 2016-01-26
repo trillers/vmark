@@ -12,7 +12,7 @@ app.proxy = true;
 app.port =  process.env.PORT || settings.env.port;
 app.bindip =  process.env.BINDIP || settings.env.bindIp;
 
-app.use(logging.generatorFunc);
+//app.use(logging.generatorFunc);
 app.use(views(path.join(__dirname, '../views'), { map: { html: 'swig' }}));
 app.use(koaBody({multipart:true, formidable:{keepExtensions: true, uploadDir: path.join(__dirname, '../../public/uploads')}}));
 
