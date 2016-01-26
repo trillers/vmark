@@ -1,0 +1,123 @@
+<note-comment>
+    <div class="feature_area">
+        <div>
+            <div class="txt_area">
+                <input oninput="{noteEditInput}" name="txtInput" placeholder="点击输入文字" value=""/>
+            </div>
+            <div class="toggle_menu">
+                <div onclick="{addComment}" class="send_btn" if="{viewModel.input.editTxt}">发送</div>
+            </div>
+        </div>
+        <div style="clear: both"></div>
+    </div>
+    <style scoped>
+        .feature_area{
+            height: 48px;
+            background: white;
+            width: 100%;
+            overflow: hidden;
+        }
+        .feature_area >div{
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .feature_area >div >div{
+            height: 32px;
+            float:left;
+        }
+        .feature_area .toggle_txt_voi{
+            width:15%;
+        }
+        .feature_area .txt_area{
+            width: 70%;
+        }
+        .feature_area .voi_area{
+            width: 70%;
+        }
+        .feature_area .voi_area input{
+            width: 100%;
+            height: 32px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            border-radius: 5px;
+            text-align: center;
+            color: #ccc;
+        }
+        .feature_area .txt_area input{
+            width: 100%;
+            height: 32px;
+            box-sizing: border-box;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            font-size: 16px;
+        }
+        .feature_area .toggle_menu{
+            width: 15%;
+        }
+        .feature_area .send_btn{
+            margin: 0px auto;
+            width: 60px;
+            height: 32px;
+            line-height: 32px;
+            border: 1px solid #ccc;
+            box-sizing:border-box;
+            border-radius: 5px;
+            background: #18c54b;
+            border: none;
+            text-align: center;
+            color: white;
+        }
+        .feature_area .toggle_btn{
+            margin: 0px auto;
+            width: 32px;
+            height: 32px;
+            border-radius: 50em;
+            border: 1px solid #ccc;
+            box-sizing:border-box;
+        }
+    </style>
+    <script>
+        var self = this;
+        var saveComment = domain.action('saveComment');
+        self.viewModel = {
+            input: {
+                wait: true,
+                editTxt: false,
+                doWait: function(){
+                    this.wait = true;
+                    this.editTxt = false;
+                },
+                doEdit: function(){
+                    this.wait = false;
+                    this.editTxt = true;
+                }
+            }
+        };
+        self.addComment = function(e){
+            if(self.txtInput.value.trim() === ''){
+                return;
+            }
+            saveComment.newInvocation({
+                note: self.parent.currComment._id,
+                interaction: {
+                    initiator: self.parent.user._id,
+                    content: self.txtInput.value.trim()
+                }
+            }).onDone(function(data){
+                self.txtInput.value = '';
+                self.viewModel.input.doWait();
+                self.parent.trigger('noteComment', data.comment);
+            }).execute();
+        };
+        self.noteEditInput = function(e){
+            var txtVal = e.currentTarget.value.trim();
+            if(txtVal){
+                self.viewModel.input.doEdit();
+            }else{
+                self.viewModel.input.doWait();
+            }
+        };
+
+    </script>
+</note-comment>

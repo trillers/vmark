@@ -17,6 +17,10 @@ var Model = function(domainBuilder){
 
             content: {type: String},
 
+            likes: [{type: String, ref: 'Interaction'}],
+
+            comments: [{type: String, ref: 'Interaction'}],
+
             initiator: {type: String, ref: 'User'},
 
             parentNote: {type: String, ref: 'Note', required: true, default: 'root'},
