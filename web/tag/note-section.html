@@ -353,9 +353,6 @@
                     .execute();
             }
         };
-        self.parent.on('initSection', function(){
-            self.init();
-        });
         self.comment = function(e){
             self.parent.trigger('comment', self.section);
         };
