@@ -32,6 +32,7 @@ module.exports = function (emitter) {
     };
     emitter.subscribe(signup);
     emitter.qr(signup);
+    emitter.SCAN(signup);
 
     console.log(emitter);
 };

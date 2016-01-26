@@ -100,6 +100,7 @@ WechatEmitter.prototype.bindSite = function(site) {
 WechatEmitter.prototype.relay = function(context){
     var msg = context.weixin;
     if(this.decorator) this.decorator.decorate(context);
+console.log(context);
 
     /*
      * emit event for general messages here
@@ -120,6 +121,7 @@ WechatEmitter.prototype.relay = function(context){
          */
         if(EVENT_TYPES[eventType]){
             if('subscribe' == eventType && msg.EventKey){
+                console.log(msg);
                 var index = msg.EventKey.indexOf("_") + 1;
                 msg.SceneId = msg.EventKey.substring(index);
                 this.emitter.emit('qr', 'qr', context);
@@ -127,12 +129,14 @@ WechatEmitter.prototype.relay = function(context){
                 this.emitter.emit(customEventType, customEventType, context);
             }
             else if('SCAN' == eventType && msg.EventKey) {
+                console.log(msg);
                 msg.SceneId = msg.EventKey;
                 this.emitter.emit('qr', 'qr', context);
                 var customEventType = 'qrSCAN';
                 this.emitter.emit(customEventType, customEventType, context);
             }
             else{
+                console.log(msg);
                 this.emitter.emit(eventType, eventType, context);
             }
         }
