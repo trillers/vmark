@@ -54,6 +54,7 @@ Authenticator.prototype = {
                 }
                 else if(level==3){
                     //TODO  generate qr and link url and mark open token
+                    authentication.clear(ctx);
                     ctx.redirect('/note/welcome');
                 }
                 else if(level==2){
