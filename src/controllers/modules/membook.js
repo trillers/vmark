@@ -32,7 +32,7 @@ module.exports = function(){
         yield this.render('note', {id: id});
     });
 
-    router.get('/list', function *(){
+    router.get('/mine', function *(){
         var auth = this.session && this.session['auth'];
         if(auth && auth.user && auth.user.id){
             var noteList = yield noteServcie.loadByUserIdAsync(auth.user.id)
