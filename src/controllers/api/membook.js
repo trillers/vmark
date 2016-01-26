@@ -53,8 +53,7 @@ module.exports = function (router) {
             json._id = this.session['draftId'];
             json.initiator = this.session.auth.user._id;
             this.session['draftId'] = null;
-            var note = yield noteService.createAsync(json);
-            this.body = note;
+            this.body = yield noteService.createAsync(json);
         }catch(e){
             context.logger.error(e);
             this.body = {error: e};
@@ -144,6 +143,7 @@ module.exports = function (router) {
         try{
             var notes = this.request.body.notes;
             var sectionNote = null;
+            var me = this;
             this.session['draftId'] && (this.session['draftId'] = null);
             var asyncArr = [];
             if(!notes[0].parentNote){
@@ -154,7 +154,7 @@ module.exports = function (router) {
                 });
             }
             notes.forEach(function(note){
-                note.initiator = this.session.auth.user._id;
+                note.initiator = me.session.auth.user._id;
                 note.parentNote = note.parentNote || sectionNote._id;
                 asyncArr.push(noteService.createAsync(note));
             });
