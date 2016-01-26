@@ -111,11 +111,19 @@
                 };
                 self.titleInput.value = '';
                 wx.onMenuShareTimeline({
-                    title: self.pageNote.title || '素鸡',
+                    title: self.pageNote.title || '记易',
                     link: url,
-                    imgUrl: '/public/images/share.jpeg',
+                    imgUrl: __page.baseUrl + '/public/images/share.jpeg',
                     success: function(){},
                     cancel: function(){}
+                });
+                wx.onMenuShareAppMessage({
+                    title: self.pageNote.title || '记易',
+                    desc: '',
+                    link: url,
+                    imgUrl: '',
+                    success: function () {},
+                    cancel: function () {}
                 });
             };
             self.on('cancel', function(section){
