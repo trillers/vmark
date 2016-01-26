@@ -26,8 +26,12 @@ module.exports = function(){
             //TODO oauth
             var id = this.session['draftId'];
             if(!id){
-                var pageNote = yield noteServcie.createAsync({});
-                id = this.session['draftId'] = pageNote._id;
+                var pageNote = {};
+                if(this.session && this.session['auth'].user){
+                    pageNote['initiator'] = this.session['auth'].user._id;
+                }
+                var refinedPageNote = yield noteServcie.createAsync(pageNote);
+                id = this.session['draftId'] = refinedPageNote._id;
             }
             this.redirect('/note/_' + id);
         }catch(e){
@@ -36,7 +40,7 @@ module.exports = function(){
 
     });
 
-    router.get('/_:id', needBaseInfoFilter, function *(){
+    router.get('/_:id', function *(){
         var id = this.params.id;
         yield this.render('note', {id: id});
     });
