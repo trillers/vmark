@@ -23,7 +23,6 @@ module.exports = function(){
 
     router.get('/new', needSubscriptionFilter, function *(){
         try{
-            //TODO oauth
             var id = this.session['draftId'];
             if(!id){
                 var pageNote = {};
