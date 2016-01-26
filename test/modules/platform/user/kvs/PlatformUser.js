@@ -11,7 +11,7 @@ describe('PlatformUser', function(){
     var openid = 'okvXqsw1VG76eVVJrKivWDgps_gA';
     var at = '';
     before(function(done){
-        var agentToken = require('../../../../../src/modules/auth/agentToken');
+        var agentToken = require('../../../../../src/modules/membook/common/agentToken');
         at = agentToken.generate(openid);
         done();
     });

@@ -1,5 +1,6 @@
 var logger = require('../../app/logging').logger;
-var agentToken = require('./agentToken');
+var agentToken = require('./../membook/common/agentToken');
+var openToken = require('./../membook/common/openToken');
 
 var AUTH_KEY = 'auth'; //session key of auth info
 var RETURN_URL_KEY = 'returnUrl'; //session key of return url in session
@@ -10,6 +11,7 @@ var Authentication = function(){};
 Authentication.prototype.setAuthentication = function(ctx, auth){
     if(auth.wechatSiteUser){
         agentToken.set(ctx, auth.wechatSiteUser.at);
+        openToken.set(ctx, auth.wechatSiteUser.ot);
     }
     return ctx.session[AUTH_KEY] = auth;
 };

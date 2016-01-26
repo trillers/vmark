@@ -20,7 +20,7 @@ Kv.prototype.loadById = function(id, callback){
 };
 Kv.prototype.saveById = function(json, callback){
     var redis = this.context.redis.main;
-    var id = json.id;
+    var id = json._id;
     var key = idToObjKey(id);
     redis.hmset(key, json, function(err, result){
         cbUtil.logCallback(

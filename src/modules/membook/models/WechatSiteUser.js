@@ -28,6 +28,13 @@ var Model = function(domainBuilder){
 
             //agent token for 公众号 - 微站, 参见 agentToken.generate()
             , at:     {type: String}
+
+            /*
+             * open token for 公众号 - 微站, 参见 openToken.generate()
+             * one openid can generate one open token which is public and visible
+             */
+            , ot:     {type: String}
+
         })
         .build();
     return schema.model(true);

@@ -1,5 +1,5 @@
 var co = require('co');
-var agentToken = require('./agentToken');
+var agentToken = require('./../membook/common/agentToken');
 var context = require('../../context/context');
 var logger = context.logger;
 var authentication = require('./authentication');

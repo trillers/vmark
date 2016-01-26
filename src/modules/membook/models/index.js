@@ -4,6 +4,9 @@ var context = require('../../../context/context');
 var Note = require('./Note');
 module.exports.Note     = Note(context.domainBuilder.main);
 
+var Interaction = require('./Interaction');
+module.exports.Interaction     = Interaction(context.domainBuilder.main);
+
 var WechatSiteUser = require('./WechatSiteUser');
 module.exports.WechatSiteUser     = WechatSiteUser(context.domainBuilder.main);
 
