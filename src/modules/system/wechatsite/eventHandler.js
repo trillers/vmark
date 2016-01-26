@@ -13,18 +13,23 @@ module.exports = function (emitter) {
         });
     });
 
-    emitter.subscribe(function(event, context){
+    var signup = function signup(event, context){
         co(function*() {
             var openid = context.weixin.FromUserName;
             var auth = null;
             try{
-                auth = yield authenticationService.signupWithSubscriptionAsync(openid);
+                auth = yield authenticationService.signupOnSubscriptionAsync(openid);
+                context.wxsession = auth;
                 logger.info('Sign up with subscription for openid ' + openid);
                 logger.debug(auth);
             }catch(err){
                 logger.error('Fail to sign up with subscription: ' + err);
             }
         });
+    };
+    emitter.subscribe(signup);
+    emitter.qr(signup);
+    emitter.SCAN(signup);
 
-    });
+    console.log(emitter);
 };

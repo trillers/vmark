@@ -20,6 +20,7 @@ Authenticator.prototype = {
         if(!at){//signup firstly when user access wechat web page
             level==1 && oauthSignupWithBaseInfo.authorize(ctx);
             level==2 && oauthSignupWithUserInfo.authorize(ctx);
+            level==3 && oauthSignupWithBaseInfo.authorize(ctx);
             return;
         }
         else{ //not signed up yet
@@ -29,11 +30,13 @@ Authenticator.prototype = {
                     agentToken.delete(ctx);
                     level==1 && oauthSignupWithBaseInfo.authorize(ctx);
                     level==2 && oauthSignupWithUserInfo.authorize(ctx);
+                    level==3 && oauthSignupWithBaseInfo.authorize(ctx);
                     return;
                 }
 
                 var auth = yield authenticationService.signinWithOpenidAsync(openid);
-                logger.debug(auth);
+                console.log('signin auth');
+                console.log(auth);
                 if(!auth){
                     agentToken.delete(ctx);
                     yield this.render('/login-feedback', auth);
@@ -51,7 +54,9 @@ Authenticator.prototype = {
                     yield next;
                 }
                 else if(level==3){
-                    yield this.redirect('/welcome');
+                    //TODO  generate qr and link url and mark open token
+                    authentication.clear(ctx);
+                    ctx.redirect('/note/welcome');
                 }
                 else if(level==2){
                     oauthSignupWithUserInfo.authorize(ctx);
@@ -62,7 +67,7 @@ Authenticator.prototype = {
             }catch(err){
                 logger.error('Fail to sign in with openid: ' + err);
                 logger.error(err.stack);
-                yield this.render('/error', {error: err}); //TODO
+                yield ctx.render('/error', {error: err}); //TODO
             }
         }
     }
