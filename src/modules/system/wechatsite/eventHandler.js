@@ -13,8 +13,10 @@ module.exports = function (emitter) {
         });
     });
 
+    var signup = function signup(event, context){
+        console.log('sign up handler');
+        console.log(context);
 
-    var signup = function(event, context){
         co(function*() {
             var openid = context.weixin.FromUserName;
             var auth = null;
@@ -31,4 +33,5 @@ module.exports = function (emitter) {
     emitter.subscribe(signup);
     emitter.qr(signup);
 
+    console.log(emitter);
 };
