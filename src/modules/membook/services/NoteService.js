@@ -64,7 +64,7 @@ Service.prototype.updateById = function(id, json, callback){
 
 Service.prototype.loadByUserId = function(id, callback){
     var Note = this.context.models.Note;
-    Note.find({initiator: id}, null, {lean: true}).exec(callback);
+    Note.find({initiator: id, type: 'pg'}, null, {lean: true, sort: {crtOn: -1}}).exec(callback);
 };
 Service.prototype.addComment = function(id, json, callback){
     var me = this;
