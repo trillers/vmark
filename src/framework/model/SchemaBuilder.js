@@ -66,7 +66,6 @@ SchemaBuilder.prototype.withOptions = function(options){
     _.extend(this.options, options);
     return this;
 };
-
 SchemaBuilder.prototype.build = function(){
     var schema = new Schema(this.properties, this.options);
     schema.name = this.name;

@@ -21,7 +21,7 @@ module.exports = function(){
         yield this.render('/welcome', {});
     });
 
-    router.get('/new', needBaseInfoFilter, needSubscriptionFilter, function *(){
+    router.get('/new', function *(){
         try{
             var id = this.session['draftId'];
             if(!id){

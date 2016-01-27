@@ -6,7 +6,6 @@ var proOrdev = true;
 seajs.config({
     alias: {
         'jquery':'/public/components/cmd-jquery/jquery.min.js',
-        'isjs':'/web/js/app/is.js',
         'util':'/web/js/app/util.js',
         'seedriot':'/public/components/cmd-riot/riot+compiler.js'
     },
