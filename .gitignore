@@ -128,9 +128,10 @@ web/build
 public/qrCode/*
 !public/qrCode/README
 public/uploads/*
+!public/uploads/images/
 !public/uploads/README
 public/uploads/images/*
-public/uploads/images/README
+!public/uploads/images/README
 
 
 
