@@ -5,21 +5,9 @@ var NoteType = typeRegistry.item('NoteType');
 var NoteStatus = typeRegistry.item('NoteStatus');
 var InteractType = typeRegistry.item('InteractType');
 var noteService = context.services.noteService;
-var authenticationService = context.services.authenticationService;
 var interactService = context.services.interactService;
 
 module.exports = function (router) {
-    router.get('/note/subscribe', function*(){
-        try{
-            var openid = this.query.openid;
-            var auth = yield authenticationService.signupOnSubscriptionAsync(openid);
-            this.session = null;
-            this.body = {ok: true};
-        }catch(e){
-            context.logger.error(e);
-            this.body = {error: e};
-        }
-    });
 
     router.get('/note/_:id', function*(){
         try{

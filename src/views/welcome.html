@@ -4,17 +4,25 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>记易</title>
+    <title>{{__app.resources.app.title}}</title>
     <script>
     </script>
 </head>
 <body style="background: #82817f;max-width: 768px;position: relative; margin: 0px auto;">
     <div class="wrapper" style="background: #ddd">
         <!-- 服务号二维码 -->
-        <img src="/public/images/qrcode_for_cuotiben.jpg" width="344" height="344">
         <div>
-            立即扫描二维码,关注"素记", 打开时空大门
+            扫描二维码, 关注"{{__app.resources.app.title}}", 走进记忆长廊
         </div>
+        <div>
+            <img src="/public/images/qrcode_for_{{wechatId}}.jpg" width="200" height="200">
+        </div>
+
+        {% if env=='ndev' %}
+            <div>
+                <a href="/note/mock-subscribe?openid=oqSpUuDlnKxHxwZa4xylKuyxaXNM">测试号包三哥</a>
+            </div>
+        {% endif %}
     </div>
 </body>
 </html>

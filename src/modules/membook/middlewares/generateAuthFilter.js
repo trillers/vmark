@@ -10,10 +10,7 @@ var AuthLevel = require('../services/AuthLevel');
 var generate = function(level){
     return function* (next) {
         var auth = authentication.getAuthentication(this);
-        console.log('session auth');
-        console.log(auth);
         var authLevel = AuthLevel.get(auth);
-        console.log('authLevel ' + authLevel);
         if (authLevel>=level) {
             yield next;
             return;
@@ -28,10 +25,14 @@ var generate = function(level){
         else if (browser.Mobile) {
             logger.debug('Using mobile browser');
             yield authMobile.auth(this, next, level);
+            //yield next;
+            return;
         }
         else {
             logger.debug('Using PC browser');
             yield authPc.auth(this, next, level);
+            //yield next;
+            return;
         }
     };
 };
