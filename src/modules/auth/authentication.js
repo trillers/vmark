@@ -8,6 +8,10 @@ var DEFAULT_RETURN_URL = '/';
 
 var Authentication = function(){};
 
+Authentication.prototype.authenticated = function(ctx){
+    return ctx.session && ctx.session[AUTH_KEY];
+};
+
 Authentication.prototype.setAuthentication = function(ctx, auth){
     if(auth.wechatSiteUser){
         agentToken.set(ctx, auth.wechatSiteUser.at);
@@ -20,14 +24,8 @@ Authentication.prototype.getAuthentication = function(ctx){
     return ctx.session && ctx.session[AUTH_KEY];
 };
 
-Authentication.prototype.authenticated = function(ctx){
-    var auth = ctx.session && ctx.session[AUTH_KEY];
-    //TODO need more check
-    return auth;
-};
-
-Authentication.prototype.clear = function(ctx){
-    ctx.session = null;
+Authentication.prototype.deleteAuthentication = function(ctx){
+    ctx.session && (ctx.session[AUTH_KEY] = null);
 };
 
 Authentication.prototype.saveReturnUrl = function(ctx){

@@ -1,3 +1,4 @@
+var settings = require('vmark-settings');
 var Router = require('koa-router');
 var util = require('../../app/util');
 var context = require('../../context/context');
@@ -7,7 +8,7 @@ var authenticationService = context.services.authenticationService;
 var generateAuthFilter = require('../../modules/membook/middlewares/generateAuthFilter');
 var NoteType = TypeRegistry.item('NoteType');
 var needBaseInfoFilter = generateAuthFilter(1);
-//var needUserInfoFilter = generateAuthFilter(2);
+var needUserInfoFilter = generateAuthFilter(2);
 var needSubscriptionFilter = generateAuthFilter(3);
 var authentication = require('../../modules/auth/authentication');
 
@@ -16,8 +17,10 @@ module.exports = function(){
     router.prefix('/note');
     require('../../app/routes-spa')(router);
 
+    var wechatId = settings.wechat.siteId;
+    var env = settings.env.name;
     router.get('/welcome', function *(){
-        yield this.render('/welcome', {});
+        yield this.render('/welcome', {wechatId: wechatId, env: env});
     });
 
     router.get('/mock-subscribe', function*(){
@@ -32,7 +35,7 @@ module.exports = function(){
         }
     });
 
-    router.get('/new', needBaseInfoFilter, needSubscriptionFilter, function *(){
+    router.get('/new', needSubscriptionFilter, needBaseInfoFilter, function *(){
         try{
             var id = this.session['draftId'];
             if(!id){
@@ -55,14 +58,11 @@ module.exports = function(){
         yield this.render('note', {id: id});
     });
 
-    router.get('/mine', needBaseInfoFilter, needSubscriptionFilter, function *(){
-        var auth = this.session && this.session['auth'];
-        if(auth && auth.user && auth.user.id){
-            var noteList = yield noteServcie.loadByUserIdAsync(auth.user.id)
-            yield this.render('note-list', {noteList: noteList});
-        }else{
-            //TODO
-        }
+    router.get('/mine', needSubscriptionFilter, needBaseInfoFilter, function *(){
+        var auth = authentication.getAuthentication(this);
+        var userId = auth.user.id;
+        var noteList = yield noteServcie.loadByUserIdAsync(userId)
+        yield this.render('note-list', {noteList: noteList});
     });
 
     return router.routes();

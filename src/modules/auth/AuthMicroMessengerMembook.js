@@ -1,16 +1,14 @@
-var co = require('co');
 var context = require('../../context/context');
 var logger = context.logger;
 var agentToken = require('./../membook/common/agentToken');
+var AuthLevel = require('../membook/services/AuthLevel');
 var authentication = require('./authentication');
 var oauthHub = require('./oauth-wechat');
 var oauthSignupWithBaseInfo = oauthHub.route(oauthHub.MEMBOOK_GET_BASE_INFO);
 var oauthSignupWithUserInfo = oauthHub.route(oauthHub.MEMBOOK_GET_USER_INFO);
-
 var authenticationService = context.services.authenticationService;
 var authResults = authenticationService.authResults;
 var atToOpenidKv = context.kvs.atToOpenid;
-var AuthLevel = require('../membook/services/AuthLevel');
 
 var Authenticator = function(options){};
 
@@ -53,7 +51,7 @@ Authenticator.prototype = {
                 }
                 else if(level==3){
                     //TODO  generate qr and link url and mark open token
-                    authentication.clear(ctx);
+                    authentication.deleteAuthentication(ctx);
                     ctx.redirect('/note/welcome');
                 }
                 else if(level==2){
