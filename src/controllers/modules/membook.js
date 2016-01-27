@@ -11,7 +11,8 @@ var needBaseInfoFilter = generateAuthFilter(1);
 var needUserInfoFilter = generateAuthFilter(2);
 var needSubscriptionFilter = generateAuthFilter(3);
 var authentication = require('../../modules/auth/authentication');
-
+var qrRegistry = require('../../modules/wechatsite/qr');
+var returnOnSubscriptionType = qrRegistry.getQrType('ret');
 module.exports = function(){
     var router = new Router();
     router.prefix('/note');
@@ -19,7 +20,12 @@ module.exports = function(){
 
     var wechatId = settings.wechat.siteId;
     var env = settings.env.name;
-    router.get('/welcome', function *(){
+    router.get('/welcome', needBaseInfoFilter, function *(){
+        var auth = authentication.getAuthentication(this);
+        var openid = auth.wechatSiteUser.openid;
+        console.log(openid);
+        console.log(authentication.getInterruptUrl(this));
+        //returnOnSubscriptionType.createQr()
         yield this.render('/welcome', {wechatId: wechatId, env: env});
     });
 
@@ -28,14 +34,14 @@ module.exports = function(){
             var openid = this.query.openid;
             var auth = yield authenticationService.signupOnSubscriptionAsync(openid);
             authentication.setAuthentication(this, auth);
-            authentication.redirectReturnUrl(this);
+            authentication.redirectInterruptUrl(this);
         }catch(e){
             context.logger.error(e);
             this.body = {error: e};
         }
     });
 
-    router.get('/new', needSubscriptionFilter, needBaseInfoFilter, function *(){
+    router.get('/new', needSubscriptionFilter, function *(){
         try{
             var id = this.session['draftId'];
             if(!id){
@@ -58,7 +64,7 @@ module.exports = function(){
         yield this.render('note', {id: id});
     });
 
-    router.get('/mine', needSubscriptionFilter, needBaseInfoFilter, function *(){
+    router.get('/mine', needSubscriptionFilter, function *(){
         var auth = authentication.getAuthentication(this);
         var userId = auth.user.id;
         var noteList = yield noteServcie.loadByUserIdAsync(userId)
