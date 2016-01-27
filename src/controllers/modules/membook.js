@@ -26,8 +26,8 @@ module.exports = function(){
             var id = this.session['draftId'];
             if(!id){
                 var pageNote = {};
-                if(this.session && this.session['auth'].user){
-                    pageNote['initiator'] = this.session['auth'].user._id;
+                if(this.session.auth && this.session.auth.user){
+                    pageNote['initiator'] = this.session.auth.user._id;
                 }
                 var refinedPageNote = yield noteServcie.createAsync(pageNote);
                 id = this.session['draftId'] = refinedPageNote._id;

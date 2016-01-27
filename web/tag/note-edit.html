@@ -68,6 +68,13 @@
             var url = window.location.href;
             var loadNote = domain.action('loadNote');
             var updateNote = domain.action('updateNote');
+            var onUpdateNote = function(data){
+                if(!data.error){
+                    util.mixin(self.pageNote, data);
+                }else{
+                    alert(data.error.message);
+                }
+            };
             var onLoadNote = function(data){
                 if(data){
                     self.pageNote = data;
@@ -113,13 +120,17 @@
                 wx.onMenuShareTimeline({
                     title: self.pageNote.title || '记易',
                     link: url,
-                    imgUrl: '/public/images/share.jpeg',
-                    success: function(){
-
-                    },
-                    cancel: function(){
-
-                    }
+                    imgUrl: __page.baseUrl + '/public/images/share.jpeg',
+                    success: function(){},
+                    cancel: function(){}
+                });
+                wx.onMenuShareAppMessage({
+                    title: self.pageNote.title || '记易',
+                    desc: '',
+                    link: url,
+                    imgUrl: '',
+                    success: function () {},
+                    cancel: function () {}
                 });
             };
             self.on('cancel', function(section){
@@ -170,9 +181,11 @@
             });
             self.on('mount', function(){
                 loadNote.onDone(onLoadNote);
+                updateNote.onDone(onUpdateNote);
             });
             self.on('unmount', function(){
                 loadNote.offDone(onLoadNote);
+                updateNote.onDone(onUpdateNote);
             });
             self.on('open', function(options){
                 self.init();

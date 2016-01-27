@@ -33,7 +33,7 @@ module.exports = function(router){
         var media_id = self.request.body.media_id;
         try {
             var imageBuffer = yield wechatApi.getMediaAsync(media_id);
-            var res = yield qnClient.uploadBufAsync(imageBuffer[0], media_id + '.jpg', null);
+            var res = yield qnClient.uploadBufAsync(imageBuffer[0], media_id + '.jpg');
             console.error(res);
             this.body = {url: res.url};
         }catch(err){
