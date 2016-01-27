@@ -52,6 +52,8 @@ Authenticator.prototype = {
                 else if(level==3){
                     //TODO  generate qr and link url and mark open token
                     authentication.deleteAuthentication(ctx);
+                    authentication.saveInterruptUrl(ctx, true);
+console.error(authentication.getInterruptUrl(ctx));
                     ctx.redirect('/note/welcome');
                 }
                 else if(level==2){

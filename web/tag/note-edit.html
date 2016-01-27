@@ -118,17 +118,17 @@
                 };
                 self.titleInput.value = '';
                 wx.onMenuShareTimeline({
-                    title: self.pageNote.title || '记易',
+                    title: self.pageNote.title || __app.resources.app.title,
                     link: url,
-                    imgUrl: __page.baseUrl + '/public/images/share.jpeg',
+                    imgUrl: __page.baseUrl + '/public/images/logo_share_48x48.jpg',
                     success: function(){},
                     cancel: function(){}
                 });
                 wx.onMenuShareAppMessage({
-                    title: self.pageNote.title || '记易',
+                    title: self.pageNote.title || __app.resources.app.title,
                     desc: '',
                     link: url,
-                    imgUrl: '',
+                    imgUrl: __page.baseUrl + '/public/images/logo_share_48x48.jpg',
                     success: function () {},
                     cancel: function () {}
                 });
