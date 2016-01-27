@@ -1,24 +1,35 @@
 var Router = require('koa-router');
 var util = require('../../app/util');
 var context = require('../../context/context');
-var idGen = require('../../app/id');
-var noteServcie = context.services.noteService;
 var TypeRegistry = require('../../modules/common/models/TypeRegistry');
-var NoteType = TypeRegistry.item('NoteType');
-var authFilter = require('../../modules/membook/middlewares/authFilter');
+var noteServcie = context.services.noteService;
+var authenticationService = context.services.authenticationService;
 var generateAuthFilter = require('../../modules/membook/middlewares/generateAuthFilter');
+var NoteType = TypeRegistry.item('NoteType');
 var needBaseInfoFilter = generateAuthFilter(1);
 //var needUserInfoFilter = generateAuthFilter(2);
 var needSubscriptionFilter = generateAuthFilter(3);
+var authentication = require('../../modules/auth/authentication');
 
 module.exports = function(){
     var router = new Router();
     router.prefix('/note');
     require('../../app/routes-spa')(router);
-    //router.use(authFilter); //add auth Filter
 
     router.get('/welcome', function *(){
         yield this.render('/welcome', {});
+    });
+
+    router.get('/mock-subscribe', function*(){
+        try{
+            var openid = this.query.openid;
+            var auth = yield authenticationService.signupOnSubscriptionAsync(openid);
+            authentication.setAuthentication(this, auth);
+            authentication.redirectReturnUrl(this);
+        }catch(e){
+            context.logger.error(e);
+            this.body = {error: e};
+        }
     });
 
     router.get('/new', needBaseInfoFilter, needSubscriptionFilter, function *(){
