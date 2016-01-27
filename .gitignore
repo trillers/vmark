@@ -129,4 +129,8 @@ public/qrCode/*
 !public/qrCode/README
 public/uploads/*
 !public/uploads/README
+public/uploads/images/*
+public/uploads/images/README
+
+
 
