@@ -3,11 +3,16 @@ var Frankon = require('../../framework/frankon');
 var Router = require('koa-router');
 var wechat = require('co-wechat');
 var productionMode = settings.env.mode == 'production';
-var tokenConfig = productionMode ? {
+//var tokenConfig = productionMode ? {
+//    token: settings.wechat.token,
+//    appid: settings.wechat.appKey,
+//    encodingAESKey: settings.wechat.encodingAESKey
+//} : settings.wechat.token;
+var tokenConfig = {
     token: settings.wechat.token,
     appid: settings.wechat.appKey,
     encodingAESKey: settings.wechat.encodingAESKey
-} : settings.wechat.token;
+};
 var frankon = new Frankon();
 
 module.exports = function() {
