@@ -1,10 +1,9 @@
 {
-  "name": "zeus",
+  "name": "note",
   "version": "0.0.1",
-  "description": "this is a spm package for zeus",
+  "description": "this is a spm package for note",
   "keywords": [],
   "homepage": "",
-  "author": "node-rookie <749924911@qq.com>",
   "repository": {
     "type": "git",
     "url": ""

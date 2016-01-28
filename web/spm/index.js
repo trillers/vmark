@@ -1,5 +1,2 @@
-var zeus;
-
-require('./js/app/index');
-
-module.exports = zeus;
+require('./js/app/note-index');
+module.exports = null;

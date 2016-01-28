@@ -1,5 +1,5 @@
 var domain = require('../domain');
 
-require('./pa');
+require('./membook');
 
 module.exports = domain.actions();

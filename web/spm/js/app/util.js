@@ -1,9 +1,9 @@
 /**
  * Created by Administrator on 2015/2/28.
  */
-var $ = require('jquery');
-var riot = require('seedriot');
-var isjs = require('./isjs');
+//var $ = require('jquery');
+//var riot = require('seedriot');
+//var isjs = require('./isjs');
 /**
  * 获取本周、下周、本月、下月的开始日期、停止日期
  */
@@ -48,6 +48,21 @@ function formatDate(date) {
     return (myyear + "-" + mymonth + "-" + myweekday);
 }
 
+//格局化日期：yyyy年MM月dd日
+function formatChineseDate(date) {
+    var myyear = date.getFullYear();
+    var mymonth = date.getMonth() + 1;
+    var myweekday = date.getDate();
+
+    if (mymonth < 10) {
+        mymonth = "0" + mymonth;
+    }
+    if (myweekday < 10) {
+        myweekday = "0" + myweekday;
+    }
+    return (myyear + "年" + mymonth + "月" + myweekday + '日');
+}
+
 //获得某月的天数
 function getMonthDays(myMonth){
     var monthStartDate = new Date(nowYear, myMonth, 1);
@@ -77,7 +92,6 @@ var getDefImg = function(type){
         return '/public/images/pabanner.png';
     }
 }
-
 var util = {
     arr: {
         rest: function(full, part){
@@ -87,6 +101,27 @@ var util = {
                 }
             })
         }
+    },
+    obj: {
+        exclude: function(){
+            var args = [].slice.apply(arguments);
+            for(var p in args[0]){
+                if(args.slice(1).indexOf(p) >= 0){
+                    delete args[0][p];
+                }
+            }
+        },
+        deepClone: function(o){
+
+        }
+    },
+    mixin: function(t, s){
+        for(var p in s){
+            t[p] = s[p]
+        }
+    },
+    extJson: function(tag){
+        return util.obj.exclude(tag, 'mount', 'off', 'on', 'one', 'opts', 'parent', 'root', 'tags', 'trigger', 'unmount', 'update', '__proto__');
     },
     getDc:function(){
         return DATA_DICT;
@@ -472,6 +507,24 @@ var util = {
     replaceImgTemplate:function(template){
         return template.replace(/\%\%(.*?)\%\%/g,'<img filename="$1" src="http://7u2kxz.com2.z0.glb.qiniucdn.com/$1">');
     },
+
+    formatChineseDate:function(date){
+        return formatChineseDate(date);
+    },
+    //获得所给日期的开始日期
+    getDateStartTime: function (date) {
+        return formatDate(date) + startHHMMSS;
+    },
+    //获得所给日期的结束日期
+    getDateEndTime: function (date) {
+        return formatDate(date) + endHHMMSS;
+    },
+    //获得加上给定天数的日期
+    getAddedDaysTime: function(date, i){
+        var day = date.getDate();
+        day = day + i;
+        return new Date(date.setDate(day));
+    },
     //获得最近三天的开始日期
     getLastDayStartDate: function () {
         var LastDayStartDate = new Date(nowYear, nowMonth, nowDay);
@@ -721,98 +774,27 @@ util.wedgt = {
         }
     }
 };
-util.wedgt.imgPreviewer['refresh'] = function($container){
-    $('.imgPreviewerUl').parent().remove();
-    $container.css({
-        height:'auto',
-        overflow:'auto'
-    });
-    $('body').css({
-        height:'auto',
-        overflow:'auto',
-        minHeight:'auto'
-    });
-}
-var touchStart, touchMove, touchEnd;
-util.map = {
-    _uniqueMap:{},
-    _innerEventDispatcher:{
-        swipeLeft: function(dom, ctx, options){
-            util.map._innerEventDispatcher._swipe(dom, ctx, options);
-        },
-        swipeRight: function(dom, ctx, options){
-            util.map._innerEventDispatcher._swipe(dom, ctx, options);
-        },
-        tap: function(dom, ctx, options){
-            console.log(dom);
-            var startTime, endTime, startPosX = 0, startPosY = 0, newPosX, newPosY, distanceX, distanceY, timer = null;
-            var touchStart = function(e){
-                //e.preventDefault();
-                e || (e = window.event);
-                startPosX = e.touches[0].pageX;
-                startPosY = e.touches[0].pageY;
-                newPosX = 0;
-                newPosY = 0;
-                startTime = (new Date()).getTime();
-            };
-            var touchMove = function(e){
-                var moveevent = e;
-                clearTimeout(timer);
-                timer = setTimeout(function(e){
-                    newPosX = moveevent.touches[0].pageX;
-                    newPosY = moveevent.touches[0].pageY;
-                }, 100);
-            };
-            var touchEnd = function(e){
-                endTime = (new Date()).getTime(),distanceX = newPosX - startPosX, distanceY = newPosY - startPosY;
-                if((((endTime -startTime) < 100) && (newPosX===0 && newPosY===0)) || ((endTime -startTime) < 100) && (distanceX < 5 && distanceY <5)){
-                    ctx.trigger('tap');
-                }
-            };
-            if(options === 'off'){
-                dom.removeEventListener('touchstart', touchStart, false);
-                dom.removeEventListener('touchmove', touchMove, false);
-                dom.removeEventListener('touchend', touchEnd, false);
-                return;
-            };
-            dom.addEventListener("touchstart", touchStart, false);
-            dom.addEventListener("touchmove", touchMove, false);
-            dom.addEventListener("touchend", touchEnd, false);
-
-        },
-        _swipe: function(dom, ctx, options){
-            var oldPosX = 0, oldPosY = 0, newPosX, newPosY, timer = null;
-            var touchStart = function(e){
-                e.preventDefault();
-                e || (e = window.event);
-                oldPosX = e.touches[0].pageX;
-            };
-            var touchMove = function(e){
-                var moveevent = e;
-                clearTimeout(timer);
-                timer = setTimeout(function(e){
-                    newPosX = moveevent.touches[0].pageX;
-                }, 100);
-            };
-            var touchEnd = function(e){
-                var touch = e.touches[0], distance = newPosX - oldPosX;
-                if(distance > 20){
-                    ctx.trigger('swipeRight');
-                }else if(distance < 20){
-                    alert(11);
-                    ctx.trigger('swipeLeft');
-                }
-            };
-            if(options === 'off'){
-                dom.removeEventListener('touchstart', touchStart, false);
-                dom.removeEventListener('touchmove', touchMove, false);
-                dom.removeEventListener('touchend', touchEnd, false);
-                return;
-            };
-            dom.addEventListener("touchstart", touchStart, false);
-            dom.addEventListener("touchmove", touchMove, false);
-            dom.addEventListener("touchend", touchEnd, false);
-        }
+util.formatDateForComments = function(date){
+    var d_minutes,d_hours,d_days;
+    var timeNow = parseInt(new Date().getTime()/1000);
+    var time = parseInt(date.getTime()/1000);
+    var d;
+    d = timeNow - time;
+    d_days = parseInt(d/86400);
+    d_hours = parseInt(d/3600);
+    d_minutes = parseInt(d/60);
+    if(d_days>0 && d_days<4){
+        return d_days+"天前";
+    }else if(d_days<=0 && d_hours>0){
+        return d_hours+"小时前";
+    }else if(d_hours<=0 && d_minutes>=1){
+        return d_minutes+"分钟前";
+    }else if(d_minutes<=1){
+        return '刚刚';
+    }
+    else{
+        var s = new Date(time*1000);
+        return (s.getMonth()+1)+"月"+s.getDate()+"日";
     }
 }
 module.exports = util;

@@ -9,13 +9,18 @@ Service.prototype.create = function(noteJson, callback){
     var kv = this.context.kvs.interaction;
     var Note = this.context.models.Interaction;
     var note = new Note(noteJson);
-    note.save(function (err, result) {
-        if(err){
-            return callback(err)
-        }
-        result = result.toObject();
-        callback(null, result)
-    });
+    note.save()
+        .then(function(result){
+            result.populate({path:'initiator'}, function(err, finalResult){
+                if(err){
+                    return callback(err);
+                }
+                var doc = finalResult.toObject();
+                callback(null, doc)
+            });
+        }, function(err){
+            callback(err);
+        })
 };
 
 Service.prototype.loadById = function(id, callback){

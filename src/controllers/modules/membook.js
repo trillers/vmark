@@ -1,27 +1,47 @@
+var settings = require('vmark-settings');
 var Router = require('koa-router');
 var util = require('../../app/util');
 var context = require('../../context/context');
-var idGen = require('../../app/id');
-var noteServcie = context.services.noteService;
 var TypeRegistry = require('../../modules/common/models/TypeRegistry');
-var NoteType = TypeRegistry.item('NoteType');
-var authFilter = require('../../modules/membook/middlewares/authFilter');
+var noteServcie = context.services.noteService;
+var authenticationService = context.services.authenticationService;
 var generateAuthFilter = require('../../modules/membook/middlewares/generateAuthFilter');
+var NoteType = TypeRegistry.item('NoteType');
 var needBaseInfoFilter = generateAuthFilter(1);
-//var needUserInfoFilter = generateAuthFilter(2);
+var needUserInfoFilter = generateAuthFilter(2);
 var needSubscriptionFilter = generateAuthFilter(3);
-
+var authentication = require('../../modules/auth/authentication');
+var qrRegistry = require('../../modules/wechatsite/qr');
+var returnOnSubscriptionType = qrRegistry.getQrType('ret');
 module.exports = function(){
     var router = new Router();
     router.prefix('/note');
     require('../../app/routes-spa')(router);
-    //router.use(authFilter); //add auth Filter
 
-    router.get('/welcome', function *(){
-        yield this.render('/welcome', {});
+    var wechatId = settings.wechat.siteId;
+    var env = settings.env.name;
+    router.get('/welcome', needBaseInfoFilter, function *(){
+        var auth = authentication.getAuthentication(this);
+        var openid = auth.wechatSiteUser.openid;
+        console.log(openid);
+        console.log(authentication.getInterruptUrl(this));
+        //returnOnSubscriptionType.createQr()
+        yield this.render('/welcome', {wechatId: wechatId, env: env});
     });
 
-    router.get('/new', needBaseInfoFilter, needSubscriptionFilter, function *(){
+    router.get('/mock-subscribe', function*(){
+        try{
+            var openid = this.query.openid;
+            var auth = yield authenticationService.signupOnSubscriptionAsync(openid);
+            authentication.setAuthentication(this, auth);
+            authentication.redirectInterruptUrl(this);
+        }catch(e){
+            context.logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.get('/new', needSubscriptionFilter, function *(){
         try{
             var id = this.session['draftId'];
             if(!id){
@@ -44,14 +64,18 @@ module.exports = function(){
         yield this.render('note', {id: id});
     });
 
-    router.get('/mine', needBaseInfoFilter, needSubscriptionFilter, function *(){
-        var auth = this.session && this.session['auth'];
-        if(auth && auth.user && auth.user.id){
-            var noteList = yield noteServcie.loadByUserIdAsync(auth.user.id)
-            yield this.render('note-list', {noteList: noteList});
-        }else{
-            //TODO
-        }
+    router.get('/mine', needSubscriptionFilter, function *(){
+        var auth = authentication.getAuthentication(this);
+        var userId = auth.user.id;
+        var noteList = yield noteServcie.loadByUserIdAsync(userId)
+        yield this.render('note-list', {noteList: noteList});
+    });
+
+    router.get('/discover', needSubscriptionFilter, function *(){
+        var auth = authentication.getAuthentication(this);
+        var userId = auth.user.id;
+        var noteList = yield noteServcie.loadByUserIdAsync(userId)
+        yield this.render('note-plaza', {noteList: noteList});
     });
 
     return router.routes();

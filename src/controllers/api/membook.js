@@ -5,21 +5,9 @@ var NoteType = typeRegistry.item('NoteType');
 var NoteStatus = typeRegistry.item('NoteStatus');
 var InteractType = typeRegistry.item('InteractType');
 var noteService = context.services.noteService;
-var authenticationService = context.services.authenticationService;
 var interactService = context.services.interactService;
 
 module.exports = function (router) {
-    router.get('/note/subscribe', function*(){
-        try{
-            var openid = this.query.openid;
-            var auth = yield authenticationService.signupOnSubscriptionAsync(openid);
-            this.session = null;
-            this.body = {ok: true};
-        }catch(e){
-            context.logger.error(e);
-            this.body = {error: e};
-        }
-    });
 
     router.get('/note/_:id', function*(){
         try{
@@ -103,13 +91,13 @@ module.exports = function (router) {
             originalInteraction.type = InteractType.Like.value();
             var interaction = yield interactService.createAsync(originalInteraction);
             var note = yield noteService.likeAsync(noteId, interaction);
-            interaction.initiator = note.initiator;
             this.body = {like: interaction};
         }catch(e){
             context.logger.error(e);
             this.body = {error: e};
         }
     });
+
     router.post('/note/comment', function*(){
         try{
             var noteId = this.request.body.note;
@@ -117,8 +105,18 @@ module.exports = function (router) {
             originalInteraction.type = InteractType.Comment.value();
             var interaction = yield interactService.createAsync(originalInteraction);
             var note = yield noteService.addCommentAsync(noteId, interaction);
-            interaction.initiator = note.initiator;
             this.body = {comment: interaction};
+        }catch(e){
+            context.logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.delete('/note/comment/_:id', function*(){
+        try{
+            var id = this.params.id;
+            yield interactService.deleteByIdAsync(id);
+            this.body = {success: true};
         }catch(e){
             context.logger.error(e);
             this.body = {error: e};

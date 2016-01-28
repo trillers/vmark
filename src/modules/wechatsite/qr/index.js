@@ -1,4 +1,5 @@
 var co = require('co');
+var settings = require('vmark-settings');
 var QrTypeRegistry = require('./QrTypeRegistry');
 var qrRegistry = new QrTypeRegistry();
 var context = require('../../../context/context');
@@ -12,6 +13,32 @@ var tenantAdminType = qrRegistry.newType('ta', {temp: true});
 var tenantBotType =   qrRegistry.newType('tb', {temp: true});
 var loginType =       qrRegistry.newType('lg', {temp: true});
 var defaultType =     qrRegistry.getQrType('default');
+var returnOnSubscriptionType = qrRegistry.newType('ret', {temp: true}); //return the previous page on subscription
+
+returnOnSubscriptionType.onAccess(function(qr, openid){
+    co(function*(){
+        try{
+            var url = qr.data;
+            var articles = [
+                {
+                    "title":"友趣笔记",
+                    "description": "点击访问",
+                    "url": url,
+                    "picurl": 'http://' + settings.app.dom + '/public/images/logo_share_48x48.jpg'
+                }
+            ];
+            wechatApi.sendNews(openid, articles, function (err) {
+                if(err) console.error(err);
+            });
+        }
+        catch(e){
+            console.error(e);
+        }
+    });
+});
+returnOnSubscriptionType.onExpire(function(){
+
+});
 
 tenantAdminType.onAccess(function(qr, openid){
     co(function*(){
