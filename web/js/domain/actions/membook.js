@@ -26,7 +26,7 @@ domain.action('saveComment').onExecute(function(data){
     apiFactory.post('/membook/note/comment').drive(this).send(data);
 });
 domain.action('deleteComment').onExecute(function(data){
-    apiFactory.delete('/membook/note/comment').drive(this).send(data);
+    apiFactory.delete('/membook/note/comment/_' + data.id).drive(this).send();
 });
 domain.action('likeNote').onExecute(function(data){
     apiFactory.post('/membook/note/like').drive(this).send(data);

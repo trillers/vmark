@@ -14,9 +14,9 @@
         </div>
 
         <div class="noteItems">
-            <div each="{section.mates}" noteId="{_id}" >
-                <div if="{parent.isOnEdit()}" style="float: left">
-                    <b class="{weui_icon_cancel : parent.inTrash(_id), weui_icon_circle: !parent.inTrash(_id)}" onclick="{parent.pushToTrash}"></b>
+            <div each="{section.mates}" noteId="{_id}" style="margin-top: 2px">
+                <div onclick="{parent.pushToTrash}" if="{parent.isOnEdit()}" style="float: left">
+                    <b class="{weui_icon_cancel : parent.inTrash(_id), weui_icon_circle: !parent.inTrash(_id)}"></b>
                 </div>
                 <div if="{type==='txt'}" class="note_txt">{content}</div>
                 <div if="{type==='img'}" class="note_img"><img style="width: 100%" src="{url}"/></div>
@@ -263,11 +263,16 @@
             function confirmListener(){
                 clearListeners();
                 deleteComment
-                    .newInvocation(self.section)
+                    .newInvocation({
+                        id: e.item._id
+                    })
                     .onDone(function(data){
                         if(data.success){
-                            self.comments.forEach(function(comments, index){
-
+                            self.section.comments.forEach(function(comment, index){
+                                if(comment._id == e.item._id){
+                                    self.section.comments.splice(index, 1);
+                                }
+                                self.update();
                             })
                         }else{
                             alert('delete comments failed.')
@@ -282,7 +287,7 @@
                 self.confirmComponent.off('confirm', confirmListener);
                 self.confirmComponent.off('cancel', cancelListener);
             }
-            self.confirmComponent.trigger('confirm');
+            self.confirmComponent.trigger('popUp');
         };
         self.cancelSectionNote = function(e){
             self.init();
