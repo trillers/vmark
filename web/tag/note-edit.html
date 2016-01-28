@@ -1,223 +1,219 @@
 <note-edit>
-    <div if="{!hidden}">
-        <note-menu></note-menu>
-        <div class="wrapper">
-            <div>
-                <input class="title" onblur="{updatePageNote}" type="text" value="{pageNote.title}" placeholder="添加标题" name="titleInput"/>
-                <hr style="margin-bottom: 10px"/>
+    <div class="page">
+        <div class="title">
+            <input class="input" onblur="{updatePageNote}" type="text" value="{pageNote.title}" placeholder="添加标题" name="titleInput"/>
+            <div class="reference">
+                <img class="user-icon" riot-src="{user.headimgurl}"/>
+                <label class="user-icon"> {user.nickname}</label>
+                <span> 创建于{formatDate(new Date())}</span>
             </div>
-            <div>
-                <img style="width:32px;height:32px" riot-src="{user.headimgurl}"/>
-                <label>{user.nickname}</label>
-                <span>{formatDate(new Date())}</span>
-            </div>
-            <div>
-                <button onclick={goToAuthorize}>去授权</button>
-            </div>
-            <div>
-                <note-section each="{item in pageNote.mates}" if="{item.status != 'dr'}" section="{item}"></note-section>
-                <note-section if="{currNote === newSection}" section="{newSection}" new="true"></note-section>
-            </div>
-            <ul class="btn-group" onclick="{selectOperate}">
-                <li><a class="weui_btn weui_btn_mini weui_btn_primary">文字</a></li>
-                <li><a class="weui_btn weui_btn_mini weui_btn_primary">图片</a></li>
-                <li><a class="weui_btn weui_btn_mini weui_btn_primary">语音</a></li>
-                <li><a class="weui_btn weui_btn_mini weui_btn_primary">小视频</a></li>
-            </ul>
-            <div>
-                <span if="{pageNote.parentNote}">{pageNote.txt}</span>
-            </div>
-            <div style="clear: both"></div>
+            <hr class="line" style="margin-bottom: 10px"/>
         </div>
-        <note-confirm></note-confirm>
-        <note-footer if="{Object.keys(currNote).length}"></note-footer>
-        <note-comment if="{currComment}"></note-comment>
-        <style scoped>
-            :focus{
-                outline: none;
+
+        <div>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <button onclick={goToAuthorize}>去授权</button>
+        </div>
+
+        <div>
+            <note-section each="{item in pageNote.mates}" if="{item.status != 'dr'}" section="{item}"></note-section>
+            <note-section if="{currNote === newSection}" section="{newSection}" new="true"></note-section>
+        </div>
+        <ul class="btn-group" onclick="{selectOperate}">
+            <li><a class="weui_btn weui_btn_mini weui_btn_primary">文字</a></li>
+            <li><a class="weui_btn weui_btn_mini weui_btn_primary">图片</a></li>
+            <li><a class="weui_btn weui_btn_mini weui_btn_primary">语音</a></li>
+            <li><a class="weui_btn weui_btn_mini weui_btn_primary">小视频</a></li>
+        </ul>
+        <div>
+            <span if="{pageNote.parentNote}">{pageNote.txt}</span>
+        </div>
+        <div style="clear: both"></div>
+    </div>
+    <note-confirm></note-confirm>
+    <note-footer if="{Object.keys(currNote).length}"></note-footer>
+    <note-comment if="{currComment}"></note-comment>
+    <style scoped>
+        :focus{
+            outline: none;
+        }
+        .title-input1{
+            font-size: 16px;
+            display: inline-block;
+            height:30px;
+            line-height: 30px;
+            background: transparent;
+            border: none;
+        }
+        .note_items div{
+            height: 40px;
+            line-height: 40px;
+        }
+        body{
+            font-size: 14px;
+        }
+        .btn-group{
+            list-style-type: none;
+        }
+        .btn-group li{
+            float:left;
+            padding:10px;
+        }
+    </style>
+    <script>
+        "use strict";
+        //private properties
+        var self = nest.presentable(this);
+        var url = window.location.href;
+        var loadNote = domain.action('loadNote');
+        var updateNote = domain.action('updateNote');
+        var onUpdateNote = function(data){
+            if(!data.error){
+                util.mixin(self.pageNote, data);
+            }else{
+                alert(data.error.message);
             }
-            .wrapper{
-                padding: 10px;
-            }
-            .title{
-                font-size: 16px;
-                display: inline-block;
-                height:30px;
-                line-height: 30px;
-                background: transparent;
-                border: none;
-            }
-            .note_items div{
-                height: 40px;
-                line-height: 40px;
-            }
-            body{
-                font-size: 14px;
-            }
-            .btn-group{
-                list-style-type: none;
-            }
-            .btn-group li{
-                float:left;
-                padding:10px;
-            }
-        </style>
-        <script>
-            "use strict";
-            //private properties
-            var self = nest.presentable(this);
-            var url = window.location.href;
-            var loadNote = domain.action('loadNote');
-            var updateNote = domain.action('updateNote');
-            var onUpdateNote = function(data){
-                if(!data.error){
-                    util.mixin(self.pageNote, data);
-                }else{
-                    alert(data.error.message);
-                }
-            };
-            var onLoadNote = function(data){
-                if(data){
-                    self.pageNote = data;
-                    //TODO init new section
-                    if(self.pageNote.mates && self.pageNote.mates.length){
-                        var draftSections = self.pageNote.mates.filter(function(sectionNote){
-                            if(sectionNote.status === 'dr'){
-                                return sectionNote;
-                            }
-                        });
-                        if(draftSections && draftSections.length){
-                            self.pageNote.mates = util.arr.rest(self.pageNote.mates, draftSections);
-                            self.newSection = draftSections[0];
-                            self.selectNote(self.newSection);
+        };
+        var onLoadNote = function(data){
+            if(data){
+                self.pageNote = data;
+                //TODO init new section
+                if(self.pageNote.mates && self.pageNote.mates.length){
+                    var draftSections = self.pageNote.mates.filter(function(sectionNote){
+                        if(sectionNote.status === 'dr'){
+                            return sectionNote;
                         }
+                    });
+                    if(draftSections && draftSections.length){
+                        self.pageNote.mates = util.arr.rest(self.pageNote.mates, draftSections);
+                        self.newSection = draftSections[0];
+                        self.selectNote(self.newSection);
                     }
                 }
-                self.trigger('ready', false);
-                self.trigger('view-route-to');
-                self.update();
+            }
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+            self.update();
+        };
+        //instance properties
+        self.pageNote = null;
+        self.newSection = {};
+        self.newSection.mates = [];
+        self.currNote = {};
+        self.currComment = null;
+        self.user = __page.user;
+        self.user.headimgurl = self.user.headimgurl || '/public/images/def-avatar.png';
+        //instance methods
+        self.formatDate = function(date){
+            return new Date(date).toLocaleString();
+        };
+        self.formatDateForMates = util.formatDateForComments;
+        self.init = function(){
+            self.pageNote = {
+                title: null,
+                comments: null,
+                crtOn: null,
+                _id: null
             };
-            //instance properties
-            self.pageNote = null;
+            self.titleInput.value = '';
+            wx.onMenuShareTimeline({
+                title: self.pageNote.title || __app.resources.app.title,
+                link: url,
+                imgUrl: __page.baseUrl + '/public/images/logo_share_48x48.jpg',
+                success: function(){},
+                cancel: function(){}
+            });
+            wx.onMenuShareAppMessage({
+                title: self.pageNote.title || __app.resources.app.title,
+                desc: '',
+                link: url,
+                imgUrl: __page.baseUrl + '/public/images/logo_share_48x48.jpg',
+                success: function () {},
+                cancel: function () {}
+            });
+        };
+        self.on('cancel', function(section){
+            self.currNote = null;
+            self.update();
+        });
+        self.on('comment', function(section){
+            self.currComment = section;
+            self.currNote = null;
+            self.update();
+        });
+        self.on('noteComment', function(comment){
+            self.currComment.comments.push(comment);
+            self.update();
+        });
+        self.updatePageNote = function(e){
+            var title = e.currentTarget.value;
+            if(!title){
+                return;
+            }
+            updateNote.execute({
+                id: self.pageNote._id,
+                title: title
+            });
+        };
+        self.selectNote = function(note, tag){
+            self.currNote = note;
+            self.currComment = null;
+            self.update();
+        };
+        self.selectOperate = function(e){
+            if(e.target.nodeName === 'A'){
+                var liNode = e.target;
+                self.selectNote(self.newSection);
+            }
+        };
+        self.on('noteSubmit', function(){
+            self.currNote = null;
             self.newSection = {};
             self.newSection.mates = [];
-            self.currNote = {};
-            self.currComment = null;
-            self.user = __page.user;
-            self.user.headimgurl = self.user.headimgurl || '/public/images/def-avatar.png';
-            //instance methods
-            self.formatDate = function(date){
-                return new Date(date).toLocaleString();
-            };
-            self.formatDateForMates = util.formatDateForComments;
-            self.init = function(){
-                self.pageNote = {
-                    title: null,
-                    comments: null,
-                    crtOn: null,
-                    _id: null
-                };
-                self.titleInput.value = '';
-                wx.onMenuShareTimeline({
-                    title: self.pageNote.title || __app.resources.app.title,
-                    link: url,
-                    imgUrl: __page.baseUrl + '/public/images/logo_share_48x48.jpg',
-                    success: function(){},
-                    cancel: function(){}
-                });
-                wx.onMenuShareAppMessage({
-                    title: self.pageNote.title || __app.resources.app.title,
-                    desc: '',
-                    link: url,
-                    imgUrl: __page.baseUrl + '/public/images/logo_share_48x48.jpg',
-                    success: function () {},
-                    cancel: function () {}
-                });
-            };
-            self.on('cancel', function(section){
-                self.currNote = null;
-                self.update();
-            });
-            self.on('comment', function(section){
-                self.currComment = section;
-                self.currNote = null;
-                self.update();
-            });
-            self.on('noteComment', function(comment){
-                self.currComment.comments.push(comment);
-                self.update();
-            });
-            self.updatePageNote = function(e){
-                var title = e.currentTarget.value;
-                if(!title){
-                    return;
-                }
-                updateNote.execute({
-                    id: self.pageNote._id,
-                    title: title
-                });
-            };
-            self.selectNote = function(note, tag){
-                self.currNote = note;
-                self.currComment = null;
-                self.update();
-            };
-            self.selectOperate = function(e){
-                if(e.target.nodeName === 'A'){
-                    var liNode = e.target;
-                    self.selectNote(self.newSection);
-                }
-            };
-            self.on('noteSubmit', function(){
-                self.currNote = null;
-                self.newSection = {};
-                self.newSection.mates = [];
-                self.update();
-            });
-            self.on('noteSave', function(){
-                self.update();
-            });
-            self.on('active', function(tag){
-                self.selectNote(tag.section, tag)
-            });
-            self.on('mount', function(){
-                loadNote.onDone(onLoadNote);
-                updateNote.onDone(onUpdateNote);
-            });
-            self.on('unmount', function(){
-                loadNote.offDone(onLoadNote);
-                updateNote.onDone(onUpdateNote);
-            });
-            self.on('open', function(options){
-                self.init();
-                try{
-                    self.pageNote._id = window.location.pathname.match(/_(\w+)/g)[0].substr(1);
-                }catch(e){
-                    alert('无效的链接');
-                }
-                console.info('tag pageNote new is opening');
-                 loadNote.execute({
-                    noteId: self.pageNote._id
-                });
-            });
-            self.on('leave', function(){
-                self.mask = true;
-                self.update();
-            });
-            self.on('reenter', function(){
-                self.mask = false;
-                self.update();
-            });
-            self.on('refresh', function(){
-                console.info('tag group index is refreshing');
-                //_refresh();
-            });
-
-            goToAuthorize(e){
-                var getUserInfoUrl = '/auth/authorize?';
-                getUserInfoUrl += 'route=get_user_info&returnUrl='+location.href;
-                location.href = getUserInfoUrl;
+            self.update();
+        });
+        self.on('noteSave', function(){
+            self.update();
+        });
+        self.on('active', function(tag){
+            self.selectNote(tag.section, tag)
+        });
+        self.on('mount', function(){
+            loadNote.onDone(onLoadNote);
+            updateNote.onDone(onUpdateNote);
+        });
+        self.on('unmount', function(){
+            loadNote.offDone(onLoadNote);
+            updateNote.onDone(onUpdateNote);
+        });
+        self.on('open', function(options){
+            self.init();
+            try{
+                self.pageNote._id = window.location.pathname.match(/_(\w+)/g)[0].substr(1);
+            }catch(e){
+                alert('无效的链接');
             }
-        </script>
-    </div>
+            console.info('tag pageNote new is opening');
+             loadNote.execute({
+                noteId: self.pageNote._id
+            });
+        });
+        self.on('leave', function(){
+            self.mask = true;
+            self.update();
+        });
+        self.on('reenter', function(){
+            self.mask = false;
+            self.update();
+        });
+        self.on('refresh', function(){
+            console.info('tag group index is refreshing');
+            //_refresh();
+        });
+
+        goToAuthorize(e){
+            var getUserInfoUrl = '/auth/authorize?';
+            getUserInfoUrl += 'route=get_user_info&returnUrl='+location.href;
+            location.href = getUserInfoUrl;
+        }
+    </script>
 </note-edit>

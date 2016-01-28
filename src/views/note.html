@@ -7,6 +7,7 @@
     <title>{{__app.resources.app.title}}</title>
     {% set devOrNot = __app.settings.env.debug %}
     {% if devOrNot %}
+    <link rel="stylesheet" href="/web/css/main.css"/>
     <script src="/public/components/seajs/dist/sea.js"></script>
     <script src="/public/components/seajs-wrap/dist/seajs-wrap.js"></script>
     {% endif %}
@@ -24,8 +25,8 @@
     </script>
     <link rel="stylesheet" href="/public/components/weui/dist/style/weui.min.css"/>
 </head>
-<body style="background: #82817f;max-width: 768px;position: relative; margin: 0px auto;">
-    <div class="wrapper" style="background: #ddd">
+<body>
+    <div>
         <note-edit></note-edit>
         {% if devOrNot %}
         <script src="/web/tag/note-edit.html" type="riot/tag"></script>

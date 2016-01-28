@@ -1,4 +1,109 @@
-body.page {
-  background-color: #000000;
+body {
+  background-color: #ffffff;
   font-family: "Helvetica Neue", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+  margin: 0px;
+}
+div.page {
+  background-color: #ffffff;
+  margin: 0px;
+  padding: 0px;
+}
+div.page div.title {
+  margin: 0px;
+  padding: 20px 20px;
+  border: 0px solid transparent;
+}
+div.page div.title input {
+  margin: 20px 0px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  height: 30px;
+  line-height: 30px;
+  width: 90%;
+  font-size: 24px;
+  background: transparent;
+  border: 0px;
+}
+div.page div.title hr.line {
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+div.reference {
+  font-size: 14px;
+  margin: 0px;
+  padding: 10px 20px 10px 20px ;
+  display: table;
+  color: #202020;
+}
+div.reference img.user-icon {
+  height: 24px;
+  width: 24px;
+  border: 0px;
+}
+div.reference label.user-nickname {
+  font-size: 14px;
+  height: 24px;
+  line-height: 24px;
+  border: 0px;
+  display: table-cell;
+  vertical-align: middle;
+}
+img.user-icon {
+  height: 24px;
+  width: 24px;
+  border: 0px;
+}
+label.user-nickname {
+  font-size: 14px;
+  height: 24px;
+  line-height: 24px;
+  border: 0px;
+  display: table-cell;
+  vertical-align: middle;
+}
+div.section {
+  background-color: #ffffff;
+  margin: 40px 0px;
+  padding: 0px;
+}
+div.section div.author {
+  font-size: 14px;
+  margin: 0px 40px;
+  padding: 0px 0px 0px 0px ;
+  text-align: center;
+  display: table;
+  color: #202020;
+}
+div.section div.top {
+  font-size: 14px;
+  margin: 0px 20px;
+  padding: 0px 0px 0px 0px ;
+  text-align: right;
+  color: #202020;
+}
+div.section div.bottom {
+  font-size: 14px;
+  margin: 0px 20px;
+  padding: 0px 0px 0px 0px ;
+  text-align: right;
+  color: #202020;
+}
+div.section div.bottom .left {
+  display: inline;
+  float: left;
+  text-align: left;
+}
+div.section div.bottom .right {
+  display: inline;
+  float: right;
+  text-align: right;
+}
+.note_txt {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-size: 14px;
+  margin-left: 20px;
+  margin-right: 20px;
 }

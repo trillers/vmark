@@ -1,15 +1,144 @@
 //style="background: #82817f;max-width: 768px;position: relative; margin: 0px auto;"
 //排班
-@baseFontSize:	16px;
-//@baseFontFamily:	"Helvetica Neue", Helvetica, Arial, sans-serif";
 @baseFontFamily:	"Helvetica Neue","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
-@baseLineHeight:	18px;
+@baseFontSize:	  14px;
+@titleFontSize:	  24px;
+@subtitleFontSize:	  14px;
+//@baseLineHeight:  18px;
 
 //颜色
-@bgColor: #000000;
+@bodyBgColor: #ffffff;
+@pageBgColor: #ffffff;//#e6e6e6
+@sectionBgColor: #ffffff;
 
-body.page {
-  background-color: @bgColor;
+body {
+  background-color: @bodyBgColor;
   font-family: @baseFontFamily;
+  margin: 0px;
 }
 
+div.page {
+  background-color: @pageBgColor;
+  margin: 0px;
+  padding: 0px;
+
+  div.title {
+    margin: 0px;
+    padding: 20px 20px;
+    border: 0px solid transparent;
+
+    input {
+      margin: 20px 0px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      padding-left: 20px;
+      padding-right: 20px;
+      height: 30px;
+      line-height: 30px;
+      width: 90%;
+      font-size: @titleFontSize;
+      background: transparent;
+      border: 0px;
+    }
+
+    hr.line {
+      margin-top: 20px;
+      margin-bottom: 30px;
+    }
+  }
+
+}
+
+div.reference {
+  font-size: @subtitleFontSize;
+  margin: 0px;
+  padding: 10px 20px 10px 20px ;
+
+  display: table;
+  color: #202020;
+
+  img.user-icon {
+    height: 24px;
+    width: 24px;
+    border: 0px;
+  }
+
+  label.user-nickname {
+    font-size: @subtitleFontSize;
+    height: 24px;
+    line-height: 24px;
+    border: 0px;
+    display: table-cell;
+    vertical-align: middle;
+  }
+}
+
+img.user-icon {
+  height: 24px;
+  width: 24px;
+  border: 0px;
+}
+
+label.user-nickname {
+  font-size: @subtitleFontSize;
+  height: 24px;
+  line-height: 24px;
+  border: 0px;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+
+div.section {
+  background-color: @sectionBgColor;
+  margin: 40px 0px;
+  padding: 0px;
+
+  div.author {
+    font-size: @subtitleFontSize;
+    margin: 0px 40px;
+    padding: 0px 0px 0px 0px ;
+    text-align: center;
+    display: table;
+    color: #202020;
+  }
+
+  div.top {
+    font-size: @subtitleFontSize;
+    margin: 0px 20px;
+    padding: 0px 0px 0px 0px ;
+    text-align: right;
+    color: #202020;
+  }
+
+  div.bottom {
+    font-size: @subtitleFontSize;
+    margin: 0px 20px;
+    padding: 0px 0px 0px 0px ;
+    text-align: right;
+    color: #202020;
+    .left {
+      display:inline;
+      float: left;
+      text-align: left;
+    }
+    .right {
+      display:inline;
+      float: right;
+      text-align: right;
+    }
+  }
+
+}
+
+.componentBase(@margin: 5px){
+  margin-top: @margin;
+  margin-bottom: @margin;
+}
+
+.note_txt {
+  .componentBase();
+  font-size: @baseFontSize;
+  margin-left: 20px;
+  margin-right: 20px;
+}
