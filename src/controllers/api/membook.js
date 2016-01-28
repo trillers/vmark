@@ -91,13 +91,13 @@ module.exports = function (router) {
             originalInteraction.type = InteractType.Like.value();
             var interaction = yield interactService.createAsync(originalInteraction);
             var note = yield noteService.likeAsync(noteId, interaction);
-            interaction.initiator = note.initiator;
             this.body = {like: interaction};
         }catch(e){
             context.logger.error(e);
             this.body = {error: e};
         }
     });
+
     router.post('/note/comment', function*(){
         try{
             var noteId = this.request.body.note;
@@ -105,7 +105,6 @@ module.exports = function (router) {
             originalInteraction.type = InteractType.Comment.value();
             var interaction = yield interactService.createAsync(originalInteraction);
             var note = yield noteService.addCommentAsync(noteId, interaction);
-            interaction.initiator = note.initiator;
             this.body = {comment: interaction};
         }catch(e){
             context.logger.error(e);

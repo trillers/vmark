@@ -4,8 +4,8 @@
             <img style="width:32px;height:32px" riot-src="{initiator.headimgurl}"/>&nbsp&nbsp
             <label>{initiator.nickname}</label> &nbsp
             <span style="font-size: 12px;color:#888" if="{section.parentNote && section.status != 'dr'}">{formatDate(new Date(section.crtOn))}</span>
-            <input onclick="{submitSectionNote}" if="{isOnEdit()}" value="提交" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_primary"/>
-            <input onclick="{cancelSectionNote}" if="{isOnEdit()}" value="取消" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_primary"/>
+            <input onclick="{submitSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" value="提交" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_primary"/>
+            <input onclick="{cancelSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" value="取消" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_primary"/>
             <input onclick="{clearTrash}" if="{isOnEdit() && trash.length>0}" value="删除" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_warn"/>
             <input onclick="{editSectionNote}" if="{!isOnEdit() && (initiator._id === parent.user._id)}" value="编辑" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
         </div>
@@ -30,7 +30,7 @@
             <label>{section.comments.length || 0}</label>
             <div class="comments" if="{parent.currComment._id === section._id}">
                 <ul>
-                    <li each="{section.comments}">
+                    <li each="{section.comments}" onclick="{parent.deleteComment}">
                         <img riot-src="{initiator.headimgurl}"/>
                         <span>{content}</span>
                         <span style="font-size: 12px; float:right">{parent.formatDate(new Date(crtOn))}</span>
@@ -142,10 +142,12 @@
         var uploadVoice = domain.action('uploadVoice');
         var likeNote = domain.action('likeNote');
         var unlikeNote = domain.action('unlikeNote');
+        var deleteComment = domain.action('deleteComment');
         //instance properties
         self.section = this.opts.section;
         self.isNew = !!this.opts.new;
         self.parent = self.isNew ? self.parent : self.parent.parent;
+        self.confirmComponent  = self.parent.tags['note-confirm'];
         self.initiator = self.section.initiator || self.parent.user;
         self.initiator.headimgurl = self.initiator.headimgurl || '/public/images/def-avatar.png';
         self.isOnEdit = function(){
@@ -240,6 +242,37 @@
                         }
                     })
                     .execute();
+        };
+        self.deleteComment = function(e){
+            var commenter = e.item.initiator;
+            if(commenter._id != self.parent.user._id){
+                return false;
+            }
+            self.confirmComponent.one('confirm', confirmListener);
+            self.confirmComponent.one('cancel', cancelListener);
+            function confirmListener(){
+                clearListeners();
+                deleteComment
+                    .newInvocation(self.section)
+                    .onDone(function(data){
+                        if(data.success){
+                            self.comments.forEach(function(comments, index){
+
+                            })
+                        }else{
+                            alert('delete comments failed.')
+                        }
+                    })
+                    .execute();
+            }
+            function cancelListener(){
+                clearListeners();
+            }
+            function clearListeners(){
+                self.confirmComponent.off('confirm', confirmListener);
+                self.confirmComponent.off('cancel', cancelListener);
+            }
+            self.confirmComponent.trigger('confirm');
         };
         self.cancelSectionNote = function(e){
             self.init();
@@ -353,6 +386,7 @@
         self.like = function(e){
             var currLike = null;
             if(self.section.likes.length>0){
+                //liked or not
                 self.section.likes.forEach(function(like){
                     if(like.initiator._id === self.parent.user._id){
                         currLike = like;

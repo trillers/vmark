@@ -15,7 +15,7 @@
                 <button onclick={goToAuthorize}>去授权</button>
             </div>
             <div>
-                <note-section each="{item in pageNote.mates}" section="{item}"></note-section>
+                <note-section each="{item in pageNote.mates}" if="{item.status != 'dr'}" section="{item}"></note-section>
                 <note-section if="{currNote === newSection}" section="{newSection}" new="true"></note-section>
             </div>
             <ul class="btn-group" onclick="{selectOperate}">
@@ -29,6 +29,7 @@
             </div>
             <div style="clear: both"></div>
         </div>
+        <note-confirm></note-confirm>
         <note-footer if="{Object.keys(currNote).length}"></note-footer>
         <note-comment if="{currComment}"></note-comment>
         <style scoped>
