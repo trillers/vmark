@@ -112,6 +112,17 @@ module.exports = function (router) {
         }
     });
 
+    router.delete('/note/comment/_:id', function*(){
+        try{
+            var id = this.params.id;
+            yield interactService.deleteByIdAsync(id);
+            this.body = {success: true};
+        }catch(e){
+            context.logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
     router.post('/note/unlike', function*(){
         try{
             var noteId = this.request.body.note;
