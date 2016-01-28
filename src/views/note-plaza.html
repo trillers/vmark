@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{__app.resources.app.title}}</title>
+    <link rel="stylesheet" href="/public/components/weui/dist/style/weui.min.css">
+    <style>
+        body{
+            padding-top: 20px;
+        }
+        a{
+            text-decoration: none;
+            cursor: pointer;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    {% if noteList.length == 0 %}
+        <div class="weui_cells">
+            <div class="weui_cell">
+                <div class="weui_cell_bd weui_cell_primary">
+                    <p>您还没有创建任何笔记~~</p>
+                </div>
+                <div class="weui_cell_ft"><a href="/note/new">去创建</a></div>
+            </div>
+        </div>
+    {% endif %}
+    {% if noteList.length > 0 %}
+    {% for note in noteList %}
+        <div class="weui_cells">
+            <div class="weui_cell">
+                <div class="weui_cell_bd weui_cell_primary">
+                    <p><a href="/note/_{{note._id}}">{{note.title || '匿名'}}</a></p>
+                </div>
+                <!--<div class="weui_cell_ft">说明文字</div>-->
+            </div>
+        </div>
+    {% endfor %}
+    {% endif %}
+</body>
+</html>

@@ -71,5 +71,12 @@ module.exports = function(){
         yield this.render('note-list', {noteList: noteList});
     });
 
+    router.get('/discover', needSubscriptionFilter, function *(){
+        var auth = authentication.getAuthentication(this);
+        var userId = auth.user.id;
+        var noteList = yield noteServcie.loadByUserIdAsync(userId)
+        yield this.render('note-plaza', {noteList: noteList});
+    });
+
     return router.routes();
 };
