@@ -3,7 +3,7 @@ var ACCESS_TOKEN = 'access';
 var JSAPI_TOKEN = 'jsapi';
 
 var tokenKey = function(type){
-    return 'wc:token:'+type;
+    return 'wc:nt:token:'+type;
 };
 
 var Kv = function(context){

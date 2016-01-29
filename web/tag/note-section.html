@@ -1,14 +1,18 @@
 <note-section>
-    <div class="note_section" sectionId="{_id}">
-        <div style="line-height: 48px;height:48px;border-bottom: 1px solid #ddd;margin-bottom: 10px">
-            <img style="width:32px;height:32px" riot-src="{initiator.headimgurl}"/>&nbsp&nbsp
-            <label>{initiator.nickname}</label> &nbsp
+    <div class="note_section1 section" sectionId="{_id}">
+        <div class="author" >
+            <img class="user-icon" riot-src="{initiator.headimgurl}"/>&nbsp&nbsp
+            <label class="user-nickname"> {initiator.nickname}</label> &nbsp
             <span style="font-size: 12px;color:#888" if="{section.parentNote && section.status != 'dr'}">{formatDate(new Date(section.crtOn))}</span>
+        </div>
+
+        <div class="top" >
             <input onclick="{submitSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" value="提交" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_primary"/>
             <input onclick="{cancelSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" value="取消" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_primary"/>
             <input onclick="{clearTrash}" if="{isOnEdit() && trash.length>0}" value="删除" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_warn"/>
             <input onclick="{editSectionNote}" if="{!isOnEdit() && (initiator._id === parent.user._id)}" value="编辑" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
         </div>
+
         <div class="noteItems">
             <div each="{section.mates}" noteId="{_id}" style="margin-top: 2px">
                 <div onclick="{parent.pushToTrash}" if="{parent.isOnEdit()}" style="float: left">
@@ -23,19 +27,28 @@
         <div style="position:absolute;top:0;left:0;width:0;height:0;">
             <audio id="voiceMsgPlayer" class="voicePlayer"></audio>
         </div>
-        <div class="interact_box" if="{!isNew}">
-            <input onclick="{like}" value="赞" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
-            <label>{section.likes.length || 0}</label>
-            <input onclick="{comment}" value="评" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
-            <label>{section.comments.length || 0}</label>
-            <div class="comments" if="{parent.currComment._id === section._id}">
+        <div class="bottom">
+            <div class="left" >
+                <input value="+" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
+            </div>
+
+            <div class="right" if="{!isNew}">
+                <input onclick="{like}" value="赞" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
                 <ul>
-                    <li each="{section.comments}" onclick="{parent.deleteComment}">
-                        <img riot-src="{initiator.headimgurl}"/>
-                        <span>{content}</span>
-                        <span style="font-size: 12px; float:right">{parent.formatDate(new Date(crtOn))}</span>
-                    </li>
+                    <li each="{section.likes}" style="width: 32px;height:32px"><img style="width: 100%" riot-src="{initiator.headimgurl}"/></li>
                 </ul>
+                <label>{section.likes.length || 0}</label>
+                <input onclick="{comment}" value="评" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
+                <label>{section.comments.length || 0}</label>
+                <div class="comments" if="{parent.currComment._id === section._id}">
+                    <ul>
+                        <li each="{section.comments}" onclick="{parent.deleteComment}">
+                            <img class="user-icon" riot-src="{initiator.headimgurl}"/>
+                            <span>{content}</span>
+                            <span style="font-size: 12px; float:right">{parent.formatDate(new Date(crtOn))}</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
