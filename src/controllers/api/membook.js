@@ -51,7 +51,6 @@ module.exports = function (router) {
     router.put('/note/publish/_:id', function* (){
         try{
             var note = this.request.body;
-            console.log(note);
             if(!note.status || note.status === NoteStatus.Draft.value()){
                 note.status = NoteStatus.Publish.value();
                 yield noteService.updateByIdAsync(note._id, note);
@@ -91,6 +90,7 @@ module.exports = function (router) {
             originalInteraction.type = InteractType.Like.value();
             var interaction = yield interactService.createAsync(originalInteraction);
             var note = yield noteService.likeAsync(noteId, interaction);
+            console.error(note);
             this.body = {like: interaction};
         }catch(e){
             context.logger.error(e);
