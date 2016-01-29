@@ -1,10 +1,10 @@
 body {
-  background-color: #ffffff;
+  background-color: #e6e6e6;
   font-family: "Helvetica Neue", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
   margin: 0px;
 }
 div.page {
-  background-color: #ffffff;
+  background-color: #e6e6e6;
   margin: 0px;
   padding: 0px;
 }
@@ -14,7 +14,7 @@ div.page div.title {
   border: 0px solid transparent;
 }
 div.page div.title input {
-  margin: 20px 0px;
+  margin: 10px 0px;
   padding-top: 10px;
   padding-bottom: 10px;
   padding-left: 20px;
@@ -26,9 +26,10 @@ div.page div.title input {
   background: transparent;
   border: 0px;
 }
-div.page div.title hr.line {
-  margin-top: 20px;
-  margin-bottom: 30px;
+div.page div.title div.line {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-top: 1px outset #999999;
 }
 div.reference {
   font-size: 14px;
@@ -55,6 +56,11 @@ img.user-icon {
   width: 24px;
   border: 0px;
 }
+img.small-icon {
+  height: 16px;
+  width: 16px;
+  border: 0px;
+}
 label.user-nickname {
   font-size: 14px;
   height: 24px;
@@ -63,17 +69,30 @@ label.user-nickname {
   display: table-cell;
   vertical-align: middle;
 }
+.left {
+  float: left;
+}
+.right {
+  float: right;
+}
 div.section {
   background-color: #ffffff;
-  margin: 40px 0px;
+  margin: 20px 0px;
   padding: 0px;
 }
+div.section div.top-padding {
+  height: 20px;
+}
+div.section div.bottom-padding {
+  height: 20px;
+}
 div.section div.author {
+  box-sizing: border-box;
   font-size: 14px;
   margin: 0px 40px;
-  padding: 0px 0px 0px 0px ;
+  padding: 10px 0px 10px 0px ;
   text-align: center;
-  display: table;
+  display: block;
   color: #202020;
 }
 div.section div.top {
@@ -83,22 +102,47 @@ div.section div.top {
   text-align: right;
   color: #202020;
 }
+div.section div.img-btn {
+  width: 16px;
+  height: 16px;
+  border: 0px;
+  padding: 4px;
+}
+div.section div.img-btn img {
+  width: 16px;
+  height: 16px;
+  border: 0px;
+}
 div.section div.bottom {
   font-size: 14px;
-  margin: 0px 20px;
+  margin: 0px 10px;
   padding: 0px 0px 0px 0px ;
-  text-align: right;
+  height: 30px;
   color: #202020;
 }
-div.section div.bottom .left {
-  display: inline;
-  float: left;
-  text-align: left;
+div.section .comments {
+  background-color: #e6e6e6;
+  margin: 0px 10px;
+  padding: 0px 0px 0px 0px ;
 }
-div.section div.bottom .right {
-  display: inline;
-  float: right;
-  text-align: right;
+div.section .comments span {
+  margin-left: 8px;
+  font-size: 14px;
+  color: #888;
+}
+div.section .comments ul {
+  margin: 0px;
+  padding: 0px;
+  list-style-type: none;
+}
+div.section .comments ul li {
+  padding: 0px 5px;
+  height: 30px;
+  line-height: 30px;
+  border-bottom: 1px solid #eee;
+}
+div.section .comments ul li:last-child {
+  border-bottom: none;
 }
 .note_txt {
   margin-top: 5px;
@@ -106,4 +150,26 @@ div.section div.bottom .right {
   font-size: 14px;
   margin-left: 20px;
   margin-right: 20px;
+}
+div.add-section-bar {
+  display: table;
+  width: 100%;
+  margin: 40px 0px;
+}
+div.add-section-bar div.add-section {
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+}
+div.add-section-bar div.add-section div {
+  display: inline-block;
+  padding: 8px 4px 2px 6px;
+  border: 1px solid #000000;
+  width: 55px;
+  height: 55px;
+}
+div.add-section-bar div.add-section div img {
+  height: 50px;
+  width: 50px;
+  border: 0px solid #000000;
 }

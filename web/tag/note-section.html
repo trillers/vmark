@@ -1,9 +1,10 @@
 <note-section>
     <div class="note_section1 section" sectionId="{_id}">
+        <div class="top-padding" />
         <div class="author" >
             <img class="user-icon" riot-src="{initiator.headimgurl}"/>&nbsp&nbsp
             <label class="user-nickname"> {initiator.nickname}</label> &nbsp
-            <span style="font-size: 12px;color:#888" if="{section.parentNote && section.status != 'dr'}">{formatDate(new Date(section.crtOn))}</span>
+            <span if="{section.parentNote && section.status != 'dr'}">{formatDate(new Date(section.crtOn))}</span>
         </div>
 
         <div class="top" >
@@ -37,17 +38,70 @@
                 <label>{section.likes.length || 0}</label>
                 <input onclick="{comment}" value="评" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
                 <label>{section.comments.length || 0}</label>
-                <div class="comments" if="{parent.currComment._id === section._id}">
-                    <ul>
-                        <li each="{section.comments}" onclick="{parent.deleteComment}">
-                            <img class="user-icon" riot-src="{initiator.headimgurl}"/>
-                            <span>{content}</span>
-                            <span style="font-size: 12px; float:right">{parent.formatDate(new Date(crtOn))}</span>
-                        </li>
-                    </ul>
-                </div>
             </div>
         </div>
+
+        <div class="bottom">
+            <table style="width:100%;">
+                <tr>
+                    <td style="width:50%;">
+                        <div class="img-btn left">
+                            <img src="/public/images/add-stretch.png">
+                        </div>
+                    </td>
+                    <td style="width:50%;">
+                        <div class="right">
+                            <div id="interactBlock" class="left" style="display: inline-block; height: 24px;">
+                                <div class="img-btn left">
+                                    <img src="/public/images/like.png">
+                                </div>
+                                <div class="img-btn left" style="display: inline-block; ">
+                                    <img src="/public/images/comment.png">
+                                </div>
+                            </div>
+                            <!--<div class="img-btn left">-->
+                                <!--<img src="/public/images/3dot-middle.png">-->
+                            <!--</div>-->
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+
+        <div class="comments" if="{parent.currComment._id === section._id}">
+            <ul>
+                <li each="{section.comments}" onclick="{parent.deleteComment}">
+                <table style="width:100%;">
+                    <tr>
+                        <td style="width: 24px;">
+                            <div>
+                                <img class="user-icon" src="{initiator.headimgurl}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <span>{content}</span>
+                            </div>
+                        </td>
+                        <td style="width: 20px; ">
+                            <div>
+                                <img class="small-icon" src="/public/images/trashbin.png"/>
+                            </div>
+                        </td>
+                        <td style="width: 60px;">
+                            <div>
+                                <span style="font-size: 12px; float:right">{parent.formatDate(new Date(crtOn))}</span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                </li>
+            </ul>
+        </div>
+
+
+        <div class="bottom-padding" />
     </div>
     <style scoped>
         label{
@@ -64,24 +118,7 @@
             border-radius: 50em;
             vertical-align: middle;
         }
-        .interact_box .comments span{
-            margin-left: 8px;
-            font-size: 14px;
-            color: #888;
-        }
-        .interact_box .comments ul{
-            margin: 0px;
-            padding: 0px;
-            list-style-type: none;
-        }
-        .interact_box .comments ul li{
-            height: 48px;
-            line-height: 48px;
-            border-bottom: 1px solid #eee;
-        }
-        .interact_box .comments ul li:last-child{
-            border-bottom: none;
-        }
+
         .noteItems div{
             line-height: 31px;
         }
