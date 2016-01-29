@@ -5,7 +5,7 @@
                 <input oninput="{noteEditInput}" name="txtInput" placeholder="点击输入文字" value=""/>
             </div>
             <div class="toggle_menu">
-                <div ontouchstart="{addComment}" class="send_btn" if="{viewModel.input.editTxt}">发送</div>
+                <div onclick="{addComment}" class="send_btn" if="{viewModel.input.editTxt}">发送</div>
             </div>
         </div>
         <div style="clear: both"></div>
@@ -107,6 +107,7 @@
             }).onDone(function(data){
                 self.txtInput.value = '';
                 self.viewModel.input.doWait();
+                console.error(data.comment);
                 self.parent.trigger('noteComment', data.comment);
             }).execute();
         };

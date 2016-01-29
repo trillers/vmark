@@ -119,9 +119,7 @@
                 title: self.pageNote.title || __app.resources.app.title,
                 link: url,
                 imgUrl: __page.baseUrl + '/public/images/logo_share_48x48.jpg',
-                success: function(){
-
-                },
+                success: function(){},
                 cancel: function(){}
             });
             wx.onMenuShareAppMessage({
@@ -129,9 +127,7 @@
                 desc: '',
                 link: url,
                 imgUrl: __page.baseUrl + '/public/images/logo_share_48x48.jpg',
-                success: function () {
-
-                },
+                success: function () {},
                 cancel: function () {}
             });
         };
