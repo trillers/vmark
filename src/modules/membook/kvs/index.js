@@ -23,4 +23,7 @@ module.exports.atToOpenid = Promise.promisifyAll(new AtToOpenid(context));
 var OtToOpenid = require('./OtToOpenid');
 module.exports.otToOpenid = Promise.promisifyAll(new OtToOpenid(context));
 
+var RankAction = require('./RankAction');
+module.exports.rankAction = Promise.promisifyAll(new RankAction(context));
+
 u.extend(context.kvs, module.exports);

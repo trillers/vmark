@@ -13,6 +13,8 @@ var needSubscriptionFilter = generateAuthFilter(3);
 var authentication = require('../../modules/auth/authentication');
 var qrRegistry = require('../../modules/wechatsite/qr');
 var returnOnSubscriptionType = qrRegistry.getQrType('ret');
+var rankAction = context.kvs.rankAction;
+
 module.exports = function(){
     var router = new Router();
     router.prefix('/note');
@@ -61,6 +63,7 @@ module.exports = function(){
 
     router.get('/_:id', needBaseInfoFilter, function *(){
         var id = this.params.id;
+        rankAction.view(id);
         yield this.render('note', {id: id});
     });
 
@@ -72,9 +75,21 @@ module.exports = function(){
     });
 
     router.get('/discover', needSubscriptionFilter, function *(){
-        var auth = authentication.getAuthentication(this);
-        var userId = auth.user.id;
-        var noteList = yield noteServcie.loadByUserIdAsync(userId)
+        var params = {
+            conditions:{
+                lFlg: 'a',
+                type: 'pg'
+            },
+            sort: {rank: -1},
+            page: {
+                no: 1,
+                size: 10
+            },
+            populate:[
+                {path: 'initiator'}
+            ]
+        }
+        var noteList = yield noteServcie.filterAsync(params);
         yield this.render('note-plaza', {noteList: noteList});
     });
 

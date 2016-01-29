@@ -5,40 +5,65 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{__app.resources.app.title}}</title>
-    <link rel="stylesheet" href="/public/components/weui/dist/style/weui.min.css">
+    <script src="/public/components/cmd-jquery/jquery.min.js"></script>
     <style>
         body{
-            padding-top: 20px;
+            background-color: gainsboro;
         }
         a{
+            display: block;
+            width: 100%;
             text-decoration: none;
             cursor: pointer;
             color: black;
         }
+        .disImg{
+            width: 100px;
+            height: 100px;
+            float: left;
+        }
+        .container{
+            background-color: white;
+            margin-top: 5px;
+            height: 100px;
+        }
+        .title{
+            float: left;
+        }
+        .date{
+
+        }
     </style>
+    <script>
+        $(function(){
+            $('.container').click(function(){
+                window.location.href = '/note/_' + $(this).attr('_id');
+            });
+        })
+    </script>
 </head>
 <body>
-    {% if noteList.length == 0 %}
-        <div class="weui_cells">
-            <div class="weui_cell">
-                <div class="weui_cell_bd weui_cell_primary">
-                    <p>您还没有创建任何笔记~~</p>
-                </div>
-                <div class="weui_cell_ft"><a href="/note/new">去创建</a></div>
-            </div>
+{% if noteList.length == 0 %}
+<div class="weui_cells">
+    <div class="weui_cell">
+        <div class="weui_cell_bd weui_cell_primary">
+            <p>您还没有笔记~~</p>
         </div>
-    {% endif %}
-    {% if noteList.length > 0 %}
-    {% for note in noteList %}
-        <div class="weui_cells">
-            <div class="weui_cell">
-                <div class="weui_cell_bd weui_cell_primary">
-                    <p><a href="/note/_{{note._id}}">{{note.title || '匿名'}}</a></p>
-                </div>
-                <!--<div class="weui_cell_ft">说明文字</div>-->
-            </div>
-        </div>
-    {% endfor %}
-    {% endif %}
+        <div class="weui_cell_ft"><a href="/note/new">去创建</a></div>
+    </div>
+</div>
+{% endif %}
+{% if noteList.length > 0 %}
+{% for note in noteList %}
+<div class="container" _id="{{note._id}}">
+    <img class="disImg" src="{{note.url || '/public/images/def-avatar.png'}}" alt="">
+    <p>{{note.title || '匿名'}}</p>
+    <div>
+        <p class="title">{{note.initiator.nickname}}</p>
+        <p class="date">{{note.crtOn|date('Y-m-d')}}</p>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
 </body>
 </html>

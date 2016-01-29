@@ -40,3 +40,6 @@ domain.action('uploadImage').onExecute(function(data){
 domain.action('uploadVoice').onExecute(function(data){
     apiFactory.post('/qn/voice').drive(this).send(data);
 });
+domain.action('shareAction').onExecute(function(data){
+    apiFactory.get('/membook/note/onShare').drive(this).send(data);
+});

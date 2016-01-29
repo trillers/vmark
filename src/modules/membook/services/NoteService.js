@@ -54,11 +54,14 @@ Service.prototype.updateById = function(id, json, callback){
     Note.findByIdAndUpdate(id, json, {new: true}, function (err, doc) {
         if(err){
             return callback(err);
+        }else if(doc) {
+            var obj = doc.toObject({virtuals: true});
+            return kv.saveById(obj, function (err, obj) {
+                if (callback) callback(err, obj);
+            });
+        }else{
+            if (callback) callback(err, doc);
         }
-        var obj = doc.toObject({virtuals: true});
-        return kv.saveById(obj, function(err, obj){
-            if(callback) callback(err, obj);
-        });
     });
 };
 
@@ -136,5 +139,45 @@ Service.prototype.deleteNotesById = function(ids, callback){
         });
     })
 };
+
+Service.prototype.filter = function (params, callback) {
+    var Note = this.context.models.Note;
+
+    var query = Note.find();
+
+    if (params.options) {
+        query.setOptions(params.options);
+    }
+
+    if (params.sort) {
+        query.sort(params.sort);
+    }
+
+    if (params.page) {
+        var skip = (params.page.no - 1) * params.page.size;
+        var limit = params.page.size;
+        if (skip) query.skip(skip);
+        if (limit) query.limit(limit);
+    }
+
+    if (params.conditions) {
+        query.find(params.conditions);
+    }
+
+    if (params.populate) {
+        params.populate.forEach(function (item) {
+            query.populate(item);
+        })
+    }
+    query.lean(true);
+    query.exec(function (err, docs) {
+        if (err) {
+            callback(err);
+            return;
+        }
+
+        if (callback) callback(null, docs);
+    });
+}
 
 module.exports = Service;

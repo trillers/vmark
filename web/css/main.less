@@ -10,6 +10,7 @@
 @bodyBgColor: #e6e6e6;
 @pageBgColor: #e6e6e6;
 @sectionBgColor: #ffffff;
+@likeBgColor: #e6e6e6;
 @commentBgColor: #e6e6e6;
 
 body {
@@ -168,9 +169,36 @@ div.section {
 
   }
 
+  .interact {
+    margin: 0px 10px;
+  }
+  .likes {
+    background-color: @likeBgColor;
+    margin: 0px 0px;
+    padding: 0px 0px 0px 0px ;
+    span{
+      margin-left: 8px;
+      font-size: 14px;
+      color: #888;
+    }
+    ul{
+      margin: 0px;
+      padding: 5px 5px;
+      list-style-type: none;
+      li{
+        padding: 0px 0px;
+        height: 30px;
+        line-height: 30px;
+        border-bottom: 1px solid #eee;
+      }
+      li:last-child{
+        border-bottom: none;
+      }
+    }
+  }
   .comments {
     background-color: @commentBgColor;
-    margin: 0px 10px;
+    margin: 0px 0px;
     padding: 0px 0px 0px 0px ;
     span{
       margin-left: 8px;

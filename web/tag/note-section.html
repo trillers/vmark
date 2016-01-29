@@ -28,18 +28,6 @@
         <div style="position:absolute;top:0;left:0;width:0;height:0;">
             <audio id="voiceMsgPlayer" class="voicePlayer"></audio>
         </div>
-        <div class="bottom">
-            <div class="left" >
-                <input value="+" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
-            </div>
-
-            <div class="right" if="{!isNew}">
-                <input onclick="{like}" value="赞" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
-                <label>{section.likes.length || 0}</label>
-                <input onclick="{comment}" value="评" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
-                <label>{section.comments.length || 0}</label>
-            </div>
-        </div>
 
         <div class="bottom">
             <table style="width:100%;">
@@ -52,16 +40,13 @@
                     <td style="width:50%;">
                         <div class="right">
                             <div id="interactBlock" class="left" style="display: inline-block; height: 24px;">
-                                <div class="img-btn left">
+                                <div onclick="{like}" class="img-btn left">
                                     <img src="/public/images/like.png">
                                 </div>
-                                <div class="img-btn left" style="display: inline-block; ">
+                                <div onclick="{comment}" class="img-btn left" style="display: inline-block; ">
                                     <img src="/public/images/comment.png">
                                 </div>
                             </div>
-                            <!--<div class="img-btn left">-->
-                                <!--<img src="/public/images/3dot-middle.png">-->
-                            <!--</div>-->
                         </div>
                     </td>
                 </tr>
@@ -69,35 +54,44 @@
 
         </div>
 
-        <div class="comments" if="{parent.currComment._id === section._id}">
-            <ul>
-                <li each="{section.comments}" onclick="{parent.deleteComment}">
-                <table style="width:100%;">
-                    <tr>
-                        <td style="width: 24px;">
-                            <div>
-                                <img class="user-icon" src="{initiator.headimgurl}"/>
-                            </div>
-                        </td>
-                        <td>
-                            <div>
-                                <span>{content}</span>
-                            </div>
-                        </td>
-                        <td style="width: 20px; ">
-                            <div>
-                                <img class="small-icon" src="/public/images/trashbin.png"/>
-                            </div>
-                        </td>
-                        <td style="width: 60px;">
-                            <div>
-                                <span style="font-size: 12px; float:right">{parent.formatDate(new Date(crtOn))}</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-                </li>
-            </ul>
+        <div class="interact" if="{!isNew}">
+            <div class="likes" >
+                <ul>
+                    <li each="{section.likes}">
+                        <div><img class="user-icon" riot-src="{initiator.headimgurl}"/></div>
+                    </li>
+                </ul>
+            </div>
+            <div class="comments" if="{parent.currComment._id === section._id}">
+                <ul>
+                    <li each="{section.comments}" onclick="{parent.deleteComment}">
+                    <table style="width:100%;">
+                        <tr>
+                            <td style="width: 24px;">
+                                <div>
+                                    <img class="user-icon" src="{initiator.headimgurl}"/>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <span>{content}</span>
+                                </div>
+                            </td>
+                            <td style="width: 20px; ">
+                                <div>
+                                    <img class="small-icon" src="/public/images/trashbin.png"/>
+                                </div>
+                            </td>
+                            <td style="width: 60px;">
+                                <div>
+                                    <span style="font-size: 12px; float:right">{parent.formatDate(new Date(crtOn))}</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    </li>
+                </ul>
+            </div>
         </div>
 
 
