@@ -34,6 +34,9 @@
 
             <div class="right" if="{!isNew}">
                 <input onclick="{like}" value="赞" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
+                <ul>
+                    <li each="{section.likes}" style="width: 32px;height:32px"><img style="width: 100%" riot-src="{initiator.headimgurl}"/></li>
+                </ul>
                 <label>{section.likes.length || 0}</label>
                 <input onclick="{comment}" value="评" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
                 <label>{section.comments.length || 0}</label>
