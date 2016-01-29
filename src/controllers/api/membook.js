@@ -6,6 +6,7 @@ var NoteStatus = typeRegistry.item('NoteStatus');
 var InteractType = typeRegistry.item('InteractType');
 var noteService = context.services.noteService;
 var interactService = context.services.interactService;
+var rankAction = context.kvs.rankAction;
 
 module.exports = function (router) {
 
@@ -53,6 +54,7 @@ module.exports = function (router) {
             var note = this.request.body;
             console.log(note);
             if(!note.status || note.status === NoteStatus.Draft.value()){
+                rankAction.addSectionNote(note.parentNote);
                 note.status = NoteStatus.Publish.value();
                 yield noteService.updateByIdAsync(note._id, note);
             }
@@ -91,6 +93,7 @@ module.exports = function (router) {
             originalInteraction.type = InteractType.Like.value();
             var interaction = yield interactService.createAsync(originalInteraction);
             var note = yield noteService.likeAsync(noteId, interaction);
+            rankAction.like(note.parentNote);
             this.body = {like: interaction};
         }catch(e){
             context.logger.error(e);
@@ -105,6 +108,7 @@ module.exports = function (router) {
             originalInteraction.type = InteractType.Comment.value();
             var interaction = yield interactService.createAsync(originalInteraction);
             var note = yield noteService.addCommentAsync(noteId, interaction);
+            rankAction.comment(note.parentNote);
             this.body = {comment: interaction};
         }catch(e){
             context.logger.error(e);
@@ -208,5 +212,13 @@ module.exports = function (router) {
             context.logger.error(e);
             this.body = {error: e};
         }
+    });
+
+    router.get('/note/onShare', function*(){
+        var noteId = this.query.id;
+        if(noteId) {
+            rankAction.share(noteId);
+        }
+        this.body = {success: true};
     });
 };

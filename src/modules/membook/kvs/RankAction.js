@@ -62,7 +62,7 @@ Kv.prototype.delRankChangedSet = function(callback){
             err,
             'Fail to del RankChangedSet' + err,
             'Succeed to del RankChangedSet');
-        cbUtil.handleOk(callback, err, result);
+        cbUtil.handleSingleValue(callback, err, result);
     });
 };
 
@@ -74,7 +74,7 @@ Kv.prototype.delNoteRank = function(noteId, callback){
             err,
             'Fail to del note rank by id ' + noteId + 'err:' + err,
             'Succeed to del note rank by id' + noteId);
-        cbUtil.handleOk(callback, err, result);
+        cbUtil.handleSingleValue(callback, err, result);
     });
 };
 

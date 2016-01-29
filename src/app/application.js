@@ -6,6 +6,7 @@ var logger = require('./logging').logger;
 var path = require('path');
 var settings = require('vmark-settings');
 var koaBody = require('koa-body');
+require('./swigExtend');
 
 app.env = process.env.NODE_ENV || settings.env.mode;
 app.proxy = true;

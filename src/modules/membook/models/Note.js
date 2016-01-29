@@ -27,7 +27,9 @@ var Model = function(domainBuilder){
 
             type: {type: String, enum: NoteType.valueList(), default: NoteType.Page.value()},
 
-            status: {type: String, enum: NoteStatus.valueList(), default: NoteStatus.Draft.value()}
+            status: {type: String, enum: NoteStatus.valueList(), default: NoteStatus.Draft.value()},
+
+            rank: {type: Number, default: 0}
         })
         .build();
     return schema.model(true);
