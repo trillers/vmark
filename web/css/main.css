@@ -1,10 +1,10 @@
 body {
-  background-color: #e6e6e6;
+  background-color: #F2F6F9;
   font-family: "Helvetica Neue", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
   margin: 0px;
 }
 div.page {
-  background-color: #e6e6e6;
+  background-color: #F2F6F9;
   margin: 0px;
   padding: 0px;
 }
@@ -76,21 +76,34 @@ label.user-nickname {
   float: right;
 }
 div.section {
-  background-color: #ffffff;
-  margin: 20px 0px;
+  background-color: transparent;
+  margin: 20px 5px;
   padding: 0px;
+  border: 1px solid #e1e8ed;
+  border-radius: 4px;
 }
 div.section div.top-padding {
   height: 20px;
 }
 div.section div.bottom-padding {
-  height: 20px;
+  height: 0px;
+}
+div.section div.panel {
+  background-color: #ffffff;
+}
+div.section .btn {
+  font-size: 12px;
+  color: #aab8c2;
+}
+div.section .btn.active {
+  color: #4298ed;
 }
 div.section div.author {
   box-sizing: border-box;
   font-size: 14px;
-  margin: 0px 40px;
+  margin: 0px 60px 10px 60px;
   padding: 10px 0px 10px 0px ;
+  height: 40px;
   text-align: center;
   display: block;
   color: #202020;
@@ -100,7 +113,6 @@ div.section div.top {
   margin: 0px 20px;
   padding: 0px 0px 0px 0px ;
   text-align: right;
-  color: #202020;
 }
 div.section div.img-btn {
   width: 16px;
@@ -121,12 +133,13 @@ div.section div.bottom {
   color: #202020;
 }
 div.section .interact {
-  margin: 0px 10px;
+  margin: 10px 10px;
 }
 div.section .likes {
-  background-color: #e6e6e6;
+  background-color: #F2F6F9;
   margin: 0px 0px;
   padding: 0px 0px 0px 0px ;
+  border-bottom: 1px solid #e1e8ed;
 }
 div.section .likes span {
   margin-left: 8px;
@@ -148,7 +161,7 @@ div.section .likes ul li:last-child {
   border-bottom: none;
 }
 div.section .comments {
-  background-color: #e6e6e6;
+  background-color: #F2F6F9;
   margin: 0px 0px;
   padding: 0px 0px 0px 0px ;
 }
@@ -159,11 +172,11 @@ div.section .comments span {
 }
 div.section .comments ul {
   margin: 0px;
-  padding: 0px;
+  padding: 5px 5px;
   list-style-type: none;
 }
 div.section .comments ul li {
-  padding: 0px 5px;
+  padding: 5px 0px;
   height: 30px;
   line-height: 30px;
   border-bottom: 1px solid #eee;
@@ -175,8 +188,8 @@ div.section .comments ul li:last-child {
   margin-top: 5px;
   margin-bottom: 5px;
   font-size: 14px;
-  margin-left: 20px;
-  margin-right: 20px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 div.add-section-bar {
   display: table;

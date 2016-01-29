@@ -1,17 +1,23 @@
 <note-section>
-    <div class="note_section1 section" sectionId="{_id}">
+    <div class="section" sectionId="{_id}">
+        <div class="panel">
         <div class="top-padding" />
         <div class="author" >
-            <img class="user-icon" riot-src="{initiator.headimgurl}"/>&nbsp&nbsp
-            <label class="user-nickname"> {initiator.nickname}</label> &nbsp
-            <span if="{section.parentNote && section.status != 'dr'}">{formatDate(new Date(section.crtOn))}</span>
+            <div style="display: inline; float: left;">
+                <img class="user-icon" riot-src="{initiator.headimgurl}"/>
+            </div>
+            <div style="display: inline; float: left; padding-left: 10px;">
+                <label class="user-nickname"> {initiator.nickname}</label>
+            </div>
+            <div style="display: inline; float: left; padding-left: 10px;">
+                <span if="{section.parentNote && section.status != 'dr'}">{formatDate(new Date(section.crtOn))}</span>
+            </div>
         </div>
 
         <div class="top" >
-            <input onclick="{submitSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" value="提交" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_primary"/>
-            <input onclick="{cancelSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" value="取消" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_primary"/>
-            <input onclick="{clearTrash}" if="{isOnEdit() && trash.length>0}" value="删除" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_warn"/>
-            <input onclick="{editSectionNote}" if="{!isOnEdit() && (initiator._id === parent.user._id)}" value="编辑" type="button" class="weui_btn weui_btn_mini weui_btn_primary"/>
+            <label class="btn active" onclick="{submitSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" >确定</label>
+            <label class="btn" onclick="{cancelSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" >取消</label>
+            <input class="btn" onclick="{clearTrash}" if="{isOnEdit() && trash.length>0}" value="删除" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_warn"/>
         </div>
 
         <div class="noteItems">
@@ -30,11 +36,14 @@
         </div>
 
         <div class="bottom">
-            <table style="width:100%;">
+            <table style="width:100%;" cellpadding="0" cellspacing="0">
                 <tr>
                     <td style="width:50%;">
                         <div class="img-btn left">
-                            <img src="/public/images/add-stretch.png">
+                            <img src="/public/images/append.png">
+                        </div>
+                        <div class="img-btn left" onclick="{editSectionNote}" if="{!isOnEdit() && (initiator._id === parent.user._id)}">
+                            <img src="/public/images/edit.png">
                         </div>
                     </td>
                     <td style="width:50%;">
@@ -51,6 +60,7 @@
                     </td>
                 </tr>
             </table>
+        </div>
 
         </div>
 
@@ -65,7 +75,7 @@
             <div class="comments" if="{parent.currComment._id === section._id}">
                 <ul>
                     <li each="{section.comments}" onclick="{parent.deleteComment}">
-                    <table style="width:100%;">
+                    <table style="width:100%;" cellpadding="0" cellspacing="0">
                         <tr>
                             <td style="width: 24px;">
                                 <div>
@@ -93,8 +103,6 @@
                 </ul>
             </div>
         </div>
-
-
         <div class="bottom-padding" />
     </div>
     <style scoped>

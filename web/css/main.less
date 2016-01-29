@@ -7,11 +7,12 @@
 //@baseLineHeight:  18px;
 
 //颜色
-@bodyBgColor: #e6e6e6;
-@pageBgColor: #e6e6e6;
-@sectionBgColor: #ffffff;
-@likeBgColor: #e6e6e6;
-@commentBgColor: #e6e6e6;
+@bodyBgColor: #F2F6F9; //#e6e6e6;
+@pageBgColor: #F2F6F9;
+@sectionBgColor: transparent;
+@panelBgColor: #ffffff;
+@likeBgColor: #F2F6F9; //#3399FF;
+@commentBgColor: #F2F6F9;
 
 body {
   background-color: @bodyBgColor;
@@ -102,16 +103,30 @@ label.user-nickname {
 
 div.section {
   background-color: @sectionBgColor;
-  margin: 20px 0px;
+  margin: 20px 5px;
   padding: 0px;
-  div.top-padding {height: 20px;}
-  div.bottom-padding {height: 20px;}
+  border: 1px solid rgb(225, 232, 237);
+  border-radius: 4px;
 
+  div.top-padding {height: 20px;}
+  div.bottom-padding {height: 0px;}
+  div.panel {
+    background-color: @panelBgColor;
+  }
+
+  .btn {
+    font-size: 12px;
+    color: #aab8c2;
+  }
+  .btn.active {
+    color: #4298ed;
+  }
   div.author {
     box-sizing: border-box;
     font-size: @subtitleFontSize;
-    margin: 0px 40px;
+    margin: 0px 60px 10px 60px;
     padding: 10px 0px 10px 0px ;
+    height: 40px;
     text-align: center;
     display: block;
     color: #202020;
@@ -122,7 +137,6 @@ div.section {
     margin: 0px 20px;
     padding: 0px 0px 0px 0px ;
     text-align: right;
-    color: #202020;
   }
 
   div.img-btn {
@@ -136,6 +150,7 @@ div.section {
       border: 0px;
     }
   }
+
 
   div.bottom {
     font-size: @subtitleFontSize;
@@ -170,12 +185,13 @@ div.section {
   }
 
   .interact {
-    margin: 0px 10px;
+    margin: 10px 10px;
   }
   .likes {
     background-color: @likeBgColor;
     margin: 0px 0px;
     padding: 0px 0px 0px 0px ;
+    border-bottom: 1px solid rgb(225, 232, 237);
     span{
       margin-left: 8px;
       font-size: 14px;
@@ -207,10 +223,10 @@ div.section {
     }
     ul{
       margin: 0px;
-      padding: 0px;
+      padding: 5px 5px;
       list-style-type: none;
       li{
-        padding: 0px 5px;
+        padding: 5px 0px;
         height: 30px;
         line-height: 30px;
         border-bottom: 1px solid #eee;
@@ -230,8 +246,8 @@ div.section {
 .note_txt {
   .componentBase();
   font-size: @baseFontSize;
-  margin-left: 20px;
-  margin-right: 20px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 div.add-section-bar {
