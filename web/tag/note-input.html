@@ -1,0 +1,16 @@
+<note-input>
+    <div if="{!hidden}">
+        hello world
+    </div>
+
+    <style scoped>
+
+    </style>
+    <script>
+        var self = this;
+        self.hidden = false;
+        self.show = function(display){
+            this.update({hidden: !display});
+        };
+    </script>
+</note-input>

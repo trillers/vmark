@@ -32,6 +32,10 @@
     <note-confirm></note-confirm>
     <note-footer if="{Object.keys(currNote).length}"></note-footer>
     <note-comment if="{currComment}"></note-comment>
+
+    <button onclick="{showInput}">显示输入</button>
+
+    <note-input></note-input>
     <style scoped>
         :focus{
             outline: none;
@@ -217,6 +221,9 @@
             var getUserInfoUrl = '/auth/authorize?';
             getUserInfoUrl += 'route=get_user_info&returnUrl='+location.href;
             location.href = getUserInfoUrl;
+        }
+        showInput(e){
+//            self.tags[]
         }
     </script>
 </note-edit>
