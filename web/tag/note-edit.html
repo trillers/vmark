@@ -1,28 +1,28 @@
 <note-edit>
     <div class="page">
-        <div class="title" if="{false}">
+        <div class="title">
             <input class="input" onblur="{updatePageNote}" type="text" value="{pageNote.title}" placeholder="添加标题" name="titleInput"/>
-            <div class="reference">
-                < img class="user-icon" riot-src="{user.headimgurl}"/>
+            <div if="{false}" class="reference">
+                <img class="user-icon" riot-src="{user.headimgurl}"/>
                 <label class="user-icon"> {user.nickname}</label>
                 <span> 创建于{formatDate(new Date())}</span>
             </div>
-            <hr class="line" style="margin-bottom: 10px"/>
-        </div>
-
-        <div>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <button onclick={goToAuthorize}>去授权</button>
+            <div class="line"/>
         </div>
 
         <div>
             <note-section each="{item in pageNote.mates}" if="{item.status != 'dr'}" section="{item}"></note-section>
             <note-section if="{currNote === newSection}" section="{newSection}" new="true"></note-section>
         </div>
-        <ul class="btn-group" onclick="{selectOperate}">
-            <li><a class="weui_btn weui_btn_mini weui_btn_primary">文字</a ></li>
-            <li><a class="weui_btn weui_btn_mini weui_btn_primary">图片</a ></li>
-            <li><a class="weui_btn weui_btn_mini weui_btn_primary">语音</a ></li>
-            <li><a class="weui_btn weui_btn_mini weui_btn_primary">小视频</a ></li>
+        <div class="add-section-bar"><div class="add-section">
+            <div onclick="{selectOperate}"><img src="/public/images/add.png"></div>
+        </div></div>
+
+        <ul if="{false}" class="btn-group" >
+            <li><a class="weui_btn weui_btn_mini weui_btn_primary">文字</a></li>
+            <li><a class="weui_btn weui_btn_mini weui_btn_primary">图片</a></li>
+            <li><a class="weui_btn weui_btn_mini weui_btn_primary">语音</a></li>
+            <li><a class="weui_btn weui_btn_mini weui_btn_primary">小视频</a></li>
         </ul>
         <div>
             <span if="{pageNote.parentNote}">{pageNote.txt}</span>
@@ -166,10 +166,7 @@
             self.update();
         };
         self.selectOperate = function(e){
-            if(e.target.nodeName === 'A'){
-                var liNode = e.target;
-                self.selectNote(self.newSection);
-            }
+            self.selectNote(self.newSection);
         };
         self.on('noteSubmit', function(){
             self.currNote = null;
