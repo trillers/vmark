@@ -1,6 +1,6 @@
 var settings = require('vmark-settings');
 var WebHelper = require('../../app/web');
-var Hub = require('./WechatOAuthHub');
+var Hub = require('./WechatOAuthHubOld');
 var context = require('../../context/context');
 var wechatOAuthKv = context.kvs.wechatOAuth;
 
