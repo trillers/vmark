@@ -1,10 +1,58 @@
 <note-input>
-    <div if="{!hidden}">
-        hello world
+    <div if="{!hidden}" class="note-input">
+        <div class="bar">
+            <table style="width:100%" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td width="52px">
+                        <div class="btn">
+                            <img src="/public/images/input_keyboard.png">
+                        </div>
+                    </td>
+                    <td width="100%">
+                        <div class="text">
+                            <div class="inline" style="float: left; width: 80%;">
+                                <input type="text">
+                            </div>
+                            <div class="inline" style="float: right; width: 30px;">
+                                <div class="emoji">
+                                    <img src="/public/images/input_emoji.png">
+                                </div>
+                            </div>
+
+                        </div>
+                    </td>
+                    <td width="52px">
+                        <div class="btn">
+                            <img src="/public/images/input_add.png">
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="more" style="display: none;">
+            <table style="width:100%" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td>
+more
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div>
+                            <img src="">
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
 
     <style scoped>
-
     </style>
     <script>
         var self = this;
@@ -12,5 +60,7 @@
         self.show = function(display){
             this.update({hidden: !display});
         };
+
+
     </script>
 </note-input>

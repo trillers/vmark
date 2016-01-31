@@ -1,4 +1,7 @@
 <note-edit>
+    <button onclick="{showInput}">显示输入</button>
+    <note-input></note-input>
+
     <div class="page">
         <div class="title">
             <input class="input" onblur="{updatePageNote}" type="text" value="{pageNote.title}" placeholder="添加标题" name="titleInput"/>
@@ -32,10 +35,6 @@
     <note-confirm></note-confirm>
     <note-footer if="{Object.keys(currNote).length}"></note-footer>
     <note-comment if="{currComment}"></note-comment>
-
-    <button onclick="{showInput}">显示输入</button>
-
-    <note-input></note-input>
     <style scoped>
         :focus{
             outline: none;
@@ -223,7 +222,8 @@
             location.href = getUserInfoUrl;
         }
         showInput(e){
-//            self.tags[]
+            var input = self.tags['note-input'];
+            input.show(true);
         }
     </script>
 </note-edit>
