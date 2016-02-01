@@ -243,6 +243,12 @@
                 }
             }else{
                 $('#voiceMsgPlayer').attr('src', url);
+                if(voiceUrl.indexOf('weixin') >= 0){
+                    wx.stopVoice({
+                        localId: voiceUrl
+                    });
+                    local_playing = false;
+                }
                 clearTimeout(playVoiceEnd);
                 playVoiceEnd = setTimeout(function(){
                     remote_playing = false;
