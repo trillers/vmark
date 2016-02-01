@@ -42,31 +42,28 @@ module.exports = function(){
 
         if(!url){
             this.redirect('/recontent-set?tenantId=' + tenantId);
-            return;
         }
         else if(url.indexOf('mp.weixin.qq.com')==-1){
             this.redirect('/recontent-set?tenantId=' + tenantId + '&feedback=not_weixin&url=' + url);
-            return;
         }
-
-        var recontent = null;
-        try{
-            recontent = yield recontentService.generateAsync({tenantId: tenantId, originalUrl: url, adlink: adlink});
+        else{
+            var recontent = null;
+            try{
+                recontent = yield recontentService.generateAsync({tenantId: tenantId, originalUrl: url, adlink: adlink});
+                var contentUri = recontent.newUrl;
+                var me = this;
+                yield new Promise(function(resolve, reject){
+                    setTimeout(function(){
+                        resolve();
+                    }, 2000);
+                });
+                me.redirect(contentUri);
+            }
+            catch(err){
+                context.logger.error(err);
+                this.redirect('/recontent-set?tenantId=' + tenantId + '&feedback=error&url=' + url);
+            }
         }
-        catch(err){
-            context.logger.error(err);
-            this.redirect('/recontent-set?tenantId=' + tenantId + '&feedback=error&url=' + url);
-            return;
-        }
-
-        var contentUri = recontent.newUrl;
-        var me = this;
-        yield new Promise(function(resolve, reject){
-            setTimeout(function(){
-                resolve();
-            }, 2000);
-        });
-        me.redirect(contentUri);
     });
 
     return router.routes();
