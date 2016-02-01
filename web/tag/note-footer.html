@@ -397,8 +397,8 @@
             console.error('startRecord');
             start = new Date().getTime();
             recordGap = setTimeout(function(){
-                wx.startRecord();
                 $('#mask').show();
+                wx.startRecord();
             }, 300);
         }
         self.voiceAreaTouchEnd = function(e){
