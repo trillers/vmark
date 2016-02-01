@@ -11,7 +11,7 @@
         </div>
 
         <div>
-            <note-section each="{item in pageNote.mates}" if="{parent.sectionShowOrNot(item)}" section="{item}"></note-section>
+            <note-section name="{item._id}" each="{item, i in pageNote.mates}" if="{parent.sectionShowOrNot(item)}" section="{item}"></note-section>
             <note-section if="{pageNoteMode.status.edit && (currNote === newSection)}" section="{newSection}" new="true"></note-section>
         </div>
         <div if="{pageNoteMode.status.view}" class="add-section-bar"><div class="add-section">
@@ -28,11 +28,19 @@
             <span if="{pageNote.parentNote}">{pageNote.txt}</span>
         </div>
         <div style="clear: both"></div>
+        <div class="mask" if="{pageNoteMode.status.comment}" ontouchstart="{pageNoteMode.doView}" style="height: {window.innerHeight + 'px'}"></div>
     </div>
     <note-confirm></note-confirm>
     <note-footer if="{Object.keys(currNote).length}"></note-footer>
     <note-comment if="{currComment}"></note-comment>
     <style scoped>
+        .mask{
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 2;
+        }
         :focus{
             outline: none;
         }
@@ -115,24 +123,26 @@
                 edit : false,
                 comment: false
             },
-            doView: function(){
-                this.status.view = true;
-                this.status.edit = false;
-                this.status.comment = false;
+            doView: function(section){
+                self.pageNoteMode.status.view = true;
+                self.pageNoteMode.status.edit = false;
+                self.pageNoteMode.status.comment = false;
                 self.currNote = null;
+                self.currComment = null;
                 self.newSection = {};
                 self.newSection.mates = [];
+                console.log(section._id);
             },
             doEdit: function(){
-                this.status.edit = true;
-                this.status.view = false;
-                this.status.comment = false;
+                self.pageNoteMode.status.edit = true;
+                self.pageNoteMode.status.view = false;
+                self.pageNoteMode.status.comment = false;
                 self.currComment = null;
             },
             doComment: function(){
-                this.status.view = false;
-                this.status.edit = false;
-                this.status.comment = true;
+                self.pageNoteMode.status.view = false;
+                self.pageNoteMode.status.edit = false;
+                self.pageNoteMode.status.comment = true;
                 self.currNote = null;
             }
         };
@@ -181,8 +191,13 @@
             return false;
         };
         self.on('cancel', function(section){
-            self.pageNoteMode.doView();
+            self.pageNoteMode.doView(section);
             self.currNote = null;
+            self.update();
+        });
+        self.on('quitComment', function(){
+            self.pageNoteMode.doView(self.currComment);
+            self.currComment = null;
             self.update();
         });
         self.on('comment', function(section){
@@ -192,6 +207,7 @@
         });
         self.on('noteComment', function(comment){
             self.currComment.comments.push(comment);
+            self.pageNoteMode.doView(self.currComment);
             self.update();
         });
         self.updatePageNote = function(e){
@@ -218,8 +234,9 @@
             self.pageNoteMode.doEdit();
             self.selectNote(section);
         });
-        self.on('noteSubmit', function(){
-            self.pageNoteMode.doView();
+        self.on('noteSubmit', function(section){
+            console.error(section)
+            self.pageNoteMode.doView(section);
             self.update();
         });
         self.on('noteSave', function(){

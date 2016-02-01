@@ -1,50 +1,57 @@
 <note-footer>
-    <div class="record_detail_area">
-        <div class="record-el-container">
-            <div class="record_progress_bar">
-                <div class="record_progress_inner_bar js_progress" style="width: 0%;"></div>
-            </div>
-            <div class="voice-seconds-container" style="color: white">
-                <span id="voice-seconds">0</span>"
-            </div>
-            <div class="recording-gif voi_area-el">
-                <img src="/public/images/def-avatar.png" style="width: 30px; height: 60px" alt="">
-            </div>
-            <div class="voice-func-btn voi_area-el">
-                <div id="stop-record" onclick="{stopRecord}"></div>
-                <div id="play-record" onclick="{playRecord}"></div>
-                <div id="pause-record" onclick="{pauseRecord}"></div>
-            </div>
-            <div class="voice-confirm-area voi_area-el">
-                <div id="confirm-sub-voice" class="weui_icon_success_no_circle" onclick="{confirmSubVoice}"></div>
-            </div>
-        </div>
-    </div>
-    <div class="feature_area">
-        <div>
-            <div class="toggle_txt_voi">
-                <div onclick="{viewModel.toggleTxtVoiBtn.toggle}" class="toggle_btn"></div>
-            </div>
-            <div if="{viewModel.toggleTxtVoiBtn.txt}" class="txt_area">
-                <input oninput="{noteEditInput}" name="txtInput" placeholder="点击输入文字" value=""/>
-            </div>
-            <div if="{viewModel.toggleTxtVoiBtn.voi}" class="voi_area" ontouchstart="{voiceAreaTouchStart}" ontouchend="{voiceAreaTouchEnd}">
-                <input type="button" value="长按录音"/>
-            </div>
-            <div class="toggle_menu">
-                <div onclick="{toggleSubMenu}" class="toggle_btn menu_btn" if="{viewModel.input.wait}">菜单</div>
-                <div onclick="{addTxt}" class="send_btn" if="{viewModel.input.editTxt}">发送</div>
+    <div class="footerWrapper">
+        <div class="record_detail_area">
+            <div class="record-el-container">
+                <div class="record_progress_bar">
+                    <div class="record_progress_inner_bar js_progress" style="width: 0%;"></div>
+                </div>
+                <div class="voice-seconds-container" style="color: white">
+                    <span id="voice-seconds">0</span>"
+                </div>
+                <div class="recording-gif voi_area-el">
+                    <img src="/public/images/def-avatar.png" style="width: 30px; height: 60px" alt="">
+                </div>
+                <div class="voice-func-btn voi_area-el">
+                    <div id="stop-record" onclick="{stopRecord}"></div>
+                    <div id="play-record" onclick="{playRecord}"></div>
+                    <div id="pause-record" onclick="{pauseRecord}"></div>
+                </div>
+                <div class="voice-confirm-area voi_area-el">
+                    <div id="confirm-sub-voice" class="weui_icon_success_no_circle" onclick="{confirmSubVoice}"></div>
+                </div>
             </div>
         </div>
-        <div style="clear: both"></div>
-    </div>
-    <div if="{viewModel.subMenu.showState}" class="scale_area">
-        <ul>
-            <li class="img_btn" onclick="{addImgs}">图片</li>
-            <li class="video_btn">视频</li>
-        </ul>
+        <div class="feature_area">
+            <div>
+                <div class="toggle_txt_voi">
+                    <div onclick="{viewModel.toggleTxtVoiBtn.toggle}" class="toggle_btn"></div>
+                </div>
+                <div if="{viewModel.toggleTxtVoiBtn.txt}" class="txt_area">
+                    <input oninput="{noteEditInput}" name="txtInput" placeholder="点击输入文字" value=""/>
+                </div>
+                <div if="{viewModel.toggleTxtVoiBtn.voi}" class="voi_area" ontouchstart="{voiceAreaTouchStart}" ontouchend="{voiceAreaTouchEnd}">
+                    <input type="button" value="长按录音"/>
+                </div>
+                <div class="toggle_menu">
+                    <div onclick="{toggleSubMenu}" class="toggle_btn menu_btn" if="{viewModel.input.wait}">菜单</div>
+                    <div onclick="{addTxt}" class="send_btn" if="{viewModel.input.editTxt}">发送</div>
+                </div>
+            </div>
+            <div style="clear: both"></div>
+        </div>
+        <div if="{viewModel.subMenu.showState}" class="scale_area">
+            <ul>
+                <li class="img_btn" onclick="{addImgs}">图片</li>
+                <li class="video_btn">视频</li>
+            </ul>
+        </div>
     </div>
     <style scoped>
+        .footerWrapper{
+            position: fixed;
+            width: 100%;
+            z-index: 10000;
+        }
         .record_progress_bar {
             margin-top: 10px;
             background-color: #EBEBEB;
