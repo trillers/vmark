@@ -34,7 +34,7 @@ Authenticator.prototype = {
             if(!auth){
                 agentToken.delete(ctx);
                 //this.redirect('/login-feedback?result=' + authResults.NO_USER);
-                yield this.render('/login-feedback', auth);
+                yield this.render('login-feedback', auth);
                 return;
             }
             else if(auth.result != authResults.OK && auth.result != authResults.NO_BOUND_BOT){
@@ -42,9 +42,14 @@ Authenticator.prototype = {
                 return;
             }
 
-            authentication.setAuthentication(ctx, auth);
-            authentication.deleteReturnUrl(ctx);
-            yield next;
+            if(auth.privileges && auth.privileges['recontent']){
+                authentication.setAuthentication(ctx, auth);
+                authentication.deleteReturnUrl(ctx);
+                yield next;
+            }
+            else{
+                yield ctx.render('login-feedback', {result: authResults.NO_PRIVILEGE});
+            }
         }
     }
 }

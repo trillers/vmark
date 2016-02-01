@@ -12,18 +12,26 @@ var handler = function*(ctx, next){
     /*
      * authenticate user by openid
      */
-    var auth = yield securityService.authenticateAsync(openid);
-    context.logger.debug(auth);
+    var auth = null;
+    try{
+        auth = yield securityService.authenticateAsync(openid);
+    }
+    catch(err){
+        yield ctx.render('error', {error: err});
+    }
+
     if(!auth){
-        yield ctx.render('/login-feedback', {result: authResults.NO_USER});
+        yield ctx.render('login-feedback', {result: authResults.NO_USER});
         return;
     }
-    else if(auth.result != authResults.OK){
-        yield ctx.render('/login-feedback', {result: auth.result});
-        return;
+
+    if(auth.privileges && auth.privileges['recontent']){
+        authentication.setAuthentication(ctx, auth);
+        authentication.redirectReturnUrl(ctx);
     }
-    authentication.setAuthentication(ctx, auth);
-    authentication.redirectReturnUrl(ctx);
+    else{
+        yield ctx.render('login-feedback', {result: authResults.NO_PRIVILEGE});
+    }
 };
 
 var errorHandler = function*(ctx, next){

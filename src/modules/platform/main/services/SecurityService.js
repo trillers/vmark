@@ -11,7 +11,8 @@ var authResults = {
     NO_USER: 'NO_USER',
     UNREGISTERED_USER: 'UNREGISTERED_USER',
     NO_RIGHTS: 'NO_RIGHTS',
-    NO_BOUND_BOT: 'NO_BOUND_BOT'
+    NO_BOUND_BOT: 'NO_BOUND_BOT',
+    NO_PRIVILEGE: 'NO_PRIVILEGE'
 };
 Service.prototype.authResults = authResults;
 
@@ -127,8 +128,8 @@ Service.prototype.authenticate = function (openid, callback) {
         }
 
         //Get and convert privileges
-        var privilegeList = yield tenantPrivilegeKv.getAllPrivilegeAsync(tenantId);
         var privileges = {};
+        var privilegeList = yield tenantPrivilegeKv.getAllPrivilegesAsync(tenantId);
         privilegeList.forEach(function(item){privileges[item] = true;});
 
         if(post.role == OrgMemberRole.PlatformAdmin.value() || post.role == OrgMemberRole.PlatformOperation.value()){

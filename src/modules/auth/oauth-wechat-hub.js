@@ -1,6 +1,6 @@
 var settings = require('vmark-settings');
 var WebHelper = require('../../app/web');
-var Hub = require('./WechatOAuthHubOld');
+var Hub = require('./WechatOAuthHub');
 var context = require('../../context/context');
 var wechatOAuthKv = context.kvs.wechatOAuth;
 
@@ -9,7 +9,6 @@ var hub = new Hub({
     appSecret: settings.wechat.appSecret,
     getAccessToken: function*(openid){
         var at = yield wechatOAuthKv.getAccessTokenAsync(openid);
-console.error(at);
         return at;
     },
     saveAccessToken: function*(openid, token){
