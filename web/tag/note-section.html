@@ -27,9 +27,6 @@
                 <div style="clear: both;"></div>
             </div>
         </div>
-        <div style="position:absolute;top:0;left:0;width:0;height:0;">
-            <audio id="voiceMsgPlayer" class="voicePlayer"></audio>
-        </div>
 
         <div class="bottom">
             <table style="width:100%;" cellpadding="0" cellspacing="0">
@@ -154,6 +151,7 @@
             font-size: 14px;
         }
         .voice{
+            margin-left: 10px;
             float: left;
             background-color: #04BE02;
             border-radius: 7px;
@@ -436,27 +434,9 @@
             }
 
         };
-        var playing = false, voiceUrl = '', playEndTimeout;
         self.playVoice = function (e) {
             var data = e.item;
-            if (data.status === 'dr') {
-                wx.playVoice({
-                    localId: data.url
-                });
-            }else{
-                $('#voiceMsgPlayer').attr('src', data.url);
-                clearTimeout(playEndTimeout);
-                playEndTimeout = setTimeout(function(){
-                    playing = false;
-                }, parseInt(data.seconds) * 1000);
-                if(!playing || voiceUrl !== data.url){
-                    document.getElementById('voiceMsgPlayer').play();
-                    playing = true;
-                    voiceUrl = data.url;
-                }else{
-                    playing = false;
-                }
-            }
+            self.parent.trigger('playVoice', data.url, data.status);
         }
     </script>
 </note-section>

@@ -1,26 +1,10 @@
 <note-footer>
-    <div class="footerWrapper">
-        <div class="record_detail_area">
-            <div class="record-el-container">
-                <div class="record_progress_bar">
-                    <div class="record_progress_inner_bar js_progress" style="width: 0%;"></div>
-                </div>
-                <div class="voice-seconds-container" style="color: white">
-                    <span id="voice-seconds">0</span>"
-                </div>
-                <div class="recording-gif voi_area-el">
-                    <img src="/public/images/def-avatar.png" style="width: 30px; height: 60px" alt="">
-                </div>
-                <div class="voice-func-btn voi_area-el">
-                    <div id="stop-record" onclick="{stopRecord}"></div>
-                    <div id="play-record" onclick="{playRecord}"></div>
-                    <div id="pause-record" onclick="{pauseRecord}"></div>
-                </div>
-                <div class="voice-confirm-area voi_area-el">
-                    <div id="confirm-sub-voice" class="weui_icon_success_no_circle" onclick="{confirmSubVoice}"></div>
-                </div>
-            </div>
+    <div id="mask">
+        <div id="stop-record-tip">
+            <span>松开手结束录音</span>
         </div>
+    </div>
+    <div class="footerWrapper">
         <div class="feature_area">
             <div>
                 <div class="toggle_txt_voi">
@@ -212,6 +196,22 @@
         #confirm-sub-voice::before{
             font-size: 45px;
         }
+        #mask{
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            display: none;
+        }
+        #stop-record-tip{
+            margin: 0 auto;
+            width: 120px;
+            margin-top: 250px;
+            color: white;
+        }
     </style>
     <script>
         var self = this;
@@ -338,38 +338,57 @@
                 }
             });
         });
+//        self.voiceAreaTouchStart = function(e){
+//            console.error('startRecord');
+//            start = new Date().getTime();
+//            recordGap = setTimeout(function(){
+//                wx.startRecord();
+//                $('.record_detail_area').show();
+//
+//                var progress = 0;
+//                var $progress = $('.js_progress');
+//                var $secondsCon = $('.voice-seconds-container');
+//                var seconds = 0;
+//
+//                function next() {
+//                    $progress.css({width: progress + '%'});
+//                    $secondsCon.css({'padding-left': progress + '%'});
+//
+//                    $('#voice-seconds').text(seconds.toFixed(0));
+//                    progress = progress + 0.05;
+//                    seconds = seconds + 0.03;
+//                    if(progress < 100){
+//                        if(!stopRecord) {
+//                            setTimeout(next, 30);
+//                        }
+//                    }else{
+//                        $progress.css({width: '100%'});
+//                        $secondsCon.css({'padding-left': '100%'});
+//                        $('#voice-seconds').text(60)
+//                    }
+//                }
+//                next();
+//            }, 300);
+//        };
+//        self.voiceAreaTouchEnd = function(e){
+//            console.error('touchend');
+//            end = new Date().getTime();
+//
+//            if((end - start) < 300){
+//                end = 0;
+//                start = 0;
+//                //小于300ms，不录音
+//                clearTimeout(recordGap);
+//            }
+//        };
         self.voiceAreaTouchStart = function(e){
             console.error('startRecord');
             start = new Date().getTime();
             recordGap = setTimeout(function(){
+                $('#mask').show();
                 wx.startRecord();
-                $('.record_detail_area').show();
-
-                var progress = 0;
-                var $progress = $('.js_progress');
-                var $secondsCon = $('.voice-seconds-container');
-                var seconds = 0;
-
-                function next() {
-                    $progress.css({width: progress + '%'});
-                    $secondsCon.css({'padding-left': progress + '%'});
-
-                    $('#voice-seconds').text(seconds.toFixed(0));
-                    progress = progress + 0.05;
-                    seconds = seconds + 0.03;
-                    if(progress < 100){
-                        if(!stopRecord) {
-                            setTimeout(next, 30);
-                        }
-                    }else{
-                        $progress.css({width: '100%'});
-                        $secondsCon.css({'padding-left': '100%'});
-                        $('#voice-seconds').text(60)
-                    }
-                }
-                next();
             }, 300);
-        };
+        }
         self.voiceAreaTouchEnd = function(e){
             console.error('touchend');
             end = new Date().getTime();
@@ -379,8 +398,37 @@
                 start = 0;
                 //小于300ms，不录音
                 clearTimeout(recordGap);
+            }else{
+                wx.stopRecord({
+                    success: function (res) {
+                        console.log(res);
+                        $('#mask').hide();
+                        var localId = res.localId;
+                        //voice.localId = localId;
+                        var seconds = ((end - start)/1000).toFixed(0);
+                        start = 0;
+                        end = 0;
+                        var note = {
+                            type: 'voi',
+                            url: localId,
+                            seconds: seconds,
+                            parentNote: self.parent.currNote._id || '',
+                            pageNoteId: self.parent.pageNote._id
+                        };
+                        saveNoteInSection.newInvocation(note).onDone(function (data) {
+                            if (data) {
+                                util.mixin(self.parent.currNote, data.sectionNote);
+                                self.parent.currNote.mates.push(data.note);
+                                self.parent.trigger('noteSave', data.note);
+                            }
+                            else {
+                                alert('error occur.');
+                            }
+                        }).execute();
+                    }
+                });
             }
-        };
+        }
         self.stopRecord = function(e){
             stopRecord = true;
             end = new Date().getTime();
