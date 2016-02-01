@@ -32,6 +32,11 @@
     <note-confirm></note-confirm>
     <note-footer if="{Object.keys(currNote).length}"></note-footer>
     <note-comment if="{currComment}"></note-comment>
+    <!--play voice panel begin-->
+    <div style="position:absolute;top:0;left:0;width:0;height:0;">
+        <audio id="voiceMsgPlayer" class="voicePlayer"></audio>
+    </div>
+    <!--play voice panel end-->
     <style scoped>
         :focus{
             outline: none;
@@ -212,7 +217,39 @@
             console.info('tag group index is refreshing');
             //_refresh();
         });
-
+        var remote_playing = false, local_playing = false, voiceUrl = '';
+        wx.ready(function(){
+            wx.onVoicePlayEnd({
+                success: function (res) {
+                    console.error('voice play end');
+                    local_playing = false;
+                }
+            });
+        });
+        self.on('playVoice', function(url, status){
+            console.info('start play voice');
+            if (status === 'dr') {
+                if(!local_playing || voiceUrl !== url){
+                    wx.playVoice({
+                        localId: url
+                    });
+                    local_playing = true;
+                }else{
+                    wx.stopVoice({
+                        localId: url
+                    });
+                    local_playing = false;
+                }
+            }else{
+                $('#voiceMsgPlayer').attr('src', url);
+                remote_playing = false;
+                if(voiceUrl !== url){
+                    document.getElementById('voiceMsgPlayer').play();
+                    remote_playing = true;
+                    voiceUrl = url;
+                }
+            }
+        })
         goToAuthorize(e){
             var getUserInfoUrl = '/auth/authorize?';
             getUserInfoUrl += 'route=get_user_info&returnUrl='+location.href;
