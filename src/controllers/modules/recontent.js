@@ -45,8 +45,6 @@ module.exports = function(){
         if(this.session.auth){
             openid = this.session.auth.wechatSiteUser && this.session.auth.wechatSiteUser.openid;
         }
-        context.logger.debug(this.session.auth);
-        context.logger.debug('openid ' + openid);
         if(!url){
             this.redirect('/recontent-set?tenantId=' + tenantId);
         }
@@ -57,7 +55,6 @@ module.exports = function(){
             var recontent = null;
             try{
                 recontent = yield recontentService.generateAsync({tenantId: tenantId, originalUrl: url, adlink: adlink});
-                context.logger.debug(recontent);
                 var contentUri = recontent.newUrl;
                 var ctx = this;
                 if(openid){
