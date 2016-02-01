@@ -45,7 +45,8 @@ module.exports = function(){
         if(this.session.auth){
             openid = this.session.auth.wechatSiteUser && this.session.auth.wechatSiteUser.openid;
         }
-
+        context.logger.debug(this.session.auth);
+        context.logger.debug('openid ' + openid);
         if(!url){
             this.redirect('/recontent-set?tenantId=' + tenantId);
         }
