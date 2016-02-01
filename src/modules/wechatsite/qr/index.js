@@ -22,6 +22,7 @@ recontentTenantType.onAccess(function(qr, openid){
             wechatApi.sendText(openid, reply, function (err) {
                 if(err) console.error(err);
             });
+            qr.invalid();
         }
         catch(e){
             console.error(e);
@@ -40,6 +41,7 @@ tenantAdminType.onAccess(function(qr, openid){
             wechatApi.sendText(openid, reply, function (err) {
                 if(err) console.error(err);
             });
+            qr.invalid();
         }
         catch(e){
             console.error(e);
