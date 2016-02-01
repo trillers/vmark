@@ -12,7 +12,7 @@
     "co": "4.6.0",
     "co-wechat": "0.0.4",
     "co-wechat-oauth": "1.0.1",
-    "wechat-api": "1.23.0",
+    "wechat-api": "1.24.0",
     "koa": "1.1.2",
     "koa-body": "1.2.1",
     "koa-generic-session": "1.9.0",
