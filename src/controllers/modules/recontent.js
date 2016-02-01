@@ -4,6 +4,7 @@ var context = require('../../context/context');
 var recontentService = context.services.recontentService;
 var adlinkService = context.services.adlinkService;
 var authChecker = require('../../modules/auth/middlewares/check-auth');
+var wechatApi = require('../../modules/wechat/common/api').api;
 module.exports = function(){
     var router = new Router();
     require('../../app/routes-spa')(router);
@@ -39,6 +40,11 @@ module.exports = function(){
         var url = body.url;
         var adlink = body.adlink;
         var tenantId = body.tenantId;
+        var openid = null;
+
+        if(this.session.auth){
+            openid = this.session.auth.wechatSiteUser && this.session.auth.wechatSiteUser.openid;
+        }
 
         if(!url){
             this.redirect('/recontent-set?tenantId=' + tenantId);
@@ -51,13 +57,23 @@ module.exports = function(){
             try{
                 recontent = yield recontentService.generateAsync({tenantId: tenantId, originalUrl: url, adlink: adlink});
                 var contentUri = recontent.newUrl;
-                var me = this;
+                var ctx = this;
+                if(openid){
+                    var articles = [{
+                            "title": recontent.originalTitle,
+                            "description": recontent.originalTitle,
+                            "url": recontent.newUrl
+                        }];
+                    api.sendNews(openid, articles, function(){
+                        context.logger.debug('Recontent newly generated is sent');
+                    });
+                }
                 yield new Promise(function(resolve, reject){
                     setTimeout(function(){
                         resolve();
                     }, 2000);
                 });
-                me.redirect(contentUri);
+                ctx.redirect(contentUri);
             }
             catch(err){
                 context.logger.error(err);
