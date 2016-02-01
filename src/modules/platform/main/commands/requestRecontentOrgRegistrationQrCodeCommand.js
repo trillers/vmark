@@ -4,12 +4,12 @@ var request = require('request');
 var logger = require('../../../../app/logging').logger;
 var wechatApi = require('../../../wechat/common/api').api;
 var qrRegistry = require('../../../wechatsite/qr');
-var tenantAdminQrType = qrRegistry.getQrType('ta');
+var recontentTenantType = qrRegistry.getQrType('rec-ta');
 
 module.exports = function (context) {
     var openid = context.weixin.FromUserName;
     try{
-        tenantAdminQrType.createQr(function(err, qr){
+        recontentTenantType.createQr(function(err, qr){
             var url = wechatApi.showQRCodeURL(qr.ticket);
             var qrCodePath = os.tmpdir() + 'recontent_' + openid + '.png';
             request(url).pipe(fs.createWriteStream(qrCodePath)).on('close', function () {
