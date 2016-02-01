@@ -1,21 +1,23 @@
 var WechatApi = require('wechat-api');
-var WechatKv = require('../kvs/WechatToken');
-var WechatErrorHelper = require('../common/WechatErrorHelper');
+var WechatErrorHelper = require('./WechatErrorHelper');
 var logger = require('../../../app/logging').logger;
 var Promise = require('bluebird');
 
-var Wechat = function(appKey, secretKey){
+var Wechat = function(appKey, secretKey, persister){
     this.appKey = appKey;
     this.secretKey = secretKey;
+    this.tokenPersister = persister;
     this.api = new WechatApi(
         appKey,
         secretKey,
-        WechatKv.getAccessToken,
-        WechatKv.saveAccessToken
+        persister.getAccessToken.bind(persister),
+        persister.saveAccessToken.bind(persister)
     );
 
     //Register get and save functions for js ticket
-    this.api.registerTicketHandle(WechatKv.getTicketToken, WechatKv.saveTicketToken);
+    this.api.registerTicketHandle(
+        persister.getTicketToken.bind(persister),
+        persister.saveTicketToken.bind(persister));
     this.api = Promise.promisifyAll(this.api);
 };
 

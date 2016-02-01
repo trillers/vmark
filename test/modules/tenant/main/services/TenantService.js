@@ -12,13 +12,13 @@ before(function(done){
 });
 
 describe('TenantService', function(){
-    describe('registerPersonalTenant', function(){
+    describe.only('registerPersonalTenant', function(){
         //var openid = 'okvXqs_VftHruzwFV9rx4Pbd_fno'; //小小星星妹
         var openid = 'okvXqsw1VG76eVVJrKivWDgps_gA';
         it('Succeed to register a personal tenant', function(done){
             var service = context.services.tenantService;
             service.registerPersonalTenant(openid, function(err, user){
-                console.error(err);
+                err && console.error(err);
                 console.info(user);
                 //assert.equal(result.type, PartyType.Personal.value());
                 //assert.equal(result.administrative, false);

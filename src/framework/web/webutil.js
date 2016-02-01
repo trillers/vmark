@@ -13,8 +13,13 @@ var util = {};
 util.parseUserAgent = function (ua) {
     var browser = {};
 
-    if (/mobile/i.test(ua))
+    if (/MicroMessenger/.test(ua)){
+        browser.MicroMessenger = /MicroMessenger\/([0-9\.]+)/.exec(ua)[1];
+    }
+
+    if (/mobile/i.test(ua)){
         browser.Mobile = true;
+    }
 
     if (/like Mac OS X/.test(ua)) {
         browser.iOS = /CPU( iPhone)? OS ([0-9\._]+) like Mac OS X/.exec(ua)[2].replace(/_/g, '.');
@@ -22,17 +27,21 @@ util.parseUserAgent = function (ua) {
         browser.iPad = /iPad/.test(ua);
     }
 
-    if (/Android/.test(ua))
+    if (/Android/.test(ua)){
         browser.Android = /Android ([0-9\.]+)[\);]/.exec(ua)[1];
+    }
 
-    if (/webOS\//.test(ua))
+    if (/webOS\//.test(ua)){
         browser.webOS = /webOS\/([0-9\.]+)[\);]/.exec(ua)[1];
+    }
 
-    if (/(Intel|PPC) Mac OS X/.test(ua))
+    if (/(Intel|PPC) Mac OS X/.test(ua)){
         browser.Mac = /(Intel|PPC) Mac OS X ?([0-9\._]*)[\)\;]/.exec(ua)[2].replace(/_/g, '.') || true;
+    }
 
-    if (/Windows NT/.test(ua))
+    if (/Windows NT/.test(ua)){
         browser.Windows = /Windows NT ([0-9\._]+)[\);]/.exec(ua)[1];
+    }
 
     return browser;
 };

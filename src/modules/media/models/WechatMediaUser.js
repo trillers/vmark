@@ -10,7 +10,6 @@ var Model = function(domainBuilder){
         .withProperties({
             host:           {type: String, ref: 'WechatMedia', required: true}
             , type:         {type: String, enum: WechatMediaUserType.valueList(), default: WechatMediaUserType.WechatSiteUser.value(), required: true}
-            , contacttype:  {type: String, enum: WechatMediaUserContactType.valueList(), default: WechatMediaUserContactType.Contact.value(), required: true}
 
             , user:         {type: String} //平台用户id
             , openid:       {type: String} //服务号粉丝openid 或者 助手号联系人buid (bot's contact id)
@@ -25,7 +24,17 @@ var Model = function(domainBuilder){
             , district:     {type: String}
 
             //微信公众号与助手号差异部分
-            , language:     {type: String, default: 'zh_CN'} //公众号
+            , language:     {type: String, default: 'zh_CN'} //公众号 - 使用语言
+
+            //助手号: 联系人类型
+            , contacttype:  {
+                type: String, enum:
+                WechatMediaUserContactType.valueList(),
+                default: WechatMediaUserContactType.Contact.value(),
+                required: true}
+
+            //agent token for 公众号 - 微站, 参见 agentToken.generate()
+            , at:     {type: String}
 
             /*
              * 标签数组,包括自定义标签和类型标签两种:
