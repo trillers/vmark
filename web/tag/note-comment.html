@@ -16,6 +16,9 @@
             background: white;
             width: 100%;
             overflow: hidden;
+            position: fixed;
+            bottom: 0px;
+            z-index: 1000;
         }
         .feature_area >div{
             overflow: hidden;
@@ -93,6 +96,9 @@
                     this.editTxt = true;
                 }
             }
+        };
+        self.quitComment = function(e){
+            self.parent.trigger('quitComment');
         };
         self.addComment = function(e){
             if(self.txtInput.value.trim() === ''){

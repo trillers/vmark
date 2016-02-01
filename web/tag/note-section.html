@@ -17,40 +17,30 @@
         <div class="top" >
             <label class="btn active" onclick="{submitSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" >确定</label>
             <label class="btn" onclick="{cancelSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" >取消</label>
-            <input class="btn" onclick="{clearTrash}" if="{isOnEdit() && trash.length>0}" value="删除" type="button" class="send_btn weui_btn weui_btn_mini weui_btn_warn"/>
         </div>
 
         <div class="noteItems">
-            <div each="{section.mates}" noteId="{_id}" style="margin-top: 2px">
-                <div onclick="{parent.pushToTrash}" if="{parent.isOnEdit()}" style="float: left">
-                    <b class="{weui_icon_cancel : parent.inTrash(_id), weui_icon_circle: !parent.inTrash(_id)}"></b>
-                </div>
+            <div each="{section.mates}" noteId="{_id}" style="margin-top: 2px" onclick="{parent.deleteNote}">
                 <div if="{type==='txt'}" class="note_txt">{content}</div>
                 <div if="{type==='img'}" class="note_img"><img style="width: 100%" src="{url}"/></div>
                 <div if="{type==='voi'}" class="note_voi" style="float:left"><div style="width: {seconds * 3 + 30}px" class="voice" onclick="{parent.playVoice}"><i class="playIcon"></i></div><span class="seconds">{seconds}"</span></div>
                 <div style="clear: both;"></div>
             </div>
         </div>
-        <div style="position:absolute;top:0;left:0;width:0;height:0;">
-            <audio id="voiceMsgPlayer" class="voicePlayer"></audio>
-        </div>
 
         <div class="bottom">
             <table style="width:100%;" cellpadding="0" cellspacing="0">
                 <tr>
                     <td style="width:50%;">
-                        <div class="img-btn left">
-                            <img src="/public/images/append.png">
-                        </div>
                         <div class="img-btn left" onclick="{editSectionNote}" if="{!isOnEdit() && (initiator._id === parent.user._id)}">
                             <img src="/public/images/edit.png">
                         </div>
                     </td>
                     <td style="width:50%;">
                         <div class="right">
-                            <div id="interactBlock" class="left" style="display: inline-block; height: 24px;">
+                            <div id="interactBlock" if="{!isNew}" class="left" style="display: inline-block; height: 24px;">
                                 <div onclick="{like}" class="img-btn left">
-                                    <img src="/public/images/like.png">
+                                    <img riot-src="{isLiked()? '/public/images/liked.png': '/public/images/like.png'}">
                                 </div>
                                 <div onclick="{comment}" class="img-btn left" style="display: inline-block; ">
                                     <img src="/public/images/comment.png">
@@ -161,6 +151,7 @@
             font-size: 14px;
         }
         .voice{
+            margin-left: 10px;
             float: left;
             background-color: #04BE02;
             border-radius: 7px;
@@ -205,14 +196,6 @@
             }
             return self.parent.currNote === self.section;
         };
-        self.trash = [];
-        self.inTrash = function(id){
-            return (function lambda(arr){
-                if(arr[0]._id === id) return true;
-                    if(arr.slice(1).length>0) return lambda(arr.slice(1));
-                        return false;
-            })(self.trash);
-        };
         self.viewModel = {
             toggleTxtVoiBtn: {
                 txt: true,
@@ -243,81 +226,45 @@
                     mates: []
                 }
             }
-            self.trash = [];
         };
         self.formatDate = util.formatDateForComments;
         self.on('update', function(){
             self.section = self.opts.section;
         });
-        self.pushToTrash = function(e){
-            if(self.trash.length<=0){
-                self.trash.push(e.item);
-                return
-            }
-            self.trash.forEach(function(t, index){
-                if(t._id === e.item._id){
-                    self.trash.splice(index, 1);
-                }else if(index === self.trash.length-1){
-                    self.trash.push(e.item);
-                }
-            });
-        };
         self.editSectionNote = function(e){
             self.init();
-            self.parent.selectNote(self.section);
+            self.parent.trigger('editSectionNote', self.section);
         };
-        self.clearTrash = function(){
-            var ids = self.trash.map(function(note){
-                return note._id;
-            });
-            deleteNotes.newInvocation({
-                        notes: ids
-                    })
-                    .onDone(function(data){
-                        if(data.success){
-                            self.section.mates = self.section.mates.filter(function(note){
-                                for(var i= 0, len=self.trash.length; i<len; i++){
-                                    if(self.trash[i]._id === note._id){
-                                        return false;
-                                    }
-                                }
-                                return true;
-                            });
-                            self.trash = [];
-                            self.update();
-                        }
-                        else{
-                            alert(data.error);
-                        }
-                    })
-                    .execute();
-        };
-        self.deleteComment = function(e){
-            var commenter = e.item.initiator;
-            if(commenter._id != self.parent.user._id){
+        self.deleteNote = function(e){
+            if(!(self.isOnEdit() && (self.initiator._id === self.parent.user._id))){
                 return false;
             }
+            self.confirm(function(){
+                deleteNotes.newInvocation({
+                    notes: [e.item._id]
+                })
+                .onDone(function(data){
+                    if(data.success){
+                        self.section.mates.forEach(function(mate, index){
+                            if(mate._id === e.item._id){
+                                self.section.mates.splice(index, 1);
+                            }
+                        });
+                        self.update();
+                    }
+                    else{
+                        alert(data.error);
+                    }
+                })
+                .execute();
+            });
+        };
+        self.confirm = function(fn){
             self.confirmComponent.one('confirm', confirmListener);
             self.confirmComponent.one('cancel', cancelListener);
             function confirmListener(){
                 clearListeners();
-                deleteComment
-                    .newInvocation({
-                        id: e.item._id
-                    })
-                    .onDone(function(data){
-                        if(data.success){
-                            self.section.comments.forEach(function(comment, index){
-                                if(comment._id == e.item._id){
-                                    self.section.comments.splice(index, 1);
-                                }
-                                self.update();
-                            })
-                        }else{
-                            alert('delete comments failed.')
-                        }
-                    })
-                    .execute();
+                fn();
             }
             function cancelListener(){
                 clearListeners();
@@ -328,6 +275,31 @@
             }
             self.confirmComponent.trigger('popUp');
         };
+        self.deleteComment = function(e){
+            var commenter = e.item.initiator;
+            if(commenter._id != self.parent.user._id){
+                return false;
+            }
+            self.confirm(function(){
+                deleteComment
+                        .newInvocation({
+                            id: e.item._id
+                        })
+                        .onDone(function(data){
+                            if(data.success){
+                                self.section.comments.forEach(function(comment, index){
+                                    if(comment._id == e.item._id){
+                                        self.section.comments.splice(index, 1);
+                                    }
+                                    self.update();
+                                })
+                            }else{
+                                alert('delete comments failed.')
+                            }
+                        })
+                        .execute();
+            });
+        };
         self.cancelSectionNote = function(e){
             self.init();
             self.parent.trigger('cancel', self.section);
@@ -337,86 +309,58 @@
                     || (self.section && self.section.mates && self.section.mates.length <=0)){
                 return;
             }
-            if(self.trash.length>0){
-                var ids = self.trash.map(function(note){
-                    return note._id;
-                });
-                deleteNotes.newInvocation({
-                    notes: ids
-                })
-                .onDone(function(data){
-                    if(data.success){
-                        clearTrashDone();
+            console.error(self.section)
+            if(self.section.mates.length<=0){
+                self.init();
+                self.parent.trigger('noteSubmit', self.section);
+                return;
+            }
+            var index = 0;
+            self.section.mates.forEach(function(mate){
+                if(!mate.status || mate.status === 'dr'){
+                    if(mate.type === 'img' && mate.url){
+                        wx.uploadImage({
+                            localId: mate.url,
+                            isShowProgressTips: 0,
+                            success: function(res){
+                                uploadImage.newInvocation({media_id: res.serverId})
+                                    .onDone(function(data){
+                                        mate.url = data.url;
+                                        if(++index === self.section.mates.length){
+                                            submitWholeSection();
+                                        }
+                                    })
+                                    .execute();
+                            }
+                        })
+                    }
+                    else if(mate.type=== 'voi' && mate.url){
+                        wx.uploadVoice({
+                            localId: mate.url,
+                            isShowProgressTips: 0,
+                            success: function(res){
+                                uploadVoice.newInvocation({media_id: res.serverId})
+                                    .onDone(function(data){
+                                        mate.url = data.url;
+                                        if(++index === self.section.mates.length){
+                                            submitWholeSection();
+                                        }
+                                    })
+                                    .execute();
+                            }
+                        })
                     }
                     else{
-                        alert(data.error);
-                    }
-                })
-                .execute();
-            }else{
-                clearTrashDone();
-            }
-            function clearTrashDone(){
-                self.section.mates = self.section.mates.filter(function(note){
-                    for(var i= 0, len=self.trash.length; i<len; i++){
-                        if(self.trash[i]._id === note._id){
-                            return false;
-                        }
-                    }
-                    return true;
-                });
-                if(self.section.mates.length<=0){
-                    self.init();
-                    self.parent.trigger('noteSubmit', self.section);
-                    return;
-                }
-                var index = 0;
-                self.section.mates.forEach(function(mate){
-                    if(!mate.status || mate.status === 'dr'){
-                        if(mate.type === 'img' && mate.url){
-                            wx.uploadImage({
-                                localId: mate.url,
-                                isShowProgressTips: 0,
-                                success: function(res){
-                                    uploadImage.newInvocation({media_id: res.serverId})
-                                        .onDone(function(data){
-                                            mate.url = data.url;
-                                            if(++index === self.section.mates.length){
-                                                submitWholeSection();
-                                            }
-                                        })
-                                        .execute();
-                                }
-                            })
-                        }
-                        else if(mate.type=== 'voi' && mate.url){
-                            wx.uploadVoice({
-                                localId: mate.url,
-                                isShowProgressTips: 0,
-                                success: function(res){
-                                    uploadVoice.newInvocation({media_id: res.serverId})
-                                        .onDone(function(data){
-                                            mate.url = data.url;
-                                            if(++index === self.section.mates.length){
-                                                submitWholeSection();
-                                            }
-                                        })
-                                        .execute();
-                                }
-                            })
-                        }
-                        else{
-                            if(++index === self.section.mates.length){
-                                submitWholeSection();
-                            }
-                        }
-                    }else{
                         if(++index === self.section.mates.length){
                             submitWholeSection();
                         }
                     }
-                });
-            }
+                }else{
+                    if(++index === self.section.mates.length){
+                        submitWholeSection();
+                    }
+                }
+            });
             function submitWholeSection(){
                 publishNote.newInvocation(self.section)
                     .onDone(function(data){
@@ -425,8 +369,8 @@
                             if(self.isNew){
                                 self.parent.pageNote.mates.push(self.section);
                             }
-                            self.init();
                             self.parent.trigger('noteSubmit', self.section);
+                            self.init();
                         } catch (e){
                             alert(JSON.stringify(e))
                         }
@@ -437,16 +381,20 @@
         self.comment = function(e){
             self.parent.trigger('comment', self.section);
         };
-        self.like = function(e){
-            var currLike = null;
-            if(self.section.likes.length>0){
-                //liked or not
-                self.section.likes.forEach(function(like){
-                    if(like.initiator._id === self.parent.user._id){
-                        currLike = like;
-                    }
-                })
+        self.isLiked = function(){
+            var result = false;
+            if(!self.section.likes || self.section.likes.length<=0){
+                return result;
             }
+            self.section.likes.forEach(function(like){
+                if(like.initiator._id === self.parent.user._id){
+                    result = like;
+                }
+            });
+            return result;
+        };
+        self.like = function(e){
+            var currLike = self.isLiked();
             if(currLike){
                 unlikeNote
                     .newInvocation({
@@ -486,27 +434,9 @@
             }
 
         };
-        var playing = false, voiceUrl = '', playEndTimeout;
         self.playVoice = function (e) {
             var data = e.item;
-            if (data.status === 'dr') {
-                wx.playVoice({
-                    localId: data.url
-                });
-            }else{
-                $('#voiceMsgPlayer').attr('src', data.url);
-                clearTimeout(playEndTimeout);
-                playEndTimeout = setTimeout(function(){
-                    playing = false;
-                }, parseInt(data.seconds) * 1000);
-                if(!playing || voiceUrl !== data.url){
-                    document.getElementById('voiceMsgPlayer').play();
-                    playing = true;
-                    voiceUrl = data.url;
-                }else{
-                    playing = false;
-                }
-            }
+            self.parent.trigger('playVoice', data.url, data.status);
         }
     </script>
 </note-section>

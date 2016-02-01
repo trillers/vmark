@@ -1,8 +1,7 @@
 <note-edit>
     <button onclick="{showInput}">显示输入</button>
     <note-input></note-input>
-
-    <div class="page">
+    <div class="page" if="{!hidden}">
         <div class="title">
             <input class="input" onblur="{updatePageNote}" type="text" value="{pageNote.title}" placeholder="添加标题" name="titleInput"/>
             <div if="{false}" class="reference">
@@ -14,10 +13,10 @@
         </div>
 
         <div>
-            <note-section each="{item in pageNote.mates}" if="{item.status != 'dr'}" section="{item}"></note-section>
-            <note-section if="{currNote === newSection}" section="{newSection}" new="true"></note-section>
+            <note-section name="{item._id}" each="{item, i in pageNote.mates}" if="{parent.sectionShowOrNot(item)}" section="{item}"></note-section>
+            <note-section if="{pageNoteMode.status.edit && (currNote === newSection)}" section="{newSection}" new="true"></note-section>
         </div>
-        <div class="add-section-bar"><div class="add-section">
+        <div if="{pageNoteMode.status.view}" class="add-section-bar"><div class="add-section">
             <div onclick="{selectOperate}"><img src="/public/images/add.png"></div>
         </div></div>
 
@@ -31,11 +30,24 @@
             <span if="{pageNote.parentNote}">{pageNote.txt}</span>
         </div>
         <div style="clear: both"></div>
+        <div class="mask" if="{pageNoteMode.status.comment}" ontouchstart="{pageNoteMode.doView}" style="height: {window.innerHeight + 'px'}"></div>
     </div>
     <note-confirm></note-confirm>
     <note-footer if="{Object.keys(currNote).length}"></note-footer>
     <note-comment if="{currComment}"></note-comment>
+    <!--play voice panel begin-->
+    <div style="position:absolute;top:0;left:0;width:0;height:0;">
+        <audio id="voiceMsgPlayer" class="voicePlayer"></audio>
+    </div>
+    <!--play voice panel end-->
     <style scoped>
+        .mask{
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 2;
+        }
         :focus{
             outline: none;
         }
@@ -112,6 +124,35 @@
             return new Date(date).toLocaleString();
         };
         self.formatDateForMates = util.formatDateForComments;
+        self.pageNoteMode = {
+            status: {
+                view: true,
+                edit : false,
+                comment: false
+            },
+            doView: function(section){
+                self.pageNoteMode.status.view = true;
+                self.pageNoteMode.status.edit = false;
+                self.pageNoteMode.status.comment = false;
+                self.currNote = null;
+                self.currComment = null;
+                self.newSection = {};
+                self.newSection.mates = [];
+                console.log(section._id);
+            },
+            doEdit: function(){
+                self.pageNoteMode.status.edit = true;
+                self.pageNoteMode.status.view = false;
+                self.pageNoteMode.status.comment = false;
+                self.currComment = null;
+            },
+            doComment: function(){
+                self.pageNoteMode.status.view = false;
+                self.pageNoteMode.status.edit = false;
+                self.pageNoteMode.status.comment = true;
+                self.currNote = null;
+            }
+        };
         self.init = function(){
             self.pageNote = {
                 title: null,
@@ -140,17 +181,40 @@
                 cancel: function () {}
             });
         };
+        self.sectionShowOrNot = function(item){
+            if(self.pageNoteMode.status.view && item.status != 'dr'){
+                return true;
+            }
+            else if(self.pageNoteMode.status.edit && item.status != 'dr'){
+                if(self.currNote._id === item._id){
+                    return true;
+                }
+            }
+            else if((self.pageNoteMode.status.comment && item.status != 'dr')) {
+                if(self.currComment._id === item._id){
+                    return true;
+                }
+            }
+            return false;
+        };
         self.on('cancel', function(section){
+            self.pageNoteMode.doView(section);
             self.currNote = null;
             self.update();
         });
+        self.on('quitComment', function(){
+            self.pageNoteMode.doView(self.currComment);
+            self.currComment = null;
+            self.update();
+        });
         self.on('comment', function(section){
+            self.pageNoteMode.doComment();
             self.currComment = section;
-            self.currNote = null;
             self.update();
         });
         self.on('noteComment', function(comment){
             self.currComment.comments.push(comment);
+            self.pageNoteMode.doView(self.currComment);
             self.update();
         });
         self.updatePageNote = function(e){
@@ -169,12 +233,17 @@
             self.update();
         };
         self.selectOperate = function(e){
+            self.pageNoteMode.doEdit();
             self.selectNote(self.newSection);
         };
-        self.on('noteSubmit', function(){
-            self.currNote = null;
-            self.newSection = {};
-            self.newSection.mates = [];
+        self.on('editSectionNote', function(section){
+            console.error(section);
+            self.pageNoteMode.doEdit();
+            self.selectNote(section);
+        });
+        self.on('noteSubmit', function(section){
+            console.error(section)
+            self.pageNoteMode.doView(section);
             self.update();
         });
         self.on('noteSave', function(){
@@ -215,7 +284,51 @@
             console.info('tag group index is refreshing');
             //_refresh();
         });
-
+        var remote_playing = false, local_playing = false, voiceUrl = '', playVoiceEnd;
+        wx.ready(function(){
+            wx.onVoicePlayEnd({
+                success: function (res) {
+                    console.error('voice play end');
+                    local_playing = false;
+                }
+            });
+        });
+        self.on('playVoice', function(url, status, seconds){
+            console.info('start play voice');
+            if (status === 'dr') {
+                if(!local_playing || voiceUrl !== url){
+                    wx.playVoice({
+                        localId: url
+                    });
+                    voiceUrl = url;
+                    local_playing = true;
+                }else{
+                    wx.stopVoice({
+                        localId: url
+                    });
+                    local_playing = false;
+                }
+            }else{
+                $('#voiceMsgPlayer').attr('src', url);
+                if(voiceUrl.indexOf('weixin') >= 0){
+                    wx.stopVoice({
+                        localId: voiceUrl
+                    });
+                    local_playing = false;
+                }
+                clearTimeout(playVoiceEnd);
+                playVoiceEnd = setTimeout(function(){
+                    remote_playing = false;
+                }, seconds*1000);
+                if(!remote_playing || voiceUrl !== url){
+                    document.getElementById('voiceMsgPlayer').play();
+                    remote_playing = true;
+                    voiceUrl = url;
+                }else{
+                    remote_playing = false;
+                }
+            }
+        })
         goToAuthorize(e){
             var getUserInfoUrl = '/auth/authorize?';
             getUserInfoUrl += 'route=get_user_info&returnUrl='+location.href;
