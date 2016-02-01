@@ -35,16 +35,13 @@
             <table style="width:100%;" cellpadding="0" cellspacing="0">
                 <tr>
                     <td style="width:50%;">
-                        <!--<div class="img-btn left">-->
-                            <!--<img src="/public/images/append.png">-->
-                        <!--</div>-->
                         <div class="img-btn left" onclick="{editSectionNote}" if="{!isOnEdit() && (initiator._id === parent.user._id)}">
                             <img src="/public/images/edit.png">
                         </div>
                     </td>
                     <td style="width:50%;">
                         <div class="right">
-                            <div id="interactBlock" class="left" style="display: inline-block; height: 24px;">
+                            <div id="interactBlock" if="{!isNew}" class="left" style="display: inline-block; height: 24px;">
                                 <div onclick="{like}" class="img-btn left">
                                     <img riot-src="{isLiked()? '/public/images/liked.png': '/public/images/like.png'}">
                                 </div>
@@ -388,7 +385,7 @@
         };
         self.isLiked = function(){
             var result = false;
-            if(self.section.likes.length<=0){
+            if(!self.section.likes || self.section.likes.length<=0){
                 return result;
             }
             self.section.likes.forEach(function(like){
