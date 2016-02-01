@@ -17,7 +17,7 @@ var recontentTenantType = qrRegistry.newType('rec-ta', {temp: true}); //创建�
 recontentTenantType.onAccess(function(qr, openid){
     co(function*(){
         try{
-            var reply = '[系统]: 个人账户注册成功！';
+            var reply = '[系统]: 广告个人账户注册成功！';
             yield tenantService.registerPersonalRecontentTenantAsync(openid);
             wechatApi.sendText(openid, reply, function (err) {
                 if(err) console.error(err);
