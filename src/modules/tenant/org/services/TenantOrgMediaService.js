@@ -31,7 +31,7 @@ Service.prototype.loadBoundMediaById = function(orgMediaId, callback){
     var OrgMedia = this.context.models.OrgMedia;
     co(function* (){
         var orgMedia = yield OrgMedia.findById(orgMediaId, 'media', {lean: true}).populate({path: 'media'}).exec();
-        if(callback) callback(null, orgMedia.media);
+        if(callback) callback(null, orgMedia && orgMedia.media);
     }).catch(Error, function(err){
         logger.error('Fail to load bound media by org media id: ' + err);
         logger.error(err.stack);

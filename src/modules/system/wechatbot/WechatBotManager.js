@@ -12,8 +12,8 @@ var WechatBotManager = function(context, options){
 WechatBotManager.prototype.start = function(){
     if(!this.timerId){
         this._init();
-        setTimeout(this._routines.bind(this), 2000);
-        this.timerId = setInterval(this._routines.bind(this), this.options.interval);
+        //setTimeout(this._routines.bind(this), 2000);
+        //this.timerId = setInterval(this._routines.bind(this), this.options.interval);
     }
     else{
         console.warn('started already! duplicated call');

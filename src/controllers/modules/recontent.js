@@ -15,7 +15,14 @@ module.exports = function(){
     });
 
     router.get('/recontent-set', function *(){
-        var tenantId = this.query.tenantId;
+        var tenantId = null;
+        if(this.session && this.session.auth){
+            tenantId = this.session.auth.tenantId;
+        }
+        else{
+            tenantId = this.query.tenantId;
+        }
+
         var url = this.query.url;
         var feedback = this.query.feedback;
         var adlinks = yield adlinkService.findTenantAdlinksAsync(tenantId);
@@ -35,11 +42,13 @@ module.exports = function(){
         var tenantId = body.tenantId;
 
         if(!url){
-            this.redirect('/recontent-set?tenantId=' + tenantId);
+            //this.redirect('/recontent-set?tenantId=' + tenantId);
+            this.redirect('/recontent-set');
             return;
         }
         else if(url.indexOf('mp.weixin.qq.com')==-1){
-            this.redirect('/recontent-set?tenantId=' + tenantId + '&feedback=not_weixin&url=' + url);
+            //this.redirect('/recontent-set?tenantId=' + tenantId + '&feedback=not_weixin&url=' + url);
+            this.redirect('/recontent-set?feedback=not_weixin&url=' + url);
             return;
         }
 

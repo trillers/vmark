@@ -66,8 +66,14 @@ module.exports = function(app){
             this.redirect('/login');
             return;
         }
-
-        var auth = yield securityService.authenticateAsync(openid);
+console.log('mock-login');
+        var auth = null;
+        try{
+            auth = yield securityService.authenticateAsync(openid);
+        }
+        catch(err){
+            console.error(err);
+        }
         context.logger.debug(auth);
         if(!auth){
             this.redirect('/login');
@@ -80,7 +86,6 @@ module.exports = function(app){
 
         this.session.auth = auth;
         this.cookies.set('sceneId', sceneId, {maxAge: 3600000*24*30});
-
         if(auth.platform){
             this.redirect('/boss');
         }

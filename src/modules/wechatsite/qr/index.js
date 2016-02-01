@@ -139,7 +139,7 @@ loginType.onAccess(function(qr, openid){
     });
 });
 loginType.onExpire(function(){
-
+    console.warn('Login qr code is expired!');
 });
 
 defaultType.onAccess(function(qr, openid){
