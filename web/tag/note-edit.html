@@ -217,7 +217,7 @@
             console.info('tag group index is refreshing');
             //_refresh();
         });
-        var remote_playing = false, local_playing = false, voiceUrl = '';
+        var remote_playing = false, local_playing = false, voiceUrl = '', playVoiceEnd;
         wx.ready(function(){
             wx.onVoicePlayEnd({
                 success: function (res) {
@@ -226,7 +226,7 @@
                 }
             });
         });
-        self.on('playVoice', function(url, status){
+        self.on('playVoice', function(url, status, seconds){
             console.info('start play voice');
             if (status === 'dr') {
                 if(!local_playing || voiceUrl !== url){
@@ -242,11 +242,16 @@
                 }
             }else{
                 $('#voiceMsgPlayer').attr('src', url);
-                remote_playing = false;
-                if(voiceUrl !== url){
+                clearTimeout(playVoiceEnd);
+                playVoiceEnd = setTimeout(function(){
+                    remote_playing = false;
+                }, seconds*1000);
+                if(!remote_playing || voiceUrl !== url){
                     document.getElementById('voiceMsgPlayer').play();
                     remote_playing = true;
                     voiceUrl = url;
+                }else{
+                    remote_playing = false;
                 }
             }
         })
