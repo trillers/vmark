@@ -1,5 +1,5 @@
 <note-edit>
-    <div class="page">
+    <div class="page" if="{!hidden}">
         <div class="title">
             <input class="input" onblur="{updatePageNote}" type="text" value="{pageNote.title}" placeholder="添加标题" name="titleInput"/>
             <div if="{false}" class="reference">
@@ -11,10 +11,10 @@
         </div>
 
         <div>
-            <note-section each="{item in pageNote.mates}" if="{item.status != 'dr'}" section="{item}"></note-section>
-            <note-section if="{currNote === newSection}" section="{newSection}" new="true"></note-section>
+            <note-section each="{item in pageNote.mates}" if="{parent.sectionShowOrNot(item)}" section="{item}"></note-section>
+            <note-section if="{pageNoteMode.status.edit && (currNote === newSection)}" section="{newSection}" new="true"></note-section>
         </div>
-        <div class="add-section-bar"><div class="add-section">
+        <div if="{pageNoteMode.status.view}" class="add-section-bar"><div class="add-section">
             <div onclick="{selectOperate}"><img src="/public/images/add.png"></div>
         </div></div>
 
@@ -109,6 +109,33 @@
             return new Date(date).toLocaleString();
         };
         self.formatDateForMates = util.formatDateForComments;
+        self.pageNoteMode = {
+            status: {
+                view: true,
+                edit : false,
+                comment: false
+            },
+            doView: function(){
+                this.status.view = true;
+                this.status.edit = false;
+                this.status.comment = false;
+                self.currNote = null;
+                self.newSection = {};
+                self.newSection.mates = [];
+            },
+            doEdit: function(){
+                this.status.edit = true;
+                this.status.view = false;
+                this.status.comment = false;
+                self.currComment = null;
+            },
+            doComment: function(){
+                this.status.view = false;
+                this.status.edit = false;
+                this.status.comment = true;
+                self.currNote = null;
+            }
+        };
         self.init = function(){
             self.pageNote = {
                 title: null,
@@ -137,13 +164,30 @@
                 cancel: function () {}
             });
         };
+        self.sectionShowOrNot = function(item){
+            if(self.pageNoteMode.status.view && item.status != 'dr'){
+                return true;
+            }
+            else if(self.pageNoteMode.status.edit && item.status != 'dr'){
+                if(self.currNote._id === item._id){
+                    return true;
+                }
+            }
+            else if((self.pageNoteMode.status.comment && item.status != 'dr')) {
+                if(self.currComment._id === item._id){
+                    return true;
+                }
+            }
+            return false;
+        };
         self.on('cancel', function(section){
+            self.pageNoteMode.doView();
             self.currNote = null;
             self.update();
         });
         self.on('comment', function(section){
+            self.pageNoteMode.doComment();
             self.currComment = section;
-            self.currNote = null;
             self.update();
         });
         self.on('noteComment', function(comment){
@@ -166,12 +210,16 @@
             self.update();
         };
         self.selectOperate = function(e){
+            self.pageNoteMode.doEdit();
             self.selectNote(self.newSection);
         };
+        self.on('editSectionNote', function(section){
+            console.error(section);
+            self.pageNoteMode.doEdit();
+            self.selectNote(section);
+        });
         self.on('noteSubmit', function(){
-            self.currNote = null;
-            self.newSection = {};
-            self.newSection.mates = [];
+            self.pageNoteMode.doView();
             self.update();
         });
         self.on('noteSave', function(){

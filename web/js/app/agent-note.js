@@ -18,7 +18,6 @@ domain = require('../domain/index');
 */
 var jsConfig = __page.jc;
 if(jsConfig){
-    wx.config(jsConfig);
     wx.chooseImageAsync = function(opts){
         return new Promise(function(resolve, reject){
             wx.chooseImage({

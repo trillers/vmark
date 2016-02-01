@@ -4,7 +4,6 @@
 var riot = require('seedriot');
 var $ = require('jquery');
 var util = require('./util');
-var welcomediv = document.getElementById('welcome_pag');
 var _default_model = {
     name: 'thing',
     fetched: false,
@@ -315,7 +314,11 @@ var presentize = function(tag, opts){
     };
 
     tag.on('ready', function(cmd){
-        setReady(cmd);
+        var topDiv = document.body.querySelector('body >div');
+        setTimeout(function(){
+            setReady(cmd);
+            topDiv.removeChild(topDiv.querySelector('#welcomeWrapper'));
+        }, 1500);
     });
 
     tag.on('refresh', function(){
