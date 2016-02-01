@@ -57,6 +57,7 @@ module.exports = function(){
             var recontent = null;
             try{
                 recontent = yield recontentService.generateAsync({tenantId: tenantId, originalUrl: url, adlink: adlink});
+                context.logger.debug(recontent);
                 var contentUri = recontent.newUrl;
                 var ctx = this;
                 if(openid){
