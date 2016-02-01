@@ -16,13 +16,12 @@ module.exports = function(){
 
     router.get('/recontent-set', function *(){
         var tenantId = null;
-        if(this.session && this.session.auth){
-            tenantId = this.session.auth.tenantId;
-        }
-        else{
+        if(this.query.tenantId){
             tenantId = this.query.tenantId;
         }
-
+        else{
+            tenantId = this.session.auth.tenantId;
+        }
         var url = this.query.url;
         var feedback = this.query.feedback;
         var adlinks = yield adlinkService.findTenantAdlinksAsync(tenantId);
@@ -42,17 +41,24 @@ module.exports = function(){
         var tenantId = body.tenantId;
 
         if(!url){
-            //this.redirect('/recontent-set?tenantId=' + tenantId);
-            this.redirect('/recontent-set');
+            this.redirect('/recontent-set?tenantId=' + tenantId);
             return;
         }
         else if(url.indexOf('mp.weixin.qq.com')==-1){
-            //this.redirect('/recontent-set?tenantId=' + tenantId + '&feedback=not_weixin&url=' + url);
-            this.redirect('/recontent-set?feedback=not_weixin&url=' + url);
+            this.redirect('/recontent-set?tenantId=' + tenantId + '&feedback=not_weixin&url=' + url);
             return;
         }
 
-        var recontent = yield recontentService.generateAsync({tenantId: tenantId, originalUrl: url, adlink: adlink});
+        var recontent = null;
+        try{
+            recontent = yield recontentService.generateAsync({tenantId: tenantId, originalUrl: url, adlink: adlink});
+        }
+        catch(err){
+            context.logger.error(err);
+            this.redirect('/recontent-set?tenantId=' + tenantId + '&feedback=error&url=' + url);
+            return;
+        }
+
         var contentUri = recontent.newUrl;
         var me = this;
         yield new Promise(function(resolve, reject){
