@@ -38,7 +38,7 @@ Authenticator.prototype = {
                 return;
             }
             else if(auth.result != authResults.OK && auth.result != authResults.NO_BOUND_BOT){
-                yield this.render('/login-feedback', {result: auth.result});
+                yield this.render('login-feedback', {result: auth.result});
                 return;
             }
 
