@@ -34,11 +34,11 @@ Authenticator.prototype = {
             if(!auth){
                 agentToken.delete(ctx);
                 //this.redirect('/login-feedback?result=' + authResults.NO_USER);
-                yield this.render('login-feedback', auth);
+                yield this.render('login-feedback', {result: authResults.NO_USER});
                 return;
             }
             else if(auth.result != authResults.OK && auth.result != authResults.NO_BOUND_BOT){
-                yield this.render('/login-feedback', auth);
+                yield this.render('/login-feedback', {result: auth.result});
                 return;
             }
 

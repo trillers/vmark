@@ -66,7 +66,6 @@ module.exports = function(app){
             this.redirect('/login');
             return;
         }
-console.log('mock-login');
         var auth = null;
         try{
             auth = yield securityService.authenticateAsync(openid);

@@ -7,34 +7,27 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="/public/favicon.ico">
-    <title>主页面</title>
-    <!-- Bootstrap core CSS -->
-    <link href="/public/components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="/public/components/jquery/jquery.min.js"></script>
-    <script src="/public/components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <title>登陆反馈</title>
     <script type="text/javascript">
 
     </script>
+    <style>
+        .feedback {
+            width: 100px;
+            padding-top: 100px;
+        }
+        .feedback div{
+            width: 50%;
+            margin: 0 auto;
+        }
+
+    </style>
 </head>
-<body background="/web/images/bg2.jpg" style="background-repeat: no-repeat;
-        background-attachment: fixed; background-size: cover;background-position: center bottom;" >
-<div class="container" style="text-align: left ; margin-top: 1%">
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 " >
+<body>
+    <div class="feedback">
+        <div >
             登陆失败：{{result}} &nbsp;&nbsp;
         </div>
     </div>
-
-    <a href="javascript:history.go(-1);">返回</a>
-    <div class="row">
-        <div class="col-lg-6" >
-
-        </div>
-
-        <div class="col-lg-6" >
-
-        </div>
-    </div>
-
 </body>
 </html>
