@@ -9,7 +9,6 @@ var page = require('./page');
 // * import global variables
 // */
 riot = require('seedriot');
-//nest = require('./nest');
 $ = jquery;
 require('./jssdk');
 domain = require('../domain/index');
