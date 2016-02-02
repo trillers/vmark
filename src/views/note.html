@@ -17,16 +17,53 @@
     window.devOrNot =( __app.settings.env.debug );
     var scripthook = document.createElement( "script" );
     if(devOrNot){
-        scripthook.src = "/web/note-index.js";
+        scripthook.src = "/web/index.js";
     }else{
         scripthook.src = "/web/spm/build/note/0.0.1/index.js";
     }
     document.getElementsByTagName( "head" )[0].appendChild( scripthook );
     </script>
     <link rel="stylesheet" href="/public/components/weui/dist/style/weui.min.css"/>
+    <style>
+        #welcomeBody{
+            transition: all 1s;
+        }
+        #welcomeFooter{
+            transition: all 1s;
+        }
+    </style>
 </head>
 <body>
     <div>
+        <div id="welcomeWrapper" style="width: 100%; height: 500px; overflow: hidden">
+            <div id="welcomeBody" style="width: 100%; margin: 0px auto; margin-top: 150px; text-align: center">
+                <div><img src="/public/images/logo_240x240.jpg"/></div>
+            </div>
+            <div id="welcomeFooter" style="margin-top: 100px; opacity: 0; text-align: center">
+                <div>welcome to easy to write</div>
+            </div>
+        </div>
+        <script>
+            var wWrapper,
+                screenHeight,
+                wBody,
+                bodyHeight,
+                topMargin;
+            wWrapper = document.querySelector('#welcomeWrapper');
+            screenHeight = window.innerHeight;
+            wWrapper.style.height = screenHeight + 'px';
+            wBody = document.querySelector('#welcomeBody');
+            bodyHeight = wBody.clientHeight;
+            topMargin = (screenHeight - bodyHeight)/2;
+            wBody.style.marginTop = topMargin + 'px';
+            setTimeout(function(){
+                var footer = document.querySelector('#welcomeFooter');
+                if(footer){
+                    footer.style.marginTop = '20px';
+                    footer.style.opacity = 1;
+                }
+            }, 300)
+        </script>
         <note-edit></note-edit>
         {% if devOrNot %}
         <script src="/web/tag/note-edit.html" type="riot/tag"></script>
@@ -35,6 +72,7 @@
         <script src="/web/tag/note-section.html" type="riot/tag"></script>
         <script src="/web/tag/note-comment.html" type="riot/tag"></script>
         <script src="/web/tag/note-confirm.html" type="riot/tag"></script>
+        <script src="/web/tag/note-input.html" type="riot/tag"></script>
         {% endif %}
     </div>
 </body>

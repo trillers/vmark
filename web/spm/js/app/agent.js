@@ -1,24 +1,18 @@
 /**
  * SPA definition which is the single entry of our mobile site
  */
-var jquery = require('jquery');
-jquery = require('../lib/jquery.cookie');
-util = require('./util');
-var page = require('./page');
-///*
-// * import global variables
-// */
+$ = require('../lib/jquery.cookie');
 riot = require('seedriot');
-nest = require('./nest');
-$ = jquery;
+util = require('./util');
 require('./jssdk');
 domain = require('../domain/index');
+
+
 /*
 * wechat js config
 */
 var jsConfig = __page.jc;
 if(jsConfig){
-    wx.config(jsConfig);
     wx.chooseImageAsync = function(opts){
         return new Promise(function(resolve, reject){
             wx.chooseImage({
@@ -94,10 +88,6 @@ var agent = {
     //    util.removeforbidOperation();
     //}
     //$(document).ajaxStart(onStart).ajaxComplete(onComplete);
-    window.newActivity = {};
-    window.revokedActivity = {};
-    riot.observable(window.newActivity);
-    riot.observable(window.revokedActivity);
-})(jquery);
+})($);
 
 module.exports = agent;

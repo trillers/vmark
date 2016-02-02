@@ -1,2 +1,1 @@
-require('./js/app/note-index');
-module.exports = null;
+module.exports = require('./js/app');

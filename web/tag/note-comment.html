@@ -16,6 +16,9 @@
             background: white;
             width: 100%;
             overflow: hidden;
+            position: fixed;
+            bottom: 0px;
+            z-index: 1000;
         }
         .feature_area >div{
             overflow: hidden;
@@ -94,6 +97,9 @@
                 }
             }
         };
+        self.quitComment = function(e){
+            self.parent.trigger('quitComment');
+        };
         self.addComment = function(e){
             if(self.txtInput.value.trim() === ''){
                 return;
@@ -107,7 +113,6 @@
             }).onDone(function(data){
                 self.txtInput.value = '';
                 self.viewModel.input.doWait();
-                console.error(data.comment);
                 self.parent.trigger('noteComment', data.comment);
             }).execute();
         };
