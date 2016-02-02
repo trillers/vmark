@@ -4,7 +4,6 @@
 var riot = require('seedriot');
 var $ = require('jquery');
 var util = require('./util');
-var welcomediv = document.getElementById('welcome_pag');
 var _default_model = {
     name: 'thing',
     fetched: false,

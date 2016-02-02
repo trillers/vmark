@@ -284,22 +284,22 @@
             }
             self.confirm({text: '是否删除评论'}, function(){
                 deleteComment
-                        .newInvocation({
-                            id: e.item._id
-                        })
-                        .onDone(function(data){
-                            if(data.success){
-                                self.section.comments.forEach(function(comment, index){
-                                    if(comment._id == e.item._id){
-                                        self.section.comments.splice(index, 1);
-                                    }
-                                    self.update();
-                                })
-                            }else{
-                                alert('delete comments failed.')
-                            }
-                        })
-                        .execute();
+                    .newInvocation({
+                        id: e.item._id
+                    })
+                    .onDone(function(data){
+                        if(data.success){
+                            self.section.comments.forEach(function(comment, index){
+                                if(comment._id == e.item._id){
+                                    self.section.comments.splice(index, 1);
+                                }
+                                self.update();
+                            })
+                        }else{
+                            alert('delete comments failed.')
+                        }
+                    })
+                    .execute();
             });
         };
         self.cancelSectionNote = function(e){
