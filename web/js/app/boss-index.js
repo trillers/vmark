@@ -6,12 +6,24 @@ require('./tags')();
 var util = require('./util');
 
 var Spa = require('./spa');
-var app = new Spa({defaultHash: '/'});
+var app = new Spa({defaultHash: 'active'});
 
-app.routeView('/', nest.viewable({
-    name: '/',
+app.routeView('active', nest.viewable({
+    name: 'active',
     mount: function(ctx){
         var tags = riot.mount('boss-active-note', {filter: ctx.req.query, app: this.parent});
+        this.tag = tags[0];
+    },
+    route: function(ctx){
+        this.context = ctx;
+        this.tag.trigger('open', {_id: ctx.req.params.id});
+    }
+}));
+
+app.routeView('deleted', nest.viewable({
+    name: 'deleted',
+    mount: function(ctx){
+        var tags = riot.mount('boss-deleted-note', {filter: ctx.req.query, app: this.parent});
         this.tag = tags[0];
     },
     route: function(ctx){
@@ -24,7 +36,7 @@ app.on('init', function(){
     var attentionUrl = util.getCookie('attentionUrl');
     var hash = attentionUrl || window.location.hash;
     hash || (hash = app.defaultHash);
-    console.error('init');
+    riot.mount('boss-top-menu');
     riot.route(hash);
     if(attentionUrl){
         util.setCookie('attentionUrl', "", -1);

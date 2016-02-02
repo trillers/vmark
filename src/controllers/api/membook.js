@@ -221,4 +221,23 @@ module.exports = function (router) {
         }
         this.body = {success: true};
     });
+
+    router.get('/note/find', function*(){
+        var params = {};
+        params.page = this.query.page;
+        var lFlg = this.query.status == 'active' ? 'a' : 'd';
+        params.conditions = {
+            lFlg: lFlg,
+            type: 'pg'
+        };
+        params.sort = {
+            crtOn: -1
+        };
+        params.populate = [
+            {
+                path: 'initiator'
+            }
+        ]
+        this.body = yield noteService.filterAsync(params);
+    });
 };

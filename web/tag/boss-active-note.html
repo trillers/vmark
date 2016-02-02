@@ -1,13 +1,79 @@
 <boss-active-note>
     <div if="{!hidden}">
-        <div>
-            已激活
+        <div class="container">
+            <div class="col-md-10 col-xs-10 col-sm-10 col-md-offset-1">
+                <div class="jumbotron" style="height: auto;padding-top: 1em; padding-left: 2em;padding-right: 4em;">
+                    <div class="panel " style="min-height: 38em">
+                        <ul class="nav nav-tabs">
+                            <li role="presentation" class="active"><a href="javascript:void(0)">已激活</a></li>
+                            <li role="presentation"><a href="#deleted">已删除</a></li>
+                        </ul>
+                        <ul class="ul_list" style="margin-bottom: 5em; padding-left: 0em; margin-top: 1em">
+                            <li>
+                                <strong class="col-md-3">笔记名称</strong>
+                                <strong class="col-md-2">创建人</strong>
+                                <strong class="col-md-2"> 状态</strong>
+                                <strong class="col-md-3">创建时间</strong>
+                                <strong class="col-md-2"> 操作</strong>
+                            </li>
+                            <li style="padding-top: 10px">
+                                <hr width="100%">
+                            </li>
+                            <boss-note-item each="{items}" curritem="{this}"/>
+                        </ul>
+                        <pagination currentPage="{currentPage}" pageCount="{pageCount}"/>
+                    </div>
+                </div>
+            </div>
         </div>
         <style scoped>
-
+            .ul_list{list-style-type: none ; text-align: center}
         </style>
         <script>
+            this.app = this.opts.app; //keep spa object
+            var self = nest.presentable(this);
+            var findNotes = domain.action('findNotes');
+            self.currentPage = 3;
+            self.pageCount = 10;
 
+            var onFindNotes = function(data){
+                self.update({items: data});
+            }
+
+            this.on('mount', function(){
+                console.info('tag boss-active-note is mounted');
+                findNotes.onDone(onFindNotes);
+            });
+            this.on('unmount', function(){
+                console.info('tag boss-active-note  is unmounted');
+                findNotes.offDone(onFindNotes);
+            });
+            this.on('open', function(options){
+                console.info('tag boss-active-note  is opening');
+                self.trigger('view-route-to');
+                var params = {
+                    status: 'active',
+                    page:{
+                        size: 10,
+                        no: 1
+                    }
+                }
+                findNotes.execute(params);
+            });
+
+            this.on('leave', function(){
+                self.mask = true;
+                self.update();
+            });
+
+            this.on('reenter', function(){
+                self.mask = false;
+                self.update();
+            });
+
+            this.on('refresh', function(){
+                console.info('tag boss-active-note index is refreshing');
+            });
         </script>
     </div>
 </boss-active-note>
