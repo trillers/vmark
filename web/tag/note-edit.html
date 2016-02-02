@@ -77,7 +77,6 @@
     <script>
         "use strict";
         //private properties
-//        var self = nest.presentable(this);
         var self = this;
         var id = this.opts.id;
         var url = window.location.href;
@@ -265,14 +264,15 @@
             self.selectNote(tag.section, tag)
         });
         self.on('mount', function(){
+            console.info('tag pageNote new is opening');
             loadNote.onDone(onLoadNote);
             updateNote.onDone(onUpdateNote);
             self.init();
             self.pageNote._id = id;
-            console.info('tag pageNote new is opening');
             loadNote.execute({
                 noteId: self.pageNote._id
             });
+
         });
         self.on('unmount', function(){
             loadNote.offDone(onLoadNote);
@@ -333,5 +333,6 @@
             var input = self.tags['note-input'];
             input.show(true);
         }
+        console.log('execute to the end');
     </script>
 </note-edit>
