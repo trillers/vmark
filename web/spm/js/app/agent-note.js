@@ -9,7 +9,7 @@ var page = require('./page');
 // * import global variables
 // */
 riot = require('seedriot');
-nest = require('./nest');
+//nest = require('./nest');
 $ = jquery;
 require('./jssdk');
 domain = require('../domain/index');
@@ -18,7 +18,6 @@ domain = require('../domain/index');
 */
 var jsConfig = __page.jc;
 if(jsConfig){
-    wx.config(jsConfig);
     wx.chooseImageAsync = function(opts){
         return new Promise(function(resolve, reject){
             wx.chooseImage({

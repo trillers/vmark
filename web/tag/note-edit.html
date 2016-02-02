@@ -77,7 +77,9 @@
     <script>
         "use strict";
         //private properties
-        var self = nest.presentable(this);
+//        var self = nest.presentable(this);
+        var self = this;
+        var id = this.opts.id;
         var url = window.location.href;
         var loadNote = domain.action('loadNote');
         var updateNote = domain.action('updateNote');
@@ -265,35 +267,18 @@
         self.on('mount', function(){
             loadNote.onDone(onLoadNote);
             updateNote.onDone(onUpdateNote);
-        });
-        self.on('unmount', function(){
-            loadNote.offDone(onLoadNote);
-            updateNote.onDone(onUpdateNote);
-        });
-        self.on('open', function(options){
             self.init();
-            try{
-                self.pageNote._id = window.location.pathname.match(/_(\w+)/g)[0].substr(1);
-            }catch(e){
-                alert('无效的链接');
-            }
+            self.pageNote._id = id;
             console.info('tag pageNote new is opening');
             loadNote.execute({
                 noteId: self.pageNote._id
             });
         });
-        self.on('leave', function(){
-            self.mask = true;
-            self.update();
+        self.on('unmount', function(){
+            loadNote.offDone(onLoadNote);
+            updateNote.offDone(onUpdateNote);
         });
-        self.on('reenter', function(){
-            self.mask = false;
-            self.update();
-        });
-        self.on('refresh', function(){
-            console.info('tag group index is refreshing');
-            //_refresh();
-        });
+
         var remote_playing = false, local_playing = false, voiceUrl = '', playVoiceEnd;
         wx.ready(function(){
             wx.onVoicePlayEnd({
