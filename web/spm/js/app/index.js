@@ -3,7 +3,6 @@
  */
 require('./agent').init();
 require('./tags')();
-
 var App = require('./app');
 var app = new App({defaultHash: '/'});
 
@@ -14,6 +13,7 @@ app.on('mount', function(id){
 app.on('route', function (ctx) {
     console.log(ctx.req.route);
 });
+
 
 app.on('init', function () {
 
