@@ -30,7 +30,7 @@
             <span if="{pageNote.parentNote}">{pageNote.txt}</span>
         </div>
         <div style="clear: both"></div>
-        <div class="mask" if="{pageNoteMode.status.comment}" ontouchstart="{pageNoteMode.doView}" style="height: {window.innerHeight + 'px'}"></div>
+        <div class="mask" if="{pageNoteMode.status.comment}" ontouchstart="{quitCommentWithClickMask(currComment)}" style="height: {window.innerHeight + 'px'}"></div>
     </div>
     <note-confirm></note-confirm>
     <note-footer if="{Object.keys(currNote).length}"></note-footer>
@@ -107,11 +107,14 @@
                     }
                 }
             }
-            self.trigger('ready', false);
-            self.trigger('view-route-to');
+            self.hidden = false;
+            //
+            var topDiv = document.body.querySelector('body >div');
+            topDiv.removeChild(topDiv.querySelector('#welcomeWrapper'));
             self.update();
         };
         //instance properties
+        self.hidden = true;
         self.pageNote = null;
         self.newSection = {};
         self.newSection.mates = [];
@@ -138,13 +141,17 @@
                 self.currComment = null;
                 self.newSection = {};
                 self.newSection.mates = [];
-                console.log(section._id);
+                if(section._id){
+                    console.log(section._id);
+                    //TODO jump to the section
+                }
             },
             doEdit: function(){
                 self.pageNoteMode.status.edit = true;
                 self.pageNoteMode.status.view = false;
                 self.pageNoteMode.status.comment = false;
                 self.currComment = null;
+                self.trigger('edit');
             },
             doComment: function(){
                 self.pageNoteMode.status.view = false;
@@ -197,6 +204,11 @@
             }
             return false;
         };
+        self.quitCommentWithClickMask = function(section){
+            return function(e){
+                self.pageNoteMode.doView(section);
+            }
+        };
         self.on('cancel', function(section){
             self.pageNoteMode.doView(section);
             self.currNote = null;
@@ -237,12 +249,10 @@
             self.selectNote(self.newSection);
         };
         self.on('editSectionNote', function(section){
-            console.error(section);
             self.pageNoteMode.doEdit();
             self.selectNote(section);
         });
         self.on('noteSubmit', function(section){
-            console.error(section)
             self.pageNoteMode.doView(section);
             self.update();
         });

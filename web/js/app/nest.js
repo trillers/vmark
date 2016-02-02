@@ -314,11 +314,7 @@ var presentize = function(tag, opts){
     };
 
     tag.on('ready', function(cmd){
-        var topDiv = document.body.querySelector('body >div');
-        setTimeout(function(){
-            setReady(cmd);
-            topDiv.removeChild(topDiv.querySelector('#welcomeWrapper'));
-        }, 1500);
+        setReady(cmd);
     });
 
     tag.on('refresh', function(){

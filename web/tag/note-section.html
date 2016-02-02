@@ -1,4 +1,5 @@
 <note-section>
+    <div class="page" if="{!hidden}">
     <div class="section" sectionId="{_id}">
         <div class="panel">
         <div class="top-padding" />
@@ -62,7 +63,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="comments" if="{parent.currComment._id === section._id}">
+            <div class="comments">
                 <ul>
                     <li each="{section.comments}" onclick="{parent.deleteComment}">
                     <table style="width:100%;" cellpadding="0" cellspacing="0">
@@ -94,6 +95,7 @@
             </div>
         </div>
         <div class="bottom-padding" />
+    </div>
     </div>
     <style scoped>
         label{
@@ -239,7 +241,7 @@
             if(!(self.isOnEdit() && (self.initiator._id === self.parent.user._id))){
                 return false;
             }
-            self.confirm(function(){
+            self.confirm({text: '是否删除该行'}, function(){
                 deleteNotes.newInvocation({
                     notes: [e.item._id]
                 })
@@ -259,7 +261,7 @@
                 .execute();
             });
         };
-        self.confirm = function(fn){
+        self.confirm = function(option, fn){
             self.confirmComponent.one('confirm', confirmListener);
             self.confirmComponent.one('cancel', cancelListener);
             function confirmListener(){
@@ -273,14 +275,14 @@
                 self.confirmComponent.off('confirm', confirmListener);
                 self.confirmComponent.off('cancel', cancelListener);
             }
-            self.confirmComponent.trigger('popUp');
+            self.confirmComponent.trigger('popUp', option);
         };
         self.deleteComment = function(e){
             var commenter = e.item.initiator;
             if(commenter._id != self.parent.user._id){
                 return false;
             }
-            self.confirm(function(){
+            self.confirm({text: '是否删除评论'}, function(){
                 deleteComment
                         .newInvocation({
                             id: e.item._id
@@ -309,7 +311,6 @@
                     || (self.section && self.section.mates && self.section.mates.length <=0)){
                 return;
             }
-            console.error(self.section)
             if(self.section.mates.length<=0){
                 self.init();
                 self.parent.trigger('noteSubmit', self.section);
