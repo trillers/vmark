@@ -69,12 +69,12 @@ var proto = {
             //hash || (hash = app.defaultHash)
             //riot.route(hash);
         });
-
         this.on('before-view-route-to', app._doBeforeViewRouteTo.bind(app));
         this.on('view-route-to', app._doViewRouteTo.bind(app));
         this.on('view-route-back', app._doViewRouteBack.bind(app));
         if(!window.devOrNot){
             window.onload = function(){
+                debugger;
                 app.trigger('init');
             };
         }else{

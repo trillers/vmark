@@ -93,5 +93,8 @@ module.exports = function(){
         yield this.render('note-plaza', {noteList: noteList});
     });
 
+    router.get('/boss', function *(){
+        yield this.render('boss/index');
+    });
     return router.routes();
 };
