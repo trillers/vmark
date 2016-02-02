@@ -35,6 +35,8 @@
             position: fixed;
             width: 100%;
             z-index: 10000;
+            overflow: hidden;
+            bottom: 0px;
         }
         .record_progress_bar {
             margin-top: 10px;
@@ -93,8 +95,6 @@
             background: white;
             width: 100%;
             overflow: hidden;
-            position: fixed;
-            bottom: 0px;
         }
         .feature_area >div{
             overflow: hidden;
@@ -317,6 +317,9 @@
         self.toggleSubMenu = function(e){
             self.viewModel.subMenu.toggle();
         };
+        self.on('edit', function(){
+            self.txtInput.focus();
+        });
         var recordGap, start, end, voice = {}, stopRecord = false;
         wx.ready(function(){
             console.log('ready');

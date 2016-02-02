@@ -57,9 +57,12 @@
             topMargin = (screenHeight - bodyHeight)/2;
             wBody.style.marginTop = topMargin + 'px';
             setTimeout(function(){
-                document.querySelector('#welcomeFooter').style.marginTop = '20px';
-                document.querySelector('#welcomeFooter').style.opacity = 1;
-            }, 1000)
+                var footer = document.querySelector('#welcomeFooter');
+                if(footer){
+                    footer.style.marginTop = '20px';
+                    footer.style.opacity = 1;
+                }
+            }, 300)
         </script>
         <note-edit></note-edit>
         {% if devOrNot %}

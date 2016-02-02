@@ -113,7 +113,6 @@
             }).onDone(function(data){
                 self.txtInput.value = '';
                 self.viewModel.input.doWait();
-                console.error(data.comment);
                 self.parent.trigger('noteComment', data.comment);
             }).execute();
         };
