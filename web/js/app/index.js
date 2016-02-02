@@ -1,9 +1,8 @@
 /**
  * SPA definition which is the single entry of our mobile site
  */
-var agent = require('./agent-note').init();
+require('./agent').init();
 require('./tags')();
-var util = require('./util');
 
 var App = require('./app');
 var app = new App({defaultHash: '/'});

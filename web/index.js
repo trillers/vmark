@@ -10,7 +10,7 @@ seajs.config({
         'seedriot':'/public/components/cmd-riot/riot+compiler.js'
     },
     vars: {
-        'mainpath':'/web/js/app/note-index'
+        'mainpath':'/web/js/app/index'
     },
     map: [
         ['','']
