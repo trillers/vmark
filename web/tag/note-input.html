@@ -1,6 +1,28 @@
 <note-input>
     <div if="{!hidden}" class="note-input">
         <div class="bar">
+            <div style="width:52px;float:left;display:inline;">
+                <div class="btn">
+                    <img src="/public/images/input_keyboard.png">
+                </div>
+            </div>
+            <div class="input-text">
+                <div class="text">
+                    <input type="text">
+                </div>
+                <div class="emoji-icon">
+                    <div class="emoji">
+                        <img src="/public/images/input_emoji.png">
+                    </div>
+                </div>
+            </div>
+            <div style="width:52px;float:right;display:inline;">
+                <div class="btn">
+                    <img src="/public/images/input_add.png">
+                </div>
+            </div>
+        </div>
+        <div class="bar" if="{false}">
             <table style="width:100%" cellspacing="0" cellpadding="0">
                 <tr>
                     <td width="52px">
@@ -8,12 +30,12 @@
                             <img src="/public/images/input_keyboard.png">
                         </div>
                     </td>
-                    <td width="100%">
+                    <td style="width:100%;">
                         <div class="text">
-                            <div class="inline" style="float: left; width: 80%;">
+                            <div class="input">
                                 <input type="text">
                             </div>
-                            <div class="inline" style="float: right; width: 30px;">
+                            <div class="emoji-icon">
                                 <div class="emoji">
                                     <img src="/public/images/input_emoji.png">
                                 </div>
@@ -51,6 +73,19 @@ more
             </table>
         </div>
     </div>
+
+<!--
+
+                <div class="input">
+                    <input type="text">
+                </div>
+                <div class="emoji-icon">
+                    <div class="emoji">
+                        <img src="/public/images/input_emoji.png">
+                    </div>
+                </div>
+
+-->
 
     <style scoped>
     </style>

@@ -292,9 +292,6 @@ div.note-input{
         height: 32px;
       }
     }
-    div.inline {
-      display: inline;
-    }
     div.emoji{
       width: 24px;
       height: 24px;
@@ -305,15 +302,27 @@ div.note-input{
       }
     }
 
-    div.text{
-      //width: 100%;
+    div.input-text{
+      width: auto;
       height: 32px;
       margin: 0px 10px;
       border-bottom: 1px solid #CBCBCB;
 
-      input {
-        width: 100%;
-        height: 20px;
+      div.text {
+        //overflow:hidden;
+        display:inline;
+        //float:left;
+        //width: auto;
+        input {
+          //width: 100%;
+          height: 20px;
+        }
+      }
+
+      div.emoji-icon {
+        display:inline;
+        float: right;
+        width: 30px;
       }
     }
   }
