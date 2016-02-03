@@ -89,7 +89,12 @@ module.exports = function(app){
             this.redirect('/boss');
         }
         else{
-            this.redirect('/');
+            if(auth.privileges && auth.privileges['recontent']){
+                this.redirect('/tenant-recontent-'+auth.tenantId+'#adlink-index');
+            }
+            else{
+                this.redirect('/');
+            }
         }
     });
 
