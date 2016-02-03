@@ -13,7 +13,7 @@
         </div>
 
         <div>
-            <note-section name="{item._id}" each="{item, i in pageNote.mates}" if="{parent.sectionShowOrNot(item)}" section="{item}"></note-section>
+            <note-section id="{item._id}" each="{item, i in pageNote.mates}" if="{parent.sectionShowOrNot(item)}" section="{item}"></note-section>
             <note-section if="{pageNoteMode.status.edit && (currNote === newSection)}" section="{newSection}" new="true"></note-section>
         </div>
         <div if="{pageNoteMode.status.view}" class="add-section-bar"><div class="add-section">
@@ -134,6 +134,10 @@
                 edit : false,
                 comment: false
             },
+            position: {
+                start: 0,
+                end: 0
+            },
             doView: function(section){
                 self.pageNoteMode.status.view = true;
                 self.pageNoteMode.status.edit = false;
@@ -144,10 +148,17 @@
                 self.newSection.mates = [];
                 if(section._id){
                     console.log(section._id);
+                    console.log(window.scrollY);
+                    console.log(self.pageNoteMode.position.start)
+                    setTimeout(function(){
+                        window.scrollTo(0, self.pageNoteMode.position.start);
+                    }, 1);
+//                    self.root.querySelector('#'+section._id + '>a').scrollIntoView();
                     //TODO jump to the section
                 }
             },
             doEdit: function(){
+                self.pageNoteMode.position.start = window.scrollY;
                 self.pageNoteMode.status.edit = true;
                 self.pageNoteMode.status.view = false;
                 self.pageNoteMode.status.comment = false;
@@ -155,6 +166,7 @@
                 self.trigger('edit');
             },
             doComment: function(){
+                self.pageNoteMode.position.start = window.scrollY;
                 self.pageNoteMode.status.view = false;
                 self.pageNoteMode.status.edit = false;
                 self.pageNoteMode.status.comment = true;
@@ -207,7 +219,9 @@
         };
         self.quitCommentWithClickMask = function(section){
             return function(e){
+                e.preventDefault();
                 self.pageNoteMode.doView(section);
+                self.update();
             }
         };
         self.on('cancel', function(section){
