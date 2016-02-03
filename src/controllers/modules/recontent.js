@@ -62,7 +62,7 @@ module.exports = function(){
                             "title": recontent.originalTitle,
                             "description": recontent.originalTitle,
                             "url": ctx.request.origin + recontent.newUrl,
-                            "picurl": ctx.request.origin + "/public/images/article.png"
+                            "picurl": ctx.request.origin + "/public/images/bjb.jpg"
                     }];
                     wechatApi.sendNews(openid, articles, function(){
                         context.logger.debug('Recontent newly generated is sent');
