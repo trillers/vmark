@@ -229,9 +229,6 @@ div.note-input .bar div.btn img {
   width: 32px;
   height: 32px;
 }
-div.note-input .bar div.inline {
-  display: inline;
-}
 div.note-input .bar div.emoji {
   width: 24px;
   height: 24px;
@@ -241,12 +238,20 @@ div.note-input .bar div.emoji img {
   width: 24px;
   height: 24px;
 }
-div.note-input .bar div.text {
+div.note-input .bar div.input-text {
+  width: auto;
   height: 32px;
   margin: 0px 10px;
   border-bottom: 1px solid #CBCBCB;
 }
-div.note-input .bar div.text input {
-  width: 100%;
+div.note-input .bar div.input-text div.text {
+  display: inline;
+}
+div.note-input .bar div.input-text div.text input {
   height: 20px;
+}
+div.note-input .bar div.input-text div.emoji-icon {
+  display: inline;
+  float: right;
+  width: 30px;
 }

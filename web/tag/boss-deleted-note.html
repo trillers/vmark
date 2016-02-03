@@ -65,10 +65,10 @@
                 findNotes.offDone(onFindNotes);
             });
             this.on('open', function(options){
-                console.info('tag boss-deleted-note  is opening');
+                console.info('tag boss-deleted-note is opening');
                 self.trigger('view-route-to');
                 var params = {
-                    status: 'active',
+                    status: 'delete',
                     page:{
                         size: 10,
                         no: 1

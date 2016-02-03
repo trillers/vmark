@@ -33,14 +33,10 @@ app.routeView('deleted', nest.viewable({
 }));
 
 app.on('init', function(){
-    var attentionUrl = util.getCookie('attentionUrl');
-    var hash = attentionUrl || window.location.hash;
+    var hash = window.location.hash;
     hash || (hash = app.defaultHash);
     riot.mount('boss-top-menu');
     riot.route(hash);
-    if(attentionUrl){
-        util.setCookie('attentionUrl', "", -1);
-    }
 });
 app.init();
 

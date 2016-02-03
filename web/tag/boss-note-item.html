@@ -15,11 +15,11 @@
     <script>
         var self = this;
         var item = self.opts.curritem;
-        console.error(item);
         var crtOn = new Date(item.crtOn);
         var year = crtOn.getFullYear();
         var month = crtOn.getMonth() + 1;
         var day = crtOn.getDate();
+
         self.date = year + '-' + month + '-' + day;
         if(item.lFlg === 'a'){
             self.state = '已激活';
@@ -28,12 +28,13 @@
             self.state = '已删除';
             self.actionName = '激活笔记';
         }
+
         deleteOrActive(e){
             e.preventUpdate = true;
             self.parent.parent.reset_id = item._id;
-            if(item.lFlg === '已激活'){
-                self.parent.parent.lockUser();
-            } else if(item.lFlg === '已锁定'){
+            if(item.lFlg === 'a'){
+                self.parent.parent.deleteNote(item._id);
+            } else if(item.lFlg === 'd'){
                 self.parent.parent.activeUser();
             }
         }
