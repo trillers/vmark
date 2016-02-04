@@ -24,7 +24,7 @@ context.domainBuilder.main = require('../framework/model/DomainBuilder');
 ar.ready(function(){
     require('../modules');
     require('../jobs/asyncNoteRank');
-    context.wechatBotManager.start();
+    //context.wechatBotManager.start();\\
 });
 
 ar.context = context;

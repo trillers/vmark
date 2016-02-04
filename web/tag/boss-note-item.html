@@ -1,0 +1,42 @@
+<boss-note-item>
+    <li style="width: 100%">
+        <span class="col-md-3"> {title || '匿名'}</span>
+        <span class="col-md-2"> {initiator.nickname || '匿名'}</span>
+        <span class="col-md-2"> {state}</span>
+        <span class="col-md-3"> {date}</span>
+        <span class="col-md-2">
+            <a onclick="{deleteOrActive}" style="text-decoration: none; cursor: pointer; padding-right: 4px;" >{actionName}</a>
+        </span>
+    </li>
+    <br>
+    <br>
+    <style scoped>
+    </style>
+    <script>
+        var self = this;
+        var item = self.opts.curritem;
+        var crtOn = new Date(item.crtOn);
+        var year = crtOn.getFullYear();
+        var month = crtOn.getMonth() + 1;
+        var day = crtOn.getDate();
+
+        self.date = year + '-' + month + '-' + day;
+        if(item.lFlg === 'a'){
+            self.state = '已激活';
+            self.actionName = '删除笔记';
+        } else if(item.lFlg === 'd'){
+            self.state = '已删除';
+            self.actionName = '激活笔记';
+        }
+
+        deleteOrActive(e){
+            e.preventUpdate = true;
+            self.parent.parent.reset_id = item._id;
+            if(item.lFlg === 'a'){
+                self.parent.parent.deleteNote(item._id);
+            } else if(item.lFlg === 'd'){
+                self.parent.parent.activeUser();
+            }
+        }
+    </script>
+</boss-note-item>
