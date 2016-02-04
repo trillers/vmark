@@ -147,9 +147,6 @@
                 self.newSection = {};
                 self.newSection.mates = [];
                 if(section._id){
-                    console.log(section._id);
-                    console.log(window.scrollY);
-                    console.log(self.pageNoteMode.position.start)
                     setTimeout(function(){
                         window.scrollTo(0, self.pageNoteMode.position.start);
                     }, 1);
@@ -286,7 +283,6 @@
             loadNote.execute({
                 noteId: self.pageNote._id
             });
-
         });
         self.on('unmount', function(){
             loadNote.offDone(onLoadNote);
