@@ -16,7 +16,7 @@
             </div>
             <div if="{viewModel.toggleTxtVoiBtn.txt}" class="text-area">
                 <div>
-                    <input oninput="{noteEditInput}" name="editTxtInput" placeholder="点击输入文字" value=""/>
+                    <input oninput="{noteEditInput}" id="editTxtInput" placeholder="点击输入文字" value=""/>
                 </div>
             </div>
             <div if="{viewModel.toggleTxtVoiBtn.voi}" class="voice-area" ontouchstart="{voiceAreaTouchStart}" ontouchend="{voiceAreaTouchEnd}">
