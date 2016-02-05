@@ -13,12 +13,9 @@
         var self = this;
         self.show = false;
         self.currTag = null;
+        self.text= '是否删除评论';
         self.on('popUp', function(option){
-            if(option && option.text){
-                self.text = option.text
-            }else{
-                self.text= '是否删除评论';
-            }
+            option.text && (self.text = option.text);
             self.show = true;
             self.update();
         });

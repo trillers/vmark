@@ -1,0 +1,31 @@
+<pagination>
+    <div>
+        <nav>
+            <ul class="pagination pagination-lg">
+                <li><a href="javascript: void(0)" page="1" onclick="{changePage}">&lt;&lt;</a></li>
+                <li><a href="javascript: void(0)" page="{opts.current_page - 1}" onclick="{changePage}">&lt;</a></li>
+                <li each="{val in pages}" class="{parent.getClass(val)}"><a href="javascript: void(0)" page="{val}" onclick="{parent.changePage}">{val}</a></li>
+                <li><a href="javascript: void(0)" page="{opts.current_page + 1}" onclick="{changePage}">&gt;</a></li>
+                <li><a href="javascript: void(0)" page="{opts.page_count}" onclick="{changePage}">&gt;&gt;</a></li>
+            </ul>
+        </nav>
+    </div>
+    <style></style>
+    <script>
+        var currentPage = opts.current_page;
+        var pageCount = opts.page_count;
+        var self = this;
+        console.log(currentPage < 4);
+        if(currentPage < 4){
+            this.pages = [1,2,3,4,5];
+        } else {
+            this.pages = [currentPage - 2, currentPage - 1, currentPage, currentPage + 1, currentPage + 2];
+        }
+        this.changePage = function(e){
+            self.parent.trigger('pageChange', $(e.currentTarget).attr('page'));
+        }
+        this.getClass = function(page){
+            return page == currentPage ? 'active' : '';
+        }
+    </script>
+</pagination>

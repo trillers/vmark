@@ -92,7 +92,6 @@
         var onLoadNote = function(data){
             if(data){
                 self.pageNote = data;
-                //TODO init new section
                 if(self.pageNote.mates && self.pageNote.mates.length){
                     var draftSections = self.pageNote.mates.filter(function(sectionNote){
                         if(sectionNote.status === 'dr'){
@@ -107,7 +106,6 @@
                 }
             }
             self.hidden = false;
-            //
             var topDiv = document.body.querySelector('body >div');
             topDiv.removeChild(topDiv.querySelector('#welcomeWrapper'));
             self.update();
@@ -145,9 +143,6 @@
                 self.newSection = {};
                 self.newSection.mates = [];
                 if(section._id){
-                    console.log(section._id);
-                    console.log(window.scrollY);
-                    console.log(self.pageNoteMode.position.start)
                     setTimeout(function(){
                         window.scrollTo(0, self.pageNoteMode.position.start);
                     }, 1);
@@ -155,20 +150,24 @@
                     //TODO jump to the section
                 }
             },
-            doEdit: function(){
+            doEdit: function(section){
                 self.pageNoteMode.position.start = window.scrollY;
                 self.pageNoteMode.status.edit = true;
                 self.pageNoteMode.status.view = false;
                 self.pageNoteMode.status.comment = false;
                 self.currComment = null;
-                self.trigger('edit');
+                self.selectNote(section);
+                self.trigger('editMode');
             },
-            doComment: function(){
+            doComment: function(section){
                 self.pageNoteMode.position.start = window.scrollY;
                 self.pageNoteMode.status.view = false;
                 self.pageNoteMode.status.edit = false;
                 self.pageNoteMode.status.comment = true;
+                self.currComment = section;
                 self.currNote = null;
+                self.update();
+                self.trigger('commentMode');
             }
         };
         self.init = function(){
@@ -233,9 +232,7 @@
             self.update();
         });
         self.on('comment', function(section){
-            self.pageNoteMode.doComment();
-            self.currComment = section;
-            self.update();
+            self.pageNoteMode.doComment(section);
         });
         self.on('noteComment', function(comment){
             self.currComment.comments.push(comment);
@@ -258,12 +255,10 @@
             self.update();
         };
         self.selectOperate = function(e){
-            self.pageNoteMode.doEdit();
-            self.selectNote(self.newSection);
+            self.pageNoteMode.doEdit(self.newSection);
         };
         self.on('editSectionNote', function(section){
-            self.pageNoteMode.doEdit();
-            self.selectNote(section);
+            self.pageNoteMode.doEdit(section);
         });
         self.on('noteSubmit', function(section){
             self.pageNoteMode.doView(section);
@@ -284,7 +279,6 @@
             loadNote.execute({
                 noteId: self.pageNote._id
             });
-
         });
         self.on('unmount', function(){
             loadNote.offDone(onLoadNote);

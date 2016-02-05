@@ -2,7 +2,7 @@
     <div class="feature_area">
         <div>
             <div class="txt_area">
-                <input oninput="{noteEditInput}" name="txtInput" placeholder="点击输入文字" value=""/>
+                <input oninput="{noteEditInput}" id="commentTxtInput" placeholder="点击输入文字" value=""/>
             </div>
             <div class="toggle_menu">
                 <div onclick="{addComment}" class="send_btn" if="{viewModel.input.editTxt}">发送</div>
@@ -97,21 +97,24 @@
                 }
             }
         };
+        self.parent.on('commentMode', function(){
+            document.querySelector('#commentTxtInput').focus();
+        });
         self.quitComment = function(e){
             self.parent.trigger('quitComment');
         };
         self.addComment = function(e){
-            if(self.txtInput.value.trim() === ''){
+            if(self.commentTxtInput.value.trim() === ''){
                 return;
             }
             saveComment.newInvocation({
                 note: self.parent.currComment._id,
                 interaction: {
                     initiator: self.parent.user._id,
-                    content: self.txtInput.value.trim()
+                    content: self.commentTxtInput.value.trim()
                 }
             }).onDone(function(data){
-                self.txtInput.value = '';
+                self.commentTxtInput.value = '';
                 self.viewModel.input.doWait();
                 self.parent.trigger('noteComment', data.comment);
             }).execute();

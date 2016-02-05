@@ -16,7 +16,7 @@
             </div>
             <div if="{viewModel.toggleTxtVoiBtn.txt}" class="text-area">
                 <div>
-                    <input oninput="{noteEditInput}" name="txtInput" placeholder="点击输入文字" value=""/>
+                    <input oninput="{noteEditInput}" name="editTxtInput" placeholder="点击输入文字" value=""/>
                 </div>
             </div>
             <div if="{viewModel.toggleTxtVoiBtn.voi}" class="voice-area" ontouchstart="{voiceAreaTouchStart}" ontouchend="{voiceAreaTouchEnd}">
@@ -99,18 +99,18 @@
             }
         };
         self.addTxt = function(e){
-            if(self.txtInput.value.trim() === ''){
+            if(self.editTxtInput.value.trim() === ''){
                 return;
             }
             saveNoteInSection.newInvocation({
                 type: 'txt',
-                content: self.txtInput.value.trim(),
+                content: self.editTxtInput.value.trim(),
                 parentNote: self.parent.currNote._id || '',
                 pageNoteId: self.parent.pageNote._id
             }).onDone(function(data){
                 util.mixin(self.parent.currNote, data.sectionNote);
                 self.parent.currNote.mates.push(data.note);
-                self.txtInput.value = '';
+                self.editTxtInput.value = '';
                 self.viewModel.input.doWait();
                 self.parent.trigger('noteSave', data.note);
             }).execute();
@@ -160,8 +160,8 @@
         self.toggleSubMenu = function(e){
             self.viewModel.subMenu.toggle();
         };
-        self.on('edit', function(){
-            self.txtInput.focus();
+        self.parent.on('editMode', function(){
+            document.querySelector('#editTxtInput').focus();
         });
         var recordGap, start, end, voice = {}, stopRecord = false;
         wx.ready(function(){
@@ -184,49 +184,49 @@
                 }
             });
         });
-//        self.voiceAreaTouchStart = function(e){
-//            console.error('startRecord');
-//            start = new Date().getTime();
-//            recordGap = setTimeout(function(){
-//                wx.startRecord();
-//                $('.record_detail_area').show();
-//
-//                var progress = 0;
-//                var $progress = $('.js_progress');
-//                var $secondsCon = $('.voice-seconds-container');
-//                var seconds = 0;
-//
-//                function next() {
-//                    $progress.css({width: progress + '%'});
-//                    $secondsCon.css({'padding-left': progress + '%'});
-//
-//                    $('#voice-seconds').text(seconds.toFixed(0));
-//                    progress = progress + 0.05;
-//                    seconds = seconds + 0.03;
-//                    if(progress < 100){
-//                        if(!stopRecord) {
-//                            setTimeout(next, 30);
-//                        }
-//                    }else{
-//                        $progress.css({width: '100%'});
-//                        $secondsCon.css({'padding-left': '100%'});
-//                        $('#voice-seconds').text(60)
-//                    }
-//                }
-//                next();
-//            }, 300);
-//        };
-//        self.voiceAreaTouchEnd = function(e){
-//            console.error('touchend');
-//            end = new Date().getTime();
-//
-//            if((end - start) < 300){
-//                end = 0;
-//                start = 0;
-//                //小于300ms，不录音
-//                clearTimeout(recordGap);
-//            }
-//        };
+        //        self.voiceAreaTouchStart = function(e){
+        //            console.error('startRecord');
+        //            start = new Date().getTime();
+        //            recordGap = setTimeout(function(){
+        //                wx.startRecord();
+        //                $('.record_detail_area').show();
+        //
+        //                var progress = 0;
+        //                var $progress = $('.js_progress');
+        //                var $secondsCon = $('.voice-seconds-container');
+        //                var seconds = 0;
+        //
+        //                function next() {
+        //                    $progress.css({width: progress + '%'});
+        //                    $secondsCon.css({'padding-left': progress + '%'});
+        //
+        //                    $('#voice-seconds').text(seconds.toFixed(0));
+        //                    progress = progress + 0.05;
+        //                    seconds = seconds + 0.03;
+        //                    if(progress < 100){
+        //                        if(!stopRecord) {
+        //                            setTimeout(next, 30);
+        //                        }
+        //                    }else{
+        //                        $progress.css({width: '100%'});
+        //                        $secondsCon.css({'padding-left': '100%'});
+        //                        $('#voice-seconds').text(60)
+        //                    }
+        //                }
+        //                next();
+        //            }, 300);
+        //        };
+        //        self.voiceAreaTouchEnd = function(e){
+        //            console.error('touchend');
+        //            end = new Date().getTime();
+        //
+        //            if((end - start) < 300){
+        //                end = 0;
+        //                start = 0;
+        //                //小于300ms，不录音
+        //                clearTimeout(recordGap);
+        //            }
+        //        };
         self.voiceAreaTouchStart = function(e){
             console.error('startRecord');
             start = new Date().getTime();
@@ -234,7 +234,7 @@
                 $('#mask').show();
                 wx.startRecord();
             }, 300);
-        }
+        };
         self.voiceAreaTouchEnd = function(e){
             console.error('touchend');
             end = new Date().getTime();
@@ -274,7 +274,7 @@
                     }
                 });
             }
-        }
+        };
         self.stopRecord = function(e){
             stopRecord = true;
             end = new Date().getTime();

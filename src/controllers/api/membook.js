@@ -221,4 +221,30 @@ module.exports = function (router) {
         }
         this.body = {success: true};
     });
+
+    router.post('/note/find', function*(){
+        var params = {};
+        //params.page = this.request.body.page;
+        var lFlg = this.request.body.status == 'active' ? 'a' : 'd';
+        params.conditions = {
+            lFlg: lFlg,
+            type: 'pg'
+        };
+        params.sort = {
+            crtOn: -1
+        };
+        params.populate = [
+            {
+                path: 'initiator'
+            }
+        ]
+        this.body = yield noteService.filterAsync(params);
+    });
+
+    router.get('/note/delete', function*(){
+        var noteId = this.query.id;
+        yield noteService.updateByIdAsync(noteId, {lFlg: 'd'});
+        this.body = {success: true};
+    });
+
 };
