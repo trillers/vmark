@@ -12,7 +12,6 @@ app.on('mount', function(id){
 
 app.on('route', function (ctx) {
     console.log(ctx.req.route);
-    
 });
 
 
