@@ -1,6 +1,4 @@
 <note-edit>
-    <button onclick="{showInput}">显示输入</button>
-    <note-input></note-input>
     <div class="page" if="{!hidden}">
         <div class="title">
             <input class="input" onblur="{updatePageNote}" type="text" value="{pageNote.title}" placeholder="添加标题" name="titleInput"/>
@@ -343,10 +341,5 @@
             getUserInfoUrl += 'route=get_user_info&returnUrl='+location.href;
             location.href = getUserInfoUrl;
         }
-        showInput(e){
-            var input = self.tags['note-input'];
-            input.show(true);
-        }
-        console.log('execute to the end');
     </script>
 </note-edit>

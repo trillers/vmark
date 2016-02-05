@@ -4,161 +4,134 @@
             <span>松开手结束录音</span>
         </div>
     </div>
-    <div class="input-panel">
-        <div class="input-bar">
-            <div class="left_btn">
-                <img if="{viewModel.toggleTxtVoiBtn.voi}" onclick="{viewModel.toggleTxtVoiBtn.toggle}" src="/public/images/input_keyboard.png">
-                <img if="{viewModel.toggleTxtVoiBtn.txt}" onclick="{viewModel.toggleTxtVoiBtn.toggle}" src="/public/images/input_voice.png">
-            </div>
-            <div class="right_btn">
-                <img src="/public/images/input_add.png" onclick="{toggleSubMenu}" if="{viewModel.input.wait}">
-                <div onclick="{addTxt}" class="send_btn" if="{viewModel.input.editTxt}">发送</div>
-            </div>
-            <div if="{viewModel.toggleTxtVoiBtn.txt}" class="txt_area">
-                <div>
+    <div class="footerWrapper">
+        <div class="feature_area">
+            <div>
+                <div class="toggle_txt_voi">
+                    <div onclick="{viewModel.toggleTxtVoiBtn.toggle}" class="toggle_btn"></div>
+                </div>
+                <div if="{viewModel.toggleTxtVoiBtn.txt}" class="txt_area">
                     <input oninput="{noteEditInput}" name="txtInput" placeholder="点击输入文字" value=""/>
                 </div>
+                <div if="{viewModel.toggleTxtVoiBtn.voi}" class="voi_area" ontouchstart="{voiceAreaTouchStart}" ontouchend="{voiceAreaTouchEnd}">
+                    <input type="button" value="长按录音"/>
+                </div>
+                <div class="toggle_menu">
+                    <div onclick="{toggleSubMenu}" class="toggle_btn menu_btn" if="{viewModel.input.wait}">菜单</div>
+                    <div onclick="{addTxt}" class="send_btn" if="{viewModel.input.editTxt}">发送</div>
+                </div>
             </div>
-            <div if="{viewModel.toggleTxtVoiBtn.voi}" class="voi_area" ontouchstart="{voiceAreaTouchStart}" ontouchend="{voiceAreaTouchEnd}">
-                <input type="button" value="按住 说话"/>
-            </div>
+            <div style="clear: both"></div>
         </div>
-        <div if="{viewModel.subMenu.showState}" class="input-more">
+        <div if="{viewModel.subMenu.showState}" class="scale_area">
             <ul>
-                <li onclick="{addImgs}">
-                    <div class="more_item">
-                        <img src="/public/images/input_image.png">
-                    </div>
-                </li>
-                <li>
-                    <div class="more_item inactive">
-                        <img src="/public/images/input_short_video.png">
-                    </div>
-                </li>
+                <li class="img_btn" onclick="{addImgs}">图片</li>
+                <li class="video_btn">视频</li>
             </ul>
         </div>
     </div>
     <style scoped>
-        .input-panel{
+        .footerWrapper{
             position: fixed;
             width: 100%;
             z-index: 10000;
             overflow: hidden;
             bottom: 0px;
         }
-        .input-bar{
-            height: 32px;
-            width: 100%;
-            padding: 8px 0px;
-            background: #ffffff;
-            overflow: hidden;
-        }
-        .input-bar .left_btn{
-            float:left;
-            height:32px;
-            width:32px;
-            padding: 0px 10px;
-        }
-        .input-bar .left_btn img{
-            height:32px;
-            width:32px;
-            border: none;
-        }
-        .input-bar .right_btn{
-            float:right;
-            height:32px;
-            width:32px;
-            padding: 0px 10px;
-        }
-        .input-bar .right_btn img{
-            height:32px;
-            width:32px;
-            border: none;
-        }
-        .input-bar .send_btn{
-            margin: 2px -5px;
-            padding: 2px 0px;
-            width: 42px;
-            height: 28px;
-            line-height: 24px;
-            font-size: 14px;
-            box-sizing:border-box;
-            border-radius: 4px;
-            border: none;
-            text-align: center;
-            background: #18c54b;
-            color: white;
-        }
-        .input-bar .txt_area{
-            padding: 0px 5px;
-            margin: 0px 52px 0px 52px;
-        }
-        .input-bar .voi_area{
-            padding: 0px 5px;
-            margin: 0px 52px 0px 52px;
-        }
-        .input-bar .txt_area input{
-            width: 100%;
-            height: 32px;
-            box-sizing: border-box;
-            border-top: 0px solid transparent;
-            border-bottom: 1px solid #CBCBCB;
-            border-left: 0px solid transparent;
-            border-right: 0px solid transparent;
-            font-size: 14px;
-        }
-        .input-bar .txt_area input:focus{
-            border-bottom: 1px solid #66CC00;
-        }
-        .input-bar .voi_area input{
-            width: 100%;
-            height: 32px;
-            padding: 4px 0px;
-            box-sizing: border-box;
-            border: 1px solid #9E9E9E;
-            border-radius: 4px;
-            font-size: 14px;
-            text-align: center;
-            color: #9E9E9E;
-            background-color: #ffffff;
-            content: "按住 说话";
-        }
-        .input-bar .voi_area input:focus{
-            color: #D9D9D9;
-            content: "松开 结束"
-        }
-        .input-more{
-            height: 118px;
+        .scale_area{
+            height: 96px;
             border-top: 1px solid #ccc;
             background: white;
         }
-        .input-more ul{
-            width: 100%;
+        .scale_area ul{
+            width: 80%;
             list-style-type: none;
-            padding: 15px;
+            margin: 0px auto;
+            padding: 0px;
+            margin-top: 28px;
             overflow: hidden;
         }
-        .input-more ul li{
+        .scale_area ul li{
             float: left;
-            margin: 20px;
-            width: 48px;
-            height: 48px;
+            margin-left: 10%;
+            width: 40px;
+            height: 40px;
             border: 1px solid #ccc;
         }
-        .input-more ul li .more_item{
-            width: 48px;
-            height: 48px;
-            border: 1px solid #797979;
+        .scale_area ul li:first-child{
+            float: left;
+            margin-left: 0px;
         }
-        .input-more ul li .inactive{
-            opacity: 0.6;
-        }
+        .scale_area .img_btn{
 
-        .input-more ul li .more_item img{
+        }
+        .feature_area{
+            height: 48px;
+            background: white;
+            width: 100%;
+            overflow: hidden;
+        }
+        .feature_area >div{
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .feature_area >div >div{
+            height: 32px;
+            float:left;
+        }
+        .feature_area .toggle_txt_voi{
+            width:15%;
+        }
+        .feature_area .txt_area{
+            width: 70%;
+        }
+        .feature_area .voi_area{
+            width: 70%;
+        }
+        .feature_area .voi_area input{
+            width: 100%;
+            height: 32px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            border-radius: 5px;
+            text-align: center;
+            color: #ccc;
+        }
+        .feature_area .txt_area input{
+            width: 100%;
+            height: 32px;
+            box-sizing: border-box;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            font-size: 16px;
+        }
+        .feature_area .toggle_menu{
+            width: 15%;
+        }
+        .feature_area .send_btn{
+            margin: 0px auto;
+            width: 60px;
+            height: 32px;
+            line-height: 32px;
+            border: 1px solid #ccc;
+            box-sizing:border-box;
+            border-radius: 5px;
+            background: #18c54b;
+            border: none;
+            text-align: center;
+            color: white;
+        }
+        .feature_area .toggle_btn{
+            margin: 0px auto;
             width: 32px;
             height: 32px;
-            margin: 8px;
-            border: 0px solid transparent;
+            border-radius: 50em;
+            border: 1px solid #ccc;
+            box-sizing:border-box;
+        }
+        .feature_area .scale_area{
+            height: 48px;
         }
         #mask{
             position: fixed;
