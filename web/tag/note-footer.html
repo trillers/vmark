@@ -11,7 +11,7 @@
                     <div onclick="{viewModel.toggleTxtVoiBtn.toggle}" class="toggle_btn"></div>
                 </div>
                 <div if="{viewModel.toggleTxtVoiBtn.txt}" class="txt_area">
-                    <input oninput="{noteEditInput}" name="txtInput" placeholder="点击输入文字" value=""/>
+                    <input oninput="{noteEditInput}" id="editTxtInput" placeholder="点击输入文字" value=""/>
                 </div>
                 <div if="{viewModel.toggleTxtVoiBtn.voi}" class="voi_area" ontouchstart="{voiceAreaTouchStart}" ontouchend="{voiceAreaTouchEnd}">
                     <input type="button" value="长按录音"/>
@@ -256,18 +256,18 @@
             }
         };
         self.addTxt = function(e){
-            if(self.txtInput.value.trim() === ''){
+            if(self.editTxtInput.value.trim() === ''){
                 return;
             }
             saveNoteInSection.newInvocation({
                 type: 'txt',
-                content: self.txtInput.value.trim(),
+                content: self.editTxtInput.value.trim(),
                 parentNote: self.parent.currNote._id || '',
                 pageNoteId: self.parent.pageNote._id
             }).onDone(function(data){
                 util.mixin(self.parent.currNote, data.sectionNote);
                 self.parent.currNote.mates.push(data.note);
-                self.txtInput.value = '';
+                self.editTxtInput.value = '';
                 self.viewModel.input.doWait();
                 self.parent.trigger('noteSave', data.note);
             }).execute();
@@ -317,8 +317,8 @@
         self.toggleSubMenu = function(e){
             self.viewModel.subMenu.toggle();
         };
-        self.on('edit', function(){
-            self.txtInput.focus();
+        self.parent.on('editMode', function(){
+            document.querySelector('#editTxtInput').focus();
         });
         var recordGap, start, end, voice = {}, stopRecord = false;
         wx.ready(function(){
@@ -391,7 +391,7 @@
                 $('#mask').show();
                 wx.startRecord();
             }, 300);
-        }
+        };
         self.voiceAreaTouchEnd = function(e){
             console.error('touchend');
             end = new Date().getTime();
@@ -431,7 +431,7 @@
                     }
                 });
             }
-        }
+        };
         self.stopRecord = function(e){
             stopRecord = true;
             end = new Date().getTime();
