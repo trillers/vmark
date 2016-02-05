@@ -239,11 +239,8 @@
             self.update();
         });
         self.updatePageNote = function(e){
-            if(self.pageNote.initiator != self.user._id){
-                return;
-            }
             var title = e.currentTarget.value;
-            if(!title){
+            if(self.pageNote.initiator != self.user._id || !title){
                 return;
             }
             updateNote.execute({
