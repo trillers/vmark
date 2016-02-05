@@ -1,4 +1,4 @@
-<note-edit>
+<note-page>
     <div class="page" if="{!hidden}">
         <div class="title">
             <input class="input" onblur="{updatePageNote}" type="text" value="{pageNote.title}" placeholder="添加标题" name="titleInput"/>
@@ -239,6 +239,9 @@
             self.update();
         });
         self.updatePageNote = function(e){
+            if(self.pageNote.initiator != self.user._id){
+                return;
+            }
             var title = e.currentTarget.value;
             if(!title){
                 return;
@@ -335,4 +338,4 @@
             location.href = getUserInfoUrl;
         }
     </script>
-</note-edit>
+</note-page>
