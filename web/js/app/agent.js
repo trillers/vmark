@@ -12,6 +12,7 @@ domain = require('../domain/index');
 * wechat js config
 */
 var jsConfig = __page.jc;
+wx.config(jsConfig);
 if(jsConfig){
     wx.error(function(res){
         console.log(res);
