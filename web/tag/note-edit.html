@@ -31,7 +31,7 @@
         <div class="mask" if="{pageNoteMode.status.comment}" ontouchstart="{quitCommentWithClickMask(currComment)}" style="height: {window.innerHeight + 'px'}"></div>
     </div>
     <note-confirm></note-confirm>
-    <note-footer if="{Object.keys(currNote).length}"></note-footer>
+    <note-input if="{Object.keys(currNote).length}"></note-input>
     <note-comment if="{currComment}"></note-comment>
     <!--play voice panel begin-->
     <div style="position:absolute;top:0;left:0;width:0;height:0;">
