@@ -1,104 +1,341 @@
 <note-input>
-    <div if="{!hidden}" class="note-input">
-        <div class="bar">
-            <div class="lcell">
-                <div class="btn">
-                    <img src="/public/images/input_keyboard.png">
-                </div>
-            </div>
-            <div class="mcell">
-                <div>
-                <div class="text">
-                    <input type="text">
-                </div>
-                <div class="emoji-icon">
-                    <div class="emoji">
-                        <img src="/public/images/input_emoji.png">
-                    </div>
-                </div>
-
-                </div>
-            </div>
-            <div class="rcell">
-                <div class="btn">
-                    <img src="/public/images/input_add.png">
-                </div>
-            </div>
-        </div>
-        <div class="bar" if="{false}">
-            <table style="width:100%" cellspacing="0" cellpadding="0">
-                <tr>
-                    <td width="52px">
-                        <div class="btn">
-                            <img src="/public/images/input_keyboard.png">
-                        </div>
-                    </td>
-                    <td style="width:100%;">
-                        <div class="text">
-                            <div class="input">
-                                <input type="text">
-                            </div>
-                            <div class="emoji-icon">
-                                <div class="emoji">
-                                    <img src="/public/images/input_emoji.png">
-                                </div>
-                            </div>
-
-                        </div>
-                    </td>
-                    <td width="52px">
-                        <div class="btn">
-                            <img src="/public/images/input_add.png">
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <div class="more" style="display: none;">
-            <table style="width:100%" cellspacing="0" cellpadding="0">
-                <tr>
-                    <td>
-more
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div>
-                            <img src="">
-                        </div>
-                    </td>
-                </tr>
-            </table>
+    <div id="mask">
+        <div id="stop-record-tip">
+            <span>松开手结束录音</span>
         </div>
     </div>
-
-<!--
-
-                <div class="input">
-                    <input type="text">
+    <div class="input-panel">
+        <div class="input-bar">
+            <div class="btn pull-left">
+                <img if="{viewModel.toggleTxtVoiBtn.voi}" onclick="{viewModel.toggleTxtVoiBtn.toggle}" src="/public/images/input_keyboard.png">
+                <img if="{viewModel.toggleTxtVoiBtn.txt}" onclick="{viewModel.toggleTxtVoiBtn.toggle}" src="/public/images/input_voice.png">
+            </div>
+            <div class="btn pull-right">
+                <img src="/public/images/input_add.png" onclick="{toggleSubMenu}" if="{viewModel.input.wait}">
+                <div onclick="{addTxt}" class="send-btn" if="{viewModel.input.editTxt}">发送</div>
+            </div>
+            <div if="{viewModel.toggleTxtVoiBtn.txt}" class="text-area">
+                <div>
+                    <input oninput="{noteEditInput}" name="editTxtInput" placeholder="点击输入文字" value=""/>
                 </div>
-                <div class="emoji-icon">
-                    <div class="emoji">
-                        <img src="/public/images/input_emoji.png">
+            </div>
+            <div if="{viewModel.toggleTxtVoiBtn.voi}" class="voice-area" ontouchstart="{voiceAreaTouchStart}" ontouchend="{voiceAreaTouchEnd}">
+                <input type="button" value="按住 说话"/>
+            </div>
+        </div>
+        <div if="{viewModel.subMenu.showState}" class="input-more">
+            <ul>
+                <li onclick="{addImgs}">
+                    <div class="more-item">
+                        <img src="/public/images/input_image.png">
                     </div>
-                </div>
-
--->
-
+                </li>
+                <li>
+                    <div class="more-item inactive">
+                        <img src="/public/images/input_short_video.png">
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
     <style scoped>
+        #mask{
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            display: none;
+        }
+        #stop-record-tip{
+            margin: 0 auto;
+            width: 120px;
+            margin-top: 250px;
+            color: white;
+        }
     </style>
     <script>
         var self = this;
-        self.hidden = false;
-        self.show = function(display){
-            this.update({hidden: !display});
+        var saveNotesInSection = domain.action('saveNotesInSection');
+        var saveNoteInSection = domain.action('saveNoteInSection');
+        self.viewModel = {
+            toggleTxtVoiBtn: {
+                txt: true,
+                voi: false,
+                toggle: function(){
+                    var me = self.viewModel.toggleTxtVoiBtn;
+                    me.txt = !me.txt;
+                    me.voi = !me.voi;
+                }
+            },
+            subMenu: {
+                showState: false,
+                toggle: function(){
+                    var me = self.viewModel.subMenu;
+                    me.showState = !me.showState;
+                },
+                show: function(){
+                    var me = self.viewModel.subMenu;
+                    me.showState = true;
+                },
+                hide: function(){
+                    var me = self.viewModel.subMenu;
+                    me.showState = false;
+                }
+            },
+            input: {
+                wait: true,
+                editTxt: false,
+                doWait: function(){
+                    this.wait = true;
+                    this.editTxt = false;
+                },
+                doEdit: function(){
+                    this.wait = false;
+                    this.editTxt = true;
+                }
+            }
         };
+        self.addTxt = function(e){
+            if(self.editTxtInput.value.trim() === ''){
+                return;
+            }
+            saveNoteInSection.newInvocation({
+                type: 'txt',
+                content: self.editTxtInput.value.trim(),
+                parentNote: self.parent.currNote._id || '',
+                pageNoteId: self.parent.pageNote._id
+            }).onDone(function(data){
+                util.mixin(self.parent.currNote, data.sectionNote);
+                self.parent.currNote.mates.push(data.note);
+                self.editTxtInput.value = '';
+                self.viewModel.input.doWait();
+                self.parent.trigger('noteSave', data.note);
+            }).execute();
+        };
+        self.addImgs = function(e){
+            wx.chooseImage({
+                count: 9,
+                sizeType: ['compressed'],
+                sourceType: ['album', 'camera'],
+                success: function(res){
+                    var notes = res.localIds.map(function(localId){
+                        return {
+                            type: 'img',
+                            url: localId,
+                            parentNote: self.parent.currNote._id || '',
+                            pageNoteId: self.parent.pageNote._id
+                        }
+                    });
+                    saveNotesInSection.newInvocation({
+                        notes: notes
+                    }).onDone(function(data){
+                        if(data){
+                            if(!self.parent.currNote.mates){
+                                self.parent.currNote.mates=[];
+                            }
+                            if(data.parentNote){
+                                util.mixin(self.parent.currNote, data.parentNote);
+                            }
+                            self.parent.currNote.mates = self.parent.currNote.mates.concat(data.mates);
+                            self.parent.trigger('noteSave', data);
+                        }
+                        else{
+                            alert('error occur.');
+                        }
+                    }).execute();
+                }
+            });
+        };
+        self.noteEditInput = function(e){
+            var txtVal = e.currentTarget.value.trim();
+            if(txtVal){
+                self.viewModel.input.doEdit();
+            }else{
+                self.viewModel.input.doWait();
+            }
+        };
+        self.toggleSubMenu = function(e){
+            self.viewModel.subMenu.toggle();
+        };
+        self.parent.on('editMode', function(){
+            document.querySelector('#editTxtInput').focus();
+        });
+        var recordGap, start, end, voice = {}, stopRecord = false;
+        wx.ready(function(){
+            console.log('ready');
+            wx.onVoiceRecordEnd({
+                // 录音时间超过一分钟没有停止的时候会执行 complete 回调
+                complete: function (res) {
+                    console.error('end');
+                    end = new Date().getTime();
+                    $('#stop-record').hide();
+                    $('#play-record').show();
+                    $('#confirm-sub-voice').show();
+                    var localId = res.localId;
+                    voice.localId = localId;
+                }
+            });
+            wx.onVoicePlayEnd({
+                success: function (res) {
+                    var localId = res.localId; // 返回音频的本地ID
+                }
+            });
+        });
+        //        self.voiceAreaTouchStart = function(e){
+        //            console.error('startRecord');
+        //            start = new Date().getTime();
+        //            recordGap = setTimeout(function(){
+        //                wx.startRecord();
+        //                $('.record_detail_area').show();
+        //
+        //                var progress = 0;
+        //                var $progress = $('.js_progress');
+        //                var $secondsCon = $('.voice-seconds-container');
+        //                var seconds = 0;
+        //
+        //                function next() {
+        //                    $progress.css({width: progress + '%'});
+        //                    $secondsCon.css({'padding-left': progress + '%'});
+        //
+        //                    $('#voice-seconds').text(seconds.toFixed(0));
+        //                    progress = progress + 0.05;
+        //                    seconds = seconds + 0.03;
+        //                    if(progress < 100){
+        //                        if(!stopRecord) {
+        //                            setTimeout(next, 30);
+        //                        }
+        //                    }else{
+        //                        $progress.css({width: '100%'});
+        //                        $secondsCon.css({'padding-left': '100%'});
+        //                        $('#voice-seconds').text(60)
+        //                    }
+        //                }
+        //                next();
+        //            }, 300);
+        //        };
+        //        self.voiceAreaTouchEnd = function(e){
+        //            console.error('touchend');
+        //            end = new Date().getTime();
+        //
+        //            if((end - start) < 300){
+        //                end = 0;
+        //                start = 0;
+        //                //小于300ms，不录音
+        //                clearTimeout(recordGap);
+        //            }
+        //        };
+        self.voiceAreaTouchStart = function(e){
+            console.error('startRecord');
+            start = new Date().getTime();
+            recordGap = setTimeout(function(){
+                $('#mask').show();
+                wx.startRecord();
+            }, 300);
+        };
+        self.voiceAreaTouchEnd = function(e){
+            console.error('touchend');
+            end = new Date().getTime();
 
-
+            if((end - start) < 300){
+                end = 0;
+                start = 0;
+                //小于300ms，不录音
+                clearTimeout(recordGap);
+            }else{
+                wx.stopRecord({
+                    success: function (res) {
+                        console.log(res);
+                        $('#mask').hide();
+                        var localId = res.localId;
+                        //voice.localId = localId;
+                        var seconds = ((end - start)/1000).toFixed(0);
+                        start = 0;
+                        end = 0;
+                        var note = {
+                            type: 'voi',
+                            url: localId,
+                            seconds: seconds,
+                            parentNote: self.parent.currNote._id || '',
+                            pageNoteId: self.parent.pageNote._id
+                        };
+                        saveNoteInSection.newInvocation(note).onDone(function (data) {
+                            if (data) {
+                                util.mixin(self.parent.currNote, data.sectionNote);
+                                self.parent.currNote.mates.push(data.note);
+                                self.parent.trigger('noteSave', data.note);
+                            }
+                            else {
+                                alert('error occur.');
+                            }
+                        }).execute();
+                    }
+                });
+            }
+        };
+        self.stopRecord = function(e){
+            stopRecord = true;
+            end = new Date().getTime();
+            wx.stopRecord({
+                success: function (res) {
+                    console.log(res);
+                    $('#stop-record').hide();
+                    $('#play-record').show();
+                    $('#confirm-sub-voice').show();
+                    var localId = res.localId;
+                    voice.localId = localId;
+                }
+            });
+        };
+        self.playRecord = function(e){
+            wx.playVoice({
+                localId: voice.localId
+            });
+            $('#play-record').hide();
+            $('#pause-record').show();
+        };
+        self.pauseRecord = function(e){
+            wx.pauseVoice({
+                localId: voice.localId
+            });
+            $('#pause-record').hide();
+            $('#play-record').show();
+        };
+        self.confirmSubVoice = function (e) {
+            $('.record_detail_area').hide();
+            var seconds = ((end - start)/1000).toFixed(0);
+            start = 0;
+            end = 0;
+            $('.js_progress').css({width: '0%'});
+            $('.voice-seconds-container').css({'padding-left': '0%'});
+            $('#voice-seconds').text(0);
+            stopRecord = false;
+            $('#stop-record').show();
+            $('#play-record').hide();
+            $('#confirm-sub-voice').hide();
+            $('#pause-record').hide();
+            var note = {
+                type: 'voi',
+                url: voice.localId,
+                seconds: seconds,
+                parentNote: self.parent.currNote._id || '',
+                pageNoteId: self.parent.pageNote._id
+            };
+            wx.pauseVoice({
+                localId: voice.localId
+            });
+            saveNoteInSection.newInvocation(note).onDone(function (data) {
+                if (data) {
+                    util.mixin(self.parent.currNote, data.sectionNote);
+                    self.parent.currNote.mates.push(data.note);
+                    self.parent.trigger('noteSave', data.note);
+                }
+                else {
+                    alert('error occur.');
+                }
+            }).execute();
+        }
     </script>
 </note-input>

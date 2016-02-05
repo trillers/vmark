@@ -1,6 +1,4 @@
 <note-edit>
-    <button onclick="{showInput}">显示输入</button>
-    <note-input></note-input>
     <div class="page" if="{!hidden}">
         <div class="title">
             <input class="input" onblur="{updatePageNote}" type="text" value="{pageNote.title}" placeholder="添加标题" name="titleInput"/>
@@ -33,7 +31,7 @@
         <div class="mask" if="{pageNoteMode.status.comment}" ontouchstart="{quitCommentWithClickMask(currComment)}" style="height: {window.innerHeight + 'px'}"></div>
     </div>
     <note-confirm></note-confirm>
-    <note-footer if="{Object.keys(currNote).length}"></note-footer>
+    <note-input if="{Object.keys(currNote).length}"></note-input>
     <note-comment if="{currComment}"></note-comment>
     <!--play voice panel begin-->
     <div style="position:absolute;top:0;left:0;width:0;height:0;">
@@ -336,10 +334,5 @@
             getUserInfoUrl += 'route=get_user_info&returnUrl='+location.href;
             location.href = getUserInfoUrl;
         }
-        showInput(e){
-            var input = self.tags['note-input'];
-            input.show(true);
-        }
-        console.log('execute to the end');
     </script>
 </note-edit>
