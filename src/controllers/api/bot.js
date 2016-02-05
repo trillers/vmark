@@ -47,7 +47,6 @@ module.exports = function (router) {
             var wechatMediaUser = yield wechatMediaUserService.loadByIdAsync(wechatMediaUserId);
             if(wechatMediaUser.tags){
                 wechatMediaUser.tags.forEach(function(oldTag){
-                    console.log(tags)
                     if(tags && tags.length){
                         var index = tags.indexOf(oldTag);
                         if(index<0){
