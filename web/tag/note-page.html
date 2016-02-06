@@ -291,6 +291,7 @@
         self.on('noteSubmit', function(section){
             self.pageNoteMode.doView(section);
             self.update();
+            self.updateWxShareConfig();
         });
         self.on('noteSave', function(note){
             self.update();
