@@ -82,7 +82,6 @@
         var loadNote = domain.action('loadNote');
         var updateNote = domain.action('updateNote');
         var shareAction = domain.action('shareAction');
-
         var onUpdateNote = function(data){
             if(!data.error){
                 util.mixin(self.pageNote, data);
@@ -167,7 +166,7 @@
                 self.currComment = section;
                 self.currNote = null;
                 self.update();
-                window.scrollTo(0, 9999999);
+                window.scrollTo(0, document.body.scrollHeight);
                 self.trigger('commentMode');
             }
         };
@@ -265,7 +264,7 @@
             return self.user && self.user.status && self.user.status === __app.enums.UserStatus.names.Verified;
         };
         self.selectOperate = function(e){
-            if(!self.isVerified()){
+            if(self.isAnonymous()){
                 self.goToAuthorize();
             }
             self.pageNoteMode.doEdit(self.newSection);
@@ -279,7 +278,7 @@
         });
         self.on('noteSave', function(note){
             self.update();
-            window.scrollTo(0, 9999999);
+            window.scrollTo(0, document.body.scrollHeight);
         });
         self.on('active', function(tag){
             self.selectNote(tag.section, tag)
