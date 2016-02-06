@@ -82,6 +82,7 @@
         var updateNote = domain.action('updateNote');
         var shareAction = domain.action('shareAction');
         var getShareImg = function(){
+            alert(111)
             if(self.pageNote.mates){
                 for(var i= 0, len=self.pageNote.mates.length; i<len; i++){
                     var section = self.pageNote.mates[i];
@@ -188,20 +189,8 @@
                 self.trigger('commentMode');
             }
         };
-        self.shareConfig = {};
         self.updateWxShareConfig = function(){
-            wx.onMenuShareTimeline(self.shareConfig);
-            wx.onMenuShareAppMessage(self.shareConfig);
-        };
-        self.init = function(){
-            self.pageNote = {
-                comments: null,
-                crtOn: null,
-                _id: null,
-                title: null
-            };
-            self.titleInput.value = '';
-            self.shareConfig = {
+            var shareConfig = {
                 title: self.pageNote.title || __app.resources.app.title,
                 desc: '',
                 link: url,
@@ -211,6 +200,17 @@
                 },
                 cancel: function(){}
             };
+            wx.onMenuShareTimeline(shareConfig);
+            wx.onMenuShareAppMessage(shareConfig);
+        };
+        self.init = function(){
+            self.pageNote = {
+                comments: null,
+                crtOn: null,
+                _id: null,
+                title: null
+            };
+            self.titleInput.value = '';
         };
         self.on('mount', function(){
             console.warn(self.tags);
