@@ -82,7 +82,7 @@
         var updateNote = domain.action('updateNote');
         var shareAction = domain.action('shareAction');
         var getShareImg = function(){
-            if(self.pageNote.mates && self.pageNote.mates.length){
+            if(self.pageNote && self.pageNote.mates && self.pageNote.mates.length){
                 for(var i= 0, len=self.pageNote.mates.length; i<len; i++){
                     var section = self.pageNote.mates[i];
                     if(section && section.mates && section.mates.length){
@@ -163,7 +163,6 @@
                     setTimeout(function(){
                         window.scrollTo(0, self.pageNoteMode.position.start);
                     }, 1);
-//                    self.root.querySelector('#'+section._id + '>a').scrollIntoView();
                 }
             },
             doEdit: function(section){
@@ -192,7 +191,7 @@
         self.updateWxShareConfig = function(){
             setTimeout(function(){
                 var shareConfig = {
-                    title: self.pageNote.title || __app.resources.app.title,
+                    title: self.pageNote && self.pageNote.title || __app.resources.app.title,
                     desc: '',
                     link: url,
                     imgUrl: getShareImg() || __page.baseUrl + '/public/images/logo_share_48x48.jpg',
@@ -240,6 +239,9 @@
                 self.update();
             }
         };
+        self.on('update', function(){
+            self.updateWxShareConfig();
+        });
         self.on('cancel', function(section){
             self.pageNoteMode.doView(section);
             self.currNote = null;
