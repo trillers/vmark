@@ -190,9 +190,16 @@ div.section .comments ul li {
 div.section .comments ul li:last-child {
   border-bottom: none;
 }
-.note_txt {
-  margin-top: 5px;
-  margin-bottom: 5px;
+.note-text {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.note-voice {
+  margin-top: 10px;
+  margin-bottom: 10px;
   font-size: 14px;
   margin-left: 10px;
   margin-right: 10px;
@@ -417,4 +424,50 @@ div.add-section-bar div.add-section div img {
   background-color: #666666;
   color: #ffffff;
   font-size: 14px;
+}
+.voice-bubble {
+  position: relative;
+  height: 16px;
+  padding: 12px 10px;
+  border: 1px solid #D3D3D3;
+  color: #333;
+  background: #fff;
+  border-radius: 6px;
+}
+.voice-bubble.left {
+  margin-left: 8px;
+}
+.voice-bubble.left img {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border: none;
+}
+.voice-bubble.left:before {
+  top: 12px;
+  bottom: auto;
+  left: -8px;
+  border-width: 6px 8px 6px 0;
+  border-color: transparent #D3D3D3;
+}
+.voice-bubble:before {
+  position: absolute;
+  content: "";
+  border-style: solid;
+  display: block;
+  width: 0;
+}
+.voice-bubble.left:after {
+  top: 13px;
+  bottom: auto;
+  left: -7px;
+  border-width: 5px 7px 5px 0;
+  border-color: transparent #fff;
+}
+.voice-bubble:after {
+  position: absolute;
+  content: "";
+  border-style: solid;
+  display: block;
+  width: 0;
 }
