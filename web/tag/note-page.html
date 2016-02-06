@@ -1,8 +1,8 @@
 <note-page>
-
     <div class="page" if="{!hidden}">
         <div class="title">
-            <input class="input" onblur="{updatePageNote}" type="text" value="{pageNote.title}" placeholder="添加标题" name="titleInput"/>
+            <input class="input" if="{pageNote.initiator != user._id}" readonly type="text" value="{pageNote.title}" name="titleInput"/>
+            <input class="input" if="{pageNote.initiator === user._id}" onblur="{updatePageNote}" type="text" value="{pageNote.title}" placeholder="添加标题" name="titleInput"/>
             <div if="{false}" class="reference">
                 <img class="user-icon" riot-src="{user.headimgurl}"/>
                 <label class="user-icon"> {user.nickname}</label>
@@ -15,16 +15,14 @@
             <note-section name="{item._id}" id="{item._id}" each="{item, i in pageNote.mates}" if="{parent.sectionShowOrNot(item)}" section="{item}"></note-section>
             <note-section name="11" if="{pageNoteMode.status.edit && (currNote === newSection)}" section="{newSection}" new="true"></note-section>
         </div>
-        <div if="{pageNoteMode.status.view}" class="add-section-bar"><div class="add-section">
-            <div onclick="{selectOperate}"><img src="/public/images/add.png"></div>
-        </div></div>
-
-        <ul if="{false}" class="btn-group" >
-            <li><a class="weui_btn weui_btn_mini weui_btn_primary">文字</a></li>
-            <li><a class="weui_btn weui_btn_mini weui_btn_primary">图片</a></li>
-            <li><a class="weui_btn weui_btn_mini weui_btn_primary">语音</a></li>
-            <li><a class="weui_btn weui_btn_mini weui_btn_primary">小视频</a></li>
-        </ul>
+        <div if="{pageNoteMode.status.view}" class="add-section-bar">
+            <div class="add-section">
+                <div onclick="{selectOperate}"><img src="/public/images/add.png"></div>
+            </div>
+        </div>
+        <div>
+            <img src=""/>
+        </div>
         <div>
             <span if="{pageNote.parentNote}">{pageNote.txt}</span>
         </div>
@@ -82,7 +80,6 @@
         var loadNote = domain.action('loadNote');
         var updateNote = domain.action('updateNote');
         var shareAction = domain.action('shareAction');
-
         var onUpdateNote = function(data){
             if(!data.error){
                 util.mixin(self.pageNote, data);
@@ -167,7 +164,7 @@
                 self.currComment = section;
                 self.currNote = null;
                 self.update();
-                window.scrollTo(0, 9999999);
+                window.scrollTo(0, document.body.scrollHeight);
                 self.trigger('commentMode');
             }
         };
@@ -265,7 +262,7 @@
             return self.user && self.user.status && self.user.status === __app.enums.UserStatus.names.Verified;
         };
         self.selectOperate = function(e){
-            if(!self.isVerified()){
+            if(self.isAnonymous()){
                 self.goToAuthorize();
             }
             self.pageNoteMode.doEdit(self.newSection);
@@ -279,7 +276,7 @@
         });
         self.on('noteSave', function(note){
             self.update();
-            window.scrollTo(0, 9999999);
+            window.scrollTo(0, document.body.scrollHeight);
         });
         self.on('active', function(tag){
             self.selectNote(tag.section, tag)
