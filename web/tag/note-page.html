@@ -15,16 +15,14 @@
             <note-section name="{item._id}" id="{item._id}" each="{item, i in pageNote.mates}" if="{parent.sectionShowOrNot(item)}" section="{item}"></note-section>
             <note-section name="11" if="{pageNoteMode.status.edit && (currNote === newSection)}" section="{newSection}" new="true"></note-section>
         </div>
-        <div if="{pageNoteMode.status.view}" class="add-section-bar"><div class="add-section">
-            <div onclick="{selectOperate}"><img src="/public/images/add.png"></div>
-        </div></div>
-
-        <ul if="{false}" class="btn-group" >
-            <li><a class="weui_btn weui_btn_mini weui_btn_primary">文字</a></li>
-            <li><a class="weui_btn weui_btn_mini weui_btn_primary">图片</a></li>
-            <li><a class="weui_btn weui_btn_mini weui_btn_primary">语音</a></li>
-            <li><a class="weui_btn weui_btn_mini weui_btn_primary">小视频</a></li>
-        </ul>
+        <div if="{pageNoteMode.status.view}" class="add-section-bar">
+            <div class="add-section">
+                <div onclick="{selectOperate}"><img src="/public/images/add.png"></div>
+            </div>
+        </div>
+        <div>
+            <img src=""/>
+        </div>
         <div>
             <span if="{pageNote.parentNote}">{pageNote.txt}</span>
         </div>
