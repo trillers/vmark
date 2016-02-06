@@ -1,4 +1,8 @@
 <note-page>
+    <div class="page-action-bar">
+        <div class="save pull-right">保存</div>
+        <div class="cancel pull-right">取消</div>
+    </div>
     <div class="page" if="{!hidden}">
         <div class="title">
             <input class="input" onblur="{updatePageNote}" type="text" value="{pageNote.title}" placeholder="添加标题" name="titleInput"/>
