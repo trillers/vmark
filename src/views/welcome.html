@@ -8,14 +8,16 @@
     <script>
     </script>
 </head>
-<body style="background: #82817f;max-width: 768px;position: relative; margin: 0px auto;">
-    <div class="wrapper" style="background: #ddd">
+<body style="background: #F2F6F9;">
+    <div style="width:100%; height: 100%;">
         <!-- 服务号二维码 -->
-        <div>
-            扫描二维码, 关注"{{__app.resources.app.title}}", 走进记忆长廊
-        </div>
-        <div>
+        <div style="margin:100px auto 20px auto; text-align: center; vertical-align: middle;">
             <img src="/public/images/qrcode_for_{{wechatId}}.jpg" width="200" height="200">
+        </div>
+        <div style="font-size: 16px; text-align: center; vertical-align: middle;">
+            长按识别二维码
+            <br><br>关注<label style="padding: 5px; margin: 5px 5px;font-size:18px; background-color: #3399FF; color: #fff;">{{__app.resources.app.title}}</label>
+            <br><br><label style="font-size:20px">记录光阴的故事</label>
         </div>
 
         {% if env=='ndev' %}
