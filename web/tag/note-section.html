@@ -1,4 +1,8 @@
 <note-section>
+    <div class="page-action-bar" if="{isShowSaveAndCancelButton()}">
+        <div onclick="{submitSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" class="save pull-right">保存</div>
+        <div onclick="{cancelSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" class="cancel pull-right">取消</div>
+    </div>
     <a href="#{section._id}"></a>
     <div class="page" if="{!hidden}">
     <div class="section" sectionId="{_id}">
@@ -16,10 +20,10 @@
             </div>
         </div>
 
-        <div class="top">
-            <label class="btn active" onclick="{submitSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" >确定</label>
-            <label class="btn" onclick="{cancelSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" >取消</label>
-        </div>
+        <!--<div class="top">-->
+            <!--&lt;!&ndash;<label class="btn active" onclick="{submitSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" >确定</label>&ndash;&gt;-->
+            <!--&lt;!&ndash;<label class="btn" onclick="{cancelSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" >取消</label>&ndash;&gt;-->
+        <!--</div>-->
 
         <div class="noteItems">
             <div each="{section.mates}" noteId="{_id}" style="margin-top: 2px" onclick="{parent.deleteNote}">
@@ -232,6 +236,9 @@
         self.on('update', function(){
             self.section = self.opts.section;
         });
+        self.isShowSaveAndCancelButton = function(){
+            return self.isOnEdit() && (self.initiator._id === self.parent.user._id);
+        };
         self.editSectionNote = function(e){
             self.init();
             self.parent.trigger('editSectionNote', self.section);
@@ -397,7 +404,7 @@
             return result;
         };
         self.like = function(e){
-            if(self.isAnonymous()){
+            if(self.parent.isAnonymous()){
                 return self.parent.goToAuthorize();
             }
             var currLike = self.isLiked();
