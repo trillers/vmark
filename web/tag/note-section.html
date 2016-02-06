@@ -27,9 +27,14 @@
 
         <div class="noteItems">
             <div each="{section.mates}" noteId="{_id}" style="margin-top: 2px" onclick="{parent.deleteNote}">
-                <div if="{type==='txt'}" class="note_txt">{content}</div>
+                <div if="{type==='txt'}" class="note-text">{content}</div>
                 <div if="{type==='img'}" class="note_img"><img style="width: 100%" src="{url}"/></div>
-                <div if="{type==='voi'}" class="note_voi" style="float:left"><div style="width: {seconds * 3 + 30}px" class="voice" onclick="{parent.playVoice}"><i class="playIcon"></i></div><span class="seconds">{seconds}"</span></div>
+                <!--<div if="{type==='voi'}" class="note_voi" style="float:left"><div style="width: {seconds * 3 + 30}px" class="voice" onclick="{parent.playVoice}"><i class="playIcon"></i></div><span class="seconds">{seconds}"</span></div>-->
+                <div if="{type==='voi'}" class="note-voice" style="float:left">
+                    <div style="width: {seconds * 3 + 30}px" class="voice-bubble left" onclick="{parent.playVoice}" >
+                        <img src="/public/images/voice_3.png">
+                    </div><span class="seconds">{seconds}"</span>
+                </div>
                 <div style="clear: both;"></div>
             </div>
         </div>
