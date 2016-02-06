@@ -19,7 +19,7 @@ module.exports = function (emitter) {
             var auth = null;
             try{
                 auth = yield authenticationService.signupOnSubscriptionAsync(openid);
-                context.wxsession = auth;
+                context.wxsession.auth = auth;
                 logger.info('Sign up with subscription for openid ' + openid);
                 logger.debug(auth);
             }catch(err){
