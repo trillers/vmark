@@ -45,6 +45,7 @@ Service.prototype.loadMatesById = function(id, callback){
         .populate({path: 'likes', populate:{path: 'initiator'}})
         .populate({path: 'comments', populate:{path: 'initiator'}})
         .populate('initiator')
+        .sort({crtOn: 1})
         .exec(callback);
 };
 
