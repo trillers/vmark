@@ -82,7 +82,6 @@
         var updateNote = domain.action('updateNote');
         var shareAction = domain.action('shareAction');
         var getShareImg = function(){
-            alert(111)
             if(self.pageNote.mates){
                 for(var i= 0, len=self.pageNote.mates.length; i<len; i++){
                     var section = self.pageNote.mates[i];
@@ -190,18 +189,20 @@
             }
         };
         self.updateWxShareConfig = function(){
-            var shareConfig = {
-                title: self.pageNote.title || __app.resources.app.title,
-                desc: '',
-                link: url,
-                imgUrl: getShareImg() && __page.baseUrl + getShareImg() || __page.baseUrl + '/public/images/logo_share_48x48.jpg',
-                success: function(){
-                    shareAction.execute({id: self.pageNote._id});
-                },
-                cancel: function(){}
-            };
-            wx.onMenuShareTimeline(shareConfig);
-            wx.onMenuShareAppMessage(shareConfig);
+            setTimeout(function(){
+                var shareConfig = {
+                    title: self.pageNote.title || __app.resources.app.title,
+                    desc: '',
+                    link: url,
+                    imgUrl: getShareImg() && __page.baseUrl + getShareImg() || __page.baseUrl + '/public/images/logo_share_48x48.jpg',
+                    success: function(){
+                        shareAction.execute({id: self.pageNote._id});
+                    },
+                    cancel: function(){}
+                };
+                wx.onMenuShareTimeline(shareConfig);
+                wx.onMenuShareAppMessage(shareConfig);
+            }, 200);
         };
         self.init = function(){
             self.pageNote = {
