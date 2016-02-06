@@ -89,8 +89,6 @@
                         for(var j= 0, len2=section.mates.length; j<len2; j++){
                             var note = section.mates[j];
                             if(note.type && note.type === 'img' && note.status != 'dr'){
-                                alert(section.mates[j].url);
-                                alert(__page.baseUrl + section.mates[j].url);
                                 return section.mates[j].url
                             }
                         }
@@ -197,7 +195,7 @@
                     title: self.pageNote.title || __app.resources.app.title,
                     desc: '',
                     link: url,
-                    imgUrl: getShareImg() && __page.baseUrl + getShareImg() || __page.baseUrl + '/public/images/logo_share_48x48.jpg',
+                    imgUrl: getShareImg() || __page.baseUrl + '/public/images/logo_share_48x48.jpg',
                     success: function(){
                         shareAction.execute({id: self.pageNote._id});
                     },
