@@ -190,8 +190,8 @@
         };
         self.shareConfig = {};
         self.updateWxShareConfig = function(){
-            wx.onMenuShareTimeline(shareConfig);
-            wx.onMenuShareAppMessage(shareConfig);
+            wx.onMenuShareTimeline(self.shareConfig);
+            wx.onMenuShareAppMessage(self.shareConfig);
         };
         self.init = function(){
             self.pageNote = {
