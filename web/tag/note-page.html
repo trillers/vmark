@@ -1,8 +1,5 @@
 <note-page>
-    <div class="page-action-bar">
-        <div class="save pull-right">保存</div>
-        <div class="cancel pull-right">取消</div>
-    </div>
+
     <div class="page" if="{!hidden}">
         <div class="title">
             <input class="input" onblur="{updatePageNote}" type="text" value="{pageNote.title}" placeholder="添加标题" name="titleInput"/>
@@ -15,8 +12,8 @@
         </div>
 
         <div>
-            <note-section id="{item._id}" each="{item, i in pageNote.mates}" if="{parent.sectionShowOrNot(item)}" section="{item}"></note-section>
-            <note-section if="{pageNoteMode.status.edit && (currNote === newSection)}" section="{newSection}" new="true"></note-section>
+            <note-section name="{item._id}" id="{item._id}" each="{item, i in pageNote.mates}" if="{parent.sectionShowOrNot(item)}" section="{item}"></note-section>
+            <note-section name="11" if="{pageNoteMode.status.edit && (currNote === newSection)}" section="{newSection}" new="true"></note-section>
         </div>
         <div if="{pageNoteMode.status.view}" class="add-section-bar"><div class="add-section">
             <div onclick="{selectOperate}"><img src="/public/images/add.png"></div>
@@ -35,7 +32,7 @@
         <div class="mask" if="{pageNoteMode.status.comment}" ontouchstart="{quitCommentWithClickMask(currComment)}" style="height: {window.innerHeight + 'px'}"></div>
     </div>
     <note-confirm></note-confirm>
-    <note-input if="{Object.keys(currNote).length}"></note-input>
+    <note-input if="{Object.keys(currNote).length && pageNoteMode.status.edit}"></note-input>
     <note-comment if="{currComment}"></note-comment>
     <!--play voice panel begin-->
     <div style="position:absolute;top:0;left:0;width:0;height:0;">
@@ -110,8 +107,8 @@
                 }
             }
             self.hidden = false;
-//            var topDiv = document.body.querySelector('body >div');
-//            topDiv.removeChild(topDiv.querySelector('#welcomeWrapper'));
+            var topDiv = document.body.querySelector('body >div');
+            topDiv.removeChild(topDiv.querySelector('#welcomeWrapper'));
             self.update();
         };
         //instance properties
@@ -170,6 +167,7 @@
                 self.currComment = section;
                 self.currNote = null;
                 self.update();
+                window.scrollTo(0, 9999999);
                 self.trigger('commentMode');
             }
         };
@@ -201,6 +199,9 @@
                 cancel: function () {}
             });
         };
+        self.on('mount', function(){
+            console.warn(self.tags);
+        });
         self.sectionShowOrNot = function(item){
             if(self.pageNoteMode.status.view && item.status != 'dr'){
                 return true;
@@ -257,7 +258,16 @@
             self.currComment = null;
             self.update();
         };
+        self.isAnonymous = function(){
+            return !self.user || !self.user.status || self.user.status === __app.enums.UserStatus.names.Anonymous;
+        };
+        self.isVerified = function(){
+            return self.user && self.user.status && self.user.status === __app.enums.UserStatus.names.Verified;
+        };
         self.selectOperate = function(e){
+            if(!self.isVerified()){
+                self.goToAuthorize();
+            }
             self.pageNoteMode.doEdit(self.newSection);
         };
         self.on('editSectionNote', function(section){
@@ -267,8 +277,9 @@
             self.pageNoteMode.doView(section);
             self.update();
         });
-        self.on('noteSave', function(){
+        self.on('noteSave', function(note){
             self.update();
+            window.scrollTo(0, 9999999);
         });
         self.on('active', function(tag){
             self.selectNote(tag.section, tag)
@@ -333,7 +344,7 @@
                 }
             }
         });
-        goToAuthorize(e){
+        self.goToAuthorize = function(e){
             var getUserInfoUrl = '/auth/authorize?';
             getUserInfoUrl += 'route=get_user_info&returnUrl='+location.href;
             location.href = getUserInfoUrl;
