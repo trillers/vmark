@@ -154,6 +154,8 @@
                 self.pageNoteMode.status.comment = false;
                 self.currComment = null;
                 self.selectNote(section);
+                var scrollHeight = self.root.querySelector('.panel').scrollHeight;
+                window.scrollTo(0, scrollHeight);
                 self.trigger('editMode');
             },
             doComment: function(section){
@@ -276,7 +278,8 @@
         });
         self.on('noteSave', function(note){
             self.update();
-            window.scrollTo(0, document.body.scrollHeight);
+            var scrollHeight = self.root.querySelector('.panel').scrollHeight;
+            window.scrollTo(0, scrollHeight-200);
         });
         self.on('active', function(tag){
             self.selectNote(tag.section, tag)
