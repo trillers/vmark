@@ -16,7 +16,7 @@
             </div>
         </div>
 
-        <div class="top" >
+        <div class="top">
             <label class="btn active" onclick="{submitSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" >确定</label>
             <label class="btn" onclick="{cancelSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" >取消</label>
         </div>
@@ -60,7 +60,7 @@
             <div class="likes" >
                 <ul>
                     <li each="{section.likes}">
-                        <div><img class="user-icon" riot-src="{initiator.headimgurl}"/></div>
+                        <div><img class="user-icon" riot-src="{initiator.headimgurl || '/public/images/def-avatar.png'}"/></div>
                     </li>
                 </ul>
             </div>
@@ -71,7 +71,7 @@
                         <tr>
                             <td style="width: 24px;">
                                 <div>
-                                    <img class="user-icon" src="{initiator.headimgurl}"/>
+                                    <img class="user-icon" src="{initiator.headimgurl || '/public/images/def-avatar.png'}"/>
                                 </div>
                             </td>
                             <td>
@@ -381,6 +381,9 @@
             }
         };
         self.comment = function(e){
+            if(self.parent.isAnonymous()){
+                return self.parent.goToAuthorize();
+            }
             self.parent.trigger('comment', self.section);
         };
         self.isLiked = function(){
@@ -396,6 +399,9 @@
             return result;
         };
         self.like = function(e){
+            if(self.isAnonymous()){
+                return self.parent.goToAuthorize();
+            }
             var currLike = self.isLiked();
             if(currLike){
                 unlikeNote

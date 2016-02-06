@@ -106,8 +106,8 @@
                 }
             }
             self.hidden = false;
-//            var topDiv = document.body.querySelector('body >div');
-//            topDiv.removeChild(topDiv.querySelector('#welcomeWrapper'));
+            var topDiv = document.body.querySelector('body >div');
+            topDiv.removeChild(topDiv.querySelector('#welcomeWrapper'));
             self.update();
         };
         //instance properties
@@ -253,7 +253,16 @@
             self.currComment = null;
             self.update();
         };
+        self.isAnonymous = function(){
+            return !self.user || !self.user.status || self.user.status === __app.enums.UserStatus.names.Anonymous;
+        };
+        self.isVerified = function(){
+            return self.user && self.user.status && self.user.status === __app.enums.UserStatus.names.Verified;
+        };
         self.selectOperate = function(e){
+            if(!self.isVerified()){
+                self.goToAuthorize();
+            }
             self.pageNoteMode.doEdit(self.newSection);
         };
         self.on('editSectionNote', function(section){
@@ -329,7 +338,7 @@
                 }
             }
         });
-        goToAuthorize(e){
+        self.goToAuthorize = function(e){
             var getUserInfoUrl = '/auth/authorize?';
             getUserInfoUrl += 'route=get_user_info&returnUrl='+location.href;
             location.href = getUserInfoUrl;
