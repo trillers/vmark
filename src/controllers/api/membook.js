@@ -17,18 +17,25 @@ module.exports = function (router) {
             if(note){
                 note.mates = yield noteService.loadMatesByIdAsync(id);
                 var arr = [];
-                note.mates.forEach(function(n){
-                    arr.push(noteService.loadMatesByIdAsync(n._id));
-                });
-                yield Promise.all(arr).then(function(results){
-                    if(note.mates.length){
-                        note.mates.forEach(function(n, index){
-                            !n.mates && (n.mates=[]);
-                            return n.mates = results[index];
-                        })
+                console.log("sections*****************");
+                if(note.mates && note.mates.length){
+                    for(var i=0, len=note.mates.length; i<len; i++){
+                        arr.push(noteService.loadMatesByIdAsync(note.mates[i]._id));
                     }
-                })
+                    yield Promise.all(arr).then(function(results){
+                        console.log("notes***************");
+                        console.log(results);
+                        if(results.length){
+                            for(var j=0, len=note.mates.length; j<len; j++){
+                                var n = note.mates[j];
+                                !n.mates && (n.mates=[]);
+                                n.mates = results[j];
+                            }
+                        }
+                    })
+                }
             }
+            console.error(note);
             this.body = note;
         }catch(e){
             context.logger.error(e);

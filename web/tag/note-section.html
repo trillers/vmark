@@ -455,6 +455,7 @@
         self.playVoice = function (e) {
             var data = e.item;
             self.parent.trigger('playVoice', data.url, data.status);
+            e.stopPropagation();
         }
     </script>
 </note-section>

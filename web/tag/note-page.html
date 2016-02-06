@@ -195,6 +195,11 @@
                     title: null
                 };
             }
+            else{
+                self.pageNote['comments'] = null;
+                self.pageNote['crtOn'] = null;
+                self.pageNote['_id'] = null;
+            }
             self.titleInput.value = '';
             wx.onMenuShareTimeline({
                 title: self.pageNote.title || __app.resources.app.title,
