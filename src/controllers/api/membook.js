@@ -17,14 +17,11 @@ module.exports = function (router) {
             if(note){
                 note.mates = yield noteService.loadMatesByIdAsync(id);
                 var arr = [];
-                console.log("sections*****************");
                 if(note.mates && note.mates.length){
                     for(var i=0, len=note.mates.length; i<len; i++){
                         arr.push(noteService.loadMatesByIdAsync(note.mates[i]._id));
                     }
                     yield Promise.all(arr).then(function(results){
-                        console.log("notes***************");
-                        console.log(results);
                         if(results.length){
                             for(var j=0, len=note.mates.length; j<len; j++){
                                 var n = note.mates[j];

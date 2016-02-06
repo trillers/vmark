@@ -99,6 +99,7 @@
         var onUpdateNote = function(data){
             if(!data.error){
                 util.mixin(self.pageNote, data);
+                self.updateWxShareConfig();
             }else{
                 alert(data.error.message);
             }
@@ -123,6 +124,7 @@
             var topDiv = document.body.querySelector('body >div');
             topDiv.removeChild(topDiv.querySelector('#welcomeWrapper'));
             self.update();
+            self.updateWxShareConfig();
         };
         //instance properties
         self.hidden = true;
@@ -186,40 +188,29 @@
                 self.trigger('commentMode');
             }
         };
+        self.shareConfig = {};
+        self.updateWxShareConfig = function(){
+            wx.onMenuShareTimeline(shareConfig);
+            wx.onMenuShareAppMessage(shareConfig);
+        };
         self.init = function(){
-            if(!self.pageNote){
-                self.pageNote = {
-                    comments: null,
-                    crtOn: null,
-                    _id: null,
-                    title: null
-                };
-            }
-            else{
-                self.pageNote['comments'] = null;
-                self.pageNote['crtOn'] = null;
-                self.pageNote['_id'] = null;
-            }
+            self.pageNote = {
+                comments: null,
+                crtOn: null,
+                _id: null,
+                title: null
+            };
             self.titleInput.value = '';
-            wx.onMenuShareTimeline({
+            self.shareConfig = {
                 title: self.pageNote.title || __app.resources.app.title,
+                desc: '',
                 link: url,
                 imgUrl: getShareImg() && __page.baseUrl + getShareImg() || __page.baseUrl + '/public/images/logo_share_48x48.jpg',
                 success: function(){
                     shareAction.execute({id: self.pageNote._id});
                 },
                 cancel: function(){}
-            });
-            wx.onMenuShareAppMessage({
-                title: self.pageNote.title || __app.resources.app.title,
-                desc: '',
-                link: url,
-                imgUrl: getShareImg() && __page.baseUrl + getShareImg() || __page.baseUrl + '/public/images/logo_share_48x48.jpg',
-                success: function () {
-                    shareAction.execute({id: self.pageNote._id});
-                },
-                cancel: function () {}
-            });
+            };
         };
         self.on('mount', function(){
             console.warn(self.tags);
@@ -301,6 +292,7 @@
         });
         self.on('noteSave', function(note){
             self.update();
+            self.updateWxShareConfig();
             var scrollHeight = self.root.querySelector('.panel').scrollHeight;
             window.scrollTo(0, scrollHeight-200);
         });
