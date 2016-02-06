@@ -7,7 +7,7 @@ var App = require('./app');
 var app = new App({defaultHash: '/'});
 
 app.on('mount', function(id){
-    riot.mount('note-edit', {id: id});
+    riot.mount('note-page', {id: id});
 });
 
 app.on('route', function (ctx) {

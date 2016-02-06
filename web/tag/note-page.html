@@ -1,4 +1,4 @@
-<note-edit>
+<note-page>
     <div class="page-action-bar">
         <div class="save pull-right">保存</div>
         <div class="cancel pull-right">取消</div>
@@ -110,8 +110,8 @@
                 }
             }
             self.hidden = false;
-            var topDiv = document.body.querySelector('body >div');
-            topDiv.removeChild(topDiv.querySelector('#welcomeWrapper'));
+//            var topDiv = document.body.querySelector('body >div');
+//            topDiv.removeChild(topDiv.querySelector('#welcomeWrapper'));
             self.update();
         };
         //instance properties
@@ -244,7 +244,7 @@
         });
         self.updatePageNote = function(e){
             var title = e.currentTarget.value;
-            if(!title){
+            if(self.pageNote.initiator != self.user._id || !title){
                 return;
             }
             updateNote.execute({
@@ -339,4 +339,4 @@
             location.href = getUserInfoUrl;
         }
     </script>
-</note-edit>
+</note-page>
