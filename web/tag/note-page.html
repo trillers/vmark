@@ -125,7 +125,6 @@
             var topDiv = document.body.querySelector('body >div');
             topDiv.removeChild(topDiv.querySelector('#welcomeWrapper'));
             self.update();
-            alert(JSON.stringify(self.pageNote));
             self.updateWxShareConfig();
         };
         //instance properties
@@ -203,7 +202,7 @@
                 };
                 wx.onMenuShareTimeline(shareConfig);
                 wx.onMenuShareAppMessage(shareConfig);
-            }, 300);
+            }, 500);
         };
         self.init = function(){
             self.pageNote = {
