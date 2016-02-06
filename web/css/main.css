@@ -164,7 +164,6 @@ div.section .likes ul li {
   padding: 0px 0px;
   height: 30px;
   line-height: 30px;
-  margin-bottom: 5px;
 }
 div.section .likes ul li:last-child {
   border-bottom: none;
