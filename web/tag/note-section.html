@@ -70,11 +70,6 @@
         <div class="interact" if="{!isNew}">
             <div class="likes" >
                 <ul>
-                    <!--<li each="{[1,2,2,2,2,22,2,2,22,11, 2, 3, 4, 5, 2, 32, 32, 32 ,32 ,32 ,32 ,32 ,32 ,32 ,2,32,11,32,32,13,13,1,31,3,12,1]}">-->
-                        <!--<div>-->
-                            <!--<img class="user-icon" src="/public/images/def-avatar.png"/>-->
-                        <!--</div>-->
-                    <!--</li>-->
                     <li each="{section.likes}">
                         <div><img class="user-icon" riot-src="{initiator.headimgurl || '/public/images/def-avatar.png'}"/></div>
                     </li>
