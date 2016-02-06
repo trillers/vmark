@@ -188,12 +188,11 @@
         };
         self.init = function(){
             if(!self.pageNote){
-                var originPage = self.pageNote;
                 self.pageNote = {
                     comments: null,
                     crtOn: null,
                     _id: null,
-                    title: originPage.title
+                    title: null
                 };
             }
             self.titleInput.value = '';
