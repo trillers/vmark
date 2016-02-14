@@ -72,7 +72,26 @@ module.exports = function(){
     router.get('/mine', needSubscriptionFilter, function *(){
         var auth = authentication.getAuthentication(this);
         var userId = auth.user.id;
-        var noteList = yield noteService.loadByUserIdAsync(userId)
+        var noteList = yield noteService.loadByUserIdAsync(userId);
+        if(noteList.length){
+            for(var i=0, len=noteList.length; i<len; i++){
+                var pageNote = noteList[i];
+                var sectionNotes = yield noteService.loadMatesByIdAsync(pageNote._id);
+                if(sectionNotes.length){
+                    for(var j=0, lenS=sectionNotes.length; j<lenS; j++){
+                        var sectionNote = sectionNotes[j];
+                        var notes = yield noteService.loadMatesByIdAsync(sectionNote._id);
+                        if(notes.length){
+                            notes.forEach(function(note){
+                                if(note.url){
+                                    !pageNote.cover && (pageNote.cover = note.url);
+                                }
+                            })
+                        }
+                    }
+                }
+            }
+        }
         yield this.render('note-list', {noteList: noteList});
     });
 
@@ -100,13 +119,8 @@ module.exports = function(){
                     for(var j=0, lenS=sectionNotes.length; j<lenS; j++){
                         var sectionNote = sectionNotes[j];
                         var notes = yield noteService.loadMatesByIdAsync(sectionNote._id);
-                        console.log("****************")
-                        console.warn(notes);
                         if(notes.length){
                             notes.forEach(function(note){
-                                console.warn("~~~~~~~~~~~~~");
-                                console.warn(note.url);
-                                console.warn(pageNote);
                                 if(note.url){
                                     !pageNote.cover && (pageNote.cover = note.url);
                                 }
@@ -116,17 +130,6 @@ module.exports = function(){
                 }
             }
         }
-        //noteList.forEach(co(function* (pgNote){
-        //    var sections = yield noteService.loadMatesByIdAsync(pgNote._id);
-        //    sections.forEach(co(function* (section){
-        //        var notes = yield section.loadMatesByIdAsync(section._id);
-        //        return pgNote.coverImg = notes.reduce(function(prev, curr){
-        //            if(curr.url){
-        //                return prev && prev.url || curr.url;
-        //            }
-        //        }, undefined)
-        //    }))
-        //}));
         yield this.render('note-plaza', {noteList: noteList});
     });
     router.get('/boss', function *(){
