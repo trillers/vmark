@@ -96,11 +96,12 @@ module.exports = function(){
             for(var i=0, len=noteList.length; i<len; i++){
                 var pageNote = noteList[i];
                 var sectionNotes = yield noteService.loadMatesByIdAsync(pageNote._id);
-                console.warn(sectionNotes);
                 if(sectionNotes.length){
                     for(var j=0, lenS=sectionNotes; j<lenS; j++){
                         var sectionNote = sectionNotes[j];
                         var notes = yield noteService.loadMatesByIdAsync(sectionNote._id);
+                        console.log("****************")
+                        console.warn(notes);
                         if(notes.length){
                             notes.forEach(function(note){
                                 console.warn("~~~~~~~~~~~~~");
