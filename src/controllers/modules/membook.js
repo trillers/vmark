@@ -94,6 +94,7 @@ module.exports = function(){
         var noteList = yield noteService.filterAsync(params);
         if(noteList.length){
             for(let i=0, len=noteList.length; i<len; i++){
+                noteList[i]['xxxxxxxxxx'] = 1111111;
                 let pageNote = noteList[i];
                 let sectionNotes = yield noteService.loadMatesByIdAsync(pageNote._id);
                 if(sectionNotes.length){
