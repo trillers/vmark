@@ -5,7 +5,7 @@ var Router = require('koa-router');
 var util = require('../../app/util');
 var context = require('../../context/context');
 var TypeRegistry = require('../../modules/common/models/TypeRegistry');
-var noteServcie = context.services.noteService;
+var noteService = context.services.noteService;
 var authenticationService = context.services.authenticationService;
 var generateAuthFilter = require('../../modules/membook/middlewares/generateAuthFilter');
 var NoteType = TypeRegistry.item('NoteType');
@@ -53,7 +53,7 @@ module.exports = function(){
                 if(this.session.auth && this.session.auth.user){
                     pageNote['initiator'] = this.session.auth.user._id;
                 }
-                var refinedPageNote = yield noteServcie.createAsync(pageNote);
+                var refinedPageNote = yield noteService.createAsync(pageNote);
                 id = this.session['draftId'] = refinedPageNote._id;
             }
             this.redirect('/note/_' + id);
@@ -72,7 +72,7 @@ module.exports = function(){
     router.get('/mine', needSubscriptionFilter, function *(){
         var auth = authentication.getAuthentication(this);
         var userId = auth.user.id;
-        var noteList = yield noteServcie.loadByUserIdAsync(userId)
+        var noteList = yield noteService.loadByUserIdAsync(userId)
         yield this.render('note-list', {noteList: noteList});
     });
 
@@ -91,7 +91,7 @@ module.exports = function(){
                 {path: 'initiator'}
             ]
         };
-        var noteList = yield noteServcie.filterAsync(params);
+        var noteList = yield noteService.filterAsync(params);
         if(noteList.length){
             for(let i=0, len=noteList.length; i<len; i++){
                 let pageNote = noteList[i];
@@ -99,7 +99,7 @@ module.exports = function(){
                 if(sectionNotes.length){
                     for(let j=0, lenS=sectionNotes; j<lenS; j++){
                         let sectionNote = sectionNotes[j];
-                        let notes = yield sectionNote.loadMatesByIdAsync(sectionNote._id);
+                        let notes = yield noteService.loadMatesByIdAsync(sectionNote._id);
                         if(notes.length){
                             notes.forEach(function(note){
                                 if(note.url){
@@ -112,7 +112,7 @@ module.exports = function(){
             }
         }
         //noteList.forEach(co(function* (pgNote){
-        //    var sections = yield noteServcie.loadMatesByIdAsync(pgNote._id);
+        //    var sections = yield noteService.loadMatesByIdAsync(pgNote._id);
         //    sections.forEach(co(function* (section){
         //        var notes = yield section.loadMatesByIdAsync(section._id);
         //        return pgNote.coverImg = notes.reduce(function(prev, curr){
