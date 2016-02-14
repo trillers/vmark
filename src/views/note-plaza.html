@@ -57,7 +57,7 @@
     {% if noteList.length > 0 %}
     {% for note in noteList %}
         <div class="container" _id="{{note._id}}">
-            <img class="disImg" src="{{note.url || '/public/images/def-avatar.png'}}" alt="">
+            <img class="disImg" src="{{note.cover || '/public/images/def-avatar.png'}}" alt="">
             <p>{{note.title || '匿名'}}</p>
             <div>
                 <p class="title">{{note.initiator.nickname}}</p>

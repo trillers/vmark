@@ -1,3 +1,5 @@
+"use strict";
+var co = require('co');
 var settings = require('vmark-settings');
 var Router = require('koa-router');
 var util = require('../../app/util');
@@ -88,11 +90,41 @@ module.exports = function(){
             populate:[
                 {path: 'initiator'}
             ]
-        }
+        };
         var noteList = yield noteServcie.filterAsync(params);
+        //if(noteList.length){
+        //    for(let i=0, len=noteList.length; i<len; i++){
+        //        let pageNote = noteList[i];
+        //        let sectionNotes = yield noteService.loadMatesByIdAsync(pageNote._id);
+        //        if(sectionNotes.length){
+        //            for(let j=0, lenS=sectionNotes; j<lenS; j++){
+        //                let sectionNote = sectionNotes[j];
+        //                let notes = yield sectionNote.loadMatesByIdAsync(sectionNote._id);
+        //                if(notes.length){
+        //                    notes.forEach(function(note){
+        //                        if(note.url){
+        //                            !pageNote.cover && (pageNote.cover = note.url);
+        //                            break;
+        //                        }
+        //                    })
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
+        noteList.forEach(co(function* (pgNote)=>{
+            var sections = yield noteServcie.loadMatesByIdAsync(pgNote._id);
+            sections.forEach(co(function* (section){
+                var notes = yield section.loadMatesByIdAsync(section._id);
+                return pgNote.coverImg = notes.reduce(function(prev, curr){
+                    if(curr.url){
+                        return prev && prev.url || curr.url;
+                    }
+                }, undefined)
+            }))
+        }));
         yield this.render('note-plaza', {noteList: noteList});
     });
-
     router.get('/boss', function *(){
         yield this.render('boss/index');
     });
