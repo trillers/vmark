@@ -112,7 +112,7 @@ module.exports = function(){
         //        }
         //    }
         //}
-        noteList.forEach(co(function* (pgNote)=>{
+        noteList.forEach(co(function* (pgNote){
             var sections = yield noteServcie.loadMatesByIdAsync(pgNote._id);
             sections.forEach(co(function* (section){
                 var notes = yield section.loadMatesByIdAsync(section._id);
