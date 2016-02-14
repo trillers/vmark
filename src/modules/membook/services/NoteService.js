@@ -177,7 +177,8 @@ Service.prototype.filter = function (params, callback) {
             return;
         }
         var docs = rawDocs.map(function(doc){
-            return doc.toObject();
+            console.warn(doc);
+            return doc;
         });
         if (callback) callback(null, docs);
     });
