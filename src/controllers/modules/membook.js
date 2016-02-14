@@ -96,10 +96,8 @@ module.exports = function(){
             for(var i=0, len=noteList.length; i<len; i++){
                 var pageNote = noteList[i];
                 var sectionNotes = yield noteService.loadMatesByIdAsync(pageNote._id);
-                console.log("sectionNotes.length-----------");
-                console.log(sectionNotes.length)
                 if(sectionNotes.length){
-                    for(var j=0, lenS=sectionNotes; j<lenS; j++){
+                    for(var j=0, lenS=sectionNotes.length; j<lenS; j++){
                         var sectionNote = sectionNotes[j];
                         var notes = yield noteService.loadMatesByIdAsync(sectionNote._id);
                         console.log("****************")
