@@ -104,7 +104,6 @@ module.exports = function(){
                             notes.forEach(function(note){
                                 if(note.url){
                                     !pageNote.cover && (pageNote.cover = note.url);
-                                    break;
                                 }
                             })
                         }
