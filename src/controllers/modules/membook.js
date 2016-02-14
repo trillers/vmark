@@ -96,6 +96,8 @@ module.exports = function(){
             for(var i=0, len=noteList.length; i<len; i++){
                 var pageNote = noteList[i];
                 var sectionNotes = yield noteService.loadMatesByIdAsync(pageNote._id);
+                console.log("sectionNotes.length-----------");
+                console.log(sectionNotes.length)
                 if(sectionNotes.length){
                     for(var j=0, lenS=sectionNotes; j<lenS; j++){
                         var sectionNote = sectionNotes[j];
@@ -116,7 +118,6 @@ module.exports = function(){
                 }
             }
         }
-        console.warn(noteList)
         //noteList.forEach(co(function* (pgNote){
         //    var sections = yield noteService.loadMatesByIdAsync(pgNote._id);
         //    sections.forEach(co(function* (section){
