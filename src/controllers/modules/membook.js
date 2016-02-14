@@ -89,8 +89,7 @@ module.exports = function(){
             },
             populate:[
                 {path: 'initiator'}
-            ],
-            lean: true
+            ]
         };
         var noteList = yield noteService.filterAsync(params);
         if(noteList.length){

@@ -171,12 +171,14 @@ Service.prototype.filter = function (params, callback) {
         })
     }
     query.lean(true);
-    query.exec(function (err, docs) {
+    query.exec(function (err, rawDocs) {
         if (err) {
             callback(err);
             return;
         }
-
+        var docs = rawDocs.map(function(doc){
+            return doc.toObject();
+        });
         if (callback) callback(null, docs);
     });
 }
