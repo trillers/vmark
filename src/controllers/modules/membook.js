@@ -94,7 +94,6 @@ module.exports = function(){
         var noteList = yield noteService.filterAsync(params);
         if(noteList.length){
             for(let i=0, len=noteList.length; i<len; i++){
-                noteList[i]['xxxxxxxxxx'] = 1111111;
                 let pageNote = noteList[i];
                 let sectionNotes = yield noteService.loadMatesByIdAsync(pageNote._id);
                 if(sectionNotes.length){
@@ -103,6 +102,9 @@ module.exports = function(){
                         let notes = yield noteService.loadMatesByIdAsync(sectionNote._id);
                         if(notes.length){
                             notes.forEach(function(note){
+                                console.warn("~~~~~~~~~~~~~");
+                                console.warn(note.url);
+                                console.warn(pageNote);
                                 if(note.url){
                                     !pageNote.cover && (pageNote.cover = note.url);
                                 }
