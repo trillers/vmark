@@ -111,6 +111,7 @@ module.exports = function(){
                 }
             }
         }
+        console.warn(noteList)
         //noteList.forEach(co(function* (pgNote){
         //    var sections = yield noteService.loadMatesByIdAsync(pgNote._id);
         //    sections.forEach(co(function* (section){
