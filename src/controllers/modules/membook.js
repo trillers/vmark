@@ -93,13 +93,14 @@ module.exports = function(){
         };
         var noteList = yield noteService.filterAsync(params);
         if(noteList.length){
-            for(let i=0, len=noteList.length; i<len; i++){
-                let pageNote = noteList[i];
-                let sectionNotes = yield noteService.loadMatesByIdAsync(pageNote._id);
+            for(var i=0, len=noteList.length; i<len; i++){
+                var pageNote = noteList[i];
+                var sectionNotes = yield noteService.loadMatesByIdAsync(pageNote._id);
+                console.warn(sectionNotes);
                 if(sectionNotes.length){
-                    for(let j=0, lenS=sectionNotes; j<lenS; j++){
-                        let sectionNote = sectionNotes[j];
-                        let notes = yield noteService.loadMatesByIdAsync(sectionNote._id);
+                    for(var j=0, lenS=sectionNotes; j<lenS; j++){
+                        var sectionNote = sectionNotes[j];
+                        var notes = yield noteService.loadMatesByIdAsync(sectionNote._id);
                         if(notes.length){
                             notes.forEach(function(note){
                                 console.warn("~~~~~~~~~~~~~");
