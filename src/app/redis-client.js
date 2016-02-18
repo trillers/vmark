@@ -1,4 +1,4 @@
-var settings = require('base-settings').redis;
+var settings = require('@private/base-settings').redis;
 var logger = require('./logging').logger;
 var redis = require('redis');
 var DEFAULT_NAME = 'default';

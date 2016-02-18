@@ -1,5 +1,5 @@
 var BotManagerFactory = require('vk');
-var rabbitmq = require('base-settings').rabbitmq;
+var rabbitmq = require('@private/base-settings').rabbitmq;
 var assert = require('chai').assert;
 var url = 'amqp://' +rabbitmq.username + ':' + rabbitmq.password + '@' + rabbitmq.host + ':' + rabbitmq.port + '/' + rabbitmq.vhost;
 var open = require('amqplib').connect(url);
