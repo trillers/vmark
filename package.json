@@ -4,9 +4,9 @@
   "author": "Henry Leu",
   "version": "0.0.1",
   "dependencies": {
-    "base-settings": "git+https://henryleu:c148960791ab761064ecfbb07b7fdf582ff008df@github.com/trillers/base-settings.git",
-    "vmark-settings": "git+https://henryleu:c148960791ab761064ecfbb07b7fdf582ff008df@github.com/trillers/vmark-settings.git",
-    "vk": "git+https://henryleu:c148960791ab761064ecfbb07b7fdf582ff008df@github.com/trillers/vk.git",
+    "@private/base-settings": "git+https://henryleu:c148960791ab761064ecfbb07b7fdf582ff008df@github.com/trillers/base-settings.git",
+    "@private/vmark-settings": "git+https://henryleu:c148960791ab761064ecfbb07b7fdf582ff008df@github.com/trillers/vmark-settings.git",
+    "@private/vk": "git+https://henryleu:c148960791ab761064ecfbb07b7fdf582ff008df@github.com/trillers/vk.git",
     "amqplib": "0.4.0",
     "bluebird": "2.9.34",
     "cheerio": "0.19.0",
