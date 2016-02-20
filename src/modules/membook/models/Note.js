@@ -23,6 +23,8 @@ var Model = function(domainBuilder){
 
             initiator: {type: String, ref: 'User'},
 
+            notebook: {type: String, ref: 'Notebook'},
+
             parentNote: {type: String, ref: 'Note', required: true, default: 'root'},
 
             type: {type: String, enum: NoteType.valueList(), default: NoteType.Page.value()},

@@ -1,5 +1,5 @@
 var crypto = require('crypto');
-var settings = require('vmark-settings');
+var settings = require('@private/vmark-settings');
 var salt = settings.security.salt;
 var CookieField = require('./../../common/web/CookieField');
 var logger = require('../../../app/logging').logger;

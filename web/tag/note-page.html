@@ -305,6 +305,7 @@
         });
         self.on('mount', function(){
             console.info('tag pageNote new is opening');
+
             loadNote.onDone(onLoadNote);
             updateNote.onDone(onUpdateNote);
             self.init();

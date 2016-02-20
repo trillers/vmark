@@ -1,12 +1,10 @@
 "use strict";
 var co = require('co');
-var settings = require('vmark-settings');
+var settings = require('@private/vmark-settings');
 var Router = require('koa-router');
 var util = require('../../app/util');
 var context = require('../../context/context');
 var TypeRegistry = require('../../modules/common/models/TypeRegistry');
-var noteService = context.services.noteService;
-var authenticationService = context.services.authenticationService;
 var generateAuthFilter = require('../../modules/membook/middlewares/generateAuthFilter');
 var NoteType = TypeRegistry.item('NoteType');
 var needBaseInfoFilter = generateAuthFilter(1);
@@ -16,6 +14,9 @@ var authentication = require('../../modules/auth/authentication');
 var qrRegistry = require('../../modules/wechatsite/qr');
 var returnOnSubscriptionType = qrRegistry.getQrType('ret');
 var rankAction = context.kvs.rankAction;
+var noteService = context.services.noteService;
+var notebookService = context.services.notebookService;
+var authenticationService = context.services.authenticationService;
 
 module.exports = function(){
     var router = new Router();
@@ -40,6 +41,31 @@ module.exports = function(){
             authentication.setAuthentication(this, auth);
             authentication.redirectInterruptUrl(this);
         }catch(e){
+            context.logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.get('/', needSubscriptionFilter, function*(){
+        try{
+            var user = this.session.auth.user;
+            var userBiz = {
+                latest: '11'
+            };
+            var latestNotebook = {
+                _id: '11',
+                title: 'xxx',
+                initiator: user._id
+            };
+            var sectionNotes = yield noteService.loadSectionNotesByNotebookIdAsync(latestNotebook._id);
+            latestNotebook.sectionNotes = sectionNotes;
+            sectionNotes.forEach(function(sectionNote){
+                co(function*(){
+                    sectionNote.mates = yield noteService.loadMatesByIdAsync(sectionNote._id);
+                })
+            });
+            yield this.render('note', {notebook: latestNotebook});
+        }catch (e){
             context.logger.error(e);
             this.body = {error: e};
         }

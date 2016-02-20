@@ -49,6 +49,11 @@ Service.prototype.loadMatesById = function(id, callback){
         .exec(callback);
 };
 
+Service.prototype.loadSectionNotesByNotebookId = function(id, callback){
+    var Note = this.context.models.Note;
+    Note.find({notebook: id, type: 'sc'}, null, {lean: true}).exec(callback);
+};
+
 Service.prototype.updateById = function(id, json, callback){
     var kv = this.context.kvs.note;
     var Note = this.context.models.Note;

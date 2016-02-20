@@ -1,4 +1,4 @@
-var settings = require('vmark-settings');
+var settings = require('@private/vmark-settings');
 var WechatApi = require('./WechatApi');
 var context = require('../../../context/context');
 var WechatToken = require('../kvs/WechatToken');

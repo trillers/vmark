@@ -1,5 +1,5 @@
 var co = require('co');
-var settings = require('vmark-settings');
+var settings = require('@private/vmark-settings');
 var QrTypeRegistry = require('./QrTypeRegistry');
 var qrRegistry = new QrTypeRegistry();
 var context = require('../../../context/context');
