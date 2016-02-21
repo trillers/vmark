@@ -19,10 +19,11 @@ Service.prototype.handleOnSubscription = function(openid, callback){
             var userBiz = yield userBizKv.loadByIdAsync(userid);
             if(userBiz){
                 if(callback) callback(null, auth);
-                return;
             }
-            var notebook = yield notebookService.createAsync({title: '默认', initiator: userid});
-            yield userBizKv.saveByIdAsync(userid, {latest: notebook._id});
+            else{
+                var notebook = yield notebookService.createAsync({title: '默认', initiator: userid});
+                yield userBizKv.saveByIdAsync(userid, {latest: notebook._id});
+            }
             var url = 'http://' + settings.app.domain + '/note';
             var logoUrl = 'http://' + settings.app.domain + '/public/images/logo_share_48x48.jpg';
             var articles = [{
