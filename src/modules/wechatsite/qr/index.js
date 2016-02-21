@@ -7,7 +7,8 @@ var wsConns = require('../../../app/wsConns');
 var tenantService = context.services.tenantService;
 var bindBotResults = tenantService.bindBotResults;
 var securityService = context.services.securityService;
-var authenticationService = context.services.authenticationService;
+//var authenticationService = context.services.authenticationService;
+var membookService = context.services.membookService;
 var authResults = securityService.authResults;
 var wechatApi = require('../../wechat/common/api').api;
 var tenantAdminType = qrRegistry.newType('ta', {temp: true});
@@ -21,11 +22,11 @@ channelType.onAccess(function(qr, openid){
     co(function*() {
         var auth = null;
         try{
-            auth = yield authenticationService.signupOnSubscriptionAsync(openid);
-            logger.info('Sign up with subscription for openid ' + openid);
+            auth = yield membookService.handleOnSubscriptionAsync(openid);
+            logger.info('Sign up on subscription for openid ' + openid);
             logger.debug(auth);
         }catch(err){
-            logger.error('Fail to sign up with subscription: ' + err);
+            logger.error('Fail to sign up on subscription: ' + err);
         }
     });
 });

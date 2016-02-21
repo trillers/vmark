@@ -1,5 +1,4 @@
 var cbUtil = require('../../../framework/callback');
-var OrgType = require('../../common/models/TypeRegistry').item('OrgType');
 
 var Service = function(context){
     this.context = context;
