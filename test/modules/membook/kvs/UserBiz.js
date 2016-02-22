@@ -8,20 +8,8 @@ before(function(done){
     });
 });
 
-describe.only('UserBiz', function(){
+describe('UserBiz', function(){
     var userid = '001';
-    //afterEach(function(done) {
-    //    var kv = context.kvs.rankAction;
-    //    kv.delNoteRank(noteId, function(err, data){
-    //        assert.ok(!err);
-    //        assert.equal(data, 1);
-    //    })
-    //    kv.delRankChangedSet(function(err, data){
-    //        assert.ok(!err);
-    //        assert.equal(data, 1);
-    //        done();
-    //    })
-    //});
     describe('saveById', function(){
         it('Succeed to save user biz by id', function(done){
             var kv = context.kvs.userBiz;

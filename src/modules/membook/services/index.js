@@ -20,4 +20,7 @@ module.exports.userService = Promise.promisifyAll(new UserService(context));
 var AuthenticationService = require('./AuthenticationService');
 module.exports.authenticationService = Promise.promisifyAll(new AuthenticationService(context));
 
+var MembookService = require('./MembookService');
+module.exports.membookService = Promise.promisifyAll(new MembookService(context));
+
 u.extend(context.services, module.exports);
