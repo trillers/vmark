@@ -7,23 +7,23 @@
     <div class="input-panel">
         <div class="input-bar">
             <div class="btn pull-left">
-                <img if="{state.toggleTxtVoiBtn.voi}" onclick="{state.toggleTxtVoiBtn.toggle}" src="/public/images/input_keyboard.png">
-                <img if="{state.toggleTxtVoiBtn.txt}" onclick="{state.toggleTxtVoiBtn.toggle}" src="/public/images/input_voice.png">
+                <img if="{viewModel.toggleTxtVoiBtn.voi}" onclick="{viewModel.toggleTxtVoiBtn.toggle}" src="/public/images/input_keyboard.png">
+                <img if="{viewModel.toggleTxtVoiBtn.txt}" onclick="{viewModel.toggleTxtVoiBtn.toggle}" src="/public/images/input_voice.png">
             </div>
             <div class="btn pull-right">
-                <img src="/public/images/input_add.png" onclick="{toggleSubMenu}" if="{state.input.wait}">
-                <div onclick="{addTxt}" class="send-btn" if="{state.input.editTxt}">发送</div>
+                <img src="/public/images/input_add.png" onclick="{toggleSubMenu}" if="{viewModel.input.wait}">
+                <div onclick="{addTxt}" class="send-btn" if="{viewModel.input.editTxt}">发送</div>
             </div>
-            <div if="{state.toggleTxtVoiBtn.txt}" class="text-area">
+            <div if="{viewModel.toggleTxtVoiBtn.txt}" class="text-area">
                 <div>
                     <input oninput="{noteEditInput}" id="editTxtInput" placeholder="点击输入文字" value=""/>
                 </div>
             </div>
-            <div if="{state.toggleTxtVoiBtn.voi}" class="voice-area" ontouchstart="{voiceAreaTouchStart}" ontouchend="{voiceAreaTouchEnd}">
+            <div if="{viewModel.toggleTxtVoiBtn.voi}" class="voice-area" ontouchstart="{voiceAreaTouchStart}" ontouchend="{voiceAreaTouchEnd}">
                 <input type="button" value="按住 说话"/>
             </div>
         </div>
-        <div if="{state.subMenu.showState}" class="input-more">
+        <div if="{viewModel.subMenu.showState}" class="input-more">
             <ul>
                 <li onclick="{addImgs}">
                     <div class="more-item">
@@ -60,12 +60,12 @@
         var self = this;
         var saveNotesInSection = domain.action('saveNotesInSection');
         var saveNoteInSection = domain.action('saveNoteInSection');
-        self.state = {
+        self.viewModel = {
             toggleTxtVoiBtn: {
                 txt: true,
                 voi: false,
                 toggle: function(){
-                    var me = self.state.toggleTxtVoiBtn;
+                    var me = self.viewModel.toggleTxtVoiBtn;
                     me.txt = !me.txt;
                     me.voi = !me.voi;
                 }
@@ -73,15 +73,15 @@
             subMenu: {
                 showState: false,
                 toggle: function(){
-                    var me = self.state.subMenu;
+                    var me = self.viewModel.subMenu;
                     me.showState = !me.showState;
                 },
                 show: function(){
-                    var me = self.state.subMenu;
+                    var me = self.viewModel.subMenu;
                     me.showState = true;
                 },
                 hide: function(){
-                    var me = self.state.subMenu;
+                    var me = self.viewModel.subMenu;
                     me.showState = false;
                 }
             },
@@ -106,12 +106,12 @@
                 type: 'txt',
                 content: self.editTxtInput.value.trim(),
                 parentNote: self.parent.currNote._id || '',
-                notebook: self.parent.notebook._id
+                pageNoteId: self.parent.pageNote._id
             }).onDone(function(data){
                 util.mixin(self.parent.currNote, data.sectionNote);
                 self.parent.currNote.mates.push(data.note);
                 self.editTxtInput.value = '';
-                self.state.input.doWait();
+                self.viewModel.input.doWait();
                 self.parent.trigger('noteSave', data.note);
             }).execute();
         };
@@ -126,7 +126,7 @@
                             type: 'img',
                             url: localId,
                             parentNote: self.parent.currNote._id || '',
-                            notebook: self.parent.notebook._id
+                            pageNoteId: self.parent.pageNote._id
                         }
                     });
                     saveNotesInSection.newInvocation({
@@ -152,13 +152,13 @@
         self.noteEditInput = function(e){
             var txtVal = e.currentTarget.value.trim();
             if(txtVal){
-                self.state.input.doEdit();
+                self.viewModel.input.doEdit();
             }else{
-                self.state.input.doWait();
+                self.viewModel.input.doWait();
             }
         };
         self.toggleSubMenu = function(e){
-            self.state.subMenu.toggle();
+            self.viewModel.subMenu.toggle();
         };
         self.parent.on('editMode', function(){
             document.querySelector('#editTxtInput').focus();
@@ -184,6 +184,49 @@
                 }
             });
         });
+        //        self.voiceAreaTouchStart = function(e){
+        //            console.error('startRecord');
+        //            start = new Date().getTime();
+        //            recordGap = setTimeout(function(){
+        //                wx.startRecord();
+        //                $('.record_detail_area').show();
+        //
+        //                var progress = 0;
+        //                var $progress = $('.js_progress');
+        //                var $secondsCon = $('.voice-seconds-container');
+        //                var seconds = 0;
+        //
+        //                function next() {
+        //                    $progress.css({width: progress + '%'});
+        //                    $secondsCon.css({'padding-left': progress + '%'});
+        //
+        //                    $('#voice-seconds').text(seconds.toFixed(0));
+        //                    progress = progress + 0.05;
+        //                    seconds = seconds + 0.03;
+        //                    if(progress < 100){
+        //                        if(!stopRecord) {
+        //                            setTimeout(next, 30);
+        //                        }
+        //                    }else{
+        //                        $progress.css({width: '100%'});
+        //                        $secondsCon.css({'padding-left': '100%'});
+        //                        $('#voice-seconds').text(60)
+        //                    }
+        //                }
+        //                next();
+        //            }, 300);
+        //        };
+        //        self.voiceAreaTouchEnd = function(e){
+        //            console.error('touchend');
+        //            end = new Date().getTime();
+        //
+        //            if((end - start) < 300){
+        //                end = 0;
+        //                start = 0;
+        //                //小于300ms，不录音
+        //                clearTimeout(recordGap);
+        //            }
+        //        };
         self.voiceAreaTouchStart = function(e){
             console.error('startRecord');
             start = new Date().getTime();
@@ -216,7 +259,7 @@
                             url: localId,
                             seconds: seconds,
                             parentNote: self.parent.currNote._id || '',
-                            notebook: self.parent.notebook._id
+                            pageNoteId: self.parent.pageNote._id
                         };
                         saveNoteInSection.newInvocation(note).onDone(function (data) {
                             if (data) {
@@ -278,7 +321,7 @@
                 url: voice.localId,
                 seconds: seconds,
                 parentNote: self.parent.currNote._id || '',
-                notebook: self.parent.notebook._id
+                pageNoteId: self.parent.pageNote._id
             };
             wx.pauseVoice({
                 localId: voice.localId

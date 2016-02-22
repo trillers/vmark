@@ -3,6 +3,7 @@
         <div onclick="{submitSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" class="save pull-right">保存</div>
         <div onclick="{cancelSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" class="cancel pull-right">取消</div>
     </div>
+    <a href="#{section._id}"></a>
     <div class="page" if="{!hidden}">
     <div class="section" sectionId="{_id}">
         <div class="panel">
@@ -18,10 +19,17 @@
                 <span if="{section.parentNote && section.status != 'dr'}">{formatDate(new Date(section.crtOn))}</span>
             </div>
         </div>
+
+        <!--<div class="top">-->
+            <!--&lt;!&ndash;<label class="btn active" onclick="{submitSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" >确定</label>&ndash;&gt;-->
+            <!--&lt;!&ndash;<label class="btn" onclick="{cancelSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" >取消</label>&ndash;&gt;-->
+        <!--</div>-->
+
         <div class="noteItems">
             <div each="{section.mates}" noteId="{_id}" style="margin-top: 5px" onclick="{parent.deleteNote}">
                 <div if="{type==='txt'}" class="note-text">{content}</div>
                 <div if="{type==='img'}" class="note_img"><img style="width: 100%" src="{url}"/></div>
+                <!--<div if="{type==='voi'}" class="note_voi" style="float:left"><div style="width: {seconds * 3 + 30}px" class="voice" onclick="{parent.playVoice}"><i class="playIcon"></i></div><span class="seconds">{seconds}"</span></div>-->
                 <div if="{type==='voi'}" class="note-voice" style="float:left">
                     <div style="width: {seconds * 3 + 30}px" class="voice-bubble left" onclick="{parent.playVoice}" >
                         <img src="/public/images/voice_3.png">
@@ -41,10 +49,57 @@
                             <img src="/public/images/edit.png">
                         </div>
                     </td>
+                    <td style="width:45%;">
+                        <div class="right">
+                            <div id="interactBlock" if="{!isNew}" class="left" style="display: inline-block; height: 24px;">
+                                <div onclick="{like}" class="img-btn left">
+                                    <img riot-src="{isLiked()? '/public/images/liked.png': '/public/images/like.png'}">
+                                </div>
+                                <div onclick="{comment}" class="img-btn left" style="display: inline-block; ">
+                                    <img src="/public/images/comment.png">
+                                </div>
+                            </div>
+                        </div>
+                    </td>
                 </tr>
             </table>
         </div>
 
+        </div>
+
+        <div class="interact" if="{!isNew}">
+            <div class="likes" >
+                <ul>
+                    <li each="{section.likes}">
+                        <div><img class="user-icon" riot-src="{initiator.headimgurl || '/public/images/def-avatar.png'}"/></div>
+                    </li>
+                </ul>
+            </div>
+            <div class="comments">
+                <ul>
+                    <li each="{section.comments}" onclick="{parent.deleteComment}">
+                    <table style="width:100%;" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td style="width: 24px;">
+                                <div>
+                                    <img class="user-icon" src="{initiator.headimgurl || '/public/images/def-avatar.png'}"/>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <span>{content}</span>
+                                </div>
+                            </td>
+                            <td style="width: 60px;">
+                                <div>
+                                    <span style="font-size: 12px; float:right">{parent.formatDate(new Date(crtOn))}</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    </li>
+                </ul>
+            </div>
         </div>
         <div class="bottom-padding" />
     </div>
@@ -140,12 +195,16 @@
         var deleteComment = domain.action('deleteComment');
         //instance properties
         self.section = this.opts.section;
-        self.parent = self.parent.parent;
+        self.isNew = !!this.opts.new;
+        self.parent = self.isNew ? self.parent : self.parent.parent;
         self.confirmComponent  = self.parent.tags['note-confirm'];
         self.initiator = self.section.initiator || self.parent.user;
         self.initiator.headimgurl = self.initiator.headimgurl || '/public/images/def-avatar.png';
         self.isOnEdit = function(){
-            self.parent.currNote === self.section;
+            if(self.isNew){
+                return !self.section.parentNote || (self.section.parentNote && self.section.status === 'dr')
+            }
+            return self.parent.currNote === self.section;
         };
         self.viewModel = {
             toggleTxtVoiBtn: {
@@ -172,6 +231,11 @@
         };
         //instance methods
         self.init = function(){
+            if(self.isNew){
+                self.section = {
+                    mates: []
+                }
+            }
         };
         self.formatDate = util.formatDateForComments;
         self.on('update', function(){
@@ -314,6 +378,9 @@
                     .onDone(function(data){
                         try {
                             util.mixin(self.section, data);
+                            if(self.isNew){
+                                self.parent.pageNote.mates.push(self.section);
+                            }
                             self.parent.trigger('noteSubmit', self.section);
                             self.init();
                         } catch (e){

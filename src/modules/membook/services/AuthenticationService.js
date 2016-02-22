@@ -317,8 +317,8 @@ Service.prototype.signinWithOpenid = function(openid, callback){
                  */
                 var userBiz = yield userBizKv.loadByIdAsync(user._id);
                 if(!userBiz){
-                    var notebook = yield notebookService.createAsync({title: '默认', initiator: userId});
-                    userBiz = yield userBizKv.saveByIdAsync(userId, {latest: notebook._id});
+                    var notebook = yield notebookService.createAsync({title: '默认', initiator: user._id});
+                    userBiz = yield userBizKv.saveByIdAsync(user._id, {latest: notebook._id});
                 }
 
                 if(callback) callback(null, {

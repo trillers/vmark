@@ -1,8 +1,8 @@
-<note-page>
+<notebook>
     <div class="page" if="{!hidden}">
         <div class="title">
-            <input class="input" if="{pageNote.initiator != user._id}" readonly type="text" value="{pageNote.title}" name="titleInput"/>
-            <input class="input" if="{pageNote.initiator === user._id}" onblur="{updatePageNote}" type="text" value="{pageNote.title}" placeholder="添加标题" name="titleInput"/>
+            <input class="input" if="{notebook.initiator != user._id}" readonly type="text" value="{notebook.title}" name="titleInput"/>
+            <input class="input" if="{notebook.initiator === user._id}" onblur="{updatePageNote}" type="text" value="{notebook.title}" placeholder="添加标题" name="titleInput"/>
             <div if="{false}" class="reference">
                 <img class="user-icon" riot-src="{user.headimgurl}"/>
                 <label class="user-icon"> {user.nickname}</label>
@@ -12,27 +12,23 @@
         </div>
 
         <div>
-            <note-section name="{item._id}" id="{item._id}" each="{item, i in pageNote.mates}" if="{parent.sectionShowOrNot(item)}" section="{item}"></note-section>
-            <note-section name="11" if="{pageNoteMode.status.edit && (currNote === newSection)}" section="{newSection}" new="true"></note-section>
+            <note-section name="{item._id}" id="{item._id}" each="{item, i in notebook.mates}" if="{parent.sectionShowOrNot(item)}" section="{item}"></note-section>
         </div>
-        <div if="{pageNoteMode.status.view}" class="add-section-bar">
-            <div class="add-section">
-                <div onclick="{selectOperate}"><img src="/public/images/add.png"></div>
-            </div>
-        </div>
-        <div if="{pageNoteMode.status.view}" style="width: 100%;text-align: center;margin-bottom: 20px">
+        <div if="{mode.status.view}" style="width: 100%;text-align: center;margin-bottom: 20px">
             <img style="width: 96px;height: 96px" src="/public/images/qrcode_for_gh_cd89432d0321.jpg"/>
             <p style="margin-top: 20px">长按二维码, 关注有趣笔记</p>
         </div>
-        <div>
-            <span if="{pageNote.parentNote}">{pageNote.txt}</span>
+        <div style="background: red">
+            <span if="{notebook.parentNote}">{notebook.txt}</span>
         </div>
         <div style="clear: both"></div>
-        <div class="mask" if="{pageNoteMode.status.comment}" ontouchstart="{quitCommentWithClickMask(currComment)}" style="height: {window.innerHeight + 'px'}"></div>
     </div>
     <note-confirm></note-confirm>
-    <note-input if="{Object.keys(currNote).length && pageNoteMode.status.edit}"></note-input>
-    <note-comment if="{currComment}"></note-comment>
+    <div if="{mode.status.view}" class="add-section-bar">
+        <div style="width:48px;height:48px;background: red;float:left" onclick="{selectOperate}"></div>
+        <div style="width:48px;height:48px;background: red;float:right">单</div>
+    </div>
+    <note-input if="{Object.keys(currNote).length}"></note-input>
     <!--play voice panel begin-->
     <div style="position:absolute;top:0;left:0;width:0;height:0;">
         <audio id="voiceMsgPlayer" class="voicePlayer"></audio>
@@ -79,12 +75,13 @@
         var id = this.opts.id;
         var url = window.location.href;
         var loadNote = domain.action('loadNote');
+        var loadLatestNotebook = domain.action('loadLatestNotebook');
         var updateNote = domain.action('updateNote');
         var shareAction = domain.action('shareAction');
         var getShareImg = function(){
-            if(self.pageNote && self.pageNote.mates && self.pageNote.mates.length){
-                for(var i= 0, len=self.pageNote.mates.length; i<len; i++){
-                    var section = self.pageNote.mates[i];
+            if(self.notebook && self.notebook.mates && self.notebook.mates.length){
+                for(var i= 0, len=self.notebook.mates.length; i<len; i++){
+                    var section = self.notebook.mates[i];
                     if(section && section.mates && section.mates.length){
                         for(var j= 0, len2=section.mates.length; j<len2; j++){
                             var note = section.mates[j];
@@ -99,27 +96,19 @@
         };
         var onUpdateNote = function(data){
             if(!data.error){
-                util.mixin(self.pageNote, data);
+                util.mixin(self.notebook, data);
                 self.updateWxShareConfig();
             }else{
                 alert(data.error.message);
             }
         };
-        var onLoadNote = function(data){
-            if(data){
-                self.pageNote = data;
-                if(self.pageNote.mates && self.pageNote.mates.length){
-                    var draftSections = self.pageNote.mates.filter(function(sectionNote){
-                        if(sectionNote.status === 'dr'){
-                            return sectionNote;
-                        }
-                    });
-                    if(draftSections && draftSections.length){
-                        self.pageNote.mates = util.arr.rest(self.pageNote.mates, draftSections);
-                        self.newSection = draftSections[0];
-                        self.selectNote(self.newSection);
-                    }
-                }
+
+        var onLoadLatestNotebook = function(data){
+            self.notebook = data.latestNotebook;
+            if(self.notebook.mates
+                    && self.notebook.mates.length
+            ){
+                self.mode.doView(self.notebook.mates[self.notebook.mates.length-1]);
             }
             self.hidden = false;
             var topDiv = document.body.querySelector('body >div');
@@ -127,13 +116,14 @@
             self.update();
             self.updateWxShareConfig();
         };
+
+        var onLoadNote = function(data){
+
+        };
         //instance properties
         self.hidden = true;
-        self.pageNote = null;
-        self.newSection = {};
-        self.newSection.mates = [];
+        self.notebook = null;
         self.currNote = {};
-        self.currComment = null;
         self.user = __page.user;
         self.user.headimgurl = self.user.headimgurl || '/public/images/def-avatar.png';
         //instance methods
@@ -141,62 +131,46 @@
             return new Date(date).toLocaleString();
         };
         self.formatDateForMates = util.formatDateForComments;
-        self.pageNoteMode = {
+        self.mode = {
             status: {
                 view: true,
-                edit : false,
-                comment: false
+                edit : false
             },
             position: {
                 start: 0,
                 end: 0
             },
             doView: function(section){
-                self.pageNoteMode.status.view = true;
-                self.pageNoteMode.status.edit = false;
-                self.pageNoteMode.status.comment = false;
+                self.mode.status.view = true;
+                self.mode.status.edit = false;
                 self.currNote = null;
-                self.currComment = null;
-                self.newSection = {};
-                self.newSection.mates = [];
                 if(section._id){
                     setTimeout(function(){
-                        window.scrollTo(0, self.pageNoteMode.position.start);
+                        window.scrollTo(0, self.mode.position.start);
                     }, 1);
                 }
             },
             doEdit: function(section){
-                self.pageNoteMode.position.start = window.scrollY;
-                self.pageNoteMode.status.edit = true;
-                self.pageNoteMode.status.view = false;
-                self.pageNoteMode.status.comment = false;
-                self.currComment = null;
+                self.mode.position.start = window.scrollY;
+                self.mode.status.edit = true;
+                self.mode.status.view = false;
                 self.selectNote(section);
-                var scrollHeight = self.root.querySelector('.panel').scrollHeight;
-                window.scrollTo(0, scrollHeight);
+                if(self.root.querySelector('.panel')){
+                    var scrollHeight = self.root.querySelector('.panel').scrollHeight;
+                    window.scrollTo(0, scrollHeight);
+                }
                 self.trigger('editMode');
-            },
-            doComment: function(section){
-                self.pageNoteMode.position.start = window.scrollY;
-                self.pageNoteMode.status.view = false;
-                self.pageNoteMode.status.edit = false;
-                self.pageNoteMode.status.comment = true;
-                self.currComment = section;
-                self.currNote = null;
-                self.update();
-                window.scrollTo(0, document.body.scrollHeight);
-                self.trigger('commentMode');
             }
         };
         self.updateWxShareConfig = function(){
             setTimeout(function(){
                 var shareConfig = {
-                    title: self.pageNote && self.pageNote.title || __app.resources.app.title,
+                    title: self.notebook && self.notebook.title || __app.resources.app.title,
                     desc: '',
                     link: url,
                     imgUrl: getShareImg() || __page.baseUrl + '/public/images/logo_share_48x48.jpg',
                     success: function(){
-                        shareAction.execute({id: self.pageNote._id});
+                        shareAction.execute({id: self.notebook._id});
                     },
                     cancel: function(){}
                 };
@@ -205,8 +179,7 @@
             }, 500);
         };
         self.init = function(){
-            self.pageNote = {
-                comments: null,
+            self.notebook = {
                 crtOn: null,
                 _id: null,
                 title: null
@@ -217,62 +190,40 @@
             console.warn(self.tags);
         });
         self.sectionShowOrNot = function(item){
-            if(self.pageNoteMode.status.view && item.status != 'dr'){
+            console.error(item)
+            if(self.notebook.mates && self.notebook.mates.length === 1){
                 return true;
             }
-            else if(self.pageNoteMode.status.edit && item.status != 'dr'){
-                if(self.currNote._id === item._id){
-                    return true;
-                }
+            if(self.mode.status.view && item.status != 'dr'){
+                return true;
             }
-            else if((self.pageNoteMode.status.comment && item.status != 'dr')) {
-                if(self.currComment._id === item._id){
+            else if(self.mode.status.edit && item.status != 'dr'){
+                if(self.currNote._id === item._id){
                     return true;
                 }
             }
             return false;
         };
-        self.quitCommentWithClickMask = function(section){
-            return function(e){
-                e.preventDefault();
-                self.pageNoteMode.doView(section);
-                self.update();
-            }
-        };
         self.on('update', function(){
             self.updateWxShareConfig();
         });
         self.on('cancel', function(section){
-            self.pageNoteMode.doView(section);
+            self.mode.doView(section);
             self.currNote = null;
-            self.update();
-        });
-        self.on('quitComment', function(){
-            self.pageNoteMode.doView(self.currComment);
-            self.currComment = null;
-            self.update();
-        });
-        self.on('comment', function(section){
-            self.pageNoteMode.doComment(section);
-        });
-        self.on('noteComment', function(comment){
-            self.currComment.comments.push(comment);
-            self.pageNoteMode.doView(self.currComment);
             self.update();
         });
         self.updatePageNote = function(e){
             var title = e.currentTarget.value;
-            if(self.pageNote.initiator != self.user._id || !title){
+            if(self.notebook.initiator != self.user._id || !title){
                 return;
             }
             updateNote.execute({
-                id: self.pageNote._id,
+                id: self.notebook._id,
                 title: title
             });
         };
         self.selectNote = function(note, tag){
             self.currNote = note;
-            self.currComment = null;
             self.update();
         };
         self.isAnonymous = function(){
@@ -285,13 +236,13 @@
             if(self.isAnonymous()){
                 self.goToAuthorize();
             }
-            self.pageNoteMode.doEdit(self.newSection);
+            self.mode.doEdit(self.notebook.mates[self.notebook.mates.length-1]);
         };
         self.on('editSectionNote', function(section){
-            self.pageNoteMode.doEdit(section);
+            self.mode.doEdit(section);
         });
         self.on('noteSubmit', function(section){
-            self.pageNoteMode.doView(section);
+            self.mode.doView(section);
             self.update();
             self.updateWxShareConfig();
         });
@@ -304,14 +255,13 @@
             self.selectNote(tag.section, tag)
         });
         self.on('mount', function(){
-            console.info('tag pageNote new is opening');
+            console.info('tag notebook new is opening');
+            loadLatestNotebook.onDone(onLoadLatestNotebook);
             loadNote.onDone(onLoadNote);
             updateNote.onDone(onUpdateNote);
             self.init();
-            self.pageNote._id = id;
-            loadNote.execute({
-                noteId: self.pageNote._id
-            });
+            self.notebook._id = id;
+            loadLatestNotebook.execute();
         });
         self.on('unmount', function(){
             loadNote.offDone(onLoadNote);
@@ -369,4 +319,4 @@
             location.href = getUserInfoUrl;
         }
     </script>
-</note-page>
+</notebook>

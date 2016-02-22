@@ -1,6 +1,9 @@
 var domain = require('../domain');
 var apiFactory = domain.restApi();
 
+domain.action('loadLatestNotebook').onExecute(function(data){
+    apiFactory.get('/membook/notebook/latest').drive(this).send();
+});
 domain.action('loadNote').onExecute(function(data){
     apiFactory.get('/membook/note/_' + data.noteId).drive(this).send();
 });

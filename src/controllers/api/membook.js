@@ -1,14 +1,41 @@
 "use strict";
+var co = require('co');
 var context = require('../../context/context');
 var typeRegistry = require('../../modules/common/models/TypeRegistry');
 var NoteType = typeRegistry.item('NoteType');
 var NoteStatus = typeRegistry.item('NoteStatus');
 var InteractType = typeRegistry.item('InteractType');
 var noteService = context.services.noteService;
+var notebookService = context.services.notebookService;
 var interactService = context.services.interactService;
 var rankAction = context.kvs.rankAction;
 
 module.exports = function (router) {
+
+    router.get('/notebook/latest', function* (){
+        try{
+            var user = this.session.auth.user;
+            var latestNotebook = yield notebookService.loadByIdAsync(user.userBiz.latest);
+            var sectionNotes = yield noteService.loadSectionNotesByNotebookIdAsync(latestNotebook._id);
+            if(!sectionNotes || !sectionNotes.length){
+                sectionNotes = yield noteService.createAsync({
+                    initiator: this.session.auth.user._id,
+                    notebook: latestNotebook._id,
+                    type: NoteType.Section.value()
+                });
+            }
+            latestNotebook.mates = Array.isArray(sectionNotes) ? sectionNotes: [sectionNotes];
+            latestNotebook.mates.forEach(function(sectionNote){
+                co(function*(){
+                    sectionNote.mates = yield noteService.loadMatesByIdAsync(sectionNote._id);
+                })
+            });
+            this.body = {latestNotebook: latestNotebook};
+        }catch (e){
+            context.logger.error(e);
+            this.body = {error: e};
+        }
+    });
 
     router.get('/note/_:id', function*(){
         try{

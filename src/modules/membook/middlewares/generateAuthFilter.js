@@ -9,7 +9,6 @@ var AuthLevel = require('../services/AuthLevel');
 
 var generate = function(level){
     return function* (next) {
-        console.log("~~~~~~")
         var auth = authentication.getAuthentication(this);
         var authLevel = AuthLevel.get(auth);
         if (authLevel>=level) {

@@ -46,26 +46,11 @@ module.exports = function(){
         }
     });
 
-    router.get('/', needBaseInfoFilter, function*(){
+    router.get('/', needSubscriptionFilter, function*(){
         try{
-            var user = this.session.auth.user;
-            var userBiz = {
-                latest: '11'
-            };
-            var latestNotebook = {
-                _id: '11',
-                title: 'xxx',
-                initiator: user._id
-            };
-            console.log("~~~~~~~~~~~~");
-            var sectionNotes = yield noteService.loadSectionNotesByNotebookIdAsync(latestNotebook._id);
-            latestNotebook.sectionNotes = sectionNotes;
-            sectionNotes.forEach(function(sectionNote){
-                co(function*(){
-                    sectionNote.mates = yield noteService.loadMatesByIdAsync(sectionNote._id);
-                })
-            });
-            yield this.render('note', {notebook: latestNotebook});
+            var auth = this.session.auth;
+            console.warn(auth);
+            yield this.render('note');
         }catch (e){
             context.logger.error(e);
             this.body = {error: e};
