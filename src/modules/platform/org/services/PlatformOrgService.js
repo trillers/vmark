@@ -1,5 +1,5 @@
 var util = require('util');
-var platformSettings = require('vmark-settings').platform;
+var platformSettings = require('@private/vmark-settings').platform;
 var cbUtil = require('../../../../framework/callback');
 var PartyType = require('../../../common/models/TypeRegistry').item('PartyType');
 var OrgService = require('./../../../org/services/OrgService');
