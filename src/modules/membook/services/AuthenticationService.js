@@ -26,19 +26,23 @@ Service.prototype.signupWithBaseInfo = function(openid, callback){
     var openidToIdKv = this.context.kvs.openidToId;
     var atToOpenidKv = this.context.kvs.atToOpenid;
     var otToOpenidKv = this.context.kvs.otToOpenid;
+    var userBizKv = this.context.kvs.userBiz;
 
     co(function*(){
         var wechatSiteUser = null;
         var user = null;
         var userId = null;
         var status = UserStatus.Anonymous.value();
+        var userBiz = null;
         try{
             wechatSiteUser = yield wechatSiteUserKv.loadByOpenidAsync(openid);
             if(wechatSiteUser){
                 user = yield userKv.loadByIdAsync(wechatSiteUser.user);
+                userBiz = yield userBizKv.loadByIdAsync(wechatSiteUser.user);
                 if(callback) callback(null, {
-                    user: user,
                     wechatSiteUser: wechatSiteUser,
+                    user: user,
+                    userBiz: userBiz,
                     result: authResults.ok
                 });
                 return;
@@ -75,10 +79,13 @@ Service.prototype.signupWithBaseInfo = function(openid, callback){
             yield atToOpenidKv.setAsync(wechatSiteUser.at, openid);
             yield otToOpenidKv.setAsync(wechatSiteUser.ot, openid);
 
-            logger.info('Succeed to sign up with base info: ' + JSON.stringify(wechatSiteUser));
+            userBiz = yield userBizKv.loadByIdAsync(userId);
+
+            logger.debug('Succeed to sign up/in with base info: ' + JSON.stringify(wechatSiteUser));
             if(callback) callback(null, {
-                user: user,
                 wechatSiteUser: wechatSiteUser,
+                user: user,
+                userBiz: userBiz,
                 result: authResults.ok
             });
         }catch(err){
@@ -100,14 +107,16 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
     var openidToIdKv = this.context.kvs.openidToId;
     var atToOpenidKv = this.context.kvs.atToOpenid;
     var otToOpenidKv = this.context.kvs.otToOpenid;
+    var userBizKv = this.context.kvs.userBiz;
 
     co(function*(){
         var openid = userInfo.openid;
         var wechatSiteUser = null;
         var user = null;
+        var userBiz = null;
         var userId = null;
         var status = UserStatus.Registered.value();
-        var statusVerfied = UserStatus.Verified.value();
+        var statusVerified = UserStatus.Verified.value();
 
         try{
             wechatSiteUser = yield wechatSiteUserKv.loadByOpenidAsync(openid);
@@ -117,7 +126,7 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
              * Ensure user created or updated
              */
             if(user){
-                statusVerfied!=user.status && (user.status = status);
+                statusVerified!=user.status && (user.status = status);
                 user.nickname = userInfo.nickname;
                 user.headimgurl = userInfo.headimgurl;
                 user.sex = userInfo.sex;
@@ -142,7 +151,7 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
              */
             if(wechatSiteUser){
                 wechatSiteUser.user = userId;
-                statusVerfied!=wechatSiteUser.status && (wechatSiteUser.status = status);
+                statusVerified!=wechatSiteUser.status && (wechatSiteUser.status = status);
                 helper.copyUserInfo(wechatSiteUser, userInfo);
                 wechatSiteUser._id && (delete wechatSiteUser._id);
                 wechatSiteUser = yield wechatSiteUserService.updateByOpenidAsync(openid, wechatSiteUser);
@@ -164,9 +173,13 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
             yield atToOpenidKv.setAsync(wechatSiteUser.at, openid);
             yield otToOpenidKv.setAsync(wechatSiteUser.ot, openid);
 
+            userBiz = yield userBizKv.loadByIdAsync(userId);
+
+            logger.debug('Succeed to sign up/in with user info: ' + JSON.stringify(wechatSiteUser));
             if(callback) callback(null, {
-                user: user,
                 wechatSiteUser: wechatSiteUser,
+                user: user,
+                userBiz: userBiz,
                 result: authResults.ok
             });
         }catch(err){
