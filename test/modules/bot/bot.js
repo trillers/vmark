@@ -1,4 +1,4 @@
-var BotManagerFactory = require('vk');
+var BotManagerFactory = require('@private/vk');
 var rabbitmq = require('@private/base-settings').rabbitmq;
 var assert = require('chai').assert;
 var url = 'amqp://' +rabbitmq.username + ':' + rabbitmq.password + '@' + rabbitmq.host + ':' + rabbitmq.port + '/' + rabbitmq.vhost;

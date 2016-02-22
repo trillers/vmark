@@ -1,5 +1,5 @@
 var logger = require('../app/logging').logger;
-var settings = require('vmark-settings');
+var settings = require('@private/vmark-settings');
 
 var _extend = function(target, source){
     for (var key in source) {

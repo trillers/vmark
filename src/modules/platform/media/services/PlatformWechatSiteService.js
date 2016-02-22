@@ -1,5 +1,5 @@
 var util = require('util');
-var settings = require('vmark-settings');
+var settings = require('@private/vmark-settings');
 var cbUtil = require('../../../../framework/callback');
 var WechatMediaType = require('../../../common/models/TypeRegistry').item('WechatMediaType');
 var WechatMediaService = require('../../../media/services/WechatMediaService');

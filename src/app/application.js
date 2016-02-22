@@ -4,7 +4,7 @@ var views = require('koa-views');
 var logging = require('./logging');
 var logger = require('./logging').logger;
 var path = require('path');
-var settings = require('vmark-settings');
+var settings = require('@private/vmark-settings');
 var koaBody = require('koa-body');
 
 app.env = process.env.NODE_ENV || settings.env.mode;

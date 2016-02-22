@@ -12,4 +12,6 @@ module.exports = function(app){
 
     app.use(require('./boss')());
 
+    app.use(require('./redpacket')());
+
 }

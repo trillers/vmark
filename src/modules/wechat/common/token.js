@@ -1,4 +1,4 @@
-var settings = require('vmark-settings');
+var settings = require('@private/vmark-settings');
 var wechat = require('./api');
 var Promise = require('bluebird');
 

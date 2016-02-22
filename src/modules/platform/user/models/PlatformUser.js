@@ -1,4 +1,6 @@
 var OrgMemberRole = require('../../../common/models/TypeRegistry').item('OrgMemberRole');
+var typeRegistry = require('../../../common/models/TypeRegistry');
+var UserStatus = typeRegistry.item('UserStatus');
 
 var Model = function(domainBuilder){
     var schema = domainBuilder
@@ -7,7 +9,8 @@ var Model = function(domainBuilder){
         .withLifeFlag()
         .withCreatedOn()
         .withProperties({
-            posts: [{
+            status: {type: String, enum: UserStatus.valueList(), default: UserStatus.Anonymous.value(), required: true}
+            ,posts: [{
                 org: {type: String, ref: 'Org', required: true}
                 , member: {type: String, required: true}
                 , role: {type: String, enum: OrgMemberRole.valueList(), required: true}
@@ -21,7 +24,7 @@ var Model = function(domainBuilder){
             , province: {type: String}
             , city: {type: String}
             , district: {type: String}
-
+            //, type: {type: String}
         })
         .build();
     return schema.model(true);
