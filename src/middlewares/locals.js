@@ -1,5 +1,5 @@
-var settings = require('vmark-settings');
-var resources = require('vmark-settings').resources;
+var settings = require('@private/vmark-settings');
+var resources = require('@private/vmark-settings').resources;
 var typeRegistry = require('../modules/common/models/TypeRegistry');
 var env = settings.env.NODE_ENV;
 var debug = env != 'production';

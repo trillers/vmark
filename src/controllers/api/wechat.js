@@ -1,4 +1,4 @@
-var settings = require('vmark-settings');
+var settings = require('@private/vmark-settings');
 var util = require('util');
 var logger = require('../../app/logging').logger;
 var ApiReturn = require('../../framework/ApiReturn');

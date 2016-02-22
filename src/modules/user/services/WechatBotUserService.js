@@ -1,4 +1,4 @@
-var settings = require('vmark-settings');
+var settings = require('@private/vmark-settings');
 var co = require('co');
 var Promise = require('bluebird');
 var User = require('../models/User').model;
