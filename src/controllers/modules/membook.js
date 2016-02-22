@@ -46,7 +46,7 @@ module.exports = function(){
         }
     });
 
-    router.get('/', needSubscriptionFilter, function*(){
+    router.get('/', needBaseInfoFilter, function*(){
         try{
             var user = this.session.auth.user;
             var userBiz = {
@@ -57,6 +57,7 @@ module.exports = function(){
                 title: 'xxx',
                 initiator: user._id
             };
+            console.log("~~~~~~~~~~~~");
             var sectionNotes = yield noteService.loadSectionNotesByNotebookIdAsync(latestNotebook._id);
             latestNotebook.sectionNotes = sectionNotes;
             sectionNotes.forEach(function(sectionNote){
