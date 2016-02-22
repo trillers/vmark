@@ -188,6 +188,8 @@ Service.prototype.signupOnSubscription = function(openid, callback){
     var openidToIdKv = this.context.kvs.openidToId;
     var atToOpenidKv = this.context.kvs.atToOpenid;
     var otToOpenidKv = this.context.kvs.otToOpenid;
+    var notebookService = this.context.services.notebookService;
+    var userBizKv = this.context.kvs.userBiz;
 
     co(function*(){
         var userInfo = null;
@@ -255,9 +257,20 @@ Service.prototype.signupOnSubscription = function(openid, callback){
             yield atToOpenidKv.setAsync(wechatSiteUser.at, openid);
             yield otToOpenidKv.setAsync(wechatSiteUser.ot, openid);
 
+            /*
+             * Ensure at least one notebook created and pointed
+             * by user biz object ({latest: notebook._id})
+             */
+            var userBiz = yield userBizKv.loadByIdAsync(userId);
+            if(!userBiz){
+                var notebook = yield notebookService.createAsync({title: '默认', initiator: userId});
+                userBiz = yield userBizKv.saveByIdAsync(userId, {latest: notebook._id});
+            }
+
             if(callback) callback(null, {
-                user: user,
                 wechatSiteUser: wechatSiteUser,
+                user: user,
+                userBiz: userBiz,
                 result: authResults.ok
             });
         }catch(err){
@@ -274,30 +287,45 @@ Service.prototype.signinWithOpenid = function(openid, callback){
     var logger = this.context.logger;
     var wechatSiteUserKv = this.context.kvs.wechatSiteUser;
     var userKv = this.context.kvs.user;
+    var notebookService = this.context.services.notebookService;
+    var userBizKv = this.context.kvs.userBiz;
+
     co(function*(){
         var wechatSiteUser = null;
         var user = null
         try{
             wechatSiteUser = yield wechatSiteUserKv.loadByOpenidAsync(openid);
             user = wechatSiteUser && (yield userKv.loadByIdAsync(wechatSiteUser.user));
+
             if(wechatSiteUser && user){
+                /*
+                 * Ensure at least one notebook created and pointed
+                 * by user biz object ({latest: notebook._id})
+                 */
+                var userBiz = yield userBizKv.loadByIdAsync(user._id);
+                if(!userBiz){
+                    var notebook = yield notebookService.createAsync({title: '默认', initiator: userId});
+                    userBiz = yield userBizKv.saveByIdAsync(userId, {latest: notebook._id});
+                }
+
                 if(callback) callback(null, {
-                    user: user,
                     wechatSiteUser: wechatSiteUser,
+                    user: user,
+                    userBiz: userBiz,
                     result: authResults.ok
                 });
             }
             else if(!wechatSiteUser && !user){
                 if(callback) callback(null, {
-                    user: null,
                     wechatSiteUser: null,
+                    user: null,
                     result: authResults.none
                 });
             }
             else{
                 if(callback) callback(null, {
-                    user: user,
                     wechatSiteUser: wechatSiteUser,
+                    user: user,
                     result: authResults.stateError
                 });
             }

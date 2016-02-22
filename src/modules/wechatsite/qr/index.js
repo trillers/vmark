@@ -7,8 +7,8 @@ var wsConns = require('../../../app/wsConns');
 var tenantService = context.services.tenantService;
 var bindBotResults = tenantService.bindBotResults;
 var securityService = context.services.securityService;
-//var authenticationService = context.services.authenticationService;
-var membookService = context.services.membookService;
+var authenticationService = context.services.authenticationService;
+//var membookService = context.services.membookService;
 var authResults = securityService.authResults;
 var wechatApi = require('../../wechat/common/api').api;
 var tenantAdminType = qrRegistry.newType('ta', {temp: true});
@@ -20,9 +20,18 @@ var channelType = qrRegistry.newType('ch', {temp: false}); //subscription channe
 
 channelType.onAccess(function(qr, openid){
     co(function*() {
-        var auth = null;
         try{
-            auth = yield membookService.handleOnSubscriptionAsync(openid);
+            var auth = yield authenticationService.signupOnSubscriptionAsync(openid);
+            var url = 'http://' + settings.app.domain + '/note';
+            var logoUrl = 'http://' + settings.app.domain + '/public/images/logo_share_48x48.jpg';
+            var articles = [{
+                "title":"友趣笔记",
+                "description": "点击访问",
+                "url": url,
+                "picurl": logoUrl
+            }];
+            wechatApi.sendNews(openid, articles, function (err) { if(err) console.error(err); });
+
             logger.info('Sign up on subscription for openid ' + openid);
             logger.debug(auth);
         }catch(err){

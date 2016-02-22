@@ -8,7 +8,7 @@ before(function(done){
     });
 });
 
-describe.only('MembookService', function(){
+describe('MembookService', function(){
     var openid = 'oqSpUuDlnKxHxwZa4xylKuyxaXNM';
     describe('saveById', function(){
         it('Succeed to save user biz by id', function(done){
