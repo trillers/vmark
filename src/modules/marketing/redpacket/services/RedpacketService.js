@@ -37,11 +37,11 @@ Service.prototype.deleteById = function*(id){
     return doc;
 }
 
-Service.prototype.loadAllByType = function*(type){
+Service.prototype.loadAll = function*(){
     var logger = this.context.logger;
     var Redpacket = this.context.models.Redpacket;
-    var docs = yield Redpacket.find({type: type, lFlg: 'a'}).lean().exec();
-    logger.info('success load all redpacket by type: ' + type);
+    var docs = yield Redpacket.find({lFlg: 'a'}).lean().exec();
+    logger.info('success load all redpacket ');
     return docs;
 }
 

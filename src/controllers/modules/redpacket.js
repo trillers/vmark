@@ -8,6 +8,8 @@ var needUserInfoFilter = generateAuthFilter(2);
 var needSubscriptionFilter = generateAuthFilter(3);
 var redpacketService = context.services.redpacketService;
 var participantService = context.services.participantService;
+var typeRegistry = require('../../modules/common/models/TypeRegistry');
+var UserType = typeRegistry.item('UserType');
 var _ = require('underscore');
 
 module.exports = function(){
@@ -27,7 +29,7 @@ module.exports = function(){
         var user = this.session.auth && this.session.auth.user || {};
         var redpacket = yield redpacketService.loadById(id);
         if(redpacket && redpacket.lFlg === 'a'){
-            redpacket.participateLink = this.protocol + '://' + settings.app.domain + '/join?id=' + redpacket._id;
+            redpacket.participateLink = this.protocol + '://' + settings.app.domain + '/marketing/redpacket/join?id=' + redpacket._id;
             redpacket.join = '';
             redpacket.joined = 'none';
             redpacket.closed = 'none';
@@ -36,7 +38,7 @@ module.exports = function(){
             if(participant.length > 0){
                 redpacket.join = 'none';
                 redpacket.joined = '';
-                this.redirect('/marketing/participant?id=' + participant[0]._id);
+                this.redirect('/marketing/redpacket/participant?id=' + participant[0]._id);
             }else {
                 var today = new Date();
                 var active = today >= new Date(redpacket.startTime) && today <= new Date(redpacket.endTime);
@@ -79,79 +81,91 @@ module.exports = function(){
 
     router.get('/participant', needBaseInfoFilter, function *(){
         var id = this.query.id;
-        var user = this.session.user || {};
-        var participant = yield participantService.loadById(id);
-        if(participant && participant.redpacket.lFlg === 'a'){
-            participant.participateLink = this.protocol + '://' + settings.app.domain + '/join?id=' + participant.redpacket._id;
-            participant.join = '';
-            participant.joined = 'none';
-            participant.help = '';
-            participant.helped = 'none';
-            participant.closed = 'none';
-            participant.noActivated = 'none';
-            participant.helpLimited = 'none';
-
-            if(user.openid === participant.user.openid){
-                participant.join = 'none';
+        var user = this.session.auth && this.session.auth.user || {};
+        if(user.type === UserType.Customer.value()) {
+            var participant = yield participantService.loadById(id);
+            if (participant && participant.redpacket.lFlg === 'a') {
+                participant.participateLink = this.protocol + '://' + settings.app.domain + '/marketing/redpacket/join?id=' + participant.redpacket._id;
+                participant.join = '';
                 participant.joined = 'none';
-                participant.help = 'none';
+                participant.help = '';
                 participant.helped = 'none';
-                participant.inviteFriend = '';
-            }else{
-                participant.inviteFriend = 'none';
-                var docs = yield participantService.filter({conditions: {user: user.id, redpacket: participant.redpacket._id}});
-                if(docs.length > 0){
-                    participant.join = 'none';
-                    participant.joined = '';
-                }
-                var helpArr = participant.help_friends;
-                if (_.indexOf(helpArr, user.openid) !== -1) {
-                    participant.help = 'none';
-                    participant.helped = '';
-                }
-                if(helpArr.length >= participant.redpacket.friend_help_count_limit){
-                    participant.help = 'none';
-                    participant.helped = 'none';
-                    participant.helpLimited = '';
-                }
-                var today = new Date();
-                var active = today >= new Date(participant.redpacket.startTime) && today <= new Date(participant.redpacket.endTime);
-                if(!active){
+                participant.closed = 'none';
+                participant.noActivated = 'none';
+                participant.helpLimited = 'none';
+
+                if (user.openid === participant.user.openid) {
                     participant.join = 'none';
                     participant.joined = 'none';
                     participant.help = 'none';
                     participant.helped = 'none';
+                    participant.inviteFriend = '';
+                } else {
                     participant.inviteFriend = 'none';
-                    if(today < new Date(participant.redpacket.startTime)){
-                        participant.noActivated = '';
+                    var docs = yield participantService.filter({
+                        conditions: {
+                            user: user.id,
+                            redpacket: participant.redpacket._id
+                        }
+                    });
+                    if (docs.length > 0) {
+                        participant.join = 'none';
+                        participant.joined = '';
                     }
-                    if(today > new Date(participant.redpacket.endTime)){
-                        participant.closed = '';
+                    var helpArr = participant.help_friends;
+                    if (_.indexOf(helpArr, user.openid) !== -1) {
+                        participant.help = 'none';
+                        participant.helped = '';
+                    }
+                    if (helpArr.length >= participant.redpacket.friend_help_count_limit) {
+                        participant.help = 'none';
+                        participant.helped = 'none';
+                        participant.helpLimited = '';
+                    }
+                    var today = new Date();
+                    var active = today >= new Date(participant.redpacket.startTime) && today <= new Date(participant.redpacket.endTime);
+                    if (!active) {
+                        participant.join = 'none';
+                        participant.joined = 'none';
+                        participant.help = 'none';
+                        participant.helped = 'none';
+                        participant.inviteFriend = 'none';
+                        if (today < new Date(participant.redpacket.startTime)) {
+                            participant.noActivated = '';
+                        }
+                        if (today > new Date(participant.redpacket.endTime)) {
+                            participant.closed = '';
+                        }
                     }
                 }
+                var params = {
+                    conditions: {
+                        redpacket: participant.redpacket._id,
+                        lFlg: 'a'
+                    },
+                    sort: {
+                        total_money: -1
+                    },
+                    page: {
+                        no: 1,
+                        size: 10
+                    },
+                    populate: [
+                        {
+                            path: 'user'
+                        }
+                    ]
+                }
+                var participants = yield participantService.filter(params);
+                yield this.render('/marketing/redpacket/participant', {
+                    participant: participant,
+                    participants: participants
+                });
+            } else {
+                yield this.render('/marketing/redpacket/error', {error: '活动暂未开放'});
             }
-            var params = {
-                conditions: {
-                    redpacket: participant.redpacket._id,
-                    lFlg: 'a'
-                },
-                sort: {
-                    total_money: -1
-                },
-                page: {
-                    no: 1,
-                    size: 10
-                },
-                populate: [
-                    {
-                        path: 'user'
-                    }
-                ]
-            }
-            var participants = yield participantService.filter(params);
-            yield this.render('/marketing/redpacket/participant', {participant: participant, participants: participants});
         }else{
-            yield this.render('/marketing/redpacket/error', {error: '活动暂未开放'});
+            yield this.render('/marketing/redpacket/error', {error: '请用微信浏览器打开该页面'});
         }
     });
 
@@ -159,15 +173,23 @@ module.exports = function(){
         var id = this.query.id;
         var user = this.session.auth && this.session.auth.user || {};
         console.error(user);
-        if(user.openid){
-            var redpacket = yield redpacketService.loadById(id);
-            if(redpacket){
-                yield this.render('/marketing/redpacket/join', {headimgurl: user.headimgurl, nickname: user.nickname, redpacketId: redpacket._id});
-            }else{
+        if(user.type === UserType.Customer.value()) {
+            if (user.openid) {
+                var redpacket = yield redpacketService.loadById(id);
+                if (redpacket) {
+                    yield this.render('/marketing/redpacket/join', {
+                        headimgurl: user.headimgurl,
+                        nickname: user.nickname,
+                        redpacketId: redpacket._id
+                    });
+                } else {
+                    yield this.render('/marketing/redpacket/error');
+                }
+            } else {
                 yield this.render('/marketing/redpacket/error');
             }
         }else{
-            yield this.render('/marketing/redpacket/error');
+                yield this.render('/marketing/redpacket/error', {error: '请用微信浏览器打开该页面'});
         }
     });
 

@@ -13,6 +13,7 @@
     "co": "4.6.0",
     "co-wechat": "0.0.4",
     "co-wechat-oauth": "1.0.1",
+    "excel-export": "^0.5.1",
     "koa": "1.1.2",
     "koa-body": "1.2.1",
     "koa-generic-session": "1.9.0",

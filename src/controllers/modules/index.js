@@ -14,4 +14,6 @@ module.exports = function(app){
 
     app.use(require('./redpacket')());
 
+    app.use(require('./marketing')());
+
 }

@@ -1,6 +1,7 @@
 var OrgMemberRole = require('../../../common/models/TypeRegistry').item('OrgMemberRole');
 var typeRegistry = require('../../../common/models/TypeRegistry');
 var UserStatus = typeRegistry.item('UserStatus');
+var UserType = typeRegistry.item('UserType');
 
 var Model = function(domainBuilder){
     var schema = domainBuilder
@@ -24,7 +25,7 @@ var Model = function(domainBuilder){
             , province: {type: String}
             , city: {type: String}
             , district: {type: String}
-            //, type: {type: String}
+            , type: {type: String, enum: UserType.valueList(), default: UserType.Tenant.value(), required: true}
         })
         .build();
     return schema.model(true);

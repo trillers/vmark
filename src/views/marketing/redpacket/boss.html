@@ -23,6 +23,9 @@
         padding: 0 !important;
         margin: 0 !important;
     }
+    .actionCon a{
+        margin-left: 10px;
+    }
 </style>
 <script type="text/javascript">
     var bgImgCount = 0;
@@ -42,9 +45,9 @@
             focus: true
         });
 
-        $.get('/api/activity/load?type=flmh', function (data) {
+        $.get('/api/marketing/redpacket/load', function (data) {
             data.forEach(function (item) {
-                $('#list').append($('<li style="height: 17px; overflow: hidden; margin-top: 2px;"> <strong class="col-md-2 activity-name" _id="'+ item._id +'">' + item.name + '</strong> <strong class="col-md-2">' + formatDate(item.startTime) + '</strong> <strong class="col-md-2">' + formatDate(item.endTime) + '</strong> <strong class="col-md-5">' + window.__app.settings.app.url + '/activity?id=' + item._id + '</strong> <strong class="col-md-1"><a href="{{api}}' + '/activity/exportParticipants?id=' + item._id + '" target="_blank" >导出</a></strong> </li>'));
+                $('#list').append($('<li style="height: 17px; overflow: hidden; margin-top: 2px;"> <strong class="col-md-2 activity-name" _id="'+ item._id +'">' + item.name + '</strong> <strong class="col-md-2">' + formatDate(item.startTime) + '</strong> <strong class="col-md-2">' + formatDate(item.endTime) + '</strong> <strong class="col-md-6 actionCon"><a href="'+ window.__app.settings.app.url + '/marketing/redpacket/redpacket?id=' + item._id +'" target="_blank">查看</a><a href="{{api}}' + '/activity/exportParticipants?id=' + item._id + '" target="_blank" >导出</a></strong> </li>'));
             });
             $('.activity-name').off('click').click(function(){
                 edit($(this).attr('_id'));
@@ -99,7 +102,7 @@
             }
         })
         function add(json){
-            $.post('/api/activity/add', json, function (data) {
+            $.post('/api/marketing/redpacket/add', json, function (data) {
 //                if (data) {
 //                    $('#list').append($('<li style="height: 17px; overflow: hidden; margin-top: 2px;"> <strong class="col-md-2 activity-name">' + data.name + '</strong> <strong class="col-md-2">' + formatDate(data.startTime) + '</strong> <strong class="col-md-2">' + formatDate(data.endTime) + '</strong> <strong class="col-md-6">' + window.__app.settings.app.url + '/activity?id=' + data._id + '</strong> </li>'));
 //                    $('#addForm').hide();
@@ -112,7 +115,7 @@
 
         }
         function update(json){
-            $.post('/api/activity/update', json, function (data) {
+            $.post('/api/marketing/redpacket/update', json, function (data) {
                 if (data) {
                     window.location.href = window.location.href;
                 }
@@ -248,8 +251,8 @@
                             <strong class="col-md-2">活动名称</strong>
                             <strong class="col-md-2">开始时间</strong>
                             <strong class="col-md-2">结束时间</strong>
-                            <strong class="col-md-5">活动链接</strong>
-                            <strong class="col-md-1">操作</strong>
+                            <!--<strong class="col-md-5">活动链接</strong>-->
+                            <strong class="col-md-6">操作</strong>
                         </li>
 
                         <li>

@@ -6,10 +6,10 @@
 {% parent %}
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="format-detection" content="telephone=no">
-<link rel="stylesheet" href="../../css/base.css">
-<link rel="stylesheet" href="../../css/swiper.min.css">
-<link rel="stylesheet" href="../../css/style.css">
-<script src="../../js/swiper.jquery.min.js"></script>
+<link rel="stylesheet" href="../../../../web/marketing/redpacket/css/base.css">
+<link rel="stylesheet" href="../../../../web/marketing/redpacket/css/swiper.min.css">
+<link rel="stylesheet" href="../../../../web/marketing/redpacket/css/style.css">
+<script src="../../../../web/marketing/redpacket/js/swiper.jquery.min.js"></script>
 <script>
     var timer = 0;
     $(function () {
@@ -155,9 +155,9 @@
 {% endblock %}
 
 {% block content %}
-<link rel="stylesheet" type="text/css" href="../../css/fans.css">
-<script src="../../js/jquery.leanModal.min.js"></script>
-<link rel="stylesheet" type="text/css" href="../../css/leanModal.css">
+<link rel="stylesheet" type="text/css" href="../../../../web/marketing/redpacket/css/fans.css">
+<script src="../../../../web/marketing/redpacket/js/jquery.leanModal.min.js"></script>
+<link rel="stylesheet" type="text/css" href="../../../../web/marketing/redpacket/css/leanModal.css">
 <div id="lean_overlay" style="display: none; opacity: 0.45;"></div>
 <script type="text/javascript">
     $(function () {
@@ -292,7 +292,7 @@
         $('#helpTa').click(function(){
             if(helping) return;
             helping = true;
-            $.post('/api/participant/help', {id: $('#participantId').val()}, function(data){
+            $.post('/api/marketing/redpacket/help', {id: $('#participantId').val()}, function(data){
                 if(data){
                     if(data.helped){
                         alert('已助力');
@@ -322,7 +322,7 @@
 <div class="fullBg" style="height: 1794px;"></div>
 <div class="fullBg2" style="height: 1794px;"></div>
 <div class="share_bg">
-    <img src="../../images/share-guide.png">
+    <img src="../../../../web/marketing/redpacket/images/share-guide.png">
 </div>
 <style>
     .fullBg2 {

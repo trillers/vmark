@@ -32,7 +32,7 @@ Service.prototype.update = function*(con, update){
 Service.prototype.loadById = function*(id){
     var logger = this.context.logger;
     var Participant = this.context.models.Participant;
-    var doc = yield Participant.findById(id, {}, {lean: true}).populate({path: 'activity'}).populate({path: 'user'}).exec();
+    var doc = yield Participant.findById(id, {}, {lean: true}).populate({path: 'redpacket'}).populate({path: 'user'}).exec();
     logger.info('success load participant by id: ' + id);
     return doc;
 }

@@ -167,8 +167,8 @@ Service.prototype.loadByOpenid = function(openid, callback){
 
 Service.prototype.updateByOpenid = function(openid, json, callback){
     var kv = this.context.kvs.wechatMediaUser;
-    var wechatMediaUser = this.context.models.wechatMediaUser;
-    wechatMediaUser.findOneAndUpdate({openid: openid}, json, {new: true}, function (err, doc) {
+    var WechatMediaUser = this.context.models.WechatMediaUser;
+    WechatMediaUser.findOneAndUpdate({openid: openid}, json, {new: true}, function (err, doc) {
         if(err){
             return callback(err);
         }

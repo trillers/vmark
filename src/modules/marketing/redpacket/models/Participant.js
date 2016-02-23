@@ -5,7 +5,7 @@ var Model = function(DomainBuilder) {
             .withLifeFlag()
             .withCreatedOn()
             .withProperties({
-                    activity: {type: String, ref: 'Redpacket'}
+                    redpacket: {type: String, ref: 'Redpacket'}
                     , user: {type: String, ref: 'PlatformUser'}
                     , phone: {type: String}
                     , total_money: {type: Number}

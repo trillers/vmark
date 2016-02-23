@@ -5,6 +5,8 @@ var wechatApi = require('../../wechat/common/api');
 
 var typeRegistry = require('../../common/models/TypeRegistry')
 var UserStatus = typeRegistry.item('UserStatus');
+var UserType = typeRegistry.item('UserType');
+
 var Service = function(context){
     this.context = context;
 };
@@ -32,6 +34,7 @@ Service.prototype.signupWithBaseInfo = function(openid, callback){
         var user = null;
         var userId = null;
         var status = UserStatus.Anonymous.value();
+        var type = UserType.Customer.value();
         try{
             wechatMediaUser = yield wechatMediaUserKv.loadByOpenidAsync(openid);
             if(wechatMediaUser){
@@ -50,7 +53,8 @@ Service.prototype.signupWithBaseInfo = function(openid, callback){
             var createUserJson = {
                 status: status,
                 nickname: '匿名',
-                openid: openid
+                openid: openid,
+                type: type
             };
             user = yield platformUserService.createAsync(createUserJson);
             userId = user.id;
@@ -109,6 +113,7 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
         var user = null;
         var userId = null;
         var status = UserStatus.Registered.value();
+        var type = UserType.Customer.value();
         var statusVerfied = UserStatus.Verified.value();
 
         try{
@@ -120,6 +125,7 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
              */
             if(user){
                 statusVerfied!=user.status && (user.status = status);
+                user.type = type;
                 user.openid = userInfo.openid;
                 user.nickname = userInfo.nickname;
                 user.headimgurl = userInfo.headimgurl;
@@ -132,6 +138,7 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
             else{
                 var createUserJson = {};
                 createUserJson.status = status;
+                createUserJson.type = type;
                 createUserJson.openid = userInfo.openid;
                 createUserJson.nickname = userInfo.nickname;
                 createUserJson.headimgurl = userInfo.headimgurl;
@@ -200,6 +207,7 @@ Service.prototype.signupOnSubscription = function(openid, callback){
         var user = null;
         var userId = null;
         var status = UserStatus.Verified.value();
+        var type = UserType.Customer.value();
 
         try{
             wechatMediaUser = yield wechatMediaUserKv.loadByOpenidAsync(openid);
@@ -213,6 +221,7 @@ Service.prototype.signupOnSubscription = function(openid, callback){
              */
             if(user){
                 user.status = status;
+                user.type = type;
                 user.openid = userInfo.openid;
                 user.nickname = userInfo.nickname;
                 user.headimgurl = userInfo.headimgurl;
@@ -226,6 +235,7 @@ Service.prototype.signupOnSubscription = function(openid, callback){
             else{
                 var createUserJson = {};
                 createUserJson.status = status;
+                createUserJson.type = type;
                 createUserJson.openid = userInfo.openid;
                 createUserJson.nickname = userInfo.nickname;
                 createUserJson.headimgurl = userInfo.headimgurl;

@@ -81,4 +81,9 @@ registry
     .addChild('Registered','r', '已注册')
     .addChild('Verified','v', '已验证')
 
+    .up().item('UserType', 'UserType', '用户类型')
+    .addChild('Admin','a', '系统管理员')
+    .addChild('Tenant','t', '租户')
+    .addChild('Customer','c', '终端用户') /*参与活动用户等*/
+
 module.exports = registry;
