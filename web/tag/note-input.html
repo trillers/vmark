@@ -60,6 +60,7 @@
         var self = this;
         var saveNotesInSection = domain.action('saveNotesInSection');
         var saveNoteInSection = domain.action('saveNoteInSection');
+        var uploadImgsAndSaveNotesInSection = domain.action('uploadImgsAndSaveNotesInSection');
         self.state = {
             toggleTxtVoiBtn: {
                 txt: true,
@@ -105,47 +106,51 @@
             saveNoteInSection.newInvocation({
                 type: 'txt',
                 content: self.editTxtInput.value.trim(),
-                parentNote: self.parent.currNote._id || '',
-                notebook: self.parent.notebook._id
+                parentNote: self.opts.section._id || '',
+                notebook: self.opts.notebook._id
             }).onDone(function(data){
-                util.mixin(self.parent.currNote, data.sectionNote);
-                self.parent.currNote.mates.push(data.note);
                 self.editTxtInput.value = '';
                 self.state.input.doWait();
-                self.parent.trigger('noteSave', data.note);
+                self.opts.onsavenote({note: data.note, section: data.section});
             }).execute();
         };
         self.addImgs = function(e){
+            var notes = [];
             wx.chooseImage({
                 count: 9,
                 sizeType: ['compressed'],
                 sourceType: ['album', 'camera'],
                 success: function(res){
-                    var notes = res.localIds.map(function(localId){
-                        return {
-                            type: 'img',
-                            url: localId,
-                            parentNote: self.parent.currNote._id || '',
-                            notebook: self.parent.notebook._id
+                    uploadImg(res.localIds);
+                    function uploadImg(localIds){
+                        if(localIds.length){
+                            var localId = localIds.splice(0, 1);
+                            wx.uploadImage({
+                                localId: localId,
+                                isShowProgressTips: 0,
+                                success: function(res){
+                                    notes.push({
+                                        type: 'img',
+                                        url: res.serverId,
+                                        parentNote: self.opts.section._id || '',
+                                        notebook: self.opts.notebook._id
+                                    });
+                                    uploadImg(localIds);
+                                }
+                            })
+                        }else{
+                            uploadImgsAndSaveNotesInSection.newInvocation({
+                                notes: notes
+                            }).onDone(function(data){
+                                if(!data.error){
+                                    self.opts.onsavenotes(data.notes);
+                                }
+                                else{
+                                    alert('error occur.');
+                                }
+                            }).execute();
                         }
-                    });
-                    saveNotesInSection.newInvocation({
-                        notes: notes
-                    }).onDone(function(data){
-                        if(data){
-                            if(!self.parent.currNote.mates){
-                                self.parent.currNote.mates=[];
-                            }
-                            if(data.parentNote){
-                                util.mixin(self.parent.currNote, data.parentNote);
-                            }
-                            self.parent.currNote.mates = self.parent.currNote.mates.concat(data.mates);
-                            self.parent.trigger('noteSave', data);
-                        }
-                        else{
-                            alert('error occur.');
-                        }
-                    }).execute();
+                    }
                 }
             });
         };
@@ -215,13 +220,13 @@
                             type: 'voi',
                             url: localId,
                             seconds: seconds,
-                            parentNote: self.parent.currNote._id || '',
-                            notebook: self.parent.notebook._id
+                            parentNote: self.opts.section._id || '',
+                            notebook: self.opts.notebook._id
                         };
                         saveNoteInSection.newInvocation(note).onDone(function (data) {
                             if (data) {
-                                util.mixin(self.parent.currNote, data.sectionNote);
-                                self.parent.currNote.mates.push(data.note);
+                                util.mixin(self.opts.section, data.sectionNote);
+                                self.opts.section.mates.push(data.note);
                                 self.parent.trigger('noteSave', data.note);
                             }
                             else {
@@ -277,16 +282,16 @@
                 type: 'voi',
                 url: voice.localId,
                 seconds: seconds,
-                parentNote: self.parent.currNote._id || '',
-                notebook: self.parent.notebook._id
+                parentNote: self.opts.section._id || '',
+                notebook: self.opts.notebook._id
             };
             wx.pauseVoice({
                 localId: voice.localId
             });
             saveNoteInSection.newInvocation(note).onDone(function (data) {
                 if (data) {
-                    util.mixin(self.parent.currNote, data.sectionNote);
-                    self.parent.currNote.mates.push(data.note);
+                    util.mixin(self.opts.section, data.sectionNote);
+                    self.opts.section.mates.push(data.note);
                     self.parent.trigger('noteSave', data.note);
                 }
                 else {

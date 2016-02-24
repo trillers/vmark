@@ -12,7 +12,7 @@
         </div>
 
         <div>
-            <note-section name="{item._id}" id="{item._id}" each="{item, i in notebook.mates}" if="{parent.sectionShowOrNot(item)}" section="{item}"></note-section>
+            <note-section onclick="{mode.doShare}" name="{item._id}" id="{item._id}" each="{item, i in notebook.mates}" highlight="{(parent.mode.status.edit && !parent.sectionShowOrNot(item))}" section="{item}"></note-section>
         </div>
         <div if="{mode.status.view}" style="width: 100%;text-align: center;margin-bottom: 20px">
             <img style="width: 96px;height: 96px" src="/public/images/qrcode_for_gh_cd89432d0321.jpg"/>
@@ -25,16 +25,28 @@
     </div>
     <note-confirm></note-confirm>
     <div if="{mode.status.view}" class="add-section-bar">
-        <div style="width:48px;height:48px;background: red;float:left" onclick="{selectOperate}"></div>
-        <div style="width:48px;height:48px;background: red;float:right">单</div>
+        <div onclick="{addNewNote}" style="width:48px;height:48px;background: red;float:left"></div>
+        <div onclick="{mode.doFuncs}" style="width:48px;height:48px;background: red;float:right">单</div>
     </div>
-    <note-input if="{Object.keys(currNote).length}"></note-input>
+    <btn-group zindex="{100}" items="{btnGroup}" if="{mode.status.funcs}"></btn-group>
+    <note-input notebook="{notebook}" section="{currNote}" onsavenote="{onSaveNote}" onsavenotes="{onSaveNotes}" if="{mode.status.edit && Object.keys(currNote).length}"></note-input>
+    <div class="mask" if="{mode.status.funcs}" ontouchstart="{mode.doView}" style="height: {window.innerHeight + 'px'}"></div>
     <!--play voice panel begin-->
     <div style="position:absolute;top:0;left:0;width:0;height:0;">
         <audio id="voiceMsgPlayer" class="voicePlayer"></audio>
     </div>
     <!--play voice panel end-->
     <style scoped>
+        .mask{
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 2;
+        }
+        .highlight{
+            background: red;
+        }
         .mask{
             width: 100%;
             position: fixed;
@@ -78,6 +90,12 @@
         var loadLatestNotebook = domain.action('loadLatestNotebook');
         var updateNote = domain.action('updateNote');
         var shareAction = domain.action('shareAction');
+        var getNewSection = function(){
+            return {
+                mates: [],
+                initiator: __page.user
+            }
+        };
         var getShareImg = function(){
             if(self.notebook && self.notebook.mates && self.notebook.mates.length){
                 for(var i= 0, len=self.notebook.mates.length; i<len; i++){
@@ -105,7 +123,8 @@
 
         var onLoadLatestNotebook = function(data){
             self.notebook = data.latestNotebook;
-            if(self.notebook.mates
+            if(self.notebook
+                    && self.notebook.mates
                     && self.notebook.mates.length
             ){
                 self.mode.doView(self.notebook.mates[self.notebook.mates.length-1]);
@@ -131,18 +150,68 @@
             return new Date(date).toLocaleString();
         };
         self.formatDateForMates = util.formatDateForComments;
+        self.btnGroup = [
+            {
+                text: '笔记',
+                icon: '',
+                onClick: function(){
+                    self.btnGroup.forEach(function(item){
+                        item.active = false;
+                    });
+                    this.active = true;
+                },
+                active: true
+            },
+            {
+                text: '笔记本',
+                icon: '',
+                onClick: function(){
+                    self.btnGroup.forEach(function(item){
+                        item.active = false;
+                    });
+                    this.active = true;
+                },
+                active: false
+            },
+            {
+                text: '去分享',
+                icon: '',
+                onClick: function(){
+                    self.btnGroup.forEach(function(item){
+                        item.active = false;
+                    });
+                    this.active = true;
+                },
+                active: false
+            }
+        ];
         self.mode = {
             status: {
                 view: true,
-                edit : false
+                edit: false,
+                funcs: false,
+                share: false
             },
             position: {
                 start: 0,
                 end: 0
             },
+            doFuncs: function(){
+                self.mode.status = {
+                    view: false,
+                    edit: false,
+                    funcs: true,
+                    share: false
+                };
+                self.currNote = null;
+            },
             doView: function(section){
-                self.mode.status.view = true;
-                self.mode.status.edit = false;
+                self.mode.status = {
+                    view: true,
+                    edit: false,
+                    funcs: false,
+                    share: false
+                };
                 self.currNote = null;
                 if(section._id){
                     setTimeout(function(){
@@ -151,15 +220,24 @@
                 }
             },
             doEdit: function(section){
+                self.mode.status = {
+                    edit: true,
+                    view: false,
+                    funcs: false,
+                    share: false
+                };
                 self.mode.position.start = window.scrollY;
-                self.mode.status.edit = true;
-                self.mode.status.view = false;
                 self.selectNote(section);
-                if(self.root.querySelector('.panel')){
-                    var scrollHeight = self.root.querySelector('.panel').scrollHeight;
-                    window.scrollTo(0, scrollHeight);
-                }
                 self.trigger('editMode');
+            },
+            doShare: function(){
+                self.mode.status = {
+                    view: false,
+                    edit: false,
+                    funcs: false,
+                    share: true
+                };
+                self.currNote = null;
             }
         };
         self.updateWxShareConfig = function(){
@@ -190,8 +268,7 @@
             console.warn(self.tags);
         });
         self.sectionShowOrNot = function(item){
-            console.error(item)
-            if(self.notebook.mates && self.notebook.mates.length === 1){
+            if(self.mode.status.edit){
                 return true;
             }
             if(self.mode.status.view && item.status != 'dr'){
@@ -232,11 +309,21 @@
         self.isVerified = function(){
             return self.user && self.user.status && self.user.status === __app.enums.UserStatus.names.Verified;
         };
-        self.selectOperate = function(e){
+        self.addNewNote = function(e){
             if(self.isAnonymous()){
                 self.goToAuthorize();
             }
-            self.mode.doEdit(self.notebook.mates[self.notebook.mates.length-1]);
+            var lastSection = self.notebook.mates[self.notebook.mates.length-1];
+            if(isToday(lastSection.crtOn)){
+                self.mode.doEdit(lastSection);
+            }else{
+                var newSection = getNewSection();
+                self.notebook.mates.push(newSection);
+                self.mode.doEdit(newSection);
+            }
+            function isToday(str){
+                return new Date().toDateString() === new Date(str).toDateString()
+            }
         };
         self.on('editSectionNote', function(section){
             self.mode.doEdit(section);
@@ -246,6 +333,17 @@
             self.update();
             self.updateWxShareConfig();
         });
+        self.onSaveNote = function(data){
+            util.mixin(self.currNote, data.section);
+            !self.currNote.mates && (self.currNote.mates = []);
+            self.currNote.mates.push(data.note);
+            self.trigger('noteSave', data.note);
+        };
+        self.onSaveNotes = function(notes){
+            !self.currNote.mates && (self.currNote.mates = []);
+            self.currNote.mates = self.currNote.mates.concat(notes);
+            self.parent.trigger('noteSave', data);
+        };
         self.on('noteSave', function(note){
             self.update();
             var scrollHeight = self.root.querySelector('.panel').scrollHeight;

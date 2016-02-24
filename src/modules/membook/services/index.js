@@ -5,6 +5,9 @@ var context = require('../../../context/context');
 var NoteService = require('./NoteService');
 module.exports.noteService = Promise.promisifyAll(new NoteService(context));
 
+var MediaService = require('./MediaService');
+module.exports.mediaService = Promise.promisifyAll(new MediaService(context));
+
 var NotebookService = require('./NotebookService');
 module.exports.notebookService = Promise.promisifyAll(new NotebookService(context));
 

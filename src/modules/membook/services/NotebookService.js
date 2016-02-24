@@ -33,17 +33,44 @@ Service.prototype.load = function(callback){
     })
 };
 
+Service.prototype.fetchById = function(id, user, callback){
+    if(!user){
+        callback(new Error('has no user in session'));
+    }
+    var Notebook = this.context.models.Notebook;
+    var self = this;
+    Notebook
+        .findById(id, null, {lean: true})
+        .populate({path: 'initiator'})
+        .exec(function(err, doc){
+            if(err){
+                return callback(err)
+            }
+            else if(!doc){
+                var json = {
+                    _id: id,
+                    title: '默认',
+                    initiator: user._id
+                };
+                self.create(json, function(err, doc){
+                    if(err){
+                        return callback(err)
+                    }
+                    doc.initiator = user;
+                    callback(null, doc);
+                });
+            }else{
+                callback(null, doc);
+            }
+        })
+};
+
 Service.prototype.loadById = function(id, callback){
     var Notebook = this.context.models.Notebook;
-    Notebook.findById(id, function(err, result){
-        if(err) {
-            console.error(err);
-            callback(err);
-        }
-        else{
-            callback(null, result);
-        }
-    })
+    Notebook
+        .findById(id, null, {lean: true})
+        .populate({path: 'initiator'})
+        .exec(callback)
 };
 
 Service.prototype.updateById = function(id, json, callback){

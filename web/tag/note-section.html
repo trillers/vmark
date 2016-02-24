@@ -3,13 +3,13 @@
         <div onclick="{submitSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" class="save pull-right">保存</div>
         <div onclick="{cancelSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" class="cancel pull-right">取消</div>
     </div>
-    <div class="page" if="{!hidden}">
+    <div class="page {highlight: opts.highlight}" if="{!hidden}">
     <div class="section" sectionId="{_id}">
         <div class="panel">
         <div class="top-padding" />
         <div class="author" >
             <div style="display: inline; float: left;">
-                <img class="user-icon" riot-src="{initiator.headimgurl}"/>
+                <img class="user-icon" riot-src="{section.initiator.headimgurl}"/>
             </div>
             <div style="display: inline; float: left; padding-left: 10px;">
                 <label class="user-nickname"> {initiator.nickname}</label>
@@ -37,7 +37,7 @@
                     <td style="width:45%;">
                     </td>
                     <td style="width:10%;">
-                        <div class="img-btn left" onclick="{editSectionNote}" if="{!isOnEdit() && (initiator._id === parent.user._id)}">
+                        <div class="img-btn left" onclick="{editSectionNote}" if="{!isOnEdit() && (section.initiator._id === parent.user._id)}">
                             <img src="/public/images/edit.png">
                         </div>
                     </td>
@@ -50,6 +50,9 @@
     </div>
     </div>
     <style scoped>
+        .highlight{
+            background: red;
+        }
         label{
             font-size: 14px;
         }
@@ -145,7 +148,7 @@
         self.initiator = self.section.initiator || self.parent.user;
         self.initiator.headimgurl = self.initiator.headimgurl || '/public/images/def-avatar.png';
         self.isOnEdit = function(){
-            self.parent.currNote === self.section;
+            return self.parent.currNote === self.section;
         };
         self.viewModel = {
             toggleTxtVoiBtn: {
@@ -224,31 +227,6 @@
             }
             self.confirmComponent.trigger('popUp', option);
         };
-        self.deleteComment = function(e){
-            var commenter = e.item.initiator;
-            if(commenter._id != self.parent.user._id){
-                return false;
-            }
-            self.confirm({text: '是否删除评论'}, function(){
-                deleteComment
-                    .newInvocation({
-                        id: e.item._id
-                    })
-                    .onDone(function(data){
-                        if(data.success){
-                            self.section.comments.forEach(function(comment, index){
-                                if(comment._id == e.item._id){
-                                    self.section.comments.splice(index, 1);
-                                }
-                                self.update();
-                            })
-                        }else{
-                            alert('delete comments failed.')
-                        }
-                    })
-                    .execute();
-            });
-        };
         self.cancelSectionNote = function(e){
             self.init();
             self.parent.trigger('cancel', self.section);
@@ -313,7 +291,7 @@
                 publishNote.newInvocation(self.section)
                     .onDone(function(data){
                         try {
-                            util.mixin(self.section, data);
+                            self.section = _.assign({}, self.section, data);
                             self.parent.trigger('noteSubmit', self.section);
                             self.init();
                         } catch (e){
@@ -322,68 +300,6 @@
                     })
                     .execute();
             }
-        };
-        self.comment = function(e){
-            if(self.parent.isAnonymous()){
-                return self.parent.goToAuthorize();
-            }
-            self.parent.trigger('comment', self.section);
-        };
-        self.isLiked = function(){
-            var result = false;
-            if(!self.section.likes || self.section.likes.length<=0){
-                return result;
-            }
-            self.section.likes.forEach(function(like){
-                if(like.initiator._id === self.parent.user._id){
-                    result = like;
-                }
-            });
-            return result;
-        };
-        self.like = function(e){
-            if(self.parent.isAnonymous()){
-                return self.parent.goToAuthorize();
-            }
-            var currLike = self.isLiked();
-            if(currLike){
-                unlikeNote
-                    .newInvocation({
-                        interaction: currLike._id,
-                        note: self.section._id
-                    })
-                    .onDone(function(data){
-                        if(data.success){
-                            self.section.likes = self.section.likes.filter(function(item){
-                                return item.initiator._id != self.parent.user._id;
-                            });
-                            self.update();
-                        }
-                        else{
-                            alert(data);
-                        }
-                    })
-                    .execute();
-            }else{
-                likeNote
-                    .newInvocation({
-                        interaction: {
-                            initiator: self.parent.user._id
-                        },
-                        note: self.section._id
-                    })
-                    .onDone(function(data){
-                        if(data && data.like){
-                            self.section.likes.push(data.like);
-                            self.update();
-                        }
-                        else{
-                            alert('failed to like item');
-                        }
-                    })
-                    .execute();
-            }
-
         };
         self.playVoice = function (e) {
             var data = e.item;

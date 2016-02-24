@@ -14,21 +14,24 @@ module.exports = function (router) {
 
     router.get('/notebook/latest', function* (){
         try{
-            var user = this.session.auth.user;
-            var latestNotebook = yield notebookService.loadByIdAsync(user.userBiz.latest);
+            var auth = this.session.auth;
+            var latestNotebook = yield notebookService.fetchByIdAsync(auth.userBiz.latest, auth.user);
             var sectionNotes = yield noteService.loadSectionNotesByNotebookIdAsync(latestNotebook._id);
             if(!sectionNotes || !sectionNotes.length){
                 sectionNotes = yield noteService.createAsync({
-                    initiator: this.session.auth.user._id,
+                    initiator: this.session.auth.user,
                     notebook: latestNotebook._id,
                     type: NoteType.Section.value()
                 });
+                sectionNotes.initiator = auth.user;
             }
             latestNotebook.mates = Array.isArray(sectionNotes) ? sectionNotes: [sectionNotes];
-            latestNotebook.mates.forEach(function(sectionNote){
-                co(function*(){
-                    sectionNote.mates = yield noteService.loadMatesByIdAsync(sectionNote._id);
-                })
+            var promiseArr = latestNotebook.mates.map(function(sectionNote){
+                return noteService.loadMatesByIdAsync(sectionNote._id);
+            });
+            var results = yield Promise.all(promiseArr);
+            results.forEach(function(notes, i){
+                latestNotebook.mates[i].mates = notes;
             });
             this.body = {latestNotebook: latestNotebook};
         }catch (e){
@@ -96,15 +99,14 @@ module.exports = function (router) {
                         asyncArr.push(noteService.updateByIdAsync(mate._id, mate))
                     }
                 });
-                yield Promise.all(asyncArr).then(function(arr){
-                    arr.map(function(newMate){
-                        note.mates.forEach(function(mate, index){
-                            if(newMate._id === mate._id){
-                                note.mates.splice(index, 1, newMate);
-                            }
-                        })
+                var arr = yield Promise.all(asyncArr);
+                arr.map(function(newMate){
+                    note.mates.map(function(mate, index){
+                        if(newMate._id === mate._id){
+                            note.mates.splice(index, 1, newMate);
+                        }
                     })
-                });
+                })
             }
             if(typeof note.initiator === 'string'){
                 note.initiator = this.session.auth.user;
@@ -215,19 +217,16 @@ module.exports = function (router) {
             var json = this.request.body;
             this.session['draftId'] && (this.session['draftId'] = null);
             if(!json.parentNote){
-                if(!json.pageNoteId){
-                    throw new Error('Fail to save section note, page note id lose.');
-                }
                 var sectionNote = yield noteService.createAsync({
                     initiator: this.session.auth.user._id,
-                    parentNote: json.pageNoteId,
-                    type: NoteType.Section.value()
+                    type: NoteType.Section.value(),
+                    notebook: json.notebook
                 });
                 json.parentNote = sectionNote._id;
                 json.new = true;
             }
             var note = yield noteService.createAsync(json);
-            this.body = {note: note, sectionNote: sectionNote}
+            this.body = {note: note, section: sectionNote}
         }catch (e){
             context.logger.error(e);
         }
@@ -239,6 +238,21 @@ module.exports = function (router) {
             var id = this.params.id;
             var json = this.request.body;
             this.body = yield noteService.updateByIdAsync(id, json);
+        }catch(e){
+            context.logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.get('/note/uploadimgs', function* (){
+        try{
+            var notes = this.request.body;
+            for(let i=0, len=notes.length; i<len; i++){
+                var note = notes[i];
+                note.url = yield context.mediaService.uploadImgAsync(note.url);
+                yield context.noteService.createAsync(note);
+            }
+            this.body = {notes: notes};
         }catch(e){
             context.logger.error(e);
             this.body = {error: e};

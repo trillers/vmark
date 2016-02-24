@@ -40,6 +40,9 @@ domain.action('unlikeNote').onExecute(function(data){
 domain.action('uploadImage').onExecute(function(data){
     apiFactory.post('/qn/image').drive(this).send(data);
 });
+domain.action('uploadImgsAndSaveNotesInSection').onExecute(function(data){
+    apiFactory.post('/membook/note/uploadimgs').drive(this).send(data);
+});
 domain.action('uploadVoice').onExecute(function(data){
     apiFactory.post('/qn/voice').drive(this).send(data);
 });

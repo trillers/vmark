@@ -48,9 +48,18 @@ Service.prototype.loadMatesById = function(id, callback){
         .exec(callback);
 };
 
+Service.prototype.loadNotesByNotebookId = function(id, callback){
+    var Note = this.context.models.Note;
+    Note.find({notebook: id}, null, {lean: true})
+        .populate({path: 'initiator'})
+        .exec(callback);
+};
+
 Service.prototype.loadSectionNotesByNotebookId = function(id, callback){
     var Note = this.context.models.Note;
-    Note.find({notebook: id, type: 'sc'}, null, {lean: true}).exec(callback);
+    Note.find({notebook: id, type: 'sc'}, null, {lean: true})
+        .populate({path: 'initiator'})
+        .exec(callback);
 };
 
 Service.prototype.updateById = function(id, json, callback){

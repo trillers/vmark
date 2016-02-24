@@ -8,10 +8,38 @@ var util = {
             })
         }
     },
+    range: function(count){
+        //es6 SUPPORT
+        //var o = {
+        //    [Symbol.iterator]: function* () {
+        //        for (var i = 0; i < count; i++) {
+        //            yield {key: i, value: '111'};
+        //        }
+        //    }
+        //};
+        //return o[Symbol.iterator]();
+        var a = [];
+        for(var i=0; i<count; i++){
+            a.push(i);
+        }
+        return a;
+    },
+    groupByDay: function(arr){
+        return arr.map(note=>{
+
+        })
+    },
+    assign: function(){
+        var objs = [].slice.apply(arguments);
+        return objs.reduceRight(function(prev, curr){
+            return util.mixin(curr, prev);
+        }, undefined)
+    },
     mixin: function(t, s){
         for(var p in s){
             t[p] = s[p]
         }
+        return t;
     },
     extend: function(target, source){
         for(var p in source){
@@ -51,5 +79,7 @@ var util = {
         }
     }
 };
-
+if(!window._){
+    window._ = util;
+}
 module.exports = util;
