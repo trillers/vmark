@@ -18,6 +18,7 @@ _exports.websocket = require('./websocket');
 _exports.websocket = require('./wechat');
 _exports.marketing = {};
 _exports.marketing.redpacket = require('./marketing/redpacket');
+_exports.marketing.points = require('./marketing/points');
 _exports.authenticationService = require('./auth/services');
 
 require('./system/wechatbot');

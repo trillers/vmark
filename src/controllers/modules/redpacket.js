@@ -6,8 +6,8 @@ var generateAuthFilter = require('../../modules/auth/middlewares/generateAuthFil
 var needBaseInfoFilter = generateAuthFilter(1);
 var needUserInfoFilter = generateAuthFilter(2);
 var needSubscriptionFilter = generateAuthFilter(3);
-var redpacketService = context.services.redpacketService;
-var participantService = context.services.participantService;
+var activityRedpacketService = context.services.activityRedpacketService;
+var redpacketParticipantService = context.services.redpacketParticipantService;
 var typeRegistry = require('../../modules/common/models/TypeRegistry');
 var UserType = typeRegistry.item('UserType');
 var _ = require('underscore');
@@ -27,14 +27,14 @@ module.exports = function(){
     router.get('/redpacket', needBaseInfoFilter, function *(){
         var id = this.query.id;
         var user = this.session.auth && this.session.auth.user || {};
-        var redpacket = yield redpacketService.loadById(id);
+        var redpacket = yield activityRedpacketService.loadById(id);
         if(redpacket && redpacket.lFlg === 'a'){
             redpacket.participateLink = this.protocol + '://' + settings.app.domain + '/marketing/redpacket/join?id=' + redpacket._id;
             redpacket.join = '';
             redpacket.joined = 'none';
             redpacket.closed = 'none';
             redpacket.noActivated = 'none';
-            var participant = yield participantService.filter({conditions: {user: user.id, redpacket: redpacket._id}});
+            var participant = yield redpacketParticipantService.filter({conditions: {user: user.id, redpacket: redpacket._id}});
             if(participant.length > 0){
                 redpacket.join = 'none';
                 redpacket.joined = '';
@@ -70,7 +70,7 @@ module.exports = function(){
                         }
                     ]
                 }
-                var participants = yield participantService.filter(params);
+                var participants = yield redpacketParticipantService.filter(params);
                 console.warn('**************************');
                 yield this.render('/marketing/redpacket/redpacket', {redpacket: redpacket, participants: participants});
             }
@@ -83,7 +83,7 @@ module.exports = function(){
         var id = this.query.id;
         var user = this.session.auth && this.session.auth.user || {};
         if(user.type === UserType.Customer.value()) {
-            var participant = yield participantService.loadById(id);
+            var participant = yield redpacketParticipantService.loadById(id);
             if (participant && participant.redpacket.lFlg === 'a') {
                 participant.participateLink = this.protocol + '://' + settings.app.domain + '/marketing/redpacket/join?id=' + participant.redpacket._id;
                 participant.join = '';
@@ -102,7 +102,7 @@ module.exports = function(){
                     participant.inviteFriend = '';
                 } else {
                     participant.inviteFriend = 'none';
-                    var docs = yield participantService.filter({
+                    var docs = yield redpacketParticipantService.filter({
                         conditions: {
                             user: user.id,
                             redpacket: participant.redpacket._id
@@ -156,7 +156,7 @@ module.exports = function(){
                         }
                     ]
                 }
-                var participants = yield participantService.filter(params);
+                var participants = yield redpacketParticipantService.filter(params);
                 yield this.render('/marketing/redpacket/participant', {
                     participant: participant,
                     participants: participants
@@ -175,7 +175,7 @@ module.exports = function(){
         console.error(user);
         if(user.type === UserType.Customer.value()) {
             if (user.openid) {
-                var redpacket = yield redpacketService.loadById(id);
+                var redpacket = yield activityRedpacketService.loadById(id);
                 if (redpacket) {
                     yield this.render('/marketing/redpacket/join', {
                         headimgurl: user.headimgurl,

@@ -21,6 +21,18 @@ app.routeView('tenants', nest.viewable({
   }
 }));
 
+app.routeView('redpacket', nest.viewable({
+  name: 'redpacket',
+  mount: function(ctx){
+    var tags = riot.mount('redpacket-boss', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx.req.query);
+  }
+}));
+
 app.on('init', function(){
   var attentionUrl = util.getCookie('attentionUrl');
   var hash = attentionUrl || window.location.hash;

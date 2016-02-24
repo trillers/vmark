@@ -19,8 +19,11 @@ module.exports = function(){
     })
 
     router.get('/redpacket', function*(){
-        yield this.render('/marketing/redpacket/boss');
+        yield this.render('/marketing/redpacket/boss', {api: settings.api.url});
     })
 
+    router.get('/points', function*(){
+        yield this.render('/marketing/points/boss', {api: settings.api.url});
+    })
     return router.routes();
 };

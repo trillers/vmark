@@ -14,6 +14,8 @@ module.exports = function(app){
 
     app.use(require('./redpacket')());
 
+    app.use(require('./points')());
+
     app.use(require('./marketing')());
 
 }

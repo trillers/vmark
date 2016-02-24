@@ -47,7 +47,7 @@
 
         $.get('/api/marketing/redpacket/load', function (data) {
             data.forEach(function (item) {
-                $('#list').append($('<li style="height: 17px; overflow: hidden; margin-top: 2px;"> <strong class="col-md-2 activity-name" _id="'+ item._id +'">' + item.name + '</strong> <strong class="col-md-2">' + formatDate(item.startTime) + '</strong> <strong class="col-md-2">' + formatDate(item.endTime) + '</strong> <strong class="col-md-6 actionCon"><a href="'+ window.__app.settings.app.url + '/marketing/redpacket/redpacket?id=' + item._id +'" target="_blank">查看</a><a href="{{api}}' + '/activity/exportParticipants?id=' + item._id + '" target="_blank" >导出</a></strong> </li>'));
+                $('#list').append($('<li style="height: 17px; overflow: hidden; margin-top: 2px;"> <strong class="col-md-2 activity-name" _id="'+ item._id +'">' + item.name + '</strong> <strong class="col-md-2">' + formatDate(item.startTime) + '</strong> <strong class="col-md-2">' + formatDate(item.endTime) + '</strong> <strong class="col-md-6 actionCon"><a href="'+ window.__app.settings.app.url + '/marketing/redpacket/redpacket?id=' + item._id +'" target="_blank">查看</a><a href="{{api}}' + '/marketing/redpacket/exportParticipants?id=' + item._id + '" target="_blank" >导出</a></strong> </li>'));
             });
             $('.activity-name').off('click').click(function(){
                 edit($(this).attr('_id'));
@@ -123,7 +123,7 @@
         }
     })
     function edit(id){
-        $.get('/api/activity/loadById?id=' + id, function(data){
+        $.get('/api/marketing/redpacket/loadById?id=' + id, function(data){
             if(data){
                 $('#activityName').val(data.name);
                 $('#shareTitle').val(data.shareTitle);
@@ -232,16 +232,8 @@
 {% block content %}
 <div class="container">
     <div class="row-fluid">
-        <div class="col-md-3 col-xs-3 col-sm-3">
-            <div class="well sidebar-nav" style="height: 38em">
-                <ul class="nav nav-list" style="margin-top: 1em">
-                    <li class="leftlist" style="background: #e7e7e7"><a href="/">红包助力</a></li>
-                </ul>
-            </div>
-            <!--/.well -->
-        </div>
         <!--/span-->
-        <div class="col-md-9 col-xs-9 col-sm-9">
+        <div class="col-md-10 col-md-offset-1">
             <div class="jumbotron" style="height: auto; padding: 25px;">
                 <div id="luckyMoneyHelpList" class="panel" style="margin-top: 1em; padding: 0; min-height: 30em">
                     <div style="padding-left: 20px; padding-bottom: 10px;"><a id="add" style="font-size: 1.5em; text-decoration: none; cursor: pointer">新增</a>
@@ -275,7 +267,7 @@
                             <div id="bgImg3" class="bgImgCon"><i class="glyphicon glyphicon-remove"></i><img src="" alt=""/></div>
                         </li>
                         <li style="clear: both; min-height: 26px"><span style="float: left">分享卡片图片:  </span><input id="shareImg" type="file" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="uploadShareImg()" style="width: 60px;"/>
-                            <div id="shareImg1" class="shareImgCon"><i class="glyphicon glyphicon-remove"></i><img src="/" alt=""/></div>
+                            <div id="shareImg1" class="shareImgCon"><i class="glyphicon glyphicon-remove"></i><img src="" alt=""/></div>
                         </li>
                         <li style="clear: both"><span>活动时间:  </span><input id="startTime" type="date"/><span> 至 </span><input id="endTime" type="date"/>
                         </li>

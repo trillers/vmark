@@ -1,10 +1,10 @@
 var u = require('../../../../app/util');
 var context = require('../../../../context/context');
 
-var Redpacket = require('./Redpacket');
-var Participant = require('./Participant');
+var ActivityRedpacket = require('./ActivityRedpacket');
+var RepacketParticipant = require('./RepacketParticipant');
 
-module.exports.Redpacket = Redpacket(context.domainBuilder.main);
-module.exports.Participant = Participant(context.domainBuilder.main);
+module.exports.ActivityRedpacket = ActivityRedpacket(context.domainBuilder.main);
+module.exports.RepacketParticipant = RepacketParticipant(context.domainBuilder.main);
 
 u.extend(context.models, module.exports);

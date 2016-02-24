@@ -1,11 +1,11 @@
 var Model = function(DomainBuilder) {
         var schema = DomainBuilder
-            .i('Participant')
+            .i('RepacketParticipant')
             .withBasis()
             .withLifeFlag()
             .withCreatedOn()
             .withProperties({
-                    redpacket: {type: String, ref: 'Redpacket'}
+                    redpacket: {type: String, ref: 'ActivityRedpacket'}
                     , user: {type: String, ref: 'PlatformUser'}
                     , phone: {type: String}
                     , total_money: {type: Number}

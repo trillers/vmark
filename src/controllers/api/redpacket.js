@@ -1,6 +1,6 @@
 var context = require('../../context/context');
-var redpacketService = context.services.redpacketService;
-var participantService = context.services.participantService;
+var activityRedpacketService = context.services.activityRedpacketService;
+var redpacketParticipantService = context.services.redpacketParticipantService;
 var nodeExcel = require('excel-export');
 var typeRegistry = require('../../modules/common/models/TypeRegistry');
 var UserType = typeRegistry.item('UserType');
@@ -24,18 +24,18 @@ module.exports = function(router){
             ,rule: this.request.body.rule
             ,desc: this.request.body.desc
         }
-        var data = yield redpacketService.create(json);
+        var data = yield activityRedpacketService.create(json);
         this.body = data;
     });
 
     router.get('/load', function *(){
-        var data = yield redpacketService.loadAll();
+        var data = yield activityRedpacketService.loadAll();
         this.body = data;
     });
 
     router.get('/loadById', function *(){
         var id = this.query.id;
-        var data = yield redpacketService.loadById(id);
+        var data = yield activityRedpacketService.loadById(id);
         this.body = data;
     });
 
@@ -57,7 +57,7 @@ module.exports = function(router){
             ,rule: this.request.body.rule
             ,desc: this.request.body.desc
         }
-        var data = yield redpacketService.updateById(id, json);
+        var data = yield activityRedpacketService.updateById(id, json);
         this.body = data;
     });
 
@@ -92,12 +92,12 @@ module.exports = function(router){
                 path: 'redpacket'
             }]
         }
-        var participants = yield participantService.filter(params);
+        var participants = yield redpacketParticipantService.filter(params);
         participants.forEach(function(item){
             conf.rows.push([item.redpacket.name, item.user.nickname, item.phone, item.total_money]);
         });
         var result = nodeExcel.execute(conf);
-        var data = yield redpacketService.loadById(redpacket_id);
+        var data = yield activityRedpacketService.loadById(redpacket_id);
         var redpacket_name = '报名数据';
         if(data){
             redpacket_name = data.name
@@ -113,9 +113,9 @@ module.exports = function(router){
         var user = this.session.auth && this.session.auth.user;
         if(user && user.type === UserType.Customer.value()) {
             if (phone) {
-                var redpacket = yield redpacketService.loadById(id);
+                var redpacket = yield activityRedpacketService.loadById(id);
                 if (redpacket) {
-                    var participant = yield participantService.filter({
+                    var participant = yield redpacketParticipantService.filter({
                         conditions: {
                             user: this.session.auth.user.id,
                             redpacket: id
@@ -132,8 +132,8 @@ module.exports = function(router){
                             , total_money: redpacket.base_lucky_money
                             , help_friends: []
                         }
-                        var data = yield participantService.create(json);
-                        yield redpacketService.updateById(id, {$inc: {participants_count: 1}});
+                        var data = yield redpacketParticipantService.create(json);
+                        yield activityRedpacketService.updateById(id, {$inc: {participants_count: 1}});
                         this.body = data;
                     }
                 } else {
@@ -151,14 +151,14 @@ module.exports = function(router){
         var id = this.request.body.id;
         var user = this.session.auth && this.session.auth.user || {};
         if(user.openid && user.type === UserType.Customer.value()){
-            var participant = yield participantService.loadById(id);
+            var participant = yield redpacketParticipantService.loadById(id);
             var helpArr = participant.help_friends;
             if (helpArr.length < participant.redpacket.friend_help_count_limit) {
                 var con = {
                     _id: id,
                     $where: 'this.help_friends.length < ' + participant.redpacket.friend_help_count_limit
                 }
-                var res = yield participantService.update(con, {$addToSet: {help_friends: user.openid}});
+                var res = yield redpacketParticipantService.update(con, {$addToSet: {help_friends: user.openid}});
                 if(res.n === 1) {
                     if (res.ok === 1 && res.nModified === 1) {
                         var min = participant.redpacket.friend_help_min_money || 0;
@@ -168,7 +168,7 @@ module.exports = function(router){
                         var update = {
                             total_money: total_money
                         }
-                        var data = yield participantService.updateById(participant._id, update);
+                        var data = yield redpacketParticipantService.updateById(participant._id, update);
                         this.body = data;
                     } else {
                         this.body = {helped: true};

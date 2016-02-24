@@ -1,6 +1,6 @@
 var Model = function(DomainBuilder){
     var schema = DomainBuilder
-        .i('Redpacket')
+        .i('ActivityPoints')
         .withBasis()
         .withLifeFlag()
         .withCreatedOn()
@@ -10,12 +10,12 @@ var Model = function(DomainBuilder){
             ,shareImg: {type: String}
             ,shareTitle: {type: String}
             ,shareDesc: {type: String}
-            ,base_lucky_money: {type: Number}
+            ,base_points: {type: Number}
             ,friend_help_count_limit: {type: Number}
             ,startTime: {type: Date}
             ,endTime: {type: Date}
-            ,friend_help_min_money: {type: Number}
-            ,friend_help_max_money: {type: Number}
+            ,friend_help_min_points: {type: Number}
+            ,friend_help_max_points: {type: Number}
             ,participants_count: {type: Number, default: 0}
             ,rule: {type: String}
             ,desc: {type: String}
