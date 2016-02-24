@@ -110,6 +110,7 @@ module.exports = function(router){
     router.post('/join', function *() {
         var id = this.request.body.id;
         var phone = this.request.body.phone;
+        console.log(id);
         var user = this.session.auth && this.session.auth.user;
         if(user && user.type === UserType.Customer.value()) {
             if (phone) {
