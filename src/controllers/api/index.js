@@ -51,4 +51,10 @@ module.exports = function(app){
     require('./recontent')(router);
     app.use(router.routes());
 
+    //marketing redpacket
+    router = new Router();
+    router.prefix('/api/marketing/redpacket');
+    require('./redpacket')(router);
+    app.use(router.routes());
+
 }

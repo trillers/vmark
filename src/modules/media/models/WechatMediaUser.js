@@ -1,5 +1,7 @@
 var WechatMediaUserType = require('../../common/models/TypeRegistry').item('WechatMediaUserType');
 var WechatMediaUserContactType = require('../../common/models/TypeRegistry').item('WechatMediaUserContactType');
+var typeRegistry = require('../../common/models/TypeRegistry');
+var UserStatus = typeRegistry.item('UserStatus');
 
 var Model = function(domainBuilder){
     var schema = domainBuilder
@@ -8,7 +10,8 @@ var Model = function(domainBuilder){
         .withLifeFlag()
         .withCreatedOn()
         .withProperties({
-            host:           {type: String, ref: 'WechatMedia', required: true}
+            status:       {type: String, enum: UserStatus.valueList(), default: UserStatus.Anonymous.value(), required: true}
+            ,host:           {type: String, ref: 'WechatMedia', required: true}
             , type:         {type: String, enum: WechatMediaUserType.valueList(), default: WechatMediaUserType.WechatSiteUser.value(), required: true}
 
             , user:         {type: String} //平台用户id
@@ -36,6 +39,11 @@ var Model = function(domainBuilder){
             //agent token for 公众号 - 微站, 参见 agentToken.generate()
             , at:     {type: String}
 
+            /*
+             * open token for 公众号 - 微站, 参见 openToken.generate()
+             * one openid can generate one open token which is public and visible
+             */
+            , ot:     {type: String}
             /*
              * 标签数组,包括自定义标签和类型标签两种:
              *  自定义标签类似 ['小资', '女'],

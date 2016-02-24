@@ -43,6 +43,16 @@ util.appendLine = function(target, str, parseFlag){
     return target;
 }
 
+/**
+ * @param min
+ * @param max
+ * get a random no between min and max
+ * */
+util.random = function(min, max){
+    var no = max - min + 1;
+    return Math.floor(Math.random()*no + min);
+}
+
 //relationshipId generator(Two strings have the same length)
 util.genOneToOneId = function(str1, str2) {
     return _sortStr(str1, str2);
@@ -79,5 +89,6 @@ module.exports = {
     result: util.result,
     appendLine: util.appendLine,
     genOneToOneId: util.genOneToOneId,
-    generateToken: util.generateToken
+    generateToken: util.generateToken,
+    random: util.random
 };
