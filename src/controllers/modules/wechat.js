@@ -1,4 +1,4 @@
-var settings = require('vmark-settings');
+var settings = require('@private/vmark-settings');
 var Frankon = require('../../framework/frankon');
 var Router = require('koa-router');
 var wechat = require('co-wechat');
