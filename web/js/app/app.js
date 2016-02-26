@@ -17,9 +17,9 @@ App.prototype = {
         riot.route.parser(routeParser);
         riot.route(app._doRoute.bind(app));
         this.on('init', function(){
-            var id = window.location.pathname.split('/_')[1];
-            app.trigger('mount', id);
-            riot.route(window.location.hash);
+            //var id = window.location.pathname.split('/_')[1];
+            //app.trigger('mount', id);
+            riot.route(window.location.hash || 'timeline');
         });
 
         if(!window.devOrNot){
