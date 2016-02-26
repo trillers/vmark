@@ -43,6 +43,7 @@ app.on('init', function () {
 });
 
 var timeline = function(id){
+    alert('11')
     riot.mount('notebook-timelines', {id: id});
 };
 nav.addRoute('timeline', timeline);

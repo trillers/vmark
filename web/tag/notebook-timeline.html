@@ -243,7 +243,7 @@
                 self.goToAuthorize();
             }
             var lastSection = self.notebook.mates[self.notebook.mates.length-1];
-            if(isToday(lastSection.crtOn)){
+            if(lastSection && lastSection.crtOn && isToday(lastSection.crtOn)){
                 self.mode.doEdit(lastSection);
             }else{
                 var newSection = getNewSection();
