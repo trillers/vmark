@@ -41,11 +41,11 @@ Service.prototype.loadById = function(id, callback){
 Service.prototype.loadMatesById = function(id, callback){
     var Note = this.context.models.Note;
     Note.find({parentNote: id}, null, {lean: true})
-        .populate({path: 'likes', populate:{path: 'initiator'}})
-        .populate({path: 'comments', populate:{path: 'initiator'}})
-        .populate('initiator')
+        .populate({path: 'initiator', select: 'headimgurl nickname crtOn'})
         .sort({crtOn: 1})
         .exec(callback);
+    //.populate({path: 'likes', populate:{path: 'initiator'}})
+    //.populate({path: 'comments', populate:{path: 'initiator'}})
 };
 
 Service.prototype.loadNotesByNotebookId = function(id, callback){
@@ -58,7 +58,7 @@ Service.prototype.loadNotesByNotebookId = function(id, callback){
 Service.prototype.loadSectionNotesByNotebookId = function(id, callback){
     var Note = this.context.models.Note;
     Note.find({notebook: id, type: 'sc'}, null, {lean: true})
-        .populate({path: 'initiator'})
+        .populate({path: 'initiator', select: 'headimgurl nickname crtOn'})
         .exec(callback);
 };
 

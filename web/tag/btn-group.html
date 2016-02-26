@@ -1,8 +1,14 @@
 <btn-group>
-    <div style="width: 100%; position: fixed; bottom: 0px; z-index: {opts.zindex}">
+    <div style="width: 100%; position: fixed; bottom: 0px; z-index: {zindex}">
         <ul class="group_ul">
-            <li each="{item in opts.items}" class="{active: item.active}" style="width: {(100/parseInt(parent.opts.items.length, 10)).toFixed(2)+ '%'}">
-                <a onclick="{item.onClick.bind(item)}"><img riot-src="{item.icon}"/>{item.text}</a>
+            <li class="{active: opts.active === 'note'}">
+                <a href="#">笔记</a>
+            </li>
+            <li class="{active: opts.active === 'notebook'}">
+                <a href="#">笔记本</a>
+            </li>
+            <li class="{active: opts.active === 'share'}">
+                <a href="#">趣分享</a>
             </li>
         </ul>
     </div>
@@ -15,6 +21,7 @@
             padding: 0px;
         }
         .group_ul li{
+            width: 33.3333333%;
             float: left;
             list-style-type:none;
             height: 40px;
@@ -33,6 +40,6 @@
     </style>
     <script>
         "use strict";
-
+        self.zindex=100;
     </script>
 </btn-group>

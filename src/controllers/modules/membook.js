@@ -49,7 +49,6 @@ module.exports = function(){
     router.get('/', needSubscriptionFilter, function*(){
         try{
             var auth = this.session.auth;
-            console.warn(auth);
             yield this.render('note');
         }catch (e){
             context.logger.error(e);

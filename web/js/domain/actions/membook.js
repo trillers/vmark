@@ -1,6 +1,12 @@
 var domain = require('../domain');
 var apiFactory = domain.restApi();
 
+domain.action('loadNotebooksByUserId').onExecute(function(data){
+    apiFactory.get('/membook/notebooks/user/_' + data.userId).drive(this).send();
+});
+domain.action('loadSectionNotesByNotebookId').onExecute(function(data){
+    apiFactory.get('/membook/notebook/note?notebookId=' + data.notebookId).drive(this).send();
+});
 domain.action('loadLatestNotebook').onExecute(function(data){
     apiFactory.get('/membook/notebook/latest').drive(this).send();
 });

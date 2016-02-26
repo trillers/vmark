@@ -1,5 +1,5 @@
-<notebook>
-    <div class="page" if="{!hidden}">
+<notebook-timeline>
+    <div class="page" if="{!hidden}" style="float:left;overflow:hidden;width: {parseInt((1/(opts.notebookslength))*100, 10).toFixed(9)}%">
         <div class="title">
             <input class="input" if="{notebook.initiator != user._id}" readonly type="text" value="{notebook.title}" name="titleInput"/>
             <input class="input" if="{notebook.initiator === user._id}" onblur="{updatePageNote}" type="text" value="{notebook.title}" placeholder="添加标题" name="titleInput"/>
@@ -24,13 +24,13 @@
         <div style="clear: both"></div>
     </div>
     <note-confirm></note-confirm>
-    <div if="{mode.status.view}" class="add-section-bar">
-        <div onclick="{addNewNote}" style="width:48px;height:48px;background: red;float:left"></div>
-        <div onclick="{mode.doFuncs}" style="width:48px;height:48px;background: red;float:right">单</div>
+    <div if="{mode.status.view}" class="add-section-bar" style="position: fixed; bottom: 0px">
+        <div onclick="{mode.doFuncs}" style="width:48px;height:48px;background: red;float:left">单</div>
+        <div onclick="{addNewNote}" style="width:48px;height:48px;background: red;float:right">新</div>
     </div>
-    <btn-group zindex="{100}" items="{btnGroup}" if="{mode.status.funcs}"></btn-group>
+    <btn-group if="{mode.status.funcs}" active="{'note'}"></btn-group>
     <note-input notebook="{notebook}" section="{currNote}" onsavenote="{onSaveNote}" onsavenotes="{onSaveNotes}" if="{mode.status.edit && Object.keys(currNote).length}"></note-input>
-    <div class="mask" if="{mode.status.funcs}" ontouchstart="{mode.doView}" style="height: {window.innerHeight + 'px'}"></div>
+    <div class="mask" if="{mode.status.funcs || mode.status.edit}" ontouchstart="{mode.doView}" style="height: {window.innerHeight + 'px'}"></div>
     <!--play voice panel begin-->
     <div style="position:absolute;top:0;left:0;width:0;height:0;">
         <audio id="voiceMsgPlayer" class="voicePlayer"></audio>
@@ -87,7 +87,7 @@
         var id = this.opts.id;
         var url = window.location.href;
         var loadNote = domain.action('loadNote');
-        var loadLatestNotebook = domain.action('loadLatestNotebook');
+        var loadSectionNotesByNotebookId = domain.action('loadSectionNotesByNotebookId');
         var updateNote = domain.action('updateNote');
         var shareAction = domain.action('shareAction');
         var getNewSection = function(){
@@ -121,27 +121,12 @@
             }
         };
 
-        var onLoadLatestNotebook = function(data){
-            self.notebook = data.latestNotebook;
-            if(self.notebook
-                    && self.notebook.mates
-                    && self.notebook.mates.length
-            ){
-                self.mode.doView(self.notebook.mates[self.notebook.mates.length-1]);
-            }
-            self.hidden = false;
-            var topDiv = document.body.querySelector('body >div');
-            topDiv.removeChild(topDiv.querySelector('#welcomeWrapper'));
-            self.update();
-            self.updateWxShareConfig();
-        };
-
         var onLoadNote = function(data){
 
         };
         //instance properties
         self.hidden = true;
-        self.notebook = null;
+        self.notebook = self.opts.notebook;
         self.currNote = {};
         self.user = __page.user;
         self.user.headimgurl = self.user.headimgurl || '/public/images/def-avatar.png';
@@ -150,41 +135,6 @@
             return new Date(date).toLocaleString();
         };
         self.formatDateForMates = util.formatDateForComments;
-        self.btnGroup = [
-            {
-                text: '笔记',
-                icon: '',
-                onClick: function(){
-                    self.btnGroup.forEach(function(item){
-                        item.active = false;
-                    });
-                    this.active = true;
-                },
-                active: true
-            },
-            {
-                text: '笔记本',
-                icon: '',
-                onClick: function(){
-                    self.btnGroup.forEach(function(item){
-                        item.active = false;
-                    });
-                    this.active = true;
-                },
-                active: false
-            },
-            {
-                text: '去分享',
-                icon: '',
-                onClick: function(){
-                    self.btnGroup.forEach(function(item){
-                        item.active = false;
-                    });
-                    this.active = true;
-                },
-                active: false
-            }
-        ];
         self.mode = {
             status: {
                 view: true,
@@ -213,11 +163,6 @@
                     share: false
                 };
                 self.currNote = null;
-                if(section._id){
-                    setTimeout(function(){
-                        window.scrollTo(0, self.mode.position.start);
-                    }, 1);
-                }
             },
             doEdit: function(section){
                 self.mode.status = {
@@ -256,17 +201,6 @@
                 wx.onMenuShareAppMessage(shareConfig);
             }, 500);
         };
-        self.init = function(){
-            self.notebook = {
-                crtOn: null,
-                _id: null,
-                title: null
-            };
-            self.titleInput.value = '';
-        };
-        self.on('mount', function(){
-            console.warn(self.tags);
-        });
         self.sectionShowOrNot = function(item){
             if(self.mode.status.edit){
                 return true;
@@ -283,11 +217,6 @@
         };
         self.on('update', function(){
             self.updateWxShareConfig();
-        });
-        self.on('cancel', function(section){
-            self.mode.doView(section);
-            self.currNote = null;
-            self.update();
         });
         self.updatePageNote = function(e){
             var title = e.currentTarget.value;
@@ -328,11 +257,6 @@
         self.on('editSectionNote', function(section){
             self.mode.doEdit(section);
         });
-        self.on('noteSubmit', function(section){
-            self.mode.doView(section);
-            self.update();
-            self.updateWxShareConfig();
-        });
         self.onSaveNote = function(data){
             util.mixin(self.currNote, data.section);
             !self.currNote.mates && (self.currNote.mates = []);
@@ -342,7 +266,7 @@
         self.onSaveNotes = function(notes){
             !self.currNote.mates && (self.currNote.mates = []);
             self.currNote.mates = self.currNote.mates.concat(notes);
-            self.parent.trigger('noteSave', data);
+            self.trigger('noteSave', notes);
         };
         self.on('noteSave', function(note){
             self.update();
@@ -353,13 +277,23 @@
             self.selectNote(tag.section, tag)
         });
         self.on('mount', function(){
-            console.info('tag notebook new is opening');
-            loadLatestNotebook.onDone(onLoadLatestNotebook);
+            loadSectionNotesByNotebookId.newInvocation({
+                notebookId: self.notebook._id
+            })
+            .onDone(function(data){
+                if(data.error){
+                    return alert('error occur!');
+                }
+                console.log(data.sections)
+                self.notebook.mates = data.sections;
+                self.mode.doView(self.notebook.mates[self.notebook.mates.length-1]);
+                self.updateWxShareConfig();
+                self.hidden = false;
+                self.update();
+            })
+            .execute();
             loadNote.onDone(onLoadNote);
             updateNote.onDone(onUpdateNote);
-            self.init();
-            self.notebook._id = id;
-            loadLatestNotebook.execute();
         });
         self.on('unmount', function(){
             loadNote.offDone(onLoadNote);
@@ -417,4 +351,4 @@
             location.href = getUserInfoUrl;
         }
     </script>
-</notebook>
+</notebook-timeline>

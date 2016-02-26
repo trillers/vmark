@@ -7,7 +7,7 @@ var App = require('./app');
 var app = new App({defaultHash: '/'});
 
 app.on('mount', function(id){
-    riot.mount('notebook', {id: id});
+    riot.mount('notebook-timelines', {id: id});
 });
 
 app.on('route', function (ctx) {

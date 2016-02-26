@@ -188,9 +188,9 @@
             self.parent.trigger('editSectionNote', self.section);
         };
         self.deleteNote = function(e){
-            if(!(self.isOnEdit() && (self.initiator._id === self.parent.user._id))){
-                return false;
-            }
+//            if(!(self.isOnEdit() && (self.initiator._id === self.parent.user._id))){
+//                return false;
+//            }
             self.confirm({text: '是否删除该行'}, function(){
                 deleteNotes.newInvocation({
                     notes: [e.item._id]
@@ -226,80 +226,6 @@
                 self.confirmComponent.off('cancel', cancelListener);
             }
             self.confirmComponent.trigger('popUp', option);
-        };
-        self.cancelSectionNote = function(e){
-            self.init();
-            self.parent.trigger('cancel', self.section);
-        };
-        self.submitSectionNote = function(e){
-            if(!self.section._id
-                    || (self.section && self.section.mates && self.section.mates.length <=0)){
-                return;
-            }
-            if(self.section.mates.length<=0){
-                self.init();
-                self.parent.trigger('noteSubmit', self.section);
-                return;
-            }
-            var index = 0;
-            self.section.mates.forEach(function(mate){
-                if(!mate.status || mate.status === 'dr'){
-                    if(mate.type === 'img' && mate.url){
-                        wx.uploadImage({
-                            localId: mate.url,
-                            isShowProgressTips: 0,
-                            success: function(res){
-                                uploadImage.newInvocation({media_id: res.serverId})
-                                    .onDone(function(data){
-                                        mate.url = data.url;
-                                        if(++index === self.section.mates.length){
-                                            submitWholeSection();
-                                        }
-                                    })
-                                    .execute();
-                            }
-                        })
-                    }
-                    else if(mate.type=== 'voi' && mate.url){
-                        wx.uploadVoice({
-                            localId: mate.url,
-                            isShowProgressTips: 0,
-                            success: function(res){
-                                uploadVoice.newInvocation({media_id: res.serverId})
-                                    .onDone(function(data){
-                                        mate.url = data.url;
-                                        if(++index === self.section.mates.length){
-                                            submitWholeSection();
-                                        }
-                                    })
-                                    .execute();
-                            }
-                        })
-                    }
-                    else{
-                        if(++index === self.section.mates.length){
-                            submitWholeSection();
-                        }
-                    }
-                }else{
-                    if(++index === self.section.mates.length){
-                        submitWholeSection();
-                    }
-                }
-            });
-            function submitWholeSection(){
-                publishNote.newInvocation(self.section)
-                    .onDone(function(data){
-                        try {
-                            self.section = _.assign({}, self.section, data);
-                            self.parent.trigger('noteSubmit', self.section);
-                            self.init();
-                        } catch (e){
-                            alert(JSON.stringify(e))
-                        }
-                    })
-                    .execute();
-            }
         };
         self.playVoice = function (e) {
             var data = e.item;

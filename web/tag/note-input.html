@@ -110,6 +110,7 @@
                 notebook: self.opts.notebook._id
             }).onDone(function(data){
                 self.editTxtInput.value = '';
+                self.editTxtInput.focus();
                 self.state.input.doWait();
                 self.opts.onsavenote({note: data.note, section: data.section});
             }).execute();
@@ -123,6 +124,7 @@
                 success: function(res){
                     uploadImg(res.localIds);
                     function uploadImg(localIds){
+                        console.warn(localIds)
                         if(localIds.length){
                             var localId = localIds.splice(0, 1);
                             wx.uploadImage({
@@ -138,10 +140,11 @@
                                     uploadImg(localIds);
                                 }
                             })
-                        }else{
+                        }else if(notes.length){
                             uploadImgsAndSaveNotesInSection.newInvocation({
                                 notes: notes
                             }).onDone(function(data){
+                                console.warn(data);
                                 if(!data.error){
                                     self.opts.onsavenotes(data.notes);
                                 }

@@ -33,11 +33,39 @@ Service.prototype.load = function(callback){
     })
 };
 
+Service.prototype.loadNotebooksByUserId = function(userId, callback){
+    var Notebook = this.context.models.Notebook;
+    var UserNotebook = this.context.models.UserNotebook;
+
+    UserNotebook.find({user: userId})
+        .lean()
+        .populate({path: 'notebook'})
+        .exec(function(err, docs){
+            if(err){
+                return callback(err)
+            }
+            UserNotebook
+                .populate(docs,
+                    {
+                        path: 'notebook.initiator',
+                        select: 'headimgurl nickname crtOn',
+                        model: 'User'
+                    },
+                    function(err, populatedDocs){
+                        if(err){
+                            return callback(err)
+                        }
+                        callback(null, populatedDocs);
+                    })
+        });
+};
+
 Service.prototype.fetchById = function(id, user, callback){
     if(!user){
         callback(new Error('has no user in session'));
     }
     var Notebook = this.context.models.Notebook;
+    var UserNotebook = this.context.models.UserNotebook;
     var self = this;
     Notebook
         .findById(id, null, {lean: true})
@@ -53,10 +81,20 @@ Service.prototype.fetchById = function(id, user, callback){
                     initiator: user._id
                 };
                 self.create(json, function(err, doc){
+
                     if(err){
                         return callback(err)
                     }
                     doc.initiator = user;
+                    (new UserNotebook({
+                        user: user._id,
+                        notebook: id
+                    })).save(function(err, doc){
+                        if(err){
+                            return callback(err)
+                        }
+                        return callback(null, doc);
+                    });
                     callback(null, doc);
                 });
             }else{
