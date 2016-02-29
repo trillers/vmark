@@ -73,14 +73,24 @@ nav.addRouteView('timeline', mount_timeline, view_timeline);
 /*
  * route for notebook index page
  */
-var mount_timeline_index = function(ctx, id){
+var mount_notebook_index = function(ctx, id){
     riot.mount('notebook-index', {});
 };
-var view_timeline_index = function(ctx, id){
+var view_notebook_index = function(ctx, id){
 
 };
-nav.addRouteView('notebook/index', mount_timeline_index, view_timeline_index);
+nav.addRouteView('notebook/index', mount_notebook_index, view_notebook_index);
 
+/*
+ * route for notebook index page
+ */
+var mount_notebook_detail = function(ctx, id){
+    riot.mount('notebook-detail', {id: id});
+};
+var view_notebook_detail = function(ctx, id){
+
+};
+nav.addRouteView('notebook/_', mount_notebook_detail, view_notebook_detail);
 
 app.init();
 

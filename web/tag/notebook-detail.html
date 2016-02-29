@@ -1,9 +1,9 @@
-<notebook-index>
-    <div if="{!hidden}">
-        <div class="notebook-item" >
+<notebook-detail>
+    <div class="page" if="{!hidden}">
+        <div class="title">
+            笔记本详情
         </div>
     </div>
-
     <!--play voice panel end-->
     <style scoped>
 
@@ -13,14 +13,15 @@
         //private properties
         var self = this;
         var id = this.opts.id;
-        this.hidden = false;
         var url = window.location.href;
         var loadNote = domain.action('loadNote');
-        var loadLatestNotebook = domain.action('loadLatestNotebook');
-        var updateNote = domain.action('updateNote');
-        var shareAction = domain.action('shareAction');
+
         self.on('mount', function(){
-            self.update({hidden: false});
+            loadNote.onDone(onLoadNote);
         });
+        self.on('unmount', function(){
+            loadNote.offDone(onLoadNote);
+        });
+
     </script>
-</notebook-index>
+</notebook-detail>
