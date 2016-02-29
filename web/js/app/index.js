@@ -6,11 +6,27 @@ require('./tags')();
 var App = require('./app');
 var app = new App({defaultHash: '/'});
 
-//app.on('mount', function(id){
-//    riot.mount('notebook', {id: id});
-//});
+app.on('route', function (ctx) {
+    console.log(ctx.req.route);
+    var routeStr = ctx.req.route;
+    var parts = routeStr.split('/_');
+    var id = null;
+    if(parts.length==2){
+        ctx.req.routeKey = parts[0] + '/_';
+        id = parts[1];
+    }
+    else{
+        ctx.req.routeKey = routeStr;
+    }
+    nav.doRouteView(ctx, id);
+});
+
+app.on('init', function () {});
+
 var Navigation = function(){
     this.routes = {};
+    this.views = {};
+    riot.observable(this);
 };
 Navigation.prototype.addRoute = function(key, handler){
     this.routes[key] = handler;
@@ -20,32 +36,44 @@ Navigation.prototype.doRoute = function(ctx, id){
     if(handler) handler.call(ctx, id);
     else console.warn(ctx.req.routeKey + ' route has no registered handler');
 };
+Navigation.prototype.addRouteView = function(key, mountHandler, viewHandler){
+    this.routes[key] = {
+        mountHandler: mountHandler,
+        viewHandler: viewHandler
+    };
+};
+Navigation.prototype.doRouteView = function(ctx, id){
+    var handlers = this.routes[ctx.req.routeKey];
+    if(!handlers) {
+        console.warn(ctx.req.routeKey + ' route has no registered handler');
+        return;
+    }
+    var viewId = ctx.req.routeKey + (id || '');
+    var view = this.views[viewId];
+    if(!view) {
+        view = handlers.mountHandler.call(this, ctx, id);
+    }
+    this.current = view;
+    this.last = handlers.viewHandler.call(this, ctx, id);
+};
+
 var nav = new Navigation();
 
-app.on('route', function (ctx) {
-    console.log(ctx.req.route);
-    var routeStr = ctx.req.route;
-    var parts = routeStr.split('/_');
-    var id = null;
-    if(parts.length==2){
-        ctx.req.routeKey = parts[0] + '/id';
-        id = parts[1];
-    }
-    else{
-        ctx.req.routeKey = routeStr;
-    }
-    nav.doRoute(ctx, id);
-});
-
-app.on('init', function () {
-
-});
-
-var timeline = function(id){
+var mount_timeline = function(ctx, id){
     riot.mount('notebook', {id: id});
 };
-nav.addRoute('timeline', timeline);
-nav.addRoute('timeline/id', timeline);
+var view_timeline = function(ctx, id){
+
+};
+nav.addRouteView('timeline', mount_timeline, view_timeline);
+
+var mount_timeline_index = function(ctx, id){
+    riot.mount('notebook-index', {});
+};
+var view_timeline_index = function(ctx, id){
+
+};
+nav.addRouteView('notebook/index', mount_timeline_index, view_timeline_index);
 
 
 app.init();

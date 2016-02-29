@@ -1,0 +1,420 @@
+<notebook-index>
+    <div class="page" if="{!hidden}">
+        <div class="title">
+            <input class="input" if="{notebook.initiator != user._id}" readonly type="text" value="{notebook.title}" name="titleInput"/>
+            <input class="input" if="{notebook.initiator === user._id}" onblur="{updatePageNote}" type="text" value="{notebook.title}" placeholder="添加标题" name="titleInput"/>
+            <div if="{false}" class="reference">
+                <img class="user-icon" riot-src="{user.headimgurl}"/>
+                <label class="user-icon"> {user.nickname}</label>
+                <span> 创建于{formatDate(new Date())}</span>
+            </div>
+            <div class="line"/>
+        </div>
+
+        <div>
+            <note-section onclick="{mode.doShare}" name="{item._id}" id="{item._id}" each="{item, i in notebook.mates}" highlight="{(parent.mode.status.edit && !parent.sectionShowOrNot(item))}" section="{item}"></note-section>
+        </div>
+        <div if="{mode.status.view}" style="width: 100%;text-align: center;margin-bottom: 20px">
+            <img style="width: 96px;height: 96px" src="/public/images/qrcode_for_gh_cd89432d0321.jpg"/>
+            <p style="margin-top: 20px">长按二维码, 关注有趣笔记</p>
+        </div>
+        <div style="background: red">
+            <span if="{notebook.parentNote}">{notebook.txt}</span>
+        </div>
+        <div style="clear: both"></div>
+    </div>
+    <note-confirm></note-confirm>
+    <div if="{mode.status.view}" class="add-section-bar">
+        <div onclick="{addNewNote}" style="width:48px;height:48px;background: red;float:left"></div>
+        <div onclick="{mode.doFuncs}" style="width:48px;height:48px;background: red;float:right">单</div>
+    </div>
+    <btn-group zindex="{100}" items="{btnGroup}" if="{mode.status.funcs}"></btn-group>
+    <note-input notebook="{notebook}" section="{currNote}" onsavenote="{onSaveNote}" onsavenotes="{onSaveNotes}" if="{mode.status.edit && Object.keys(currNote).length}"></note-input>
+    <div class="mask" if="{mode.status.funcs}" ontouchstart="{mode.doView}" style="height: {window.innerHeight + 'px'}"></div>
+    <!--play voice panel begin-->
+    <div style="position:absolute;top:0;left:0;width:0;height:0;">
+        <audio id="voiceMsgPlayer" class="voicePlayer"></audio>
+    </div>
+    <!--play voice panel end-->
+    <style scoped>
+        .mask{
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 2;
+        }
+        .highlight{
+            background: red;
+        }
+        .mask{
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 2;
+        }
+        :focus{
+            outline: none;
+        }
+        .title-input1{
+            font-size: 16px;
+            display: inline-block;
+            height:30px;
+            line-height: 30px;
+            background: transparent;
+            border: none;
+        }
+        .note_items div{
+            height: 40px;
+            line-height: 40px;
+        }
+        body{
+            font-size: 14px;
+        }
+        .btn-group{
+            list-style-type: none;
+        }
+        .btn-group li{
+            float:left;
+            padding:10px;
+        }
+    </style>
+    <script>
+        "use strict";
+        //private properties
+        var self = this;
+        var id = this.opts.id;
+        var url = window.location.href;
+        var loadNote = domain.action('loadNote');
+        var loadLatestNotebook = domain.action('loadLatestNotebook');
+        var updateNote = domain.action('updateNote');
+        var shareAction = domain.action('shareAction');
+        var getNewSection = function(){
+            return {
+                mates: [],
+                initiator: __page.user
+            }
+        };
+        var getShareImg = function(){
+            if(self.notebook && self.notebook.mates && self.notebook.mates.length){
+                for(var i= 0, len=self.notebook.mates.length; i<len; i++){
+                    var section = self.notebook.mates[i];
+                    if(section && section.mates && section.mates.length){
+                        for(var j= 0, len2=section.mates.length; j<len2; j++){
+                            var note = section.mates[j];
+                            if(note.type && note.type === 'img' && note.status != 'dr'){
+                                return section.mates[j].url
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
+        };
+        var onUpdateNote = function(data){
+            if(!data.error){
+                util.mixin(self.notebook, data);
+                self.updateWxShareConfig();
+            }else{
+                alert(data.error.message);
+            }
+        };
+
+        var onLoadLatestNotebook = function(data){
+            self.notebook = data.latestNotebook;
+            if(self.notebook
+                    && self.notebook.mates
+                    && self.notebook.mates.length
+            ){
+                self.mode.doView(self.notebook.mates[self.notebook.mates.length-1]);
+            }
+            self.hidden = false;
+            var topDiv = document.body.querySelector('body >div');
+            topDiv.removeChild(topDiv.querySelector('#welcomeWrapper'));
+            self.update();
+            self.updateWxShareConfig();
+        };
+
+        var onLoadNote = function(data){
+
+        };
+        //instance properties
+        self.hidden = true;
+        self.notebook = null;
+        self.currNote = {};
+        self.user = __page.user;
+        self.user.headimgurl = self.user.headimgurl || '/public/images/def-avatar.png';
+        //instance methods
+        self.formatDate = function(date){
+            return new Date(date).toLocaleString();
+        };
+        self.formatDateForMates = util.formatDateForComments;
+        self.btnGroup = [
+            {
+                text: '笔记',
+                icon: '',
+                onClick: function(){
+                    self.btnGroup.forEach(function(item){
+                        item.active = false;
+                    });
+                    this.active = true;
+                },
+                active: true
+            },
+            {
+                text: '笔记本',
+                icon: '',
+                onClick: function(){
+                    self.btnGroup.forEach(function(item){
+                        item.active = false;
+                    });
+                    this.active = true;
+                },
+                active: false
+            },
+            {
+                text: '去分享',
+                icon: '',
+                onClick: function(){
+                    self.btnGroup.forEach(function(item){
+                        item.active = false;
+                    });
+                    this.active = true;
+                },
+                active: false
+            }
+        ];
+        self.mode = {
+            status: {
+                view: true,
+                edit: false,
+                funcs: false,
+                share: false
+            },
+            position: {
+                start: 0,
+                end: 0
+            },
+            doFuncs: function(){
+                self.mode.status = {
+                    view: false,
+                    edit: false,
+                    funcs: true,
+                    share: false
+                };
+                self.currNote = null;
+            },
+            doView: function(section){
+                self.mode.status = {
+                    view: true,
+                    edit: false,
+                    funcs: false,
+                    share: false
+                };
+                self.currNote = null;
+                if(section._id){
+                    setTimeout(function(){
+                        window.scrollTo(0, self.mode.position.start);
+                    }, 1);
+                }
+            },
+            doEdit: function(section){
+                self.mode.status = {
+                    edit: true,
+                    view: false,
+                    funcs: false,
+                    share: false
+                };
+                self.mode.position.start = window.scrollY;
+                self.selectNote(section);
+                self.trigger('editMode');
+            },
+            doShare: function(){
+                self.mode.status = {
+                    view: false,
+                    edit: false,
+                    funcs: false,
+                    share: true
+                };
+                self.currNote = null;
+            }
+        };
+        self.updateWxShareConfig = function(){
+            setTimeout(function(){
+                var shareConfig = {
+                    title: self.notebook && self.notebook.title || __app.resources.app.title,
+                    desc: '',
+                    link: url,
+                    imgUrl: getShareImg() || __page.baseUrl + '/public/images/logo_share_48x48.jpg',
+                    success: function(){
+                        shareAction.execute({id: self.notebook._id});
+                    },
+                    cancel: function(){}
+                };
+                wx.onMenuShareTimeline(shareConfig);
+                wx.onMenuShareAppMessage(shareConfig);
+            }, 500);
+        };
+        self.init = function(){
+            self.notebook = {
+                crtOn: null,
+                _id: null,
+                title: null
+            };
+            self.titleInput.value = '';
+        };
+        self.on('mount', function(){
+            console.warn(self.tags);
+        });
+        self.sectionShowOrNot = function(item){
+            if(self.mode.status.edit){
+                return true;
+            }
+            if(self.mode.status.view && item.status != 'dr'){
+                return true;
+            }
+            else if(self.mode.status.edit && item.status != 'dr'){
+                if(self.currNote._id === item._id){
+                    return true;
+                }
+            }
+            return false;
+        };
+        self.on('update', function(){
+            self.updateWxShareConfig();
+        });
+        self.on('cancel', function(section){
+            self.mode.doView(section);
+            self.currNote = null;
+            self.update();
+        });
+        self.updatePageNote = function(e){
+            var title = e.currentTarget.value;
+            if(self.notebook.initiator != self.user._id || !title){
+                return;
+            }
+            updateNote.execute({
+                id: self.notebook._id,
+                title: title
+            });
+        };
+        self.selectNote = function(note, tag){
+            self.currNote = note;
+            self.update();
+        };
+        self.isAnonymous = function(){
+            return !self.user || !self.user.status || self.user.status === __app.enums.UserStatus.names.Anonymous;
+        };
+        self.isVerified = function(){
+            return self.user && self.user.status && self.user.status === __app.enums.UserStatus.names.Verified;
+        };
+        self.addNewNote = function(e){
+            if(self.isAnonymous()){
+                self.goToAuthorize();
+            }
+            var lastSection = self.notebook.mates[self.notebook.mates.length-1];
+            if(isToday(lastSection.crtOn)){
+                self.mode.doEdit(lastSection);
+            }else{
+                var newSection = getNewSection();
+                self.notebook.mates.push(newSection);
+                self.mode.doEdit(newSection);
+            }
+            function isToday(str){
+                return new Date().toDateString() === new Date(str).toDateString()
+            }
+        };
+        self.on('editSectionNote', function(section){
+            self.mode.doEdit(section);
+        });
+        self.on('noteSubmit', function(section){
+            self.mode.doView(section);
+            self.update();
+            self.updateWxShareConfig();
+        });
+        self.onSaveNote = function(data){
+            util.mixin(self.currNote, data.section);
+            !self.currNote.mates && (self.currNote.mates = []);
+            self.currNote.mates.push(data.note);
+            self.trigger('noteSave', data.note);
+        };
+        self.onSaveNotes = function(notes){
+            !self.currNote.mates && (self.currNote.mates = []);
+            self.currNote.mates = self.currNote.mates.concat(notes);
+            self.parent.trigger('noteSave', data);
+        };
+        self.on('noteSave', function(note){
+            self.update();
+            var scrollHeight = self.root.querySelector('.panel').scrollHeight;
+            window.scrollTo(0, scrollHeight-200);
+        });
+        self.on('active', function(tag){
+            self.selectNote(tag.section, tag)
+        });
+        self.on('mount', function(){
+            console.info('tag notebook new is opening');
+            loadLatestNotebook.onDone(onLoadLatestNotebook);
+            loadNote.onDone(onLoadNote);
+            updateNote.onDone(onUpdateNote);
+            self.init();
+            self.notebook._id = id;
+            loadLatestNotebook.execute();
+        });
+        self.on('unmount', function(){
+            loadNote.offDone(onLoadNote);
+            updateNote.offDone(onUpdateNote);
+        });
+
+        var remote_playing = false, local_playing = false, voiceUrl = '', playVoiceEnd;
+        wx.ready(function(){
+            wx.onVoicePlayEnd({
+                success: function (res) {
+                    console.error('voice play end');
+                    local_playing = false;
+                }
+            });
+        });
+        self.on('playVoice', function(url, status, seconds){
+            console.info('start play voice');
+            if (status === 'dr') {
+                if(!local_playing || voiceUrl !== url){
+                    wx.playVoice({
+                        localId: url
+                    });
+                    voiceUrl = url;
+                    local_playing = true;
+                }else{
+                    wx.stopVoice({
+                        localId: url
+                    });
+                    local_playing = false;
+                }
+            }else{
+                $('#voiceMsgPlayer').attr('src', url);
+                if(voiceUrl.indexOf('weixin') >= 0){
+                    wx.stopVoice({
+                        localId: voiceUrl
+                    });
+                    local_playing = false;
+                }
+                clearTimeout(playVoiceEnd);
+                playVoiceEnd = setTimeout(function(){
+                    remote_playing = false;
+                }, seconds*1000);
+                if(!remote_playing || voiceUrl !== url){
+                    document.getElementById('voiceMsgPlayer').play();
+                    remote_playing = true;
+                    voiceUrl = url;
+                }else{
+                    remote_playing = false;
+                }
+            }
+        });
+        self.goToAuthorize = function(e){
+            var getUserInfoUrl = '/auth/authorize?';
+            getUserInfoUrl += 'route=get_user_info&returnUrl='+location.href;
+            location.href = getUserInfoUrl;
+        }
+    </script>
+</notebook-index>
