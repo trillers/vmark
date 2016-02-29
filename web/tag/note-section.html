@@ -144,7 +144,6 @@
         //instance properties
         self.section = this.opts.section;
         self.parent = self.parent.parent;
-        self.confirmComponent  = self.parent.tags['note-confirm'];
         self.initiator = self.section.initiator || self.parent.user;
         self.initiator.headimgurl = self.initiator.headimgurl || '/public/images/def-avatar.png';
         self.isOnEdit = function(){
@@ -212,8 +211,8 @@
             });
         };
         self.confirm = function(option, fn){
-            self.confirmComponent.one('confirm', confirmListener);
-            self.confirmComponent.one('cancel', cancelListener);
+            app.one('confirm', confirmListener);
+            app.one('cancel', cancelListener);
             function confirmListener(){
                 clearListeners();
                 fn();
@@ -222,10 +221,10 @@
                 clearListeners();
             }
             function clearListeners(){
-                self.confirmComponent.off('confirm', confirmListener);
-                self.confirmComponent.off('cancel', cancelListener);
+                app.off('confirm', confirmListener);
+                app.off('cancel', cancelListener);
             }
-            self.confirmComponent.trigger('popUp', option);
+            app.trigger('popUp', option);
         };
         self.playVoice = function (e) {
             var data = e.item;

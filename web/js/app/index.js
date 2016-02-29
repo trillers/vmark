@@ -39,16 +39,18 @@ app.on('route', function (ctx) {
 });
 
 app.on('init', function () {
-
+    if(!window.app){
+        window.app = app;
+    }
 });
 
+riot.mount('btn-group');
+
 var timeline = function(id){
-    alert('11')
     riot.mount('notebook-timelines', {id: id});
 };
 nav.addRoute('timeline', timeline);
 nav.addRoute('timeline/id', timeline);
-
 
 app.init();
 

@@ -1,7 +1,23 @@
 <notebook-timelines>
-    <div style="width: {notebooks.length * 100}%">
-        <notebook-timeline each="{note in notebooks}" notebookslength="{parent.notebooks.length || 1}" notebook="{note}" latest="{parent.latestNotebook}"></notebook-timeline>
+    <div>
+        <notebook-timeline each="{note in notebooks}" if="{parent.latestNotebook._id === note._id}" notebook="{note}" latest="{parent.latestNotebook}"></notebook-timeline>
+        <div class="btn_group" style="position: fixed; top: {200}px">
+            <div id="prev_page_btn" onclick="{onPrevPageClick}" class="route_btn" style="float:left">上</div>
+            <div id="next_page_btn" onclick="{onNextPageClick}" class="route_btn" style="float: right">下</div>
+        </div>
+        <note-confirm></note-confirm>
     </div>
+    <style>
+        .btn_group{
+            width: 100%;
+            position: fixed;
+        }
+        .route_btn{
+            width:40px;
+            height: 40px;
+            background: red;
+        }
+    </style>
     <script>
         var self = this;
         var loadNotebooksByUserId = domain.action('loadNotebooksByUserId');
@@ -13,7 +29,31 @@
             self.update();
         };
         self.notebooks = [];
+        self.currentState = 'view';
         self.latestNotebook = null;
+        app.on('viewMode', function(e){
+            self.trigger('viewMode');
+            self.currentState = 'view';
+        });
+        app.on('addNewNote', function(e){
+            self.trigger('addNewNote');
+        });
+        self.onPrevPageClick = function(e){
+            var currentIndex = self.notebooks.map(notebook=>notebook._id).indexOf(self.latestNotebook._id);
+            if(!self.notebooks[currentIndex-1]){
+                return;
+            }
+            self.latestNotebook = self.notebooks[currentIndex-1];
+            riot.route('timeline/id?=' + self.latestNotebook._id);
+        };
+        self.onNextPageClick = function(e){
+            var currentIndex = self.notebooks.map(notebook=>notebook._id).indexOf(self.latestNotebook._id);
+            if(!self.notebooks[currentIndex+1]){
+                return;
+            }
+            self.latestNotebook = self.notebooks[currentIndex+1];
+            riot.route('timeline/id?=' + self.latestNotebook._id);
+        };
         self.on('mount', function(){
             loadNotebooksByUserId.onDone(onLoadNotebooksByUserId);
             loadNotebooksByUserId.execute({

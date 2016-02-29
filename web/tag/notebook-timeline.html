@@ -1,5 +1,5 @@
 <notebook-timeline>
-    <div class="page" if="{!hidden}" style="float:left;overflow:hidden;width: {parseInt((1/(opts.notebookslength))*100, 10).toFixed(9)}%">
+    <div class="page" if="{!hidden}" style="float:left;overflow:hidden;">
         <div class="title">
             <input class="input" if="{notebook.initiator != user._id}" readonly type="text" value="{notebook.title}" name="titleInput"/>
             <input class="input" if="{notebook.initiator === user._id}" onblur="{updatePageNote}" type="text" value="{notebook.title}" placeholder="添加标题" name="titleInput"/>
@@ -12,9 +12,9 @@
         </div>
 
         <div>
-            <note-section onclick="{mode.doShare}" name="{item._id}" id="{item._id}" each="{item, i in notebook.mates}" highlight="{(parent.mode.status.edit && !parent.sectionShowOrNot(item))}" section="{item}"></note-section>
+            <note-section onclick="{state.doShare}" name="{item._id}" id="{item._id}" each="{item, i in notebook.mates}" highlight="{(parent.state.current === 'edit' && !parent.sectionShowOrNot(item))}" section="{item}"></note-section>
         </div>
-        <div if="{mode.status.view}" style="width: 100%;text-align: center;margin-bottom: 20px">
+        <div if="{state.current === 'view'}" style="width: 100%;text-align: center;margin-bottom: 20px">
             <img style="width: 96px;height: 96px" src="/public/images/qrcode_for_gh_cd89432d0321.jpg"/>
             <p style="margin-top: 20px">长按二维码, 关注有趣笔记</p>
         </div>
@@ -23,47 +23,18 @@
         </div>
         <div style="clear: both"></div>
     </div>
-    <note-confirm></note-confirm>
-    <div if="{mode.status.view}" class="add-section-bar" style="position: fixed; bottom: 0px">
-        <div onclick="{mode.doFuncs}" style="width:48px;height:48px;background: red;float:left">单</div>
-        <div onclick="{addNewNote}" style="width:48px;height:48px;background: red;float:right">新</div>
-    </div>
-    <btn-group if="{mode.status.funcs}" active="{'note'}"></btn-group>
-    <note-input notebook="{notebook}" section="{currNote}" onsavenote="{onSaveNote}" onsavenotes="{onSaveNotes}" if="{mode.status.edit && Object.keys(currNote).length}"></note-input>
-    <div class="mask" if="{mode.status.funcs || mode.status.edit}" ontouchstart="{mode.doView}" style="height: {window.innerHeight + 'px'}"></div>
+    <note-input notebook="{notebook}" section="{currNote}" onsavenote="{onSaveNote}" onsavenotes="{onSaveNotes}" if="{state.current === 'edit' && Object.keys(currNote).length}"></note-input>
     <!--play voice panel begin-->
     <div style="position:absolute;top:0;left:0;width:0;height:0;">
         <audio id="voiceMsgPlayer" class="voicePlayer"></audio>
     </div>
     <!--play voice panel end-->
     <style scoped>
-        .mask{
-            width: 100%;
-            position: fixed;
-            top: 0px;
-            left: 0px;
-            z-index: 2;
-        }
-        .highlight{
-            background: red;
-        }
-        .mask{
-            width: 100%;
-            position: fixed;
-            top: 0px;
-            left: 0px;
-            z-index: 2;
+        .page{
+            width: 100%
         }
         :focus{
             outline: none;
-        }
-        .title-input1{
-            font-size: 16px;
-            display: inline-block;
-            height:30px;
-            line-height: 30px;
-            background: transparent;
-            border: none;
         }
         .note_items div{
             height: 40px;
@@ -71,9 +42,6 @@
         }
         body{
             font-size: 14px;
-        }
-        .btn-group{
-            list-style-type: none;
         }
         .btn-group li{
             float:left;
@@ -128,6 +96,7 @@
         self.hidden = true;
         self.notebook = self.opts.notebook;
         self.currNote = {};
+        self.parent = self.parent.parent;
         self.user = __page.user;
         self.user.headimgurl = self.user.headimgurl || '/public/images/def-avatar.png';
         //instance methods
@@ -135,53 +104,27 @@
             return new Date(date).toLocaleString();
         };
         self.formatDateForMates = util.formatDateForComments;
-        self.mode = {
-            status: {
-                view: true,
-                edit: false,
-                funcs: false,
-                share: false
-            },
+        self.state = {
+            current: 'view',
             position: {
                 start: 0,
                 end: 0
             },
-            doFuncs: function(){
-                self.mode.status = {
-                    view: false,
-                    edit: false,
-                    funcs: true,
-                    share: false
-                };
-                self.currNote = null;
-            },
             doView: function(section){
-                self.mode.status = {
-                    view: true,
-                    edit: false,
-                    funcs: false,
-                    share: false
-                };
+                self.state.current = 'view';
                 self.currNote = null;
+                self.update();
             },
             doEdit: function(section){
-                self.mode.status = {
-                    edit: true,
-                    view: false,
-                    funcs: false,
-                    share: false
-                };
-                self.mode.position.start = window.scrollY;
+                self.state.current = 'edit';
+                self.state.position.start = window.scrollY;
                 self.selectNote(section);
                 self.trigger('editMode');
+                var h = document.documentElement.scrollHeight || document.body.scrollHeight;
+                window.scrollTo(0,h);
             },
             doShare: function(){
-                self.mode.status = {
-                    view: false,
-                    edit: false,
-                    funcs: false,
-                    share: true
-                };
+                self.state.current = 'share';
                 self.currNote = null;
             }
         };
@@ -202,13 +145,13 @@
             }, 500);
         };
         self.sectionShowOrNot = function(item){
-            if(self.mode.status.edit){
+            if(self.state.current === 'edit'){
                 return true;
             }
-            if(self.mode.status.view && item.status != 'dr'){
+            if(self.state.current === 'view' && item.status != 'dr'){
                 return true;
             }
-            else if(self.mode.status.edit && item.status != 'dr'){
+            else if(self.state.current === 'edit' && item.status != 'dr'){
                 if(self.currNote._id === item._id){
                     return true;
                 }
@@ -244,18 +187,18 @@
             }
             var lastSection = self.notebook.mates[self.notebook.mates.length-1];
             if(lastSection && lastSection.crtOn && isToday(lastSection.crtOn)){
-                self.mode.doEdit(lastSection);
+                self.state.doEdit(lastSection);
             }else{
                 var newSection = getNewSection();
                 self.notebook.mates.push(newSection);
-                self.mode.doEdit(newSection);
+                self.state.doEdit(newSection);
             }
             function isToday(str){
                 return new Date().toDateString() === new Date(str).toDateString()
             }
         };
         self.on('editSectionNote', function(section){
-            self.mode.doEdit(section);
+            self.state.doEdit(section);
         });
         self.onSaveNote = function(data){
             util.mixin(self.currNote, data.section);
@@ -268,10 +211,23 @@
             self.currNote.mates = self.currNote.mates.concat(notes);
             self.trigger('noteSave', notes);
         };
+        self.parent.on('viewMode', function(e){
+            self.notebook.mates = self.notebook.mates.filter(function(notebook){return notebook._id});
+            if(self.opts.latest._id === self.notebook._id){
+                self.state.doView();
+            }
+        });
+        self.parent.on('addNewNote', function(e){
+            if(self.opts.latest._id === self.notebook._id){
+                self.addNewNote();
+            }
+        });
         self.on('noteSave', function(note){
             self.update();
-            var scrollHeight = self.root.querySelector('.panel').scrollHeight;
-            window.scrollTo(0, scrollHeight-200);
+//            var scrollHeight = self.root.querySelector('.panel').scrollHeight;
+//            window.scrollTo(0, scrollHeight-200);
+            var h = document.documentElement.scrollHeight || document.body.scrollHeight;
+            window.scrollTo(0,h);
         });
         self.on('active', function(tag){
             self.selectNote(tag.section, tag)
@@ -286,7 +242,7 @@
                 }
                 console.log(data.sections)
                 self.notebook.mates = data.sections;
-                self.mode.doView(self.notebook.mates[self.notebook.mates.length-1]);
+                self.state.doView(self.notebook.mates[self.notebook.mates.length-1]);
                 self.updateWxShareConfig();
                 self.hidden = false;
                 self.update();

@@ -1,5 +1,10 @@
 <btn-group>
-    <div style="width: 100%; position: fixed; bottom: 0px; z-index: {zindex}">
+    <div class="mask" if="{state.current === 'menu' || state.current === 'edit'}" ontouchstart="{viewMode}" style="height: {window.innerHeight + 'px'}"></div>
+    <div class="add-section-bar" if="{state.current == 'view'}" style="position: fixed; bottom: 0px">
+        <div onclick="{showSubMenu}" style="width:48px;height:48px;background: red;float:left">单</div>
+        <div onclick="{addNewNote}" style="width:48px;height:48px;background: red;float:right">新</div>
+    </div>
+    <div if="{state.current === 'menu'}" style="width: 100%; position: fixed; bottom: 0px; z-index: 100">
         <ul class="group_ul">
             <li class="{active: opts.active === 'note'}">
                 <a href="#">笔记</a>
@@ -13,6 +18,15 @@
         </ul>
     </div>
     <style scoped>
+        .mask{
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 2;
+            background: black;
+            opacity: 0.2;
+        }
         .active{
             background: #5D5D5D !important;
         }
@@ -40,6 +54,21 @@
     </style>
     <script>
         "use strict";
-        self.zindex=100;
+        self.currNav = 'note';
+        self.state = {
+            current: 'view'
+        };
+        self.showSubMenu = function(e){
+            self.state.current = 'menu';
+        };
+        self.viewMode = function(){
+            app.trigger('viewMode');
+            self.state.current = 'view';
+        };
+        //view --> edit
+        self.addNewNote = function(){
+            app.trigger('addNewNote');
+            self.state.current = 'edit';
+        };
     </script>
 </btn-group>

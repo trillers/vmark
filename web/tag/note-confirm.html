@@ -14,17 +14,17 @@
         self.show = false;
         self.currTag = null;
         self.text= '是否删除评论';
-        self.on('popUp', function(option){
+        app.on('popUp', function(option){
             option.text && (self.text = option.text);
             self.show = true;
             self.update();
         });
         self.confirm = function(e){
-            self.trigger('confirm');
+            app.trigger('confirm');
             self.show = false;
         };
         self.cancel = function(e){
-            self.trigger('cancel');
+            app.trigger('cancel');
             self.show = false;
         };
     </script>

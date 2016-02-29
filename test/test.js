@@ -1,10 +1,8 @@
-"use strict";
+var arr = [1, 2, '11'];
+var lastDate = (new Date()).getTime();
+console.log(arr.some(i=>i===2))
+console.warn((new Date()).getTime() - lastDate)
 
-var [first, ...args] = [1, 2, 3];
-
-test({sex: '222'}, (p)=>{
-    console.log(p)
-});
-function test({name=222, sex}, test){
-    test('111');
-}
+var lastDate2 = (new Date()).getTime();
+console.log(arr.indexOf(2))
+console.warn((new Date()).getTime() - lastDate2)
