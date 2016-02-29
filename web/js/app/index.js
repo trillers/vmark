@@ -6,23 +6,6 @@ require('./tags')();
 var App = require('./app');
 var app = new App({defaultHash: '/'});
 
-app.on('route', function (ctx) {
-    console.log(ctx.req.route);
-    var routeStr = ctx.req.route;
-    var parts = routeStr.split('/_');
-    var id = null;
-    if(parts.length==2){
-        ctx.req.routeKey = parts[0] + '/_';
-        id = parts[1];
-    }
-    else{
-        ctx.req.routeKey = routeStr;
-    }
-    nav.doRouteView(ctx, id);
-});
-
-app.on('init', function () {});
-
 var Navigation = function(){
     this.routes = {};
     this.views = {};
@@ -59,14 +42,37 @@ Navigation.prototype.doRouteView = function(ctx, id){
 
 var nav = new Navigation();
 
+app.on('route', function (ctx) {
+    console.log(ctx.req.route);
+    var routeStr = ctx.req.route;
+    var parts = routeStr.split('/_');
+    var id = null;
+    if(parts.length==2){
+        ctx.req.routeKey = parts[0] + '/_';
+        id = parts[1];
+    }
+    else{
+        ctx.req.routeKey = routeStr;
+    }
+    nav.doRouteView(ctx, id);
+});
+
+app.on('init', function () {});
+
+/*
+ * route for timeline index page
+ */
 var mount_timeline = function(ctx, id){
-    riot.mount('notebook', {id: id});
+    riot.mount('notebook-timelines', {id: id});
 };
 var view_timeline = function(ctx, id){
 
 };
 nav.addRouteView('timeline', mount_timeline, view_timeline);
 
+/*
+ * route for notebook index page
+ */
 var mount_timeline_index = function(ctx, id){
     riot.mount('notebook-index', {});
 };

@@ -1,0 +1,24 @@
+<notebook-timelines>
+    <div style="width: {notebooks.length * 100}%">
+        <notebook-timeline each="{note in notebooks}" notebookslength="{parent.notebooks.length || 1}" notebook="{note}" latest="{parent.latestNotebook}"></notebook-timeline>
+    </div>
+    <script>
+        var self = this;
+        var loadNotebooksByUserId = domain.action('loadNotebooksByUserId');
+        var onLoadNotebooksByUserId = function(data){
+            self.notebooks = data.notebooks;
+            self.latestNotebook = data.latestNotebook;
+            var topDiv = document.body.querySelector('body >div');
+            topDiv.removeChild(topDiv.querySelector('#welcomeWrapper'));
+            self.update();
+        };
+        self.notebooks = [];
+        self.latestNotebook = null;
+        self.on('mount', function(){
+            loadNotebooksByUserId.onDone(onLoadNotebooksByUserId);
+            loadNotebooksByUserId.execute({
+                userId: __page.user.id
+            });
+        })
+    </script>
+</notebook-timelines>
