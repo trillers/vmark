@@ -33,9 +33,6 @@ var util = {
         }
         return target;
     },
-    scrollTo: function(dom){
-        console.log(dom.offsetHeight)
-    },
     htmlParser: {
         parse: function(str){
             return str.replace(/<br>/g,'\n');

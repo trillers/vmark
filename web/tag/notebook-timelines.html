@@ -44,7 +44,7 @@
                 return;
             }
             self.latestNotebook = self.notebooks[currentIndex-1];
-            riot.route('timeline/id?=' + self.latestNotebook._id);
+            riot.route('timeline/_' + self.latestNotebook._id);
         };
         self.onNextPageClick = function(e){
             var currentIndex = self.notebooks.map(notebook=>notebook._id).indexOf(self.latestNotebook._id);
@@ -52,7 +52,7 @@
                 return;
             }
             self.latestNotebook = self.notebooks[currentIndex+1];
-            riot.route('timeline/id?=' + self.latestNotebook._id);
+            riot.route('timeline/_' + self.latestNotebook._id);
         };
         self.on('mount', function(){
             loadNotebooksByUserId.onDone(onLoadNotebooksByUserId);

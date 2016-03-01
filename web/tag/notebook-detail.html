@@ -1,0 +1,27 @@
+<notebook-detail>
+    <div class="page" if="{!hidden}">
+        <div class="title">
+            笔记本详情
+        </div>
+    </div>
+    <!--play voice panel end-->
+    <style scoped>
+
+    </style>
+    <script>
+        "use strict";
+        //private properties
+        var self = this;
+        var id = this.opts.id;
+        var url = window.location.href;
+        var loadNote = domain.action('loadNote');
+
+        self.on('mount', function(){
+            loadNote.onDone(onLoadNote);
+        });
+        self.on('unmount', function(){
+            loadNote.offDone(onLoadNote);
+        });
+
+    </script>
+</notebook-detail>
