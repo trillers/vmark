@@ -19,7 +19,7 @@
             </div>
         </div>
         <div class="noteItems">
-            <div each="{section.mates}" noteId="{_id}" style="margin-top: 5px" onclick="{parent.deleteNote}">
+            <div each="{section.mates}" noteId="{_id}" style="margin-top: 5px" ontouchstart="{parent.deleteNote}">
                 <div if="{type==='txt'}" class="note-text">{content}</div>
                 <div if="{type==='img'}" class="note_img"><img style="width: 100%" src="{url}"/></div>
                 <div if="{type==='voi'}" class="note-voice" style="float:left">

@@ -1,13 +1,16 @@
 <notebook-timelines>
-    <div>
+    <div class="timeline_container">
         <notebook-timeline each="{note in notebooks}" if="{parent.latestNotebook._id === note._id}" notebook="{note}" latest="{parent.latestNotebook}"></notebook-timeline>
-        <div class="btn_group" style="position: fixed; top: {200}px">
-            <div id="prev_page_btn" onclick="{onPrevPageClick}" class="route_btn" style="float:left">上</div>
-            <div id="next_page_btn" onclick="{onNextPageClick}" class="route_btn" style="float: right">下</div>
+        <div class="btn_group" style="position: fixed; top: {300}px">
+            <div id="prev_page_btn" ontouchstart="{onPrevPageClick}" class="route_btn" style="float:left">上</div>
+            <div id="next_page_btn" ontouchstart="{onNextPageClick}" class="route_btn" style="float: right">下</div>
         </div>
         <note-confirm></note-confirm>
     </div>
     <style>
+        .timeline_container{
+            overflow: hidden;
+        }
         .btn_group{
             width: 100%;
             position: fixed;
@@ -59,6 +62,6 @@
             loadNotebooksByUserId.execute({
                 userId: __page.user.id
             });
-        })
+        });
     </script>
 </notebook-timelines>
