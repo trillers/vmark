@@ -82,20 +82,26 @@
 
     function timeShow() {
         var show_time = $(".timeShow");
-        endtime = new Date({{JSON.stringify(participant.redpacket.endTime)}});//结束时间
-    today = new Date();//当前时间
-    delta_T = endtime.getTime() - today.getTime();//时间间隔
-    window.setTimeout(timeShow, 1000);
-    total_days = delta_T / (24 * 60 * 60 * 1000);//总天数
-    total_show = Math.floor(total_days);//实际显示的天数
-    total_hours = (total_days - total_show) * 24;//剩余小时
-    hours_show = Math.floor(total_hours);//实际显示的小时数
-    total_minutes = (total_hours - hours_show) * 60;//剩余的分钟数
-    minutes_show = Math.floor(total_minutes);//实际显示的分钟数
-    total_seconds = (total_minutes - minutes_show) * 60;//剩余的分钟数
-    seconds_show = Math.floor(total_seconds);//实际显示的秒数
-    if (total_days < 10) {
-        total_days = "0" + total_days;
+        var endtime = new Date({{JSON.stringify(participant.redpacket.endTime)}});//结束时间
+        var today = new Date();//当前时间
+        var total_show = 0;
+        var hours_show = 0;
+        var minutes_show = 0;
+        var seconds_show = 0;
+        if(endtime > today) {
+            var delta_T = endtime.getTime() - today.getTime();//时间间隔
+            window.setTimeout(timeShow, 1000);
+            var total_days = delta_T / (24 * 60 * 60 * 1000);//总天数
+            total_show = Math.floor(total_days);//实际显示的天数
+            var total_hours = (total_days - total_show) * 24;//剩余小时
+            hours_show = Math.floor(total_hours);//实际显示的小时数
+            var total_minutes = (total_hours - hours_show) * 60;//剩余的分钟数
+            minutes_show = Math.floor(total_minutes);//实际显示的分钟数
+            var total_seconds = (total_minutes - minutes_show) * 60;//剩余的分钟数
+            seconds_show = Math.floor(total_seconds);//实际显示的秒数
+        }
+    if (total_show < 10) {
+        total_show = "0" + total_show;
     }
     if (hours_show < 10) {
         hours_show = "0" + hours_show;
@@ -194,7 +200,7 @@
         <div class="userDesc">
             <h2>{{participant.user.nickname}}</h2>
 
-            <!--<p>排名：{{participant.user.rank}}</p>-->
+            <p>排名：{{participant.rank}}</p>
         </div>
         <div class="tipBox">
             <div class="tip tip1">
@@ -229,7 +235,7 @@
             <ul>
                 <li class="li0" style="margin:0 2px"><i></i>活动介绍</li>
                 <li class="li1 on" style="margin:0 2px"><i></i>活动规则</li>
-                <li class="li2" style="margin:0 2px"><i></i>排行top10</li>
+                <li class="li2" style="margin:0 2px"><i></i>排行top200</li>
             </ul>
         </div>
         <div class="bdRound">
@@ -306,7 +312,7 @@
                         alert('助力失败');
                         helping = false;
                     }else {
-                        $('#luckyMoney').text('￥' + data.total_money);
+                        $('#luckyMoney').text('￥' + data);
                         $('#helpTa').hide();
                         $('#helped').show();
                         alert('助力成功');

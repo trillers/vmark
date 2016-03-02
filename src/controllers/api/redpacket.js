@@ -115,25 +115,18 @@ module.exports = function(router){
             if (phone) {
                 var redpacket = yield activityRedpacketService.loadById(id);
                 if (redpacket) {
-                    var participant = yield redpacketParticipantService.filter({
-                        conditions: {
-                            user: this.session.auth.user.id,
-                            redpacket: id
-                        }
-                    });
-                    console.error(participant);
-                    if (participant.length > 0) {
+                    var status = yield activityRedpacketService.getStatus(redpacket, user);
+                    if (status.join === 'none') {
                         this.body = {error: 'joined', msg: '已参加'};
                     } else {
                         var json = {
                             redpacket: id
-                            , user: this.session.auth.user.id
+                            , user: user.id
                             , phone: phone
                             , total_money: redpacket.base_lucky_money
                             , help_friends: []
                         }
                         var data = yield redpacketParticipantService.create(json);
-                        yield activityRedpacketService.updateById(id, {$inc: {participants_count: 1}});
                         this.body = data;
                     }
                 } else {
@@ -151,30 +144,21 @@ module.exports = function(router){
         var id = this.request.body.id;
         var user = this.session.auth && this.session.auth.user || {};
         if(user.openid && user.type === UserType.Customer.value()){
-            var participant = yield redpacketParticipantService.loadById(id);
-            var helpArr = participant.help_friends;
-            if (helpArr.length < participant.redpacket.friend_help_count_limit) {
-                var con = {
-                    _id: id,
-                    $where: 'this.help_friends.length < ' + participant.redpacket.friend_help_count_limit
-                }
-                var res = yield redpacketParticipantService.update(con, {$addToSet: {help_friends: user.openid}});
-                if(res.n === 1) {
-                    if (res.ok === 1 && res.nModified === 1) {
-                        var min = participant.redpacket.friend_help_min_money || 0;
-                        var max = participant.redpacket.friend_help_max_money || 0;
-                        var helpMoney = util.random(min, max);
-                        var total_money = participant.total_money + helpMoney;
-                        var update = {
-                            total_money: total_money
-                        }
-                        var data = yield redpacketParticipantService.updateById(participant._id, update);
-                        this.body = data;
-                    } else {
-                        this.body = {helped: true};
-                    }
+            var kv = context.kvs.redpacket;
+            var participant = yield kv.loadParticipantByIdAsync(id);
+            var redpacket = yield kv.loadActivityByIdAsync(participant.redpacket);
+            var helpArr = yield kv.getHelpFriendsSetAsync(id);
+            if (helpArr.length < redpacket.friend_help_count_limit) {
+                var res = yield kv.addHelpFriendToSetAsync(id, user.openid);
+                if(res === 1) {
+                    var min = parseInt(redpacket.friend_help_min_money || 0);
+                    var max = parseInt(redpacket.friend_help_max_money || 0);
+                    var helpMoney = util.random(min, max);
+                    var data = yield kv.incParticipantMoneyByIdAsync(id, helpMoney);
+                    yield kv.increaseParticipantScoreInRankingListAsync(redpacket._id, participant.user, helpMoney);
+                    this.body = data;
                 } else if(res.n === 0) {
-                    this.body = {limited: true};
+                    this.body = {helped: true};
                 } else {
                     this.body = {error: 'unknown error'};
                 }

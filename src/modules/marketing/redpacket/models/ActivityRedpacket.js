@@ -17,6 +17,7 @@ var Model = function(DomainBuilder){
             ,friend_help_min_money: {type: Number}
             ,friend_help_max_money: {type: Number}
             ,participants_count: {type: Number, default: 0}
+            ,views: {type: Number, default: 0}    //浏览量, 用户浏览一次活动页或者参与者详情页时+1
             ,rule: {type: String}
             ,desc: {type: String}
         })
