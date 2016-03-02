@@ -91,6 +91,8 @@ Service.prototype.getStatus = function*(redpacket, user){
     var kv = this.context.kvs.redpacket;
     status.particpant = yield kv.getParticipantIdByUserIdAndActivityIdAsync
     (redpacket._id, user.id);
+    console.error(redpacket);
+    console.error(user);
     var today = new Date();
     var active = today >= new Date(redpacket.startTime) && today <= new Date(redpacket.endTime);
     if(!active){
