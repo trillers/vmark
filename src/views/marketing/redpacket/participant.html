@@ -200,7 +200,7 @@
         <div class="userDesc">
             <h2>{{participant.user.nickname}}</h2>
 
-            <p>排名：{{participant.rank}}</p>
+            <p id="rank">排名：{{participant.rank}}</p>
         </div>
         <div class="tipBox">
             <div class="tip tip1">
@@ -312,7 +312,9 @@
                         alert('助力失败');
                         helping = false;
                     }else {
-                        $('#luckyMoney').text('￥' + data);
+                        $('#luckyMoney').text('￥' + data.total_money);
+                        $('#rank').text('排名: ' + data.rank);
+
                         $('#helpTa').hide();
                         $('#helped').show();
                         alert('助力成功');

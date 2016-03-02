@@ -144,27 +144,9 @@ module.exports = function(router){
         var id = this.request.body.id;
         var user = this.session.auth && this.session.auth.user || {};
         if(user.openid && user.type === UserType.Customer.value()){
-            var kv = context.kvs.redpacket;
-            var participant = yield kv.loadParticipantByIdAsync(id);
-            var redpacket = yield kv.loadActivityByIdAsync(participant.redpacket);
-            var helpArr = yield kv.getHelpFriendsSetAsync(id);
-            if (helpArr.length < redpacket.friend_help_count_limit) {
-                var res = yield kv.addHelpFriendToSetAsync(id, user.openid);
-                if(res === 1) {
-                    var min = parseInt(redpacket.friend_help_min_money || 0);
-                    var max = parseInt(redpacket.friend_help_max_money || 0);
-                    var helpMoney = util.random(min, max);
-                    var data = yield kv.incParticipantMoneyByIdAsync(id, helpMoney);
-                    yield kv.increaseParticipantScoreInRankingListAsync(redpacket._id, participant.user, helpMoney);
-                    this.body = data;
-                } else if(res.n === 0) {
-                    this.body = {helped: true};
-                } else {
-                    this.body = {error: 'unknown error'};
-                }
-            } else {
-                this.body = {limited: true};
-            }
+            var participant = yield redpacketParticipantService.loadById(id);
+            var res = yield redpacketParticipantService.help(participant, user);
+            this.body = res;
         }else {
             this.body = {error: 'please open in wechat browser'};
         }

@@ -1,6 +1,7 @@
 var util = require('util');
 var settings = require('@private/vmark-settings');
 var _ = require('underscore');
+var myUtil = require('../../../../app/util');
 
 var Service = function(context){
     this.context = context;
@@ -28,6 +29,15 @@ Service.prototype.updateById = function*(id, update, helpMoney){
     return doc;
 }
 
+Service.prototype.syncById = function*(id, update){
+    var logger = this.context.logger;
+    var RepacketParticipant = this.context.models.RepacketParticipant;
+
+    var doc = yield RepacketParticipant.findByIdAndUpdate(id, update, {new: true}).lean().exec();
+    logger.info('success update participant by id: ' + id);
+    return doc;
+}
+
 Service.prototype.update = function*(con, update){
     var logger = this.context.logger;
     var RepacketParticipant = this.context.models.RepacketParticipant;
@@ -48,10 +58,12 @@ Service.prototype.loadById = function*(id){
         redpacket.bgImg = redpacket.bgImg.split(',');
         var user = yield userKv.loadByIdAsync(participant.user);
         var rank = yield kv.getParticipantRankAsync(participant.redpacket, participant.user);
+        var helpArr = yield kv.getHelpFriendsSetAsync(id);
         participant.participateLink = 'http://' + settings.app.domain + '/marketing/redpacket/join?id=' + redpacket._id;
         participant.redpacket = redpacket;
         participant.user = user;
         participant.rank = rank;
+        participant.help_friends = helpArr;
     }
     logger.info('success load participant by id: ' + id);
     return participant;
@@ -113,6 +125,7 @@ Service.prototype.filter = function*(params){
 Service.prototype.getStatus = function*(participant, user){
     var kv = this.context.kvs.redpacket;
     var status = {
+        active: true,
         join: '',
         joined: 'none',
         help: '',
@@ -126,6 +139,7 @@ Service.prototype.getStatus = function*(participant, user){
     if (!active) {
         status.join = 'none';
         status.help = 'none';
+        status.active = false;
         if (today < new Date(participant.redpacket.startTime)) {
             status.noActivated = '';
         }
@@ -147,17 +161,41 @@ Service.prototype.getStatus = function*(participant, user){
             }
             var helpArr = yield kv.getHelpFriendsSetAsync(participant.id);
             if (_.indexOf(helpArr, user.openid) !== -1) {
-                participant.help = 'none';
-                participant.helped = '';
+                status.help = 'none';
+                status.helped = '';
             }
             if (helpArr.length >= participant.redpacket.friend_help_count_limit) {
-                participant.help = 'none';
-                participant.helped = 'none';
-                participant.helpLimited = '';
+                status.help = 'none';
+                status.helped = 'none';
+                status.helpLimited = '';
             }
         }
     }
     return status;
 }
 
+Service.prototype.help = function*(participant, user){
+    var status = yield this.getStatus(participant, user);
+    var result = {};
+    var kv = this.context.kvs.redpacket;
+    if (status.helpLimited === 'none') {
+        var res = yield kv.addHelpFriendToSetAsync(participant.id, user.openid);
+        if(res === 1) {
+            var min = parseInt(participant.redpacket.friend_help_min_money || 0);
+            var max = parseInt(participant.redpacket.friend_help_max_money || 0);
+            var helpMoney = myUtil.random(min, max);
+            var data = yield kv.incParticipantMoneyByIdAsync(participant.id, helpMoney);
+            yield kv.increaseParticipantScoreInRankingListAsync(participant.redpacket._id, participant.user.id, helpMoney);
+            var rank = yield kv.getParticipantRankAsync(participant.redpacket, participant.user);
+            result = {rank: rank, total_money: data};
+        } else if(res === 0) {
+            result = {helped: true};
+        } else {
+            result = {error: 'unknown error'};
+        }
+    } else {
+        result = {limited: true};
+    }
+    return result;
+}
 module.exports = Service;

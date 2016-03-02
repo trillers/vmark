@@ -37,6 +37,19 @@ Service.prototype.updateById = function*(id, update){
     }
 }
 
+Service.prototype.syncById = function*(id, update){
+    var logger = this.context.logger;
+    var ActivityRedpacket = this.context.models.ActivityRedpacket;
+    try{
+        var doc = yield ActivityRedpacket.findByIdAndUpdate(id, update, {new: true}).lean().exec();
+        logger.info('success sync redpacket by id: ' + id);
+        return doc;
+    }catch(err){
+        logger.error('failed sync redpacket, err: ' + err);
+        return null;
+    }
+}
+
 Service.prototype.loadById = function*(id){
     var logger = this.context.logger;
     var kv = this.context.kvs.redpacket;

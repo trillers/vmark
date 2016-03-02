@@ -267,7 +267,9 @@ Kv.prototype.getParticipantRank = function(activityId, userId, callback){
     var redis = this.context.redis.main;
     var key = idToRankingListKey(activityId);
     redis.ZREVRANK(key, userId, function(err, result){
-        result = result === 0 ? result + 1 : result;
+        if(!err) {
+            result = result + 1;
+        }
         cbUtil.logCallback(
             err,
             'Fail to get participant rank, activity id ' + activityId + ': ' + err,
