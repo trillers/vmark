@@ -29,6 +29,8 @@ module.exports = function(){
         var redpacket = yield activityRedpacketService.loadById(id);
         if(redpacket && redpacket.lFlg === 'a'){
             var status = yield activityRedpacketService.getStatus(redpacket, user);
+            console.error('++++++++++++++++++++++');
+            console.log(status);
             if(status.participant){
                 this.redirect('/marketing/redpacket/participant?id=' + status.participant);
             }else {
