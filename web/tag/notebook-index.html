@@ -1,6 +1,7 @@
 <notebook-index>
     <div if="{!hidden}">
-        <notebook-item class="notebook-item" each="{item, i in notebooks}" notebook="{item}"/>
+        111
+        <notebook-item class="notebook-item" each="{item, i in opts.notebooks}" notebook="{item}"/>
     </div>
 
     <!--play voice panel end-->
@@ -12,15 +13,18 @@
         //private properties
         var self = this;
         var id = this.opts.id;
-        this.hidden = false;
-        this.notebooks = [{name: 'name1'}, {name: 'name2'}, {name: 'name3'}];
+        this.hidden = true;
         var url = window.location.href;
-        var loadNote = domain.action('loadNote');
+        var loadAllNotebook = domain.action('loadAllNotebook');
         var loadLatestNotebook = domain.action('loadLatestNotebook');
         var updateNote = domain.action('updateNote');
         var shareAction = domain.action('shareAction');
         self.on('mount', function(){
-            self.update({hidden: false});
+
         });
+        self.on('open', function(){
+            console.log('opened');
+            self.trigger('ready')
+        })
     </script>
 </notebook-index>

@@ -3,7 +3,13 @@
  */
 require('./agent').init();
 require('./tags')();
+var middlewares = require('./middlewares');
+var applyMiddlewares = middlewares.applyMiddlewares;
+var loadNotebooksByUserId = middlewares.loadNotebooksByUserId;
+var logger = middlewares.logger;
+
 var App = require('./app');
+
 var app = new App({defaultHash: '/'});
 
 var Navigation = function(){
@@ -26,6 +32,7 @@ Navigation.prototype.addRouteView = function(key, mountHandler, viewHandler){
     };
 };
 Navigation.prototype.doRouteView = function(ctx, id){
+    var self = this;
     var handlers = this.routes[ctx.req.routeKey];
     if(!handlers) {
         console.warn(ctx.req.routeKey + ' route has no registered handler');
@@ -33,17 +40,37 @@ Navigation.prototype.doRouteView = function(ctx, id){
     }
     var viewId = ctx.req.routeKey + (id || '');
     var view = this.views[viewId];
+
     if(!view) {
-        view = handlers.mountHandler.call(this, ctx, id);
+        try{
+            view = handlers.mountHandler.call(this, ctx, id);
+            this.views[viewId] = view;
+        }catch(e){
+            throw new Error('tag is not in set.');
+        }
     }
+
     this.current = view;
+    view.off('ready').on('ready', readyHandler);
+    view.trigger('open');
+
+    function readyHandler(){
+        Object.keys(self.views).map(function(key){
+            var v = self.views[key];
+            if(!v.hidden){
+                v.update({hidden: true});
+            }
+        });
+        app.trigger('done');
+        view.update({hidden: false});
+        view.off('ready');
+    }
     this.last = handlers.viewHandler.call(this, ctx, id);
 };
 
 var nav = new Navigation();
 
 app.on('route', function (ctx) {
-    console.log(ctx.req.route);
     var routeStr = ctx.req.route;
     var parts = routeStr.split('/_');
     var id = null;
@@ -61,17 +88,24 @@ app.on('init', function () {
     if(!window.app){
         window.app = app;
     }
+    riot.mount('btn-group')
 });
 
-riot.mount('btn-group');
-
-app.on('init', function () {});
+var isDone = false;
+app.on('done', function(){
+    if(isDone){
+        return;
+    }
+    isDone = true;
+    var topDiv = document.body.querySelector('body >div');
+    topDiv.removeChild(topDiv.querySelector('#welcomeWrapper'));
+});
 
 /*
  * route for timeline index page
  */
 var mount_timeline = function(ctx, id){
-    riot.mount('notebook-timelines', {id: id});
+    return riot.mount('notebook-timelines', {id: id, notebooks: app.notebooks, latestnotebook: app.latestnotebook})[0];
 };
 var view_timeline = function(ctx, id){
 
@@ -84,7 +118,8 @@ nav.addRouteView('timeline/_', mount_timeline, view_timeline);
  * route for notebook index page
  */
 var mount_notebook_index = function(ctx, id){
-    riot.mount('notebook-index', {});
+    var tagInstance = riot.mount('notebook-index', {notebooks: app.notebooks, latestnotebook: app.latestnotebook})[0];
+    return tagInstance
 };
 var view_notebook_index = function(ctx, id){
 
@@ -95,13 +130,17 @@ nav.addRouteView('notebook/index', mount_notebook_index, view_notebook_index);
  * route for notebook index page
  */
 var mount_notebook_detail = function(ctx, id){
-    riot.mount('notebook-detail', {id: id});
+    return riot.mount('notebook-detail', {id: id})[0];
 };
 var view_notebook_detail = function(ctx, id){
 
 };
 nav.addRouteView('notebook/_', mount_notebook_detail, view_notebook_detail);
 
-app.init();
+
+var bootstrap = applyMiddlewares(loadNotebooksByUserId(app), logger(app));
+
+bootstrap(app.init.bind(app));
+
 
 module.exports = app;

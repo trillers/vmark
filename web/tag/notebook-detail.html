@@ -15,7 +15,10 @@
         var id = this.opts.id;
         var url = window.location.href;
         var loadNote = domain.action('loadNote');
+        var onLoadNote = function(){
 
+        }
+        self.hidden = true;
         self.on('mount', function(){
             loadNote.onDone(onLoadNote);
         });

@@ -1,9 +1,9 @@
 <notebook-timelines>
-    <div class="timeline_container">
-        <notebook-timeline each="{note in notebooks}" if="{parent.latestNotebook._id === note._id}" notebook="{note}" latest="{parent.latestNotebook}"></notebook-timeline>
+    <div class="timeline_container" if="{!hidden}">
+        <notebook-timeline each="{note in opts.notebooks}" if="{parent.opts.latestnotebook._id === note._id}" notebook="{note}" latest="{parent.opts.latestnotebook}"></notebook-timeline>
         <div class="btn_group" style="position: fixed; top: {300}px">
-            <div id="prev_page_btn" ontouchstart="{onPrevPageClick}" class="route_btn" style="float:left">上</div>
-            <div id="next_page_btn" ontouchstart="{onNextPageClick}" class="route_btn" style="float: right">下</div>
+            <div id="prev_page_btn" onclick="{onPrevPageClick}" class="route_btn" style="float:left">上</div>
+            <div id="next_page_btn" onclick="{onNextPageClick}" class="route_btn" style="float: right">下</div>
         </div>
         <note-confirm></note-confirm>
     </div>
@@ -23,17 +23,8 @@
     </style>
     <script>
         var self = this;
-        var loadNotebooksByUserId = domain.action('loadNotebooksByUserId');
-        var onLoadNotebooksByUserId = function(data){
-            self.notebooks = data.notebooks;
-            self.latestNotebook = data.latestNotebook;
-            var topDiv = document.body.querySelector('body >div');
-            topDiv.removeChild(topDiv.querySelector('#welcomeWrapper'));
-            self.update();
-        };
-        self.notebooks = [];
+        self.hidden = true;
         self.currentState = 'view';
-        self.latestNotebook = null;
         app.on('viewMode', function(e){
             self.trigger('viewMode');
             self.currentState = 'view';
@@ -42,26 +33,24 @@
             self.trigger('addNewNote');
         });
         self.onPrevPageClick = function(e){
-            var currentIndex = self.notebooks.map(notebook=>notebook._id).indexOf(self.latestNotebook._id);
-            if(!self.notebooks[currentIndex-1]){
+            var currentIndex = self.opts.notebooks.map(function(notebook){return notebook._id}).indexOf(self.opts.latestnotebook._id);
+            if(!self.opts.notebooks[currentIndex-1]){
                 return;
             }
-            self.latestNotebook = self.notebooks[currentIndex-1];
-            riot.route('timeline/_' + self.latestNotebook._id);
+            self.latestNotebook = self.opts.notebooks[currentIndex-1];
+            riot.route('timeline/_' + self.opts.latestnotebook._id);
         };
         self.onNextPageClick = function(e){
-            var currentIndex = self.notebooks.map(notebook=>notebook._id).indexOf(self.latestNotebook._id);
-            if(!self.notebooks[currentIndex+1]){
+            var currentIndex = self.opts.notebooks.map(function(notebook){return notebook._id}).indexOf(self.opts.latestnotebook._id);
+            if(!self.opts.notebooks[currentIndex+1]){
                 return;
             }
-            self.latestNotebook = self.notebooks[currentIndex+1];
-            riot.route('timeline/_' + self.latestNotebook._id);
+            self.opts.latestnotebook = self.opts.notebooks[currentIndex+1];
+            riot.route('timeline/_' + self.opts.latestnotebook._id);
         };
         self.on('mount', function(){
-            loadNotebooksByUserId.onDone(onLoadNotebooksByUserId);
-            loadNotebooksByUserId.execute({
-                userId: __page.user.id
-            });
+            console.log(self.opts)
         });
+
     </script>
 </notebook-timelines>
