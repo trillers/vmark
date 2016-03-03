@@ -3,21 +3,21 @@ var rule = new schedule.RecurrenceRule();
 var context = require('../context/context');
 var Promise = require('bluebird');
 var util = require('util');
-var kv = context.kvs.redpacket;
+var kv = context.kvs.points;
 var redis = context.redis.main;
 redis.keysAsync = Promise.promisify(redis.keys);
-var activityRedpacketService = context.services.activityRedpacketService;
-var redpacketParticipantService = context.services.redpacketParticipantService;
+var activityPointsService = context.services.activityPointsService;
+var pointsParticipantService = context.services.pointsParticipantService;
 var logger = context.logger;
 var co = require('co');
 
 rule.hour = 23;
 schedule.scheduleJob(rule, function(){
-    logger.info('sync redpacket activity job starting');
+    logger.info('sync points activity job starting');
     co(function*(){
-        var activityKeys = yield redis.keysAsync('rp:act:id:*');
+        var activityKeys = yield redis.keysAsync('pts:act:id:*');
         var activityIdArr = activityKeys.map(function(item){
-            return item.substr(10);
+            return item.substr(11);
         })
         for(var i = 0; i < activityIdArr.length; i++){
             var activity = yield kv.loadActivityByIdAsync(activityIdArr[i]);
@@ -28,36 +28,36 @@ schedule.scheduleJob(rule, function(){
                     views: activity.views,
                     participants_count: activity.participants_count
                 }
-                yield activityRedpacketService.syncById(activityIdArr[i], update);
-                logger.info('success sync redpacket activity :' + activityIdArr[i] + ', update:' + util.inspect(update));
+                yield activityPointsService.syncById(activityIdArr[i], update);
+                logger.info('success sync points activity :' + activityIdArr[i] + ', update:' + util.inspect(update));
             //}
         }
-        logger.info('sync activity job job end');
+        logger.info('sync points activity job job end');
     }).catch(function(err){
-        logger.error('sync redpacket activity job err:' + err);
+        logger.error('sync points activity job err:' + err);
     })
 });
 
 schedule.scheduleJob(rule, function(){
-    logger.info('sync redpacket participant job starting');
+    logger.info('sync participant job starting');
     co(function*(){
-        var participantKeys = yield redis.keysAsync('rp:ptcp:id:*');
+        var participantKeys = yield redis.keysAsync('pts:ptcp:id:*');
         var participantIdArr = participantKeys.map(function(item){
-            return item.substr(11);
+            return item.substr(12);
         })
         for(var i = 0; i < participantIdArr.length; i++){
             var participant = yield kv.loadParticipantByIdAsync(participantIdArr[i]);
             var help_friends = yield kv.getHelpFriendsSetAsync(participantIdArr[i]);
             var update = {
-                total_money: participant.total_money,
+                total_points: participant.total_points,
                 help_friends: help_friends
             }
-            yield redpacketParticipantService.syncById(participantIdArr[i], update);
-            logger.info('success sync redpacket participant :' + participantIdArr[i] + ', update:' + util.inspect(update));
+            yield pointsParticipantService.syncById(participantIdArr[i], update);
+            logger.info('success sync participant :' + participantIdArr[i] + ', update:' + util.inspect(update));
             //}
         }
-        logger.info('sync redpacket participant job job end');
+        logger.info('sync participant job job end');
     }).catch(function(err){
-        logger.error('sync redpacket participant job err:' + err);
+        logger.error('sync participant job err:' + err);
     })
 });

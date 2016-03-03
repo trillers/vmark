@@ -24,6 +24,7 @@ context.domainBuilder.main = require('../framework/model/DomainBuilder');
 ar.ready(function(){
     require('../modules');
     require('../jobs/syncRedpacketActivity');
+    require('../jobs/syncPointsActivity');
     context.wechatBotManager.start();
 });
 
