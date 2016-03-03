@@ -77,7 +77,7 @@ module.exports = function(router){
             type:'string',
             width:40
         },{
-            caption:'总积分',
+            caption:'红包金额',
             type:'number',
             width:40
         }];
@@ -110,31 +110,23 @@ module.exports = function(router){
     router.post('/join', function *() {
         var id = this.request.body.id;
         var phone = this.request.body.phone;
-        console.log(id);
         var user = this.session.auth && this.session.auth.user;
         if(user && user.type === UserType.Customer.value()) {
             if (phone) {
                 var points = yield activityPointsService.loadById(id);
                 if (points) {
-                    var participant = yield pointsParticipantService.filter({
-                        conditions: {
-                            user: this.session.auth.user.id,
-                            points: id
-                        }
-                    });
-                    console.error(participant);
-                    if (participant.length > 0) {
+                    var status = yield activityPointsService.getStatus(points, user);
+                    if (status.join === 'none') {
                         this.body = {error: 'joined', msg: '已参加'};
                     } else {
                         var json = {
                             points: id
-                            , user: this.session.auth.user.id
+                            , user: user.id
                             , phone: phone
                             , total_points: points.base_points
                             , help_friends: []
                         }
                         var data = yield pointsParticipantService.create(json);
-                        yield activityPointsService.updateById(id, {$inc: {participants_count: 1}});
                         this.body = data;
                     }
                 } else {
@@ -153,35 +145,8 @@ module.exports = function(router){
         var user = this.session.auth && this.session.auth.user || {};
         if(user.openid && user.type === UserType.Customer.value()){
             var participant = yield pointsParticipantService.loadById(id);
-            var helpArr = participant.help_friends;
-            if (helpArr.length < participant.points.friend_help_count_limit) {
-                var con = {
-                    _id: id,
-                    $where: 'this.help_friends.length < ' + participant.points.friend_help_count_limit
-                }
-                var res = yield pointsParticipantService.update(con, {$addToSet: {help_friends: user.openid}});
-                if(res.n === 1) {
-                    if (res.ok === 1 && res.nModified === 1) {
-                        var min = participant.points.friend_help_min_points || 0;
-                        var max = participant.points.friend_help_max_points || 0;
-                        var helpMoney = util.random(min, max);
-                        var total_points = participant.total_points + helpMoney;
-                        var update = {
-                            total_points: total_points
-                        }
-                        var data = yield pointsParticipantService.updateById(participant._id, update);
-                        this.body = data;
-                    } else {
-                        this.body = {helped: true};
-                    }
-                } else if(res.n === 0) {
-                    this.body = {limited: true};
-                } else {
-                    this.body = {error: 'unknown error'};
-                }
-            } else {
-                this.body = {limited: true};
-            }
+            var res = yield pointsParticipantService.help(participant, user);
+            this.body = res;
         }else {
             this.body = {error: 'please open in wechat browser'};
         }

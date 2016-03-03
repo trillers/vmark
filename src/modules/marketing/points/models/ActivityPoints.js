@@ -17,6 +17,7 @@ var Model = function(DomainBuilder){
             ,friend_help_min_points: {type: Number}
             ,friend_help_max_points: {type: Number}
             ,participants_count: {type: Number, default: 0}
+            ,views: {type: Number, default: 0}
             ,rule: {type: String}
             ,desc: {type: String}
         })

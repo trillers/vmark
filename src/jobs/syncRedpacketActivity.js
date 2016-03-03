@@ -11,7 +11,7 @@ var redpacketParticipantService = context.services.redpacketParticipantService;
 var logger = context.logger;
 var co = require('co');
 
-rule.second = [0, 30];
+rule.hour = 23;
 schedule.scheduleJob(rule, function(){
     logger.info('sync activity job starting');
     co(function*(){
