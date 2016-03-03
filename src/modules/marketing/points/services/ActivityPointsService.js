@@ -91,6 +91,10 @@ Service.prototype.getStatus = function*(points, user){
     var kv = this.context.kvs.points;
     status.participant = yield kv.getParticipantIdByUserIdAndActivityIdAsync
     (points._id, user.id);
+    if(status.participant){
+        status.join = 'none';
+        status.joined = '';
+    }
     var today = new Date();
     var active = today >= new Date(points.startTime) && today <= new Date(points.endTime);
     if(!active){

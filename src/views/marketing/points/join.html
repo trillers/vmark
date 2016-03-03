@@ -25,6 +25,7 @@
             color: rgb(200, 74, 59);
             background-color: yellow;
         }
+        #mask{ display: none;  position: absolute;  top: 0%;  left: 0%;  width: 100%;  height: 100%;  background-color: black;  z-index:1001;  -moz-opacity: 7;  opacity:0;  filter: alpha(opacity=0);}
     </style>
     <script>
         window.__app = {{JSON.stringify(__app)}};
@@ -36,7 +37,9 @@
                         id: $('#pointsId').val(),
                         phone: $('#phone').val()
                     }
+                    $('#mask').show();
                     $.post('/api/marketing/points/join', data, function (data) {
+                        $('#mask').hide();
                         if (!data.error) {
                             window.location.href = window.__app.settings.app.url + '/marketing/points/participant?id=' + data._id;
                         } else if (data.error === 'joined') {
@@ -53,6 +56,7 @@
     </script>
 </head>
 <body style="padding: 0; margin: 0; width: 100%; color: yellow; background-image:url('/web/marketing/points/images/join_bg.jpg'); background-size: 100%; background-repeat: no-repeat;">
+<div id="mask"></div>
 <div id="join" style="padding-top: 100px">
     <div class="fl userAvatar">
         <img style="border-radius: 100%; height: 70px; width: 70px" src="{{headimgurl}}">
