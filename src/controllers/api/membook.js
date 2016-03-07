@@ -53,13 +53,15 @@ module.exports = function (router) {
             let pageNote = yield noteService.createAsync({
                 title: '默认',
                 type: NoteType.Page.value(),
-                initiator: page.initiator._id
+                initiator: page.initiator._id,
+                status: NoteStatus.Publish.value()
             });
             pageNote.initiator = page.initiator;
             let sectionNote = yield noteService.createAsync({
                 parentNote: pageNote._id,
                 type: NoteType.Section.value(),
-                initiator: page.initiator._id
+                initiator: page.initiator._id,
+                status: NoteStatus.Publish.value()
             });
             sectionNote.initiator = page.initiator;
             pageNote.mates = [sectionNote];
@@ -75,7 +77,6 @@ module.exports = function (router) {
                 notePersisted.initiator = page.initiator;
                 sectionNote.mates.push(notePersisted);
             }
-            console.log(pageNote);
             this.body = {error: null, pageNote: pageNote};
         } catch(e) {
             context.logger.error(e);
@@ -137,25 +138,26 @@ module.exports = function (router) {
         try{
             var id = this.params.id;
             var note = yield noteService.loadByIdAsync(id);
-            if(note){
-                note.mates = yield noteService.loadMatesByIdAsync(id);
-                var arr = [];
-                if(note.mates && note.mates.length){
-                    for(var i=0, len=note.mates.length; i<len; i++){
-                        arr.push(noteService.loadMatesByIdAsync(note.mates[i]._id));
-                    }
-                    yield Promise.all(arr).then(function(results){
-                        if(results.length){
-                            for(var j=0, len=note.mates.length; j<len; j++){
-                                var n = note.mates[j];
-                                !n.mates && (n.mates=[]);
-                                n.mates = results[j];
-                            }
-                        }
-                    })
-                }
+            if(!note){
+                return this.body = {note: {}};
             }
-            this.body = {error: null, note: note};
+            note.mates = yield noteService.loadMatesDeepByIdAsync(id);
+            var arr = [];
+            if(note.mates && note.mates.length){
+                for(var i=0, len=note.mates.length; i<len; i++){
+                    arr.push(noteService.loadMatesByIdAsync(note.mates[i]._id));
+                }
+                yield Promise.all(arr).then(function(results){
+                    if(results.length){
+                        for(var j=0, len=note.mates.length; j<len; j++){
+                            var n = note.mates[j];
+                            !n.mates && (n.mates=[]);
+                            n.mates = results[j];
+                        }
+                    }
+                });
+            }
+            this.body = {note: note, error: null};
         }catch(e){
             context.logger.error(e);
             this.body = {error: e};
@@ -448,16 +450,20 @@ module.exports = function (router) {
             var json = this.request.body;
             this.session['draftId'] && (this.session['draftId'] = null);
             if(!json.parentNote){
-                var sectionNote = yield noteService.createAsync({
+                let sectionNote = {
                     initiator: this.session.auth.user._id,
-                    type: NoteType.Section.value(),
+                        type: NoteType.Section.value(),
                     notebook: json.notebook
-                });
-                json.parentNote = sectionNote._id;
+                }
+                if(json.pageNoteId){
+                    sectionNote['parentNote'] = json.pageNoteId;
+                }
+                var sectionNotePersisted = yield noteService.createAsync(sectionNote);
+                json.parentNote = sectionNotePersisted._id;
                 json.new = true;
             }
             var note = yield noteService.createAsync(json);
-            this.body = {note: note, section: sectionNote}
+            this.body = {note: note, section: sectionNotePersisted}
         }catch (e){
             context.logger.error(e);
         }

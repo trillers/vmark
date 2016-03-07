@@ -31,7 +31,7 @@
         <div class="mask" if="{pageNoteMode.status.comment}" ontouchstart="{quitCommentWithClickMask(currComment)}" style="height: {window.innerHeight + 'px'}"></div>
     </div>
     <note-confirm></note-confirm>
-    <note-input if="{Object.keys(currNote).length && pageNoteMode.status.edit}"></note-input>
+    <note-input-share if="{Object.keys(currNote).length && pageNoteMode.status.edit}"></note-input-share>
     <note-comment if="{currComment}"></note-comment>
     <!--play voice panel begin-->
     <div style="position:absolute;top:0;left:0;width:0;height:0;">
@@ -121,11 +121,9 @@
                     }
                 }
             }
-            var topDiv = document.body.querySelector('body >div');
-            var welComeDiv = topDiv.querySelector('#welcomeWrapper');
-            welComeDiv && topDiv.removeChild(welComeDiv);
-            self.update({hidden: false});
             self.updateWxShareConfig();
+            self.trigger('ready');
+            self.update();
         };
         //instance properties
         self.hidden = true;
@@ -213,8 +211,6 @@
             };
             self.titleInput.value = '';
         };
-        self.on('mount', function(){
-        });
         self.sectionShowOrNot = function(item){
             if(self.pageNoteMode.status.view && item.status != 'dr'){
                 return true;
@@ -303,17 +299,15 @@
             self.selectNote(tag.section, tag)
         });
         self.on('open', function(){
-            self.trigger('ready')
-        });
-        self.on('mount', function(){
-            console.info('tag pageNote new is opening');
             loadNote.onDone(onLoadNote);
-            updateNote.onDone(onUpdateNote);
-            self.init();
-            self.pageNote._id = id;
             loadNote.execute({
                 noteId: self.pageNote._id
             });
+        });
+        self.on('mount', function(){
+            updateNote.onDone(onUpdateNote);
+            self.init();
+            self.pageNote._id = id;
         });
         self.on('unmount', function(){
             loadNote.offDone(onLoadNote);

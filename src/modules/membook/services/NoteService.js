@@ -48,6 +48,34 @@ Service.prototype.loadMatesById = function(id, callback){
     //.populate({path: 'comments', populate:{path: 'initiator'}})
 };
 
+Service.prototype.loadMatesDeepById = function(id, callback){
+    var Note = this.context.models.Note;
+    Note.find({parentNote: id}, null, {lean: true})
+        .populate({path: 'initiator', select: 'headimgurl nickname crtOn'})
+        .populate({path: 'likes', populate:{path: 'initiator'}})
+        .populate({path: 'comments', populate:{path: 'initiator'}})
+        .sort({crtOn: 1})
+        .exec()
+        .then(function(doc){
+            Note.populate(doc, {
+                path: 'likes.initiator',
+                select: 'headimgurl nickname crtOn',
+                model: 'User'
+            }, function(err, doc){
+                if(err){
+                    return callback(err);
+                }
+                Note.populate(doc, {
+                    path: 'likes.initiator',
+                    select: 'headimgurl nickname crtOn',
+                    model: 'User'
+                }, callback)
+            })
+        }, function(e){
+            callback(e)
+        })
+}
+
 Service.prototype.loadNotesByNotebookId = function(id, callback){
     var Note = this.context.models.Note;
     Note.find({notebook: id}, null, {lean: true})

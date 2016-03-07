@@ -1,4 +1,4 @@
-<note-input>
+<note-input-share>
     <div id="mask">
         <div id="stop-record-tip">
             <span>松开手结束录音</span>
@@ -108,7 +108,8 @@
                 parentNote: self.parent.currNote._id || '',
                 pageNoteId: self.parent.pageNote._id
             }).onDone(function(data){
-                util.mixin(self.parent.currNote, data.sectionNote);
+                _.mixin(self.parent.currNote, data.section);
+                console.log(data);
                 self.parent.currNote.mates.push(data.note);
                 self.editTxtInput.value = '';
                 self.viewModel.input.doWait();
@@ -338,4 +339,4 @@
             }).execute();
         }
     </script>
-</note-input>
+</note-input-share>

@@ -1,4 +1,4 @@
-<note-section>
+<page-section>
     <div class="page-action-bar" if="{isShowSaveAndCancelButton()}">
         <div onclick="{submitSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" class="save pull-right">保存</div>
         <div onclick="{cancelSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" class="cancel pull-right">取消</div>
@@ -318,6 +318,7 @@
             self.parent.trigger('cancel', self.section);
         };
         self.submitSectionNote = function(e){
+            console.log(self.section);
             if(!self.section._id
                     || (self.section && self.section.mates && self.section.mates.length <=0)){
                 return;
@@ -458,4 +459,4 @@
             e.stopPropagation();
         }
     </script>
-</note-section>
+</page-section>
