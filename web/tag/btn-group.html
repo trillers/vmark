@@ -2,15 +2,15 @@
     <div class="mask" if="{state.current === 'menu' || state.current === 'edit'}" ontouchstart="{viewMode}" style="height: {window.innerHeight + 'px'}"></div>
     <div class="add-section-bar" if="{state.current == 'view'}" style="position: fixed; bottom: 0px">
         <div onclick="{showSubMenu}" style="width:48px;height:48px;background: red;float:left">单</div>
-        <div onclick="{addNewNote}" style="width:48px;height:48px;background: red;float:right">新</div>
+        <div if="{editableOrNot()}" onclick="{addNewNote}" style="width:48px;height:48px;background: red;float:right">新</div>
     </div>
     <div if="{state.current === 'menu'}" style="width: 100%; position: fixed; bottom: 0px; z-index: 100">
         <ul class="group_ul">
             <li class="{active: opts.active === 'note'}">
-                <a href="#">笔记</a>
+                <a href="#timeline">笔记</a>
             </li>
             <li class="{active: opts.active === 'notebook'}">
-                <a href="#">笔记本</a>
+                <a href="#notebook/index">笔记本</a>
             </li>
             <li class="{active: opts.active === 'share'}">
                 <a href="#">趣分享</a>
@@ -54,10 +54,15 @@
     </style>
     <script>
         "use strict";
+        self = this;
         self.currNav = 'note';
         self.state = {
             current: 'view'
         };
+        riot.route(function(){
+            self.state.current = 'view';
+            self.update();
+        });
         self.showSubMenu = function(e){
             self.state.current = 'menu';
         };
@@ -65,6 +70,13 @@
             app.trigger('viewMode');
             self.state.current = 'view';
         };
+        self.editableOrNot = function(){
+            return ((self.opts.latestnotebook.participates.map(function(participate){return participate._id})).indexOf(__page.user._id) >= 0)
+                && (window.location.hash.split('/')[0] === '#timeline')
+        };
+        app.on('changeForUpdate', function(res){
+            self.update();
+        });
         //view --> edit
         self.addNewNote = function(){
             app.trigger('addNewNote');

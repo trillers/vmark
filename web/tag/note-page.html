@@ -12,8 +12,8 @@
         </div>
 
         <div>
-            <note-section name="{item._id}" id="{item._id}" each="{item, i in pageNote.mates}" if="{parent.sectionShowOrNot(item)}" section="{item}"></note-section>
-            <note-section name="11" if="{pageNoteMode.status.edit && (currNote === newSection)}" section="{newSection}" new="true"></note-section>
+            <page-section name="{item._id}" id="{item._id}" each="{item, i in pageNote.mates}" if="{parent.sectionShowOrNot(item)}" section="{item}"></page-section>
+            <page-section name="11" if="{pageNoteMode.status.edit && (currNote === newSection)}" section="{newSection}" new="true"></page-section>
         </div>
         <div if="{pageNoteMode.status.view}" class="add-section-bar">
             <div class="add-section">
@@ -105,9 +105,9 @@
                 alert(data.error.message);
             }
         };
-        var onLoadNote = function(data){
-            if(data){
-                self.pageNote = data;
+        var onLoadNote = function(res){
+            if(!res.error){
+                self.pageNote = res.note;
                 if(self.pageNote.mates && self.pageNote.mates.length){
                     var draftSections = self.pageNote.mates.filter(function(sectionNote){
                         if(sectionNote.status === 'dr'){
@@ -121,10 +121,10 @@
                     }
                 }
             }
-            self.hidden = false;
             var topDiv = document.body.querySelector('body >div');
-            topDiv.removeChild(topDiv.querySelector('#welcomeWrapper'));
-            self.update();
+            var welComeDiv = topDiv.querySelector('#welcomeWrapper');
+            welComeDiv && topDiv.removeChild(welComeDiv);
+            self.update({hidden: false});
             self.updateWxShareConfig();
         };
         //instance properties
@@ -214,7 +214,6 @@
             self.titleInput.value = '';
         };
         self.on('mount', function(){
-            console.warn(self.tags);
         });
         self.sectionShowOrNot = function(item){
             if(self.pageNoteMode.status.view && item.status != 'dr'){
@@ -302,6 +301,9 @@
         });
         self.on('active', function(tag){
             self.selectNote(tag.section, tag)
+        });
+        self.on('open', function(){
+            self.trigger('ready')
         });
         self.on('mount', function(){
             console.info('tag pageNote new is opening');

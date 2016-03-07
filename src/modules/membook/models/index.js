@@ -7,6 +7,9 @@ module.exports.Note = Note(context.domainBuilder.main);
 var Notebook = require('./Notebook');
 module.exports.Notebook = Notebook(context.domainBuilder.main);
 
+var Invitation = require('./Invitation');
+module.exports.Invitation = Invitation(context.domainBuilder.main);
+
 var UserNotebook = require('./UserNotebook');
 module.exports.UserNotebook = UserNotebook(context.domainBuilder.main);
 

@@ -17,6 +17,7 @@ var rankAction = context.kvs.rankAction;
 var noteService = context.services.noteService;
 var notebookService = context.services.notebookService;
 var authenticationService = context.services.authenticationService;
+var invitationService = context.services.invitationService;
 
 module.exports = function(){
     var router = new Router();
@@ -32,6 +33,32 @@ module.exports = function(){
         console.log(authentication.getInterruptUrl(this));
         //returnOnSubscriptionType.createQr()
         yield this.render('/welcome', {wechatId: wechatId, env: env});
+    });
+
+    router.get('/notebook/invite/_:id', needSubscriptionFilter, function*(){
+        try{
+            let invitationId = this.params.id;
+            let invitation = yield invitationService.loadByIdAsync(invitationId);
+            if(!invitation.valid){
+                return yield this.render('/error', {error: '邀请已被他们认领.'});
+            }
+            let notebook = yield notebookService.loadNotebookByIdAndUserIdAsync({
+                user: this.session.auth.user._id,
+                notebook: invitation.notebook._id
+            });
+            if(notebook) {
+                yield notebookService.participateAsync({
+                    user: this.session.auth.user._id,
+                    notebook: notebook._id
+                });
+                yield invitationService.updateByIdAsync(invitationId, {valid: false});
+                this.session.auth.userBiz.latest = notebook._id;
+            }
+            yield this.render('note', {id: notebook._id});
+        } catch (e){
+            context.logger.error(e);
+            yield this.render('/error', {error: '邀请已被他们认领.'});
+        }
     });
 
     router.get('/mock-subscribe', function*(){

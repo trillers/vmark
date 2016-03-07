@@ -1,0 +1,28 @@
+<mask>
+    <div class="mask" if="{show}" ontouchstart="{hide}" style="height: {window.innerHeight + 'px'}"></div>
+    <style>
+        .mask{
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 2;
+            background: black;
+            opacity: 0.2;
+        }
+    </style>
+    <script>
+        var self = this;
+        this.show = false;
+        app.on('maskShow', function(){
+            self.update({show: true})
+        });
+        app.on('maskHide', function(){
+            self.update({show: false})
+        });
+        this.hide = function(){
+            self.update({show: false})
+            app.trigger('maskHiding');
+        };
+    </script>
+</mask>

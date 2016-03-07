@@ -5,13 +5,13 @@ var Service = function(context){
 };
 
 Service.prototype.create = function(json, callback){
-    var Notebook = this.context.models.Notebook;
-    var notebook = new Notebook(json);
-    notebook.save(function (err, result, affected) {
+    var Invitation = this.context.models.Invitation;
+    var invitation = new Invitation(json);
+    invitation.save(function (err, result, affected) {
         cbUtil.logCallback(
             err,
-            'Fail to save notebook: ' + err,
-            'Succeed to save notebook');
+            'Fail to save invitation: ' + err,
+            'Succeed to save invitation');
 
         cbUtil.handleAffected(function(err, doc){
             var obj = doc.toObject({virtuals: true});
@@ -30,35 +30,6 @@ Service.prototype.load = function(callback){
         else{
             callback(null, result);
         }
-    })
-};
-
-Service.prototype.loadNotebookByIdAndUserId = function(json, callback){
-    var UserNotebook = this.context.models.UserNotebook;
-
-    UserNotebook
-        .findOne({
-            notebook: json.notebook,
-            user: json.user
-        })
-        .lean()
-        .exec(function(err, docs){
-            if(err){
-                return callback(err)
-            }
-            callback(null, docs);
-        })
-};
-
-Service.prototype.participate = function(json, callback){
-    var UserNotebook = this.context.models.UserNotebook;
-    var userNotebook = new UserNotebook(json);
-
-    userNotebook.save(json, function(err, docs){
-        if(err){
-            return callback(err)
-        }
-        callback(null, docs);
     })
 };
 
@@ -151,16 +122,17 @@ Service.prototype.fetchById = function(id, user, callback){
 };
 
 Service.prototype.loadById = function(id, callback){
-    var Notebook = this.context.models.Notebook;
-    Notebook
+    var Invitation = this.context.models.Invitation;
+    Invitation
         .findById(id, null, {lean: true})
         .populate({path: 'initiator'})
+        .populate({path: 'notebook'})
         .exec(callback)
 };
 
 Service.prototype.updateById = function(id, json, callback){
-    var Notebook = this.context.models.Notebook;
-    Notebook.findByIdAndUpdate(id, json, {new: true}, function (err, doc) {
+    var Invitation = this.context.models.Invitation;
+    Invitation.findByIdAndUpdate(id, json, {new: true}, function (err, doc) {
         if(err){
             return callback(err);
         }else if(doc) {

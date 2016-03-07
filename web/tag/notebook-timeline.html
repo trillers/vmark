@@ -12,7 +12,7 @@
         </div>
 
         <div>
-            <note-section onclick="{state.doShare}" name="{item._id}" id="{item._id}" each="{item, i in notebook.mates}" highlight="{(parent.state.current === 'edit' && !parent.sectionShowOrNot(item))}" section="{item}"></note-section>
+            <note-section onclick="{state.doShare}" name="{item._id}" id="{item._id}" each="{item, i in notebook.mates}" shares="{parent.opts.shares}" mode="{parent.opts.mode}" highlight="{(parent.state.current === 'edit' && !parent.sectionShowOrNot(item))}" section="{item}"></note-section>
         </div>
         <div if="{state.current === 'view'}" style="width: 100%;text-align: center;margin-bottom: 20px">
             <img style="width: 96px;height: 96px" src="/public/images/qrcode_for_gh_cd89432d0321.jpg"/>
@@ -88,7 +88,6 @@
                 alert(data.error.message);
             }
         };
-
         var onLoadNote = function(data){
 
         };
@@ -212,9 +211,11 @@
             self.trigger('noteSave', notes);
         };
         self.parent.on('viewMode', function(e){
-            self.notebook.mates = self.notebook.mates.filter(function(notebook){return notebook._id});
-            if(self.opts.latest._id === self.notebook._id){
-                self.state.doView();
+            if(self.notebook && self.notebook.mates){
+                self.notebook.mates = self.notebook.mates.filter(function(notebook){return notebook._id});
+                if(self.opts.latest._id === self.notebook._id){
+                    self.state.doView();
+                }
             }
         });
         self.parent.on('addNewNote', function(e){
@@ -240,7 +241,6 @@
                 if(data.error){
                     return alert('error occur!');
                 }
-                console.log(data.sections)
                 self.notebook.mates = data.sections;
                 self.state.doView(self.notebook.mates[self.notebook.mates.length-1]);
                 self.updateWxShareConfig();

@@ -1,5 +1,6 @@
 "use strict";
 var co = require('co');
+var _ = require('underscore');
 var context = require('../../context/context');
 var typeRegistry = require('../../modules/common/models/TypeRegistry');
 var NoteType = typeRegistry.item('NoteType');
@@ -8,6 +9,8 @@ var InteractType = typeRegistry.item('InteractType');
 var noteService = context.services.noteService;
 var notebookService = context.services.notebookService;
 var interactService = context.services.interactService;
+var invitationService = context.services.invitationService;
+
 var rankAction = context.kvs.rankAction;
 
 module.exports = function (router) {
@@ -40,6 +43,96 @@ module.exports = function (router) {
         }
     });
 
+    /**
+     * add a note page for share
+     */
+    router.post('/share', function* (){
+        try{
+            let page = this.request.body;
+            page.initiaor = _.pick(page.initiaor, '_id', 'headimgurl', 'nickname');
+            let pageNote = yield noteService.createAsync({
+                title: '默认',
+                type: NoteType.Page.value(),
+                initiator: page.initiator._id
+            });
+            pageNote.initiator = page.initiator;
+            let sectionNote = yield noteService.createAsync({
+                parentNote: pageNote._id,
+                type: NoteType.Section.value(),
+                initiator: page.initiator._id
+            });
+            sectionNote.initiator = page.initiator;
+            pageNote.mates = [sectionNote];
+            sectionNote.mates = [];
+            for(var i=0, len=page.notes.length; i<len; i++){
+                let note = {
+                    content: page.notes[i].content,
+                    type: page.notes[i].type,
+                    parentNote: sectionNote._id,
+                    initiator: page.initiator._id
+                };
+                let notePersisted = yield noteService.createAsync(note);
+                notePersisted.initiator = page.initiator;
+                sectionNote.mates.push(notePersisted);
+            }
+            console.log(pageNote);
+            this.body = {error: null, pageNote: pageNote};
+        } catch(e) {
+            context.logger.error(e);
+            this.body = {error :e};
+        }
+    });
+
+    /**
+     * in used
+     */
+    router.put('/notebook/_:id', function* (){
+        try{
+            let id = this.params.id;
+            let title = this.request.body.title;
+            yield notebookService.updateByIdAsync(id,
+                {title: title}
+            );
+            this.body = {error: null, notebook: {
+                id: id,
+                title: title
+            }};
+        } catch(e) {
+            context.logger.error(e);
+            this.body = {error :e};
+        }
+    });
+
+    /**
+     * in used
+     * @param: pageNum
+     * @param: perPage
+     * @param: notebookId
+     */
+    router.post('/note/p/:num', function* (){
+        try{
+            let pageNum = this.params.num;
+            let perPage = this.request.body.perPage;
+            let notebookId = this.request.body.notebook;
+            let notes = yield noteService.filterAsync({
+                conditions:{
+                    notebook: notebookId,
+                    type: {
+                        $not: {$eq: 'sc'}
+                    }
+                },
+                page: {
+                    no: pageNum,
+                    size: perPage
+                }
+            });
+            this.body = {notes: notes, error: null};
+        } catch (e){
+            context.logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
     router.get('/note/_:id', function*(){
         try{
             var id = this.params.id;
@@ -62,25 +155,30 @@ module.exports = function (router) {
                     })
                 }
             }
-            console.error(note);
-            this.body = note;
+            this.body = {error: null, note: note};
         }catch(e){
             context.logger.error(e);
             this.body = {error: e};
         }
     });
 
+    /**
+     * in used, for app startup
+     */
     router.get('/notebooks/user/_:userId', function*(){
         try{
             let latestNotebookId = this.session.auth.userBiz.latest;
             let latestNotebook = null;
-            let res = yield notebookService.loadNotebooksByUserIdAsync(this.params.userId);
-            let notebooks = res.map(res => {
-                if(res.notebook._id === latestNotebookId) {
-                    latestNotebook = res.notebook;
+            let result = yield notebookService.loadNotebooksByUserIdAsync(this.params.userId);
+            let notebooks = result.map(function(r){ return r.notebook});
+            for(let i=0, len=notebooks.length; i<len; i++){
+                let notebook = notebooks[i];
+                let participatesTemp = yield notebookService.loadUsersByNotebookIdAsync(notebook._id);
+                notebook['participates'] = participatesTemp.map(function(participate){ return participate.user });
+                if(notebook._id === latestNotebookId) {
+                    latestNotebook = notebook;
                 }
-                return res.notebook;
-            });
+            }
             this.body = {notebooks: notebooks, latestNotebook: latestNotebook};
         }catch(e){
             console.log(e);
@@ -203,6 +301,105 @@ module.exports = function (router) {
             yield noteService.unlikeAsync(noteId, userId);
             this.body = {success: true};
         }catch(e){
+            context.logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    /**
+     * wanted {total count, a week count, participates}
+     * params: notebook_ids<Array>
+     * in used, for notebooks index
+     */
+    router.post('/notebooks/summary', function*(){
+        try{
+            var notebookIds = this.request.body.notebooks;
+            var notebooks = [];
+            for(let i=0, len=notebookIds.length; i<len; i++){
+                let id = notebookIds[i];
+                let notes = yield noteService.loadNotesByNotebookIdAsync(id);
+                let participatesTemp = yield notebookService.loadUsersByNotebookIdAsync(id);
+                let participates = participatesTemp.map(function(participate){ return participate.user });
+                let total = notes && notes.length || 0;
+                let now = (new Date()).getTime();
+                let countForWeek = notes.filter(function(note){ return ((now - note.crtOn.getTime()) <= 7*24*3600*1000)}).length || 0;
+                notebooks.push({
+                    id: id,
+                    total: total,
+                    countForWeek: countForWeek,
+                    participates: participates
+                })
+            }
+            this.body = {data: notebooks, error: null};
+        }catch(e){
+            context.logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    /**
+     * @params: notebook_id as id<string>
+     * in used
+     */
+    router.put('/notebook/latest/_:id', function*(){
+        try{
+            this.session.auth.userBiz.latest = this.params.id;
+            this.body = {data: true, error: null};
+        }catch(e){
+            context.logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    /**
+     * load notebook detail for notebook-detail page
+     * @param notebook_id
+     * @return {total count, a week count, participates}
+     * in used
+     */
+    router.post('/notebook/detail/_:id', function* (){
+        try{
+            let notebookId = this.params.id;
+            let notebook = yield notebookService.loadByIdAsync(notebookId);
+            let notes = yield noteService.loadNotesByNotebookIdAsync(notebookId);
+            let participatesTemp = yield notebookService.loadUsersByNotebookIdAsync(notebookId);
+            let participates = participatesTemp.map(function(participate){ return participate.user });
+            let total = notes && notes.length || 0;
+            let now = (new Date()).getTime();
+            let countForWeek = notes.filter(function(note){ return ((now - note.crtOn.getTime()) <= 7*24*3600*1000)}).length || 0;
+            notebook['total'] = total;
+            notebook['countForWeek'] = countForWeek;
+            notebook['participates'] = participates;
+            let refinedNotes = [];
+            if(notes && notes.length){
+                refinedNotes = notes.splice(0, 2)
+            }
+            this.body = {
+                error: null,
+                notebook:notebook,
+                notes: refinedNotes
+            };
+        }catch(e){
+            context.logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    /**
+     * @params initiator notebook
+     * invite participate
+     * in used
+     */
+    router.post('/notebook/invite', function* (){
+        try{
+            let initiator = this.request.body.initiator;
+            let notebook = this.request.body.notebook;
+            let invitation = yield invitationService.createAsync({notebook: notebook, initiator: initiator});
+            this.body = {
+                error: null,
+                invitation: invitation.id
+            }
+        } catch(e) {
             context.logger.error(e);
             this.body = {error: e};
         }

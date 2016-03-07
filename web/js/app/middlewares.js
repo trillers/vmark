@@ -7,6 +7,42 @@ exports.logger = function(app){
     }
 };
 
+exports.listenToChange = function(app){
+    return function(next){
+        return function(){
+            domain.action('updateLatestNotebook').onDone(function(res){
+                app.latestnotebook = res.notebook;
+                app.trigger('changeForUpdate');
+            });
+            domain.action('updateNotebook').onDone(function(data){
+                app.notebooks = app.notebooks.map(function(notebook){
+                    if(notebook._id === data.notebook.id){
+                        return util.assign({}, notebook, data.notebook);
+                    }
+                    return notebook
+                });
+                app.trigger('change', {
+                    error: data.error,
+                    notebooks: app.notebooks
+                });
+            });
+            domain.action('loadNoteDetail')
+                .onDone(function(data){
+                    if(data.error){
+                        console.error('error occur.');
+                    }
+                    app.notebooks = app.notebooks.map(function(notebook){
+                        if(notebook._id === data.notebook.id){
+                            return util.assign({}, notebook, data.notebook);
+                        }
+                        return notebook
+                    });
+                });
+            next();
+        }
+    }
+};
+
 exports.loadNotebooksByUserId = function(app){
     return function(next){
         return function(){

@@ -1,13 +1,13 @@
 <note-section>
-    <div class="page-action-bar" if="{isShowSaveAndCancelButton()}">
-        <div onclick="{submitSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" class="save pull-right">保存</div>
-        <div onclick="{cancelSectionNote}" if="{isOnEdit() && (initiator._id === parent.user._id)}" class="cancel pull-right">取消</div>
+    <div class="page-action-bar" if="{isShowShareBtnGroup()}">
+        <div onclick="{onShareItems}" class="save pull-right">分享</div>
+        <div onclick="{onCancelShare}" class="cancel pull-right">取消</div>
     </div>
     <div class="page {highlight: opts.highlight}" if="{!hidden}">
     <div class="section" sectionId="{_id}">
         <div class="panel">
         <div class="top-padding" />
-        <div class="author" >
+        <div class="author">
             <div style="display: inline; float: left;">
                 <img class="user-icon" riot-src="{section.initiator.headimgurl}"/>
             </div>
@@ -19,13 +19,13 @@
             </div>
         </div>
         <div class="noteItems">
-            <div each="{section.mates}" noteId="{_id}" style="margin-top: 5px" onclick="{parent.deleteNote}">
-                <div if="{type==='txt'}" class="note-text">{content}</div>
-                <div if="{type==='img'}" class="note_img"><img style="width: 100%" src="{url}"/></div>
-                <div if="{type==='voi'}" class="note-voice" style="float:left">
+            <div class="{share_div: parent.inShareItems(note)}" each="{note in section.mates}" noteId="{_id}" style="position:relative;z-index: 3;margin-top: 5px" onclick="{parent.deleteNote}">
+                <div if="{note.type==='txt'}" class="note-text">{note.content}</div>
+                <div if="{note.type==='img'}" class="note_img"><img style="width: 100%" riot-src="{note.url}"/></div>
+                <div if="{note.type==='voi'}" class="note-voice" style="float:left">
                     <div style="width: {seconds * 3 + 30}px" class="voice-bubble left" onclick="{parent.playVoice}" >
                         <img src="/public/images/voice_3.png">
-                    </div><span class="seconds">{seconds}"</span>
+                    </div><span class="seconds">{note.seconds}"</span>
                 </div>
                 <div style="clear: both;"></div>
             </div>
@@ -37,8 +37,8 @@
                     <td style="width:45%;">
                     </td>
                     <td style="width:10%;">
-                        <div class="img-btn left" onclick="{editSectionNote}" if="{!isOnEdit() && (section.initiator._id === parent.user._id)}">
-                            <img src="/public/images/edit.png">
+                        <div class="img-btn left" if="{!isOnEdit() && (section.initiator._id === parent.user._id)}">
+
                         </div>
                     </td>
                 </tr>
@@ -50,6 +50,9 @@
     </div>
     </div>
     <style scoped>
+        .share_div{
+            background: red;
+        }
         .highlight{
             background: red;
         }
@@ -141,6 +144,7 @@
         var likeNote = domain.action('likeNote');
         var unlikeNote = domain.action('unlikeNote');
         var deleteComment = domain.action('deleteComment');
+
         //instance properties
         self.section = this.opts.section;
         self.parent = self.parent.parent;
@@ -148,6 +152,9 @@
         self.initiator.headimgurl = self.initiator.headimgurl || '/public/images/def-avatar.png';
         self.isOnEdit = function(){
             return self.parent.currNote === self.section;
+        };
+        self.inShareItems = function(note){
+            return self.opts.shares && (self.opts.shares.filter(function(i){ return i._id===note._id}).length>0) || null
         };
         self.viewModel = {
             toggleTxtVoiBtn: {
@@ -179,17 +186,16 @@
         self.on('update', function(){
             self.section = self.opts.section;
         });
-        self.isShowSaveAndCancelButton = function(){
-            return self.isOnEdit() && (self.initiator._id === self.parent.user._id);
-        };
-        self.editSectionNote = function(e){
-            self.init();
-            self.parent.trigger('editSectionNote', self.section);
+        self.isShowShareBtnGroup = function(){
+            return self.opts.mode === 'share' && (self.initiator._id === self.parent.user._id);
         };
         self.deleteNote = function(e){
 //            if(!(self.isOnEdit() && (self.initiator._id === self.parent.user._id))){
 //                return false;
 //            }
+            if(self.opts.mode === 'share'){
+                return app.trigger('shareToggle', e.item.note);
+            }
             self.confirm({text: '是否删除该行'}, function(){
                 deleteNotes.newInvocation({
                     notes: [e.item._id]
@@ -209,6 +215,12 @@
                 })
                 .execute();
             });
+        };
+        self.onCancelShare = function(e){
+            app.trigger('viewMode');
+        };
+        self.onShareItems = function(e){
+            app.trigger('beginShare');
         };
         self.confirm = function(option, fn){
             app.one('confirm', confirmListener);
@@ -231,5 +243,6 @@
             self.parent.trigger('playVoice', data.url, data.status);
             e.stopPropagation();
         }
+
     </script>
 </note-section>

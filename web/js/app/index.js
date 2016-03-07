@@ -3,10 +3,12 @@
  */
 require('./agent').init();
 require('./tags')();
+var _ = require('./util');
 var middlewares = require('./middlewares');
 var applyMiddlewares = middlewares.applyMiddlewares;
 var loadNotebooksByUserId = middlewares.loadNotebooksByUserId;
 var logger = middlewares.logger;
+var listenToChange = middlewares.listenToChange;
 
 var App = require('./app');
 
@@ -38,31 +40,35 @@ Navigation.prototype.doRouteView = function(ctx, id){
         console.warn(ctx.req.routeKey + ' route has no registered handler');
         return;
     }
-    var viewId = ctx.req.routeKey + (id || '');
+    var viewId = ctx.req.routeKey;
     var view = this.views[viewId];
-
     if(!view) {
-        try{
-            view = handlers.mountHandler.call(this, ctx, id);
-            this.views[viewId] = view;
-        }catch(e){
-            throw new Error('tag is not in set.');
+        view = handlers.mountHandler.call(this, ctx, id);
+        if(!view){
+            throw new Error('no such tag name ' + viewId);
         }
+        this.views[viewId] = view;
     }
+    view.on('ready', readyHandler);
+    try{
+        var context = _.toObjectFromRiot(this.current);
+    } catch (e){
+        console.error('ctx parse error.');
+    }
+    view.trigger('open', context);
 
     this.current = view;
-    view.off('ready').on('ready', readyHandler);
-    view.trigger('open');
 
     function readyHandler(){
         Object.keys(self.views).map(function(key){
             var v = self.views[key];
-            if(!v.hidden){
+            if(v && !v.hidden){
                 v.update({hidden: true});
             }
         });
         app.trigger('done');
         view.update({hidden: false});
+
         view.off('ready');
     }
     this.last = handlers.viewHandler.call(this, ctx, id);
@@ -88,7 +94,8 @@ app.on('init', function () {
     if(!window.app){
         window.app = app;
     }
-    riot.mount('btn-group')
+    riot.mount('btn-group', {notebooks: app.notebooks, latestnotebook: app.latestnotebook});
+    riot.mount('mask');
 });
 
 var isDone = false;
@@ -101,11 +108,29 @@ app.on('done', function(){
     topDiv.removeChild(topDiv.querySelector('#welcomeWrapper'));
 });
 
+
+/*
+ * route for share page note
+ */
+var mount_timeline = function(ctx, id){
+    return riot.mount('note-page', {id: id})[0];
+};
+var view_timeline = function(ctx, id){
+    console.log("........")
+};
+
+nav.addRouteView('share/_', mount_timeline, view_timeline);
+
 /*
  * route for timeline index page
  */
 var mount_timeline = function(ctx, id){
-    return riot.mount('notebook-timelines', {id: id, notebooks: app.notebooks, latestnotebook: app.latestnotebook})[0];
+    var tagInstance = null;
+    tagInstance = this.views['timeline'] || this.views['timeline/_'];
+    if(!tagInstance){
+        tagInstance = riot.mount('notebook-timelines', {id: id, notebooks: app.notebooks, latestnotebook: app.latestnotebook})[0];
+    }
+    return tagInstance;
 };
 var view_timeline = function(ctx, id){
 
@@ -138,7 +163,7 @@ var view_notebook_detail = function(ctx, id){
 nav.addRouteView('notebook/_', mount_notebook_detail, view_notebook_detail);
 
 
-var bootstrap = applyMiddlewares(loadNotebooksByUserId(app), logger(app));
+var bootstrap = applyMiddlewares(loadNotebooksByUserId(app), logger(app), listenToChange(app));
 
 bootstrap(app.init.bind(app));
 

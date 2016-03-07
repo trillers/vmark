@@ -1,7 +1,6 @@
 <notebook-index>
     <div if="{!hidden}">
-        111
-        <notebook-item class="notebook-item" each="{item, i in opts.notebooks}" notebook="{item}"/>
+        <notebook-item onclick="{parent.routeToDetail}" class="notebook-item" each="{item, i in notebooks}" total="{total}" weekcount="{countForWeek}" notebook="{item}"/>
     </div>
 
     <!--play voice panel end-->
@@ -10,21 +9,37 @@
     </style>
     <script>
         "use strict";
-        //private properties
         var self = this;
         var id = this.opts.id;
         this.hidden = true;
-        var url = window.location.href;
-        var loadAllNotebook = domain.action('loadAllNotebook');
-        var loadLatestNotebook = domain.action('loadLatestNotebook');
-        var updateNote = domain.action('updateNote');
-        var shareAction = domain.action('shareAction');
+        var loadSummaryInNotebooksByIds = domain.action('loadSummaryInNotebooksByIds');
+        self.routeToDetail = function(e){
+            riot.route('notebook/_' + e.item.item._id);
+        };
         self.on('mount', function(){
-
+            app.on('change', function(state){
+                var notebooks = _.assign(self.notebooks, state.notebooks);
+                self.update({notebooks: notebooks})
+            });
         });
         self.on('open', function(){
-            console.log('opened');
-            self.trigger('ready')
+            loadSummaryInNotebooksByIds.newInvocation({
+                notebooks: opts.notebooks.map(function(notebook){return notebook._id})
+            })
+            .onDone(function(res){
+                if(res.error){
+                    console.log('Failed to load summary', data.error);
+                    return;
+                }
+                //own state
+                self.notebooks = self.opts.notebooks.map(function(notebook){
+                    return _.mixin(notebook, res.data.filter(function(item){
+                        return item.id === notebook._id
+                    })[0])
+                });
+                self.trigger('ready');
+            })
+            .execute();
         })
     </script>
 </notebook-index>

@@ -1,29 +1,150 @@
 <notebook-detail>
+    <div class="mask" if="{shareing}" ontouchstart="{resetShare}" style="height: {window.innerHeight + 'px'}">
+        分享给朋友,邀请加入
+    </div>
     <div class="page" if="{!hidden}">
         <div class="title">
-            笔记本详情
+            <input if="{notebook.initiator._id != __page.user._id}" readonly type="text" value="{notebook.title}"/>
+            <input name="title" if="{notebook.initiator._id === __page.user._id}" onblur="{modifyTitle}" type="text" value="{notebook.title}"/>
+        </div>
+        <div>
+            共有记录者 {notebook.participates.length} 人 <div if="{notebook.initiator._id === __page.user._id}"><a onClick="{inviteParticipates}">邀请</a></div>
+            <ul>
+                <li each="{notebook.participates}">
+                    <img riot-src="{headimgurl}"/>
+                    <div>{nickname}</div>
+                </li>
+            </ul>
+        </div>
+        <div>
+            最近笔记(共{notebook.total}条) <a href="#timeline/_{notebook._id}">查看全部</a>
+            <ul>
+                <li each="{notes}">
+                    <div>{content}</div>
+                    <div>{crtOn}</div>
+                </li>
+            </ul>
         </div>
     </div>
     <!--play voice panel end-->
     <style scoped>
-
+        .mask{
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 2;
+            background: black;
+            opacity: 0.2;
+        }
+        ul{
+            margin: 0px;
+            padding: 0px;
+        }
+        ul li img{
+            width:40px;
+        }
     </style>
     <script>
         "use strict";
-        //private properties
+        //opts wanted: notebook <{
+        // title,
+        // participates,
+        // total count,
+        // notes,
+        // }>
         var self = this;
         var id = this.opts.id;
         var url = window.location.href;
-        var loadNote = domain.action('loadNote');
-        var onLoadNote = function(){
-
-        }
+        var loadNotesInNotebookByPage = domain.action('loadNotesInNotebookByPage');
+        var loadNoteDetail = domain.action('loadNoteDetail');
+        var updateNotebook = domain.action('updateNotebook');
+        var inviteParticipates = domain.action('inviteParticipates');
+        var onLoadNoteDetail = function(res){
+            self.notebook = res.notebook;
+            self.notes = res.notes;
+            self.trigger('ready');
+        };
+        var resetShare = function(){
+            self.shareing = false;
+            var shareConfig = {
+                title: self.notebook && self.notebook.title || __app.resources.app.title,
+                link: '',
+                imgUrl: __page.baseUrl + '/public/images/logo_share_48x48.jpg',
+                success: function noop(){},
+                cancel: function noop(){}
+            };
+            wx.onMenuShareAppMessage(shareConfig);
+            self.update();
+        };
         self.hidden = true;
+        self.shareing = false;
+        self.resetShare = resetShare;
+        self.on('open', function(ctx){
+            var notebookId = window.location.hash.split('_')[1];
+            if(!notebookId){
+                throw new Error('hash parse error.');
+            }
+            if(ctx && ctx.notebooks && ctx.notebooks.length){
+                //有部分信息,需要加载相关笔记
+                self.notebook = ctx.notebooks.filter(function(notebook){
+                    return notebook._id === notebookId
+                })[0];
+                loadNotesInNotebookByPage.newInvocation({
+                    pageNum: 1,
+                    perPage: 10,
+                    notebook: self.notebook._id || notebookId
+                })
+                .onDone(function(res){
+                    if(res.error){
+                        alert('failed to load notes, error occur.')
+                        return;
+                    }
+                    if(res && res.notes && res.notes.length){
+                        self.notes = res.notes.slice(0, 2);
+                    }
+                    self.trigger('ready');
+                })
+                .execute();
+            }
+            else{
+                //没有该notebook的信息
+                loadNoteDetail.execute({
+                    notebook: notebookId
+                }).onDone(onLoadNoteDetail)
+            }
+        });
+        self.inviteParticipates = function(e){
+            self.shareing = true;
+            inviteParticipates.newInvocation({
+                notebook: self.notebook._id,
+                initiator: __page.user._id
+            })
+            .onDone(function(res){
+                setTimeout(function(){
+                    var url = 'membook/notebook/invite/_' + res.invitation;
+                    var shareConfig = {
+                        title: self.notebook && self.notebook.title || __app.resources.app.title,
+                        desc: '',
+                        link: url,
+                        imgUrl: __page.baseUrl + '/public/images/logo_share_48x48.jpg',
+                        success: resetShare,
+                        cancel: resetShare
+                    };
+                    wx.onMenuShareAppMessage(shareConfig);
+                }, 100);
+            })
+            .execute();
+        };
+        self.modifyTitle = function(){
+            updateNotebook.execute({
+                id: self.notebook._id,
+                title: self.title.value
+            });
+        };
         self.on('mount', function(){
-            loadNote.onDone(onLoadNote);
         });
         self.on('unmount', function(){
-            loadNote.offDone(onLoadNote);
         });
 
     </script>

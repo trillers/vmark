@@ -1,13 +1,34 @@
 <notebook-timelines>
+    <div id="shareMask" class="mask" if="{currentState === 'share'}" style="height: {window.innerHeight + 'px'}"></div>
     <div class="timeline_container" if="{!hidden}">
-        <notebook-timeline each="{note in opts.notebooks}" if="{parent.opts.latestnotebook._id === note._id}" notebook="{note}" latest="{parent.opts.latestnotebook}"></notebook-timeline>
+        <notebook-timeline each="{note in opts.notebooks}" if="{parent.opts.latestnotebook._id === note._id}" notebook="{note}" latest="{parent.opts.latestnotebook}" mode="{parent.currentState}" shares="{parent.shares}"></notebook-timeline>
         <div class="btn_group" style="position: fixed; top: {300}px">
             <div id="prev_page_btn" onclick="{onPrevPageClick}" class="route_btn" style="float:left">上</div>
             <div id="next_page_btn" onclick="{onNextPageClick}" class="route_btn" style="float: right">下</div>
         </div>
+        <div class="share_btn" onclick="{openShareMode}">
+            享
+        </div>
         <note-confirm></note-confirm>
     </div>
     <style>
+        .mask{
+            width: 100%;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 2;
+            background: black;
+            opacity: 0.2;
+        }
+        .share_btn{
+            position: fixed;
+            bottom: 250px;
+            right: 0px;
+            width: 40px;
+            height: 40px;
+            background: red;
+        }
         .timeline_container{
             overflow: hidden;
         }
@@ -23,34 +44,86 @@
     </style>
     <script>
         var self = this;
+        var updateLatestNotebook = domain.action('updateLatestNotebook');
+        var addShareNotePage = domain.action('addShareNotePage');
+
         self.hidden = true;
         self.currentState = 'view';
+        self.shares = [];
         app.on('viewMode', function(e){
             self.trigger('viewMode');
-            self.currentState = 'view';
+            self.update({
+                currentState: 'view',
+                shares: []
+            })
+        });
+        app.on('beginShare', function(){
+            //todo page new
+            if(!self.shares.length){
+                return;
+            }
+            addShareNotePage.newInvocation({
+                notes: self.shares,
+                initiator: __page.user._id
+            })
+            .onDone(function(res){
+                console.log(res.pageNote);
+                self.currentState = 'view';
+                self.shares = [];
+                riot.route('share/_' + res.pageNote._id);
+            })
+            .execute();
         });
         app.on('addNewNote', function(e){
             self.trigger('addNewNote');
         });
-        self.onPrevPageClick = function(e){
-            var currentIndex = self.opts.notebooks.map(function(notebook){return notebook._id}).indexOf(self.opts.latestnotebook._id);
-            if(!self.opts.notebooks[currentIndex-1]){
+        app.on('shareToggle', function(note){
+            var i = self.shares.indexOf(note);
+            if(i>=0){
+                self.shares.splice(i, 1);
+            }else{
+                self.shares.push(note);
+            }
+            console.log(self.shares)
+            self.update({shares: self.shares});
+        });
+        var routeToNotebook = function(index){
+            if(!self.opts.notebooks[index]){
                 return;
             }
-            self.latestNotebook = self.opts.notebooks[currentIndex-1];
-            riot.route('timeline/_' + self.opts.latestnotebook._id);
+            self.opts.latestnotebook = self.opts.notebooks[index];
+            var notebookId = self.opts.latestnotebook._id;
+            updateLatestNotebook.execute({
+                notebookId: notebookId
+            })
+            .onDone(function(){
+                riot.route('timeline/_' + notebookId);
+            })
+        };
+        self.onPrevPageClick = function(e){
+            var currentIndex = self.opts.notebooks.map(function(notebook){return notebook._id}).indexOf(self.opts.latestnotebook._id);
+            routeToNotebook(currentIndex-1);
         };
         self.onNextPageClick = function(e){
             var currentIndex = self.opts.notebooks.map(function(notebook){return notebook._id}).indexOf(self.opts.latestnotebook._id);
-            if(!self.opts.notebooks[currentIndex+1]){
-                return;
-            }
-            self.opts.latestnotebook = self.opts.notebooks[currentIndex+1];
-            riot.route('timeline/_' + self.opts.latestnotebook._id);
+            routeToNotebook(currentIndex+1);
         };
         self.on('mount', function(){
-            console.log(self.opts)
-        });
 
+        });
+        self.on('open', function(){
+            try{
+                var notebook = self.opts.notebooks.filter(function(notebook){
+                    return notebook._id === window.location.hash.split('_')[1]
+                })[0];
+                routeToNotebook(self.opts.notebooks.indexOf(notebook));
+            }catch(e){
+                console.error(e);
+            }
+            self.trigger('ready')
+        });
+        self.openShareMode = function(){
+            self.currentState='share';
+        }
     </script>
 </notebook-timelines>
