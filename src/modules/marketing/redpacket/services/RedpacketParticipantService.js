@@ -9,9 +9,9 @@ var Service = function(context){
 
 Service.prototype.create = function*(jsonData){
     var logger = this.context.logger;
-    var RepacketParticipant = this.context.models.RepacketParticipant;
+    var RedpacketParticipant = this.context.models.RedpacketParticipant;
     var kv = this.context.kvs.redpacket;
-    var participant = new RepacketParticipant(jsonData);
+    var participant = new RedpacketParticipant(jsonData);
     var doc = yield participant.save();
     yield kv.saveParticipantAsync(doc.toObject());
     logger.info('success create participant: ' + util.inspect(doc));
@@ -20,10 +20,10 @@ Service.prototype.create = function*(jsonData){
 
 Service.prototype.updateById = function*(id, update, helpMoney){
     var logger = this.context.logger;
-    var RepacketParticipant = this.context.models.RepacketParticipant;
+    var RedpacketParticipant = this.context.models.RedpacketParticipant;
     var kv = this.context.kvs.redpacket;
 
-    var doc = yield RepacketParticipant.findByIdAndUpdate(id, update, {new: true}).lean().exec();
+    var doc = yield RedpacketParticipant.findByIdAndUpdate(id, update, {new: true}).lean().exec();
     yield kv.increaseParticipantScoreInRankingListAsync(doc.activity, doc.user, helpMoney);
     logger.info('success update participant by id: ' + id);
     return doc;
@@ -31,25 +31,25 @@ Service.prototype.updateById = function*(id, update, helpMoney){
 
 Service.prototype.syncById = function*(id, update){
     var logger = this.context.logger;
-    var RepacketParticipant = this.context.models.RepacketParticipant;
+    var RedpacketParticipant = this.context.models.RedpacketParticipant;
 
-    var doc = yield RepacketParticipant.findByIdAndUpdate(id, update, {new: true}).lean().exec();
+    var doc = yield RedpacketParticipant.findByIdAndUpdate(id, update, {new: true}).lean().exec();
     logger.info('success update participant by id: ' + id);
     return doc;
 }
 
 Service.prototype.update = function*(con, update){
     var logger = this.context.logger;
-    var RepacketParticipant = this.context.models.RepacketParticipant;
-    var res = yield RepacketParticipant.update(con, update).exec();
+    var RedpacketParticipant = this.context.models.RedpacketParticipant;
+    var res = yield RedpacketParticipant.update(con, update).exec();
     logger.info('success update participant by condition: ' + con);
     return res;
 }
 
 Service.prototype.loadById = function*(id){
     var logger = this.context.logger;
-    //var RepacketParticipant = this.context.models.RepacketParticipant;
-    //var doc = yield RepacketParticipant.findById(id, {}, {lean: true}).populate({path: 'redpacket'}).populate({path: 'user'}).exec();
+    //var RedpacketParticipant = this.context.models.RedpacketParticipant;
+    //var doc = yield RedpacketParticipant.findById(id, {}, {lean: true}).populate({path: 'redpacket'}).populate({path: 'user'}).exec();
     var kv = this.context.kvs.redpacket;
     var userKv = this.context.kvs.platformUser;
     var participant = yield kv.loadParticipantByIdAsync(id);
@@ -71,24 +71,24 @@ Service.prototype.loadById = function*(id){
 
 Service.prototype.deleteById = function*(id){
     var logger = this.context.logger;
-    var RepacketParticipant = this.context.models.RepacketParticipant;
-    var doc = yield RepacketParticipant.findByIdAndUpdate(id, {lFlg: 'd'}, {new: true}).lean().exec();
+    var RedpacketParticipant = this.context.models.RedpacketParticipant;
+    var doc = yield RedpacketParticipant.findByIdAndUpdate(id, {lFlg: 'd'}, {new: true}).lean().exec();
     logger.info('success delete participant by id: ' + id);
     return doc;
 }
 
 Service.prototype.loadAll = function*(){
     var logger = this.context.logger;
-    var RepacketParticipant = this.context.models.RepacketParticipant;
-    var docs = yield RepacketParticipant.find({lFlg: 'a'}).lean().exec();
+    var RedpacketParticipant = this.context.models.RedpacketParticipant;
+    var docs = yield RedpacketParticipant.find({lFlg: 'a'}).lean().exec();
     logger.info('success load all participant');
     return docs;
 }
 
 Service.prototype.filter = function*(params){
     var logger = this.context.logger;
-    var RepacketParticipant = this.context.models.RepacketParticipant;
-    var query = RepacketParticipant.find();
+    var RedpacketParticipant = this.context.models.RedpacketParticipant;
+    var query = RedpacketParticipant.find();
 
     if (params.options) {
         query.setOptions(params.options);

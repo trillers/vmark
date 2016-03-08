@@ -12,6 +12,10 @@ var defaultType =     qrRegistry.getQrType('default');
 var tenantAdminType = qrRegistry.newType('ta', {temp: true});
 var tenantBotType =   qrRegistry.newType('tb', {temp: true});
 var loginType =       qrRegistry.newType('lg', {temp: true});
+var activityType =    qrRegistry.newType('ac', {temp: true});
+var activityPosterType =    qrRegistry.newType('acp', {temp: true});
+var participantPosterType =    qrRegistry.newType('pap', {temp: true});
+
 var recontentTenantType = qrRegistry.newType('rec-ta', {temp: true}); //创建文章采集租户
 
 recontentTenantType.onAccess(function(qr, openid){
@@ -152,7 +156,40 @@ defaultType.onAccess(function(qr, openid){
     });
 });
 
+activityType.onAccess(function(qr, openid){
+    co(function*(){
+        try{
+            console.log('activity type qr code been scanned, qr:' + qr.sceneId + 'user: ' + openid);
+        }
+        catch(e){
+            console.error(e);
+        }
+    });
+});
+activityType.onExpire(function(){});
 
+activityPosterType.onAccess(function(qr, openid){
+    co(function*(){
+        try{
+            console.log('activity type qr code been scanned, qr:' + qr.sceneId + 'user: ' + openid);
+        }
+        catch(e){
+            console.error(e);
+        }
+    });
+});
+activityPosterType.onExpire(function(){});
 
+participantPosterType.onAccess(function(qr, openid){
+    co(function*(){
+        try{
+            console.log('activity type qr code been scanned, qr:' + qr.sceneId + 'user: ' + openid);
+        }
+        catch(e){
+            console.error(e);
+        }
+    });
+});
+participantPosterType.onExpire(function(){});
 
 module.exports = qrRegistry;

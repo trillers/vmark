@@ -86,4 +86,8 @@ registry
     .addChild('Tenant','t', '租户')
     .addChild('Customer','c', '终端用户') /*参与活动用户等*/
 
+    .up().item('PosterType', 'PosterType', '海报类型')
+    .addChild('activity','ac', '活动')
+    .addChild('participant','pa', '参与者')
+
 module.exports = registry;

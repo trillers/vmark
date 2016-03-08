@@ -1,6 +1,6 @@
 var Model = function(DomainBuilder) {
         var schema = DomainBuilder
-            .i('RepacketParticipant')
+            .i('RedpacketParticipant')
             .withBasis()
             .withLifeFlag()
             .withCreatedOn()
