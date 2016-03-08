@@ -45,9 +45,10 @@
             focus: true
         });
 
-        $.get('/api/marketing/redpacket/load', function (data) {
+        $.get('/api/marketing/power/load', function (data) {
             data.forEach(function (item) {
-                $('#list').append($('<li style="height: 17px; overflow: hidden; margin-top: 2px;"> <strong class="col-md-2 activity-name" _id="'+ item._id +'">' + item.name + '</strong> <strong class="col-md-2">' + formatDate(item.startTime) + '</strong> <strong class="col-md-2">' + formatDate(item.endTime) + '</strong> <strong class="col-md-6 actionCon"><a href="'+ window.__app.settings.app.url + '/marketing/redpacket/redpacket?id=' + item._id +'" target="_blank">查看</a><a href="{{api}}' + '/marketing/redpacket/exportParticipants?id=' + item._id + '" target="_blank" >导出</a></strong> </li>'));
+                item.type = getActivityType(item.type);
+                $('#list').append($('<li style="height: 17px; overflow: hidden; margin-top: 2px;"> <strong class="col-md-2 activity-name" _id="'+ item._id +'">' + item.name + '</strong> <strong class="col-md-2">' + formatDate(item.startTime) + '</strong> <strong class="col-md-2">' + formatDate(item.endTime) + '</strong><strong class="col-md-2">' + item.type + '</strong> <strong class="col-md-4 actionCon"><a href="'+ window.__app.settings.app.url + '/marketing/power/activity?id=' + item._id +'" target="_blank">查看</a><a href="{{api}}' + '/marketing/power/exportParticipants?id=' + item._id + '" target="_blank" >导出</a></strong> </li>'));
             });
             $('.activity-name').off('click').click(function(){
                 edit($(this).attr('_id'));
@@ -55,12 +56,38 @@
         });
 
         $('#add').click(function () {
-            $('#luckyMoneyHelpList').hide();
+            $('#powerList').hide();
             $('#addForm').show();
+            $('#startTime').attr('value', formatDate(new Date()));
+            $('#endTime').attr('value', formatDate(new Date()));
+            if($('#add-or-update').val() === 'update') {
+                $('#activityName').val('');
+                $('#shareTitle').val('');
+                $("input[name='activity_type']")[0].checked = true;
+                bgImgCount = 0;
+                bgImg = [];
+                shareImg = '';
+                for (var i = 1; i <= 3; i++) {
+                    $('#bgImg' + i + ' img').attr('src', '').parent().css('display', 'none');
+                    $('#bgImg' + i + ' i').attr('media', '');
+                }
+                $('#bgImg').show();
+                $('#shareImg1 img').attr('src', '').parent().css('display', 'none');
+                $('#shareImg').show();
+                $('#shareDesc').val('');
+                $('#base_power').val('');
+                $('#friend_help_count_limit').val('');
+                $('#friend_help_min_power').val('');
+                $('#friend_help_max_power').val('');
+                $('#rule').summernote('code', '');
+                $('#desc').summernote('code', '');
+                $('#activity-id').val('');
+                $('#add-or-update').val('add');
+            }
         });
 
         $('#return').click(function () {
-            $('#luckyMoneyHelpList').show();
+            $('#powerList').show();
             $('#addForm').hide();
         });
 
@@ -79,18 +106,18 @@
 
         $('#submit').click(function () {
             var json = {
-                type: $('#activityType').val()
+                type: $(':radio[name="activity_type"]:checked').val()
                 , name: $('#activityName').val()
                 , bgImg: bgImg
                 , shareImg: shareImg
                 , shareTitle: $('#shareTitle').val()
                 , shareDesc: $('#shareDesc').val()
-                , base_lucky_money: $('#base_lucky_money').val()
+                , base_power: $('#base_power').val()
                 , friend_help_count_limit: $('#friend_help_count_limit').val()
                 , startTime: $('#startTime').val() + ' 00:00:00'
                 , endTime: $('#endTime').val() + ' 23:59:59'
-                , friend_help_min_money: $('#friend_help_min_money').val()
-                , friend_help_max_money: $('#friend_help_max_money').val()
+                , friend_help_min_power: $('#friend_help_min_power').val()
+                , friend_help_max_power: $('#friend_help_max_power').val()
                 , rule: $('#rule').summernote('code')
                 , desc: $('#desc').summernote('code')
             }
@@ -101,12 +128,19 @@
                 update(json);
             }
         })
+        function getActivityType(type){
+            if(type === 'rp'){
+                return '红包';
+            }else if(type === 'po'){
+                return '积分';
+            }
+        }
         function add(json){
-            $.post('/api/marketing/redpacket/add', json, function (data) {
+            $.post('/api/marketing/power/add', json, function (data) {
 //                if (data) {
 //                    $('#list').append($('<li style="height: 17px; overflow: hidden; margin-top: 2px;"> <strong class="col-md-2 activity-name">' + data.name + '</strong> <strong class="col-md-2">' + formatDate(data.startTime) + '</strong> <strong class="col-md-2">' + formatDate(data.endTime) + '</strong> <strong class="col-md-6">' + window.__app.settings.app.url + '/activity?id=' + data._id + '</strong> </li>'));
 //                    $('#addForm').hide();
-//                    $('#luckyMoneyHelpList').show();
+//                    $('#powerList').show();
 //                }
                 if(data){
                     window.location.href=window.location.href;
@@ -115,7 +149,7 @@
 
         }
         function update(json){
-            $.post('/api/marketing/redpacket/update', json, function (data) {
+            $.post('/api/marketing/power/update', json, function (data) {
                 if (data) {
                     window.location.href = window.location.href;
                 }
@@ -123,10 +157,17 @@
         }
     })
     function edit(id){
-        $.get('/api/marketing/redpacket/loadById?id=' + id, function(data){
+        $.get('/api/marketing/power/loadById?id=' + id, function(data){
             if(data){
+                $('#powerList').hide();
+                $('#addForm').show();
                 $('#activityName').val(data.name);
                 $('#shareTitle').val(data.shareTitle);
+                if(data.type === 'rp'){
+                    $("input[name='activity_type']")[0].checked = true;
+                }else if(data.type === 'po'){
+                    $("input[name='activity_type']")[1].checked = true;
+                }
                 if(data.bgImg && data.bgImg.length > 0){
                     bgImgCount = data.bgImg.length;
                     bgImg = data.bgImg;
@@ -144,16 +185,14 @@
                     $('#shareImg').hide();
                 }
                 $('#shareDesc').val(data.shareDesc);
-                $('#base_lucky_money').val(data.base_lucky_money);
+                $('#base_power').val(data.base_power);
                 $('#friend_help_count_limit').val(data.friend_help_count_limit);
                 $('#startTime').attr('value', formatDate(data.startTime));
                 $('#endTime').attr('value', formatDate(data.endTime));
-                $('#friend_help_min_money').val(data.friend_help_min_money);
-                $('#friend_help_max_money').val(data.friend_help_max_money);
+                $('#friend_help_min_power').val(data.friend_help_min_power);
+                $('#friend_help_max_power').val(data.friend_help_max_power);
                 $('#rule').summernote('code', data.rule);
                 $('#desc').summernote('code', data.desc);
-                $('#luckyMoneyHelpList').hide();
-                $('#addForm').show();
                 $('#activity-id').val(data._id);
                 $('#add-or-update').val('update');
             }
@@ -235,7 +274,7 @@
         <!--/span-->
         <div class="col-md-10 col-md-offset-1">
             <div class="jumbotron" style="height: auto; padding: 25px;">
-                <div id="luckyMoneyHelpList" class="panel" style="margin-top: 1em; padding: 0; min-height: 30em">
+                <div id="powerList" class="panel" style="margin-top: 1em; padding: 0; min-height: 30em">
                     <div style="padding-left: 20px; padding-bottom: 10px;"><a id="add" style="font-size: 1.5em; text-decoration: none; cursor: pointer">新增</a>
                     </div>
                     <ul class="ul" id="list">
@@ -243,8 +282,8 @@
                             <strong class="col-md-2">活动名称</strong>
                             <strong class="col-md-2">开始时间</strong>
                             <strong class="col-md-2">结束时间</strong>
-                            <!--<strong class="col-md-5">活动链接</strong>-->
-                            <strong class="col-md-6">操作</strong>
+                            <strong class="col-md-2">类型</strong>
+                            <strong class="col-md-4">操作</strong>
                         </li>
 
                         <li>
@@ -258,7 +297,11 @@
                     <input type="hidden" value="" id="activity-id">
                     <div style="padding-left: 20px; padding-bottom: 10px;"><a id="return" style="font-size: 1.5em; text-decoration: none; cursor: pointer">返回</a></div>
                     <ul class="ul" style="text-align: left; padding-left: 2em">
-                        <li><span>红包助力活动设置</span></li>
+                        <li><span>助力活动设置</span></li>
+                        <li id="type_select"><span>类型: </span>
+                            <label><input id="type_rp" name="activity_type" type="radio" value="rp" checked="checked"/>红包</label>
+                            <label><input id="type_po" name="activity_type" type="radio" value="po" />积分</label>
+                        </li>
                         <li><span>活动名称:  </span><input id="activityName" type="text"/></li>
                         <li class="bgImg" style="min-height: 26px"><span style="float: left">背景图片(3张):  </span><input id="bgImg" type="file" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="uploadBgImg()" style="width: 60px;"/>
 
@@ -275,12 +318,11 @@
                         <li><span>活动规则:  </span><div id="rule"></div></li>
                         <li><span>分享标题自定义:  </span><textarea id="shareTitle" cols="60" rows="1"></textarea></li>
                         <li><span>分享描述自定义:  </span><textarea id="shareDesc" cols="60" rows="1"></textarea></li>
-                        <li><span>基础红包金额:  </span><input id="base_lucky_money" type="text"/></li>
-                        <li><span>好友助力单次奖励:  </span><input id="friend_help_min_money" type="text"/><span> 至 </span><input id="friend_help_max_money" type="text"/></li>
+                        <li><span>基础奖励:  </span><input id="base_power" type="text"/></li>
+                        <li><span>好友助力单次奖励:  </span><input id="friend_help_min_power" type="text"/><span> 至 </span><input id="friend_help_max_power" type="text"/></li>
                         <li><span>好友助力上限人数:  </span><input id="friend_help_count_limit" type="text"/></li>
                         <li style="text-align: center; margin-top: 1em"><input class="btn btn-success" type="button"
                                                                                id="submit" value="提交"/></li>
-                        <input type="hidden" id="activityType" value="flmh"/>
                     </ul>
                 </div>
             </div>

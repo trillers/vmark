@@ -86,4 +86,7 @@ registry
     .addChild('Tenant','t', '租户')
     .addChild('Customer','c', '终端用户') /*参与活动用户等*/
 
+    .up().item('PowerType', 'PowerType', '助力活动类型')
+    .addChild('RedPacket','rp', '红包助力')
+    .addChild('Points','po', '积分助力')
 module.exports = registry;

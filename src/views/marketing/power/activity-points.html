@@ -1,15 +1,15 @@
 {% extends 'mobileLayout.html' %}
 
-{% block title %}{{redpacket.name || '红包助力，助你成功'}}{% endblock %}
+{% block title %}{{activity.name || '积分助力，助你成功'}}{% endblock %}
 
 {% block head %}
 {% parent %}
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="format-detection" content="telephone=no">
-<link rel="stylesheet" href="../../../../web/marketing/redpacket/css/base.css">
-<link rel="stylesheet" href="../../../../web/marketing/redpacket/css/swiper.min.css">
-<link rel="stylesheet" href="../../../../web/marketing/redpacket/css/style.css">
-<script src="../../../../web/marketing/redpacket/js/swiper.jquery.min.js"></script>
+<link rel="stylesheet" href="../../../../web/marketing/power/css/base.css">
+<link rel="stylesheet" href="../../../../web/marketing/power/css/swiper.min.css">
+<link rel="stylesheet" href="../../../../web/marketing/power/css/style.css">
+<script src="../../../../web/marketing/power/js/swiper.jquery.min.js"></script>
 <script>
     var timer = 0;
     $(function () {
@@ -82,7 +82,7 @@
 
     function timeShow() {
         var show_time = $(".timeShow");
-        var endtime = new Date({{JSON.stringify(redpacket.endTime)}});//结束时间
+        var endtime = new Date({{JSON.stringify(activity.endTime)}});//结束时间
         var today = new Date();//当前时间
         var total_show = 0;
         var hours_show = 0;
@@ -160,9 +160,9 @@
 {% endblock %}
 
 {% block content %}
-<link rel="stylesheet" type="text/css" href="../../../../web/marketing/redpacket/css/fans.css">
-<script src="../../../../web/marketing/redpacket/js/jquery.leanModal.min.js"></script>
-<link rel="stylesheet" type="text/css" href="../../../../web/marketing/redpacket/css/leanModal.css">
+<link rel="stylesheet" type="text/css" href="../../../../web/marketing/power/css/fans.css">
+<script src="../../../../web/marketing/power/js/jquery.leanModal.min.js"></script>
+<link rel="stylesheet" type="text/css" href="../../../../web/marketing/power/css/leanModal.css">
 <div id="lean_overlay" style="display: none; opacity: 0.45;"></div>
 <script type="text/javascript">
     $(function () {
@@ -178,16 +178,16 @@
     <div class="swiper-container swiper-container-horizontal">
         <div class="swiper-wrapper" style="transition-duration: 0ms; transform: translate3d(-2552px, 0px, 0px);">
             <!--<div class="swiper-slide swiper-slide-duplicate" data-swiper-slide-index="0" style="width: 1276px;">-->
-                <!--<a href="javascript:void(0)"><img src="{{redpacket.bgImg || '../../images/thumb_5662adc4f38c1.jpg'}}" width="100%"></a>-->
+                <!--<a href="javascript:void(0)"><img src="{{activity.bgImg || '../../images/thumb_5662adc4f38c1.jpg'}}" width="100%"></a>-->
             <!--</div>-->
-            {% for item in redpacket.bgImg %}
+            {% for item in activity.bgImg %}
             <div class="swiper-slide swiper-slide-prev" data-swiper-slide-index="0" style="width: 1276px;">
                 <a href="javascript:void(0)"><img src="{{item}}" width="100%"></a>
             </div>
             {% endfor %}
             <!--<div class="swiper-slide swiper-slide-duplicate swiper-slide-active" data-swiper-slide-index="0"-->
                  <!--style="width: 1276px;">-->
-                <!--<a href="javascript:void(0)"><img src="{{redpacket.bgImg || '../../images/thumb_5662adc4f38c1.jpg'}}" width="100%"></a>-->
+                <!--<a href="javascript:void(0)"><img src="{{activity.bgImg || '../../images/thumb_5662adc4f38c1.jpg'}}" width="100%"></a>-->
             <!--</div>-->
         </div>
     </div>
@@ -228,10 +228,10 @@
         <div class="bdRound">
             <div class="bd" style="padding-top: 15px;">
                 <div class="row rule" style="line-height: 20px; display: none;">
-                    {{redpacket.desc|raw}}
+                    {{activity.desc|raw}}
                 </div>
                 <div class="row prize" style="line-height: 20px; display: block;">
-                    {{redpacket.rule|raw}}
+                    {{activity.rule|raw}}
                 </div>
                 <div class="row list" style="display: none;">
                     <ul>
@@ -246,9 +246,9 @@
                                 </div>
                                 <div class="tipBox">
                                     <div class="tip tip1">
-                                        <h3>红包</h3>
+                                        <h3>积分</h3>
                                         <br>
-                                        <p>￥{{item.total_money}}</p>
+                                        <p>￥{{item.total_power}}</p>
                                     </div>
                                 </div>
                                 <div class="num">
@@ -268,11 +268,11 @@
 </section>
 <footer style="top: 505px;">
     <div class="oBtn">
-        <a href="{{redpacket.participateLink}}" style="display: {{ redpacket.join }}"
+        <a href="{{activity.participateLink}}" style="display: {{ activity.join }}"
            id="modaltrigger_notice">我要参加</a>
-        <a style="-webkit-animation: inherit; background-color: gray; display: {{redpacket.joined}}">已参加</a>
-        <a style="background-color: gray; display: {{redpacket.noActivated}}">未开始</a>
-        <a style="background-color: gray; display: {{redpacket.closed}}">已结束</a>
+        <a style="-webkit-animation: inherit; background-color: gray; display: {{activity.joined}}">已参加</a>
+        <a style="background-color: gray; display: {{activity.noActivated}}">未开始</a>
+        <a style="background-color: gray; display: {{activity.closed}}">已结束</a>
     </div>
 </footer>
 <div class="fullBg" style="height: 1794px;"></div>
@@ -340,13 +340,13 @@
     window.shareData = {
         "moduleName": "Helping",
         "moduleID": "0",
-        "imgUrl": "{{ redpacket.shareImg || 'http://s.404.cn/tpl/static/helping/images/default.jpg'}}",
-        "timeLineLink": window.__app.settings.app.url + '/marketing/redpacket/redpacket?id=' + '{{redpacket._id}}',
-        "sendFriendLink": window.__app.settings.app.url + '/marketing/redpacket/redpacket?id=' + '{{redpacket._id}}',
-        "weiboLink": window.__app.settings.app.url + '/marketing/redpacket/redpacket?id=' + '{{redpacket._id}}',
-        "tContent": "{{redpacket.shareDesc || '我正在参加红包助力活动，小伙伴们快来参加呀！'}}",
-        "tTitle": "{{redpacket.shareTitle || '红包助力，祝我成功！'}}",
-        "fTitle": "{{redpacket.shareTitle || '我正在参加红包助力活动，小伙伴们快来参加呀！'}}"
+        "imgUrl": "{{ activity.shareImg || 'http://s.404.cn/tpl/static/helping/images/default.jpg'}}",
+        "timeLineLink": window.__app.settings.app.url + '/marketing/power/activity?id=' + '{{activity._id}}',
+        "sendFriendLink": window.__app.settings.app.url + '/marketing/power/activity?id=' + '{{activity._id}}',
+        "weiboLink": window.__app.settings.app.url + '/marketing/power/activity?id=' + '{{activity._id}}',
+        "tContent": "{{activity.shareDesc || '我正在参加积分助力活动，小伙伴们快来参加呀！'}}",
+        "tTitle": "{{activity.shareTitle || '积分助力，祝我成功！'}}",
+        "fTitle": "{{activity.shareTitle || '我正在参加积分助力活动，小伙伴们快来参加呀！'}}"
     };
 </script>
 <script type="text/javascript">

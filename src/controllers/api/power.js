@@ -1,6 +1,6 @@
 var context = require('../../context/context');
-var activityRedpacketService = context.services.activityRedpacketService;
-var redpacketParticipantService = context.services.redpacketParticipantService;
+var powerActivityService = context.services.powerActivityService;
+var powerParticipantService = context.services.powerParticipantService;
 var nodeExcel = require('excel-export');
 var typeRegistry = require('../../modules/common/models/TypeRegistry');
 var UserType = typeRegistry.item('UserType');
@@ -15,27 +15,27 @@ module.exports = function(router){
             ,shareDesc: this.request.body.shareDesc
             ,shareImg: this.request.body.shareImg
             ,bgImg: this.request.body.bgImg
-            ,base_lucky_money: this.request.body.base_lucky_money
+            ,base_power: this.request.body.base_power
             ,friend_help_count_limit: this.request.body.friend_help_count_limit
             ,startTime: new Date(this.request.body.startTime)
             ,endTime: new Date(this.request.body.endTime)
-            ,friend_help_min_money: this.request.body.friend_help_min_money
-            ,friend_help_max_money: this.request.body.friend_help_max_money
+            ,friend_help_min_power: this.request.body.friend_help_min_power
+            ,friend_help_max_power: this.request.body.friend_help_max_power
             ,rule: this.request.body.rule
             ,desc: this.request.body.desc
         }
-        var data = yield activityRedpacketService.create(json);
+        var data = yield powerActivityService.create(json);
         this.body = data;
     });
 
     router.get('/load', function *(){
-        var data = yield activityRedpacketService.loadAll();
+        var data = yield powerActivityService.loadAll();
         this.body = data;
     });
 
     router.get('/loadById', function *(){
         var id = this.query.id;
-        var data = yield activityRedpacketService.loadById(id);
+        var data = yield powerActivityService.loadById(id);
         this.body = data;
     });
 
@@ -48,21 +48,21 @@ module.exports = function(router){
             ,shareDesc: this.request.body.shareDesc
             ,shareImg: this.request.body.shareImg
             ,bgImg: this.request.body.bgImg
-            ,base_lucky_money: this.request.body.base_lucky_money
+            ,base_power: this.request.body.base_power
             ,friend_help_count_limit: this.request.body.friend_help_count_limit
             ,startTime: new Date(this.request.body.startTime)
             ,endTime: new Date(this.request.body.endTime)
-            ,friend_help_min_money: this.request.body.friend_help_min_money
-            ,friend_help_max_money: this.request.body.friend_help_max_money
+            ,friend_help_min_power: this.request.body.friend_help_min_power
+            ,friend_help_max_power: this.request.body.friend_help_max_power
             ,rule: this.request.body.rule
             ,desc: this.request.body.desc
         }
-        var data = yield activityRedpacketService.updateById(id, json);
+        var data = yield powerActivityService.updateById(id, json);
         this.body = data;
     });
 
     router.get('/exportParticipants', function*(){
-        var redpacket_id = this.query.id;
+        var activityId = this.query.id;
         var conf ={};
         conf.cols = [{
             caption:'活动名称',
@@ -77,33 +77,33 @@ module.exports = function(router){
             type:'string',
             width:40
         },{
-            caption:'红包金额',
+            caption:'助力总数',
             type:'number',
             width:40
         }];
         conf.rows = [];
         var params = {
             conditions: {
-                redpacket: redpacket_id
+                activity: activityId
             },
             populate:[{
                 path: 'user'
             },{
-                path: 'redpacket'
+                path: 'activity'
             }]
         }
-        var participants = yield redpacketParticipantService.filter(params);
+        var participants = yield powerParticipantService.filter(params);
         participants.forEach(function(item){
-            conf.rows.push([item.redpacket.name, item.user.nickname, item.phone, item.total_money]);
+            conf.rows.push([item.activity.name, item.user.nickname, item.phone, item.total_power]);
         });
         var result = nodeExcel.execute(conf);
-        var data = yield activityRedpacketService.loadById(redpacket_id);
-        var redpacket_name = '报名数据';
+        var data = yield powerActivityService.loadById(activityId);
+        var activityName = '报名数据';
         if(data){
-            redpacket_name = data.name
+            activityName = data.name
         }
         this.set('Content-Type', 'application/vnd.openxmlformats');
-        this.set("Content-Disposition", "attachment; filename=" + encodeURIComponent(redpacket_name) + ".xlsx");
+        this.set("Content-Disposition", "attachment; filename=" + encodeURIComponent(activityName) + ".xlsx");
         this.body = new Buffer(result, 'binary');
     });
 
@@ -113,24 +113,24 @@ module.exports = function(router){
         var user = this.session.auth && this.session.auth.user;
         if(user && user.type === UserType.Customer.value()) {
             if (phone) {
-                var redpacket = yield activityRedpacketService.loadById(id);
-                if (redpacket) {
-                    var status = yield activityRedpacketService.getStatus(redpacket, user);
+                var activity = yield powerActivityService.loadById(id);
+                if (activity) {
+                    var status = yield powerActivityService.getStatus(activity, user);
                     if (status.join === 'none') {
                         this.body = {error: 'joined', msg: '已参加'};
                     } else {
                         var json = {
-                            redpacket: id
+                            activity: id
                             , user: user.id
                             , phone: phone
-                            , total_money: redpacket.base_lucky_money
+                            , total_power: activity.base_power
                             , help_friends: []
                         }
-                        var data = yield redpacketParticipantService.create(json);
+                        var data = yield powerParticipantService.create(json);
                         this.body = data;
                     }
                 } else {
-                    this.body = {error: 'no such redpacket'};
+                    this.body = {error: 'no such activity'};
                 }
             } else {
                 this.body = {error: 'phone no is must'};
@@ -144,8 +144,8 @@ module.exports = function(router){
         var id = this.request.body.id;
         var user = this.session.auth && this.session.auth.user || {};
         if(user.openid && user.type === UserType.Customer.value()){
-            var participant = yield redpacketParticipantService.loadById(id);
-            var res = yield redpacketParticipantService.help(participant, user);
+            var participant = yield powerParticipantService.loadById(id);
+            var res = yield powerParticipantService.help(participant, user);
             this.body = res;
         }else {
             this.body = {error: 'please open in wechat browser'};

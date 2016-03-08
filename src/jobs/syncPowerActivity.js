@@ -3,19 +3,19 @@ var rule = new schedule.RecurrenceRule();
 var context = require('../context/context');
 var Promise = require('bluebird');
 var util = require('util');
-var kv = context.kvs.redpacket;
+var kv = context.kvs.power;
 var redis = context.redis.main;
 redis.keysAsync = Promise.promisify(redis.keys);
-var activityRedpacketService = context.services.activityRedpacketService;
-var redpacketParticipantService = context.services.redpacketParticipantService;
+var powerActivityService = context.services.powerActivityService;
+var powerParticipantService = context.services.powerParticipantService;
 var logger = context.logger;
 var co = require('co');
 
-rule.hour = 23;
+rule.hour = 4;
 schedule.scheduleJob(rule, function(){
-    logger.info('sync redpacket activity job starting');
+    logger.info('sync power activity job starting');
     co(function*(){
-        var activityKeys = yield redis.keysAsync('rp:act:id:*');
+        var activityKeys = yield redis.keysAsync('pw:act:id:*');
         var activityIdArr = activityKeys.map(function(item){
             return item.substr(10);
         })
@@ -28,20 +28,20 @@ schedule.scheduleJob(rule, function(){
                     views: activity.views,
                     participants_count: activity.participants_count
                 }
-                yield activityRedpacketService.syncById(activityIdArr[i], update);
-                logger.info('success sync redpacket activity :' + activityIdArr[i] + ', update:' + util.inspect(update));
+                yield powerActivityService.syncById(activityIdArr[i], update);
+                logger.info('success sync power activity :' + activityIdArr[i] + ', update:' + util.inspect(update));
             //}
         }
         logger.info('sync activity job job end');
     }).catch(function(err){
-        logger.error('sync redpacket activity job err:' + err);
+        logger.error('sync power activity job err:' + err);
     })
 });
 
 schedule.scheduleJob(rule, function(){
-    logger.info('sync redpacket participant job starting');
+    logger.info('sync power participant job starting');
     co(function*(){
-        var participantKeys = yield redis.keysAsync('rp:ptcp:id:*');
+        var participantKeys = yield redis.keysAsync('pw:ptcp:id:*');
         var participantIdArr = participantKeys.map(function(item){
             return item.substr(11);
         })
@@ -49,15 +49,15 @@ schedule.scheduleJob(rule, function(){
             var participant = yield kv.loadParticipantByIdAsync(participantIdArr[i]);
             var help_friends = yield kv.getHelpFriendsSetAsync(participantIdArr[i]);
             var update = {
-                total_money: participant.total_money,
+                total_power: participant.total_power,
                 help_friends: help_friends
             }
-            yield redpacketParticipantService.syncById(participantIdArr[i], update);
-            logger.info('success sync redpacket participant :' + participantIdArr[i] + ', update:' + util.inspect(update));
+            yield powerParticipantService.syncById(participantIdArr[i], update);
+            logger.info('success sync power participant :' + participantIdArr[i] + ', update:' + util.inspect(update));
             //}
         }
-        logger.info('sync redpacket participant job job end');
+        logger.info('sync power participant job job end');
     }).catch(function(err){
-        logger.error('sync redpacket participant job err:' + err);
+        logger.error('sync power participant job err:' + err);
     })
 });

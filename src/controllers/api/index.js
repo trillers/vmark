@@ -51,10 +51,10 @@ module.exports = function(app){
     require('./recontent')(router);
     app.use(router.routes());
 
-    //marketing redpacket
+    //marketing power activity
     router = new Router();
-    router.prefix('/api/marketing/redpacket');
-    require('./redpacket')(router);
+    router.prefix('/api/marketing/power');
+    require('./power')(router);
     app.use(router.routes());
 
     //marketing points

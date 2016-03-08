@@ -18,8 +18,8 @@ module.exports = function(){
         yield this.render('/activity-list');
     })
 
-    router.get('/redpacket', function*(){
-        yield this.render('/marketing/redpacket/boss', {api: settings.api.url});
+    router.get('/power', function*(){
+        yield this.render('/marketing/power/boss', {api: settings.api.url});
     })
 
     router.get('/points', function*(){

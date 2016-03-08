@@ -9,58 +9,58 @@ var Service = function(context){
 
 Service.prototype.create = function*(jsonData){
     var logger = this.context.logger;
-    var RepacketParticipant = this.context.models.RepacketParticipant;
-    var kv = this.context.kvs.redpacket;
-    var participant = new RepacketParticipant(jsonData);
+    var PowerParticipant = this.context.models.PowerParticipant;
+    var kv = this.context.kvs.power;
+    var participant = new PowerParticipant(jsonData);
     var doc = yield participant.save();
     yield kv.saveParticipantAsync(doc.toObject());
     logger.info('success create participant: ' + util.inspect(doc));
     return doc.toObject();
 }
 
-Service.prototype.updateById = function*(id, update, helpMoney){
+Service.prototype.updateById = function*(id, update, helpPower){
     var logger = this.context.logger;
-    var RepacketParticipant = this.context.models.RepacketParticipant;
-    var kv = this.context.kvs.redpacket;
+    var PowerParticipant = this.context.models.PowerParticipant;
+    var kv = this.context.kvs.power;
 
-    var doc = yield RepacketParticipant.findByIdAndUpdate(id, update, {new: true}).lean().exec();
-    yield kv.increaseParticipantScoreInRankingListAsync(doc.activity, doc.user, helpMoney);
+    var doc = yield PowerParticipant.findByIdAndUpdate(id, update, {new: true}).lean().exec();
+    yield kv.increaseParticipantScoreInRankingListAsync(doc.activity, doc.user, helpPower);
     logger.info('success update participant by id: ' + id);
     return doc;
 }
 
 Service.prototype.syncById = function*(id, update){
     var logger = this.context.logger;
-    var RepacketParticipant = this.context.models.RepacketParticipant;
+    var PowerParticipant = this.context.models.PowerParticipant;
 
-    var doc = yield RepacketParticipant.findByIdAndUpdate(id, update, {new: true}).lean().exec();
+    var doc = yield PowerParticipant.findByIdAndUpdate(id, update, {new: true}).lean().exec();
     logger.info('success update participant by id: ' + id);
     return doc;
 }
 
 Service.prototype.update = function*(con, update){
     var logger = this.context.logger;
-    var RepacketParticipant = this.context.models.RepacketParticipant;
-    var res = yield RepacketParticipant.update(con, update).exec();
+    var PowerParticipant = this.context.models.PowerParticipant;
+    var res = yield PowerParticipant.update(con, update).exec();
     logger.info('success update participant by condition: ' + con);
     return res;
 }
 
 Service.prototype.loadById = function*(id){
     var logger = this.context.logger;
-    //var RepacketParticipant = this.context.models.RepacketParticipant;
-    //var doc = yield RepacketParticipant.findById(id, {}, {lean: true}).populate({path: 'redpacket'}).populate({path: 'user'}).exec();
-    var kv = this.context.kvs.redpacket;
+    //var PowerParticipant = this.context.models.PowerParticipant;
+    //var doc = yield PowerParticipant.findById(id, {}, {lean: true}).populate({path: 'power'}).populate({path: 'user'}).exec();
+    var kv = this.context.kvs.power;
     var userKv = this.context.kvs.platformUser;
     var participant = yield kv.loadParticipantByIdAsync(id);
     if(participant){
-        var redpacket = yield kv.loadActivityByIdAsync(participant.redpacket);
-        redpacket.bgImg = redpacket.bgImg.split(',');
+        var activity = yield kv.loadActivityByIdAsync(participant.activity);
+        activity.bgImg = activity.bgImg.split(',');
         var user = yield userKv.loadByIdAsync(participant.user);
-        var rank = yield kv.getParticipantRankAsync(participant.redpacket, participant.user);
+        var rank = yield kv.getParticipantRankAsync(participant.activity, participant.user);
         var helpArr = yield kv.getHelpFriendsSetAsync(id);
-        participant.participateLink = 'http://' + settings.app.domain + '/marketing/redpacket/join?id=' + redpacket._id;
-        participant.redpacket = redpacket;
+        participant.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + activity._id;
+        participant.activity = activity;
         participant.user = user;
         participant.rank = rank;
         participant.help_friends = helpArr;
@@ -71,24 +71,24 @@ Service.prototype.loadById = function*(id){
 
 Service.prototype.deleteById = function*(id){
     var logger = this.context.logger;
-    var RepacketParticipant = this.context.models.RepacketParticipant;
-    var doc = yield RepacketParticipant.findByIdAndUpdate(id, {lFlg: 'd'}, {new: true}).lean().exec();
+    var PowerParticipant = this.context.models.PowerParticipant;
+    var doc = yield PowerParticipant.findByIdAndUpdate(id, {lFlg: 'd'}, {new: true}).lean().exec();
     logger.info('success delete participant by id: ' + id);
     return doc;
 }
 
 Service.prototype.loadAll = function*(){
     var logger = this.context.logger;
-    var RepacketParticipant = this.context.models.RepacketParticipant;
-    var docs = yield RepacketParticipant.find({lFlg: 'a'}).lean().exec();
+    var PowerParticipant = this.context.models.PowerParticipant;
+    var docs = yield PowerParticipant.find({lFlg: 'a'}).lean().exec();
     logger.info('success load all participant');
     return docs;
 }
 
 Service.prototype.filter = function*(params){
     var logger = this.context.logger;
-    var RepacketParticipant = this.context.models.RepacketParticipant;
-    var query = RepacketParticipant.find();
+    var PowerParticipant = this.context.models.PowerParticipant;
+    var query = PowerParticipant.find();
 
     if (params.options) {
         query.setOptions(params.options);
@@ -123,7 +123,7 @@ Service.prototype.filter = function*(params){
 }
 
 Service.prototype.getStatus = function*(participant, user){
-    var kv = this.context.kvs.redpacket;
+    var kv = this.context.kvs.power;
     var status = {
         active: true,
         join: '',
@@ -135,15 +135,15 @@ Service.prototype.getStatus = function*(participant, user){
         helpLimited: 'none'
     }
     var today = new Date();
-    var active = today >= new Date(participant.redpacket.startTime) && today <= new Date(participant.redpacket.endTime);
+    var active = today >= new Date(participant.activity.startTime) && today <= new Date(participant.activity.endTime);
     if (!active) {
         status.join = 'none';
         status.help = 'none';
         status.active = false;
-        if (today < new Date(participant.redpacket.startTime)) {
+        if (today < new Date(participant.activity.startTime)) {
             status.noActivated = '';
         }
-        if (today > new Date(participant.redpacket.endTime)) {
+        if (today > new Date(participant.activity.endTime)) {
             status.closed = '';
         }
     }
@@ -154,7 +154,7 @@ Service.prototype.getStatus = function*(participant, user){
             status.inviteFriend = '';
         } else {
             status.inviteFriend = 'none';
-            var participantId = yield kv.getParticipantIdByUserIdAndActivityIdAsync(participant.redpacket._id, user.id);
+            var participantId = yield kv.getParticipantIdByUserIdAndActivityIdAsync(participant.activity._id, user.id);
             if (participantId) {
                 status.join = 'none';
                 status.joined = '';
@@ -164,7 +164,7 @@ Service.prototype.getStatus = function*(participant, user){
                 status.help = 'none';
                 status.helped = '';
             }
-            if (helpArr.length >= participant.redpacket.friend_help_count_limit) {
+            if (helpArr.length >= participant.activity.friend_help_count_limit) {
                 status.help = 'none';
                 status.helped = 'none';
                 status.helpLimited = '';
@@ -177,17 +177,17 @@ Service.prototype.getStatus = function*(participant, user){
 Service.prototype.help = function*(participant, user){
     var status = yield this.getStatus(participant, user);
     var result = {};
-    var kv = this.context.kvs.redpacket;
+    var kv = this.context.kvs.power;
     if (status.helpLimited === 'none') {
         var res = yield kv.addHelpFriendToSetAsync(participant.id, user.openid);
         if(res === 1) {
-            var min = parseInt(participant.redpacket.friend_help_min_money || 0);
-            var max = parseInt(participant.redpacket.friend_help_max_money || 0);
-            var helpMoney = myUtil.random(min, max);
-            var data = yield kv.incParticipantMoneyByIdAsync(participant.id, helpMoney);
-            yield kv.increaseParticipantScoreInRankingListAsync(participant.redpacket._id, participant.user.id, helpMoney);
-            var rank = yield kv.getParticipantRankAsync(participant.redpacket, participant.user);
-            result = {rank: rank, total_money: data};
+            var min = parseInt(participant.activity.friend_help_min_power || 0);
+            var max = parseInt(participant.activity.friend_help_max_power || 0);
+            var helpPower = myUtil.random(min, max);
+            var data = yield kv.incParticipantPowerByIdAsync(participant.id, helpPower);
+            yield kv.increaseParticipantScoreInRankingListAsync(participant.activity._id, participant.user.id, helpPower);
+            var rank = yield kv.getParticipantRankAsync(participant.activity, participant.user);
+            result = {rank: rank, total_power: data};
         } else if(res === 0) {
             result = {helped: true};
         } else {

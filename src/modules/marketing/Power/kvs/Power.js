@@ -2,23 +2,23 @@ var cbUtil = require('../../../../framework/callback');
 var _ = require('underscore');
 
 var idToActivityKey = function(id){
-    return 'rp:act:id:' + id;
+    return 'pw:act:id:' + id;
 };
 
 var idToParticipantKey = function(id){
-    return 'rp:ptcp:id:' + id;
+    return 'pw:ptcp:id:' + id;
 };
 
 var idToHelpFriendsKey = function(id){
-    return 'rp:hf:id:' + id;
+    return 'pw:hf:id:' + id;
 };
 
 var activityIdToUserIdParticipantIdHashKey = function(activityId){
-    return 'rp:upln:id:' + activityId;
+    return 'pw:upln:id:' + activityId;
 }
 
 var idToRankingListKey = function(id){
-    return 'rp:ranking:id:' + id;
+    return 'pw:ranking:id:' + id;
 };
 
 var Kv = function(context){
@@ -26,7 +26,7 @@ var Kv = function(context){
 };
 
 /**
- * add redpacket activity to redis
+ * add power activity to redis
  * @param activity json
  * */
 Kv.prototype.saveActivity = function(json, callback){
@@ -37,14 +37,14 @@ Kv.prototype.saveActivity = function(json, callback){
     redis.hmset(key, obj, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to save redpacket activity by id ' + obj.id + ': ' + err,
-            'Succeed to save redpacket activity by id ' + obj.id);
+            'Fail to save power activity by id ' + obj.id + ': ' + err,
+            'Succeed to save power activity by id ' + obj.id);
         cbUtil.handleOk(callback, err, result, obj);
     });
 }
 
 /**
- * add redpacket activity participant to redis
+ * add power activity participant to redis
  * @param participant json
  * */
 Kv.prototype.saveParticipant = function(json, callback){
@@ -52,24 +52,24 @@ Kv.prototype.saveParticipant = function(json, callback){
     var self = this;
     var obj = _.clone(json);
     obj.crtOn && (delete obj.crtOn);
-    var pariticipantId = obj.id || obj._id;
-    var key = idToParticipantKey(pariticipantId);
+    var participantId = obj.id || obj._id;
+    var key = idToParticipantKey(participantId);
     redis.hmset(key, obj, function(err, result){
         if(!err && result === 'OK'){
-            self.linkUserToParticipantId(obj.redpacket, obj.user, pariticipantId);
-            self.addParticipantInRankingList(obj.redpacket, obj.user, obj.total_money);
-            self.incActivityParticipantsCountById(obj.redpacket);
+            self.linkUserToParticipantId(obj.activity, obj.user, participantId);
+            self.addParticipantInRankingList(obj.activity, obj.user, obj.total_power);
+            self.incActivityParticipantsCountById(obj.activity);
         }
         cbUtil.logCallback(
             err,
-            'Fail to save redpacket activity participant by id ' + obj.id + ': ' + err,
-            'Succeed to save redpacket activity participant by id ' + obj.id);
+            'Fail to save power activity participant by id ' + obj.id + ': ' + err,
+            'Succeed to save power activity participant by id ' + obj.id);
         cbUtil.handleOk(callback, err, result, obj);
     });
 }
 
 /**
- * link redpacket activity participant to user
+ * link power activity participant to user
  * @param activity id
  * @param user id
  * */
@@ -79,14 +79,14 @@ Kv.prototype.linkUserToParticipantId = function(activityId, userId, participantI
     redis.hset(key, userId, participantId, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to link redpacket activity participant to user:' + userId + 'err: ' + err,
-            'Succeed to link redpacket activity participant to user: ' + userId);
+            'Fail to link power activity participant to user:' + userId + 'err: ' + err,
+            'Succeed to link power activity participant to user: ' + userId);
         cbUtil.handleSingleValue(callback, err, result);
     });
 }
 
 /**
- * get redpacket activity participant id
+ * get power activity participant id
  * @param activity id
  * @param user id
  * */
@@ -96,14 +96,14 @@ Kv.prototype.getParticipantIdByUserIdAndActivityId = function(activityId, userId
     redis.hget(key, userId, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to get redpacket activity participantId by user:' + userId + 'err: ' + err,
-            'Succeed to get redpacket activity participantId by user: ' + userId);
+            'Fail to get power activity participantId by user:' + userId + 'err: ' + err,
+            'Succeed to get power activity participantId by user: ' + userId);
         cbUtil.handleSingleValue(callback, err, result);
     });
 }
 
 /**
- * load redpacket activity from redis by id
+ * load power activity from redis by id
  * @param activity id
  * */
 Kv.prototype.loadActivityById = function(id, callback){
@@ -113,14 +113,14 @@ Kv.prototype.loadActivityById = function(id, callback){
     redis.hgetall(key, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to get redpacket activity by id ' + id + ': ' + err,
-            'Succeed to get redpacket activity by id ' + id);
+            'Fail to get power activity by id ' + id + ': ' + err,
+            'Succeed to get power activity by id ' + id);
         cbUtil.handleSingleValue(callback, err, result);
     });
 }
 
 /**
- * load redpacket activity participant  from redis by id
+ * load power activity participant  from redis by id
  * @param activity participant id
  * */
 Kv.prototype.loadParticipantById = function(id, callback){
@@ -129,14 +129,14 @@ Kv.prototype.loadParticipantById = function(id, callback){
     redis.hgetall(key, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to get redpacket activity participant by id ' + id + ': ' + err,
-            'Succeed to get redpacket activity participant by id ' + id);
+            'Fail to get power activity participant by id ' + id + ': ' + err,
+            'Succeed to get power activity participant by id ' + id);
         cbUtil.handleSingleValue(callback, err, result);
     });
 }
 
 /**
- * update redpacket activity views by id
+ * update power activity views by id
  * @param activity id
  * */
 Kv.prototype.incActivityViewsById = function(id, callback){
@@ -145,14 +145,14 @@ Kv.prototype.incActivityViewsById = function(id, callback){
     redis.hincrby(key,'views', 1, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to update redpacket activity views by id ' + id + ': ' + err,
-            'Succeed to update redpacket activity views by id ' + id);
+            'Fail to update power activity views by id ' + id + ': ' + err,
+            'Succeed to update power activity views by id ' + id);
         cbUtil.handleSingleValue(callback, err, result);
     });
 }
 
 /**
- * update redpacket activity participant count by id
+ * update power activity participant count by id
  * @param activity id
  * */
 Kv.prototype.incActivityParticipantsCountById = function(id, callback){
@@ -161,24 +161,24 @@ Kv.prototype.incActivityParticipantsCountById = function(id, callback){
     redis.hincrby(key,'participants_count', 1, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to update redpacket activity participants_count by id ' + id + ': ' + err,
-            'Succeed to update redpacket activity participants_count by id ' + id);
+            'Fail to update power activity participants_count by id ' + id + ': ' + err,
+            'Succeed to update power activity participants_count by id ' + id);
         cbUtil.handleSingleValue(callback, err, result);
     });
 }
 
 /**
- * update redpacket activity participant money by id
+ * update power activity participant power by id
  * @param participant id
  * */
-Kv.prototype.incParticipantMoneyById = function(id, incMoney, callback){
+Kv.prototype.incParticipantPowerById = function(id, incPower, callback){
     var redis = this.context.redis.main;
     var key = idToParticipantKey(id);
-    redis.hincrby(key,'total_money', incMoney, function(err, result){
+    redis.hincrby(key,'total_power', incPower, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to update redpacket activity participant money by id ' + id + ': ' + err,
-            'Succeed to update redpacket activity participant money by id ' + id);
+            'Fail to update power activity participant power by id ' + id + ': ' + err,
+            'Succeed to update power activity participant power by id ' + id);
         cbUtil.handleSingleValue(callback, err, result);
     });
 }
@@ -220,13 +220,13 @@ Kv.prototype.getHelpFriendsSet = function(participantId, callback){
  * in the ranking list of a activity
  * @param activityId activity id
  * @param userId the id of the user of the participant
- * @param initialMoney
+ * @param initialPower
  * @param callback callback(err, affectedNum)
  */
-Kv.prototype.addParticipantInRankingList = function(activityId, userId, initialMoney, callback){
+Kv.prototype.addParticipantInRankingList = function(activityId, userId, initialPower, callback){
     var redis = this.context.redis.main;
     var key = idToRankingListKey(activityId);
-    redis.ZADD(key, initialMoney, userId, function(err, result){
+    redis.ZADD(key, initialPower, userId, function(err, result){
         cbUtil.logCallback(
             err,
             'Fail to add participant with score, activity id ' + activityId + ': ' + err,
@@ -302,7 +302,7 @@ Kv.prototype.getRankingList = function(activityId, callback){
 
 /**
  * Get the ranking list of a activity.
- * the item of the list is like ['{user: {nickname,'sunny' ......}, 'total_money' 10}', '{user: {nickname,'sunny' ......}, 'total_money' 10}']
+ * the item of the list is like ['{user: {nickname,'sunny' ......}, 'total_power' 10}', '{user: {nickname,'sunny' ......}, 'total_power' 10}']
  * @param activityId
  * @param count //the query count of sorted set
  * @param callback
@@ -325,7 +325,7 @@ local index = 0\
            user[field] = hm[j]\
         end\
         json['user'] = user\
-        json['total_money'] = userIdScoreArr[i]\
+        json['total_power'] = userIdScoreArr[i]\
         re[index] = cjson.encode(json)\
         index = index + 1\
     end    \

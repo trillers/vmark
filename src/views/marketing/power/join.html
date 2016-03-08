@@ -34,14 +34,14 @@
             $('.subBtn').click(function () {
                 if(/^1\d{10}$/.test($('#phone').val())) {
                     var data = {
-                        id: $('#redpacketId').val(),
+                        id: $('#activityId').val(),
                         phone: $('#phone').val()
                     }
                     $('#mask').show();
-                    $.post('/api/marketing/redpacket/join', data, function (data) {
+                    $.post('/api/marketing/power/join', data, function (data) {
                         $('#mask').hide();
                         if (!data.error) {
-                            window.location.href = window.__app.settings.app.url + '/marketing/redpacket/participant?id=' + data._id;
+                            window.location.href = window.__app.settings.app.url + '/marketing/power/participant?id=' + data._id;
                         } else if (data.error === 'joined') {
                             alert('已参加');
                         } else if (data.error === 'phone no is must') {
@@ -55,7 +55,7 @@
         })
     </script>
 </head>
-<body style="padding: 0; margin: 0; width: 100%; color: yellow; background-image:url('/web/marketing/redpacket/images/join_bg.jpg'); background-size: 100%; background-repeat: no-repeat;">
+<body style="padding: 0; margin: 0; width: 100%; color: yellow; background-image:url('/web/marketing/power/images/join_bg.jpg'); background-size: 100%; background-repeat: no-repeat;">
 <div id="mask"></div>
 <div id="join" style="padding-top: 100px">
     <div class="fl userAvatar">
@@ -69,7 +69,7 @@
         <button class="subBtn">提交</button>
     </div>
 </div>
-<input type="hidden" id="redpacketId" value="{{redpacketId}}"/>
+<input type="hidden" id="activityId" value="{{activityId}}"/>
 </div>
 </body>
 </html>
