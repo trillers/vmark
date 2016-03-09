@@ -340,7 +340,7 @@ return re\
         ct = count - 1;
     }
     redis.eval(lua, 2, key, ct, function(err, result){
-        var listJson = '';
+        var listJson = {};
         if(!err) {
             var listJsonString = '[' + result.join(',') + ']';
             listJson = JSON.parse(listJsonString);
