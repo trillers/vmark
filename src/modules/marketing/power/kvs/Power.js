@@ -340,8 +340,11 @@ return re\
         ct = count - 1;
     }
     redis.eval(lua, 2, key, ct, function(err, result){
-        var listJsonString = '[' + result.join(',') + ']';
-        var listJson = JSON.parse(listJsonString);
+        var listJson = '';
+        if(!err) {
+            var listJsonString = '[' + result.join(',') + ']';
+            listJson = JSON.parse(listJsonString);
+        }
         cbUtil.logCallback(
             err,
             'Fail to get ranking list with score, activity id ' + activityId + ': ' + err,
