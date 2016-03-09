@@ -159,10 +159,33 @@ defaultType.onAccess(function(qr, openid){
 activityType.onAccess(function(qr, openid){
     co(function*(){
         try{
-            console.log('activity type qr code been scanned, qr:' + qr.sceneId + 'user: ' + openid);
+            var powerActivityService = context.services.powerActivityService;
+            var powerPosterService = context.services.powerPosterService;
+            var userKv = context.kvs.platformUser;
+
+            var activity = yield powerActivityService.loadByQrCodeId(qr._id);
+            var user = yield userKv.loadPlatformUserByOpenidAsync(openid);
+            if(!activity.poster || !activity.poster.mediaId){
+                var posterJson = {
+                    user: user._id,
+                    activity: activity._id,
+                    bgImg: activity.bgImg,
+                    type: 'acp'
+                }
+                var poster = yield powerPosterService.create(posterJson);
+                activity.poster = poster;
+                yield powerActivityService.updateById(activity._id, {poster: poster._id});
+            }
+            wechatApi.sendText(openid, '助力活动 [' + activity.name + '] 活动海报获取成功:', function (err) {
+                if(err) console.error(err);
+            });
+            wechatApi.sendImage(openid, activity.poster.mediaId, function (err) {
+                if(err) console.error(err);
+            });
         }
         catch(e){
             console.error(e);
+            console.error('获取活动海报失败,活动二维码ID:' + qr._id);
         }
     });
 });

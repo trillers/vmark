@@ -7,6 +7,17 @@ var Service = function(context){
     this.context = context
 };
 
+/**
+ * create power activity poster
+ * @params jsonData
+ * {
+ *    bgImg: 'xxx' //poster background image, required
+ *    type: 'acp' or 'pap' //poster type, activity poster or participant poster, required
+ *    activity: 'ddd' //activity id
+ *    participant: 'participant id'
+ *    user: 'platform user id' // required
+ * }
+* **/
 Service.prototype.create = function*(jsonData){
     var logger = this.context.logger;
     var PowerPoster = this.context.models.PowerPoster;

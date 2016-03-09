@@ -76,6 +76,18 @@ Service.prototype.loadById = function*(id){
     return doc;
 }
 
+Service.prototype.loadByQrCodeId = function*(id){
+    var logger = this.context.logger;
+    var PowerActivity = this.context.models.PowerActivity;
+    var doc = yield PowerActivity.findOne({qrCode: id}, {}, {lean: true}).populate({path: 'poster'}).exec();
+    if(doc) {
+        logger.info('success load power by qrCode id: ' + id);
+    }else{
+        logger.info('failed load power by qrCode id: ' + id + ' err: no such activity');
+    }
+    return doc;
+}
+
 Service.prototype.deleteById = function*(id){
     var logger = this.context.logger;
     var kv = this.context.kvs.power;
