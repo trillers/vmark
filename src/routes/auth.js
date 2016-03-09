@@ -93,7 +93,7 @@ module.exports = function(app){
                 this.redirect('/tenant-recontent-'+auth.tenantId+'#adlink-index');
             }
             else{
-                this.redirect('/');
+                this.redirect('/func-list');
             }
         }
     });

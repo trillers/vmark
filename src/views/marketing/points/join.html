@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1.0 user-scalable=no"/>
+    <title>参加</title>
+    <script src="../../../../public/components/jquery/jquery.min.js"></script>
+    <style>
+        .userAvatar {
+            -webkit-animation: 0.5s linear 0s normal none rotate;
+            margin: 40px auto;
+            border-radius: 100%;
+            background: #eee;
+            height: 70px;
+            width: 70px;
+            overflow: hidden;
+        }
+
+        .subBtn {
+            border-radius: 10px;
+            height: 40px;
+            font-size: 23px;
+            width: 100px;
+            border: solid 1px rgb(200, 74, 59);
+            color: rgb(200, 74, 59);
+            background-color: yellow;
+        }
+        #mask{ display: none;  position: absolute;  top: 0%;  left: 0%;  width: 100%;  height: 100%;  background-color: black;  z-index:1001;  -moz-opacity: 7;  opacity:0;  filter: alpha(opacity=0);}
+    </style>
+    <script>
+        window.__app = {{JSON.stringify(__app)}};
+        window.__page = {{JSON.stringify(__page)}};
+        $(function () {
+            $('.subBtn').click(function () {
+                if(/^1\d{10}$/.test($('#phone').val())) {
+                    var data = {
+                        id: $('#pointsId').val(),
+                        phone: $('#phone').val()
+                    }
+                    $('#mask').show();
+                    $.post('/api/marketing/points/join', data, function (data) {
+                        $('#mask').hide();
+                        if (!data.error) {
+                            window.location.href = window.__app.settings.app.url + '/marketing/points/participant?id=' + data._id;
+                        } else if (data.error === 'joined') {
+                            alert('已参加');
+                        } else if (data.error === 'phone no is must') {
+                            alert('必须填写手机号才能参加活动哦!');
+                        }
+                    })
+                }else{
+                    alert('请输入正确的手机号');
+                }
+            })
+        })
+    </script>
+</head>
+<body style="padding: 0; margin: 0; width: 100%; color: yellow; background-image:url('/web/marketing/points/images/join_bg.jpg'); background-size: 100%; background-repeat: no-repeat;">
+<div id="mask"></div>
+<div id="join" style="padding-top: 100px">
+    <div class="fl userAvatar">
+        <img style="border-radius: 100%; height: 70px; width: 70px" src="{{headimgurl}}">
+    </div>
+    <div style="width: 300px; margin: 115px auto 30px; text-align: center;">
+        <!--<span style="font-size: 23px; float:left">手机: </span>-->
+        <input type="text" id="phone" style="display: inline; height: 30px;border: solid 1px #CC463B;border-radius: 10px;font-size: 20px;" placeholder="请输入手机号"/>
+    </div>
+    <div style="text-align: center">
+        <button class="subBtn">提交</button>
+    </div>
+</div>
+<input type="hidden" id="pointsId" value="{{pointsId}}"/>
+</div>
+</body>
+</html>

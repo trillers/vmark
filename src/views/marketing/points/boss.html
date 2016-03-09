@@ -1,0 +1,294 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+{% parent %}
+<style type="text/css">
+    .leftlist {list-style-type: none; text-align: center; font-size: 1.3em}
+    .ul {list-style-type: none; text-align: center; padding: 0}
+    .ul li {margin-bottom: 20px;}
+    .bgImg #bgImg {float: left; margin-left: 10px;}
+    .bgImg .bgImgCon {margin-left: 10px; display: -webkit-inline-box; position: relative; display: none; border: solid 1px #E8E7E7;}
+    .bgImgCon i{color: #EC3131; position: absolute; left: 58px; top: 2px; cursor: pointer;}
+    .bgImgCon div{margin-left: 20px; float: left;}
+    .bgImgCon img {width: 75px; height: 75px;}
+    .shareImgCon img {width: 75px; height: 75px;}
+    #shareImg{float: left; margin-left: 10px;}
+    .shareImgCon i{color: #EC3131;position: absolute;left: 58px;top: 2px;cursor: pointer;}
+    .shareImgCon{margin-left: 10px; display: -webkit-inline-box;position: relative; display: none; border: solid 1px #E8E7E7;}
+    .activity-name{
+        color: #23527c;
+        cursor: pointer;
+    }
+    li strong{
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .actionCon a{
+        margin-left: 10px;
+    }
+</style>
+<script type="text/javascript">
+    var bgImgCount = 0;
+    var bgImg = [];
+    var shareImg = '';
+    $(function () {
+        $('#desc').summernote({
+            height: 200,
+            minHeight: null,
+            maxHeight: null,
+            focus: true
+        });
+        $('#rule').summernote({
+            height: 200,
+            minHeight: null,
+            maxHeight: null,
+            focus: true
+        });
+
+        $.get('/api/marketing/points/load', function (data) {
+            data.forEach(function (item) {
+                $('#list').append($('<li style="height: 17px; overflow: hidden; margin-top: 2px;"> <strong class="col-md-2 activity-name" _id="'+ item._id +'">' + item.name + '</strong> <strong class="col-md-2">' + formatDate(item.startTime) + '</strong> <strong class="col-md-2">' + formatDate(item.endTime) + '</strong> <strong class="col-md-6 actionCon"><a href="'+ window.__app.settings.app.url + '/marketing/points/points?id=' + item._id +'" target="_blank">查看</a><a href="{{api}}' + '/marketing/points/exportParticipants?id=' + item._id + '" target="_blank" >导出</a></strong> </li>'));
+            });
+            $('.activity-name').off('click').click(function(){
+                edit($(this).attr('_id'));
+            })
+        });
+
+        $('#add').click(function () {
+            $('#pointsHelpList').hide();
+            $('#addForm').show();
+        });
+
+        $('#return').click(function () {
+            $('#pointsHelpList').show();
+            $('#addForm').hide();
+        });
+
+        $('.bgImgCon i').click(function(){
+            $(this).parent().hide();
+            $('#bgImg').show();
+            var index = bgImg.indexOf($(this).attr('media'));
+            bgImg.splice(index, 1);
+            --bgImgCount;
+        });
+
+        $('.shareImgCon i').click(function(){
+            $(this).parent().hide();
+            $('#shareImg').show();
+        });
+
+        $('#submit').click(function () {
+            var json = {
+                type: $('#activityType').val()
+                , name: $('#activityName').val()
+                , bgImg: bgImg
+                , shareImg: shareImg
+                , shareTitle: $('#shareTitle').val()
+                , shareDesc: $('#shareDesc').val()
+                , base_points: $('#base_points').val()
+                , friend_help_count_limit: $('#friend_help_count_limit').val()
+                , startTime: $('#startTime').val() + ' 00:00:00'
+                , endTime: $('#endTime').val() + ' 23:59:59'
+                , friend_help_min_points: $('#friend_help_min_points').val()
+                , friend_help_max_points: $('#friend_help_max_points').val()
+                , rule: $('#rule').summernote('code')
+                , desc: $('#desc').summernote('code')
+            }
+            if($('#add-or-update').val() === 'add'){
+                add(json);
+            }else{
+                json.id = $('#activity-id').val();
+                update(json);
+            }
+        })
+        function add(json){
+            $.post('/api/marketing/points/add', json, function (data) {
+//                if (data) {
+//                    $('#list').append($('<li style="height: 17px; overflow: hidden; margin-top: 2px;"> <strong class="col-md-2 activity-name">' + data.name + '</strong> <strong class="col-md-2">' + formatDate(data.startTime) + '</strong> <strong class="col-md-2">' + formatDate(data.endTime) + '</strong> <strong class="col-md-6">' + window.__app.settings.app.url + '/activity?id=' + data._id + '</strong> </li>'));
+//                    $('#addForm').hide();
+//                    $('#pointsHelpList').show();
+//                }
+                if(data){
+                    window.location.href=window.location.href;
+                }
+            });
+
+        }
+        function update(json){
+            $.post('/api/marketing/points/update', json, function (data) {
+                if (data) {
+                    window.location.href = window.location.href;
+                }
+            });
+        }
+    })
+    function edit(id){
+        $.get('/api/marketing/points/loadById?id=' + id, function(data){
+            if(data){
+                $('#activityName').val(data.name);
+                $('#shareTitle').val(data.shareTitle);
+                if(data.bgImg && data.bgImg.length > 0){
+                    bgImgCount = data.bgImg.length;
+                    bgImg = data.bgImg;
+                    for(var i = 1; i <= bgImg.length; i++){
+                        $('#bgImg' + i + ' img').attr('src', bgImg[i-1]).parent().css('display', '-webkit-inline-box');
+                        $('#bgImg' + i + ' i').attr('media', bgImg[i-1]);
+                    }
+                    if (bgImgCount === 3) {
+                        $('#bgImg').hide();
+                    }
+                }
+                if(data.shareImg){
+                    $('#shareImg1 img').attr('src', data.shareImg).parent().css('display', '-webkit-inline-box');
+                    shareImg = data.shareImg;
+                    $('#shareImg').hide();
+                }
+                $('#shareDesc').val(data.shareDesc);
+                $('#base_points').val(data.base_points);
+                $('#friend_help_count_limit').val(data.friend_help_count_limit);
+                $('#startTime').attr('value', formatDate(data.startTime));
+                $('#endTime').attr('value', formatDate(data.endTime));
+                $('#friend_help_min_points').val(data.friend_help_min_points);
+                $('#friend_help_max_points').val(data.friend_help_max_points);
+                $('#rule').summernote('code', data.rule);
+                $('#desc').summernote('code', data.desc);
+                $('#pointsHelpList').hide();
+                $('#addForm').show();
+                $('#activity-id').val(data._id);
+                $('#add-or-update').val('update');
+            }
+        });
+    }
+    function formatDate(date) {
+        var dateTime = new Date(date);
+        var year = dateTime.getFullYear();
+        var month = (dateTime.getMonth() + 1)>9 ? (dateTime.getMonth() + 1) : '0' + (dateTime.getMonth() + 1);
+        var day = dateTime.getDate() > 9 ? dateTime.getDate() : '0' + dateTime.getDate();
+        return year + '-' + month + '-' + day;
+    }
+
+    function uploadShareImg() {
+        var files = $('#shareImg')[0].files;
+        var formData = new FormData();
+        formData.append('file', files[0]);
+        $.ajax({
+            url: __app.settings.api.url + '/file/upload',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (responseStr) {
+                if (responseStr.media_id) {
+                    $('#shareImg1 img').attr('src', __app.settings.api.url + '/file?media_id=' + responseStr.media_id).parent().css('display', '-webkit-inline-box');
+                    shareImg = window.__app.settings.api.url + '/file?media_id=' + responseStr.media_id;
+                    $('#shareImg').hide();
+                }
+            },
+            error: function (responseStr) {
+                console.error(responseStr);
+                //TODO
+            }
+        });
+        $('#shareImg').val();
+    }
+
+    function uploadBgImg(){
+        var files = $('#bgImg')[0].files;
+        if(files.length > (3 - bgImgCount)){
+            alert('最多上传三张背景图片');
+            return;
+        }
+        for(var i=0; i<files.length; i++) {
+            var formData = new FormData();
+            formData.append('file', files[i]);
+            $.ajax({
+                url: __app.settings.api.url + '/file/upload',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (responseStr) {
+                    if(responseStr.media_id) {
+                        ++bgImgCount;
+                        $('#bgImg' + bgImgCount + ' img').attr('src', __app.settings.api.url + '/file?media_id=' + responseStr.media_id).parent().css('display', '-webkit-inline-box');
+                        $('#bgImg' + bgImgCount + ' i').attr('media', window.__app.settings.api.url + '/file?media_id=' + responseStr.media_id);
+                        bgImg.push(window.__app.settings.api.url + '/file?media_id=' + responseStr.media_id);
+                        if (bgImgCount === 3) {
+                            $('#bgImg').hide();
+                        }
+                    }
+                },
+                error: function (responseStr) {
+                    console.error(responseStr);
+                    //TODO
+                }
+            });
+        }
+        $('#bgImg').val();
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row-fluid">
+        <!--/span-->
+        <div class="col-md-10 col-md-offset-1">
+            <div class="jumbotron" style="height: auto; padding: 25px;">
+                <div id="pointsHelpList" class="panel" style="margin-top: 1em; padding: 0; min-height: 30em">
+                    <div style="padding-left: 20px; padding-bottom: 10px;"><a id="add" style="font-size: 1.5em; text-decoration: none; cursor: pointer">新增</a>
+                    </div>
+                    <ul class="ul" id="list">
+                        <li>
+                            <strong class="col-md-2">活动名称</strong>
+                            <strong class="col-md-2">开始时间</strong>
+                            <strong class="col-md-2">结束时间</strong>
+                            <!--<strong class="col-md-5">活动链接</strong>-->
+                            <strong class="col-md-6">操作</strong>
+                        </li>
+
+                        <li>
+                            <hr width="100%">
+                        </li>
+
+                    </ul>
+                </div>
+                <div id="addForm" class="panel" style="margin-top: 1em; display: none">
+                    <input type="hidden" value="add" id="add-or-update">
+                    <input type="hidden" value="" id="activity-id">
+                    <div style="padding-left: 20px; padding-bottom: 10px;"><a id="return" style="font-size: 1.5em; text-decoration: none; cursor: pointer">返回</a></div>
+                    <ul class="ul" style="text-align: left; padding-left: 2em">
+                        <li><span>积分助力活动设置</span></li>
+                        <li><span>活动名称:  </span><input id="activityName" type="text"/></li>
+                        <li class="bgImg" style="min-height: 26px"><span style="float: left">背景图片(3张):  </span><input id="bgImg" type="file" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="uploadBgImg()" style="width: 60px;"/>
+
+                            <div id="bgImg1" class="bgImgCon"><i class="glyphicon glyphicon-remove"></i><img src="" alt=""/></div>
+                            <div id="bgImg2" class="bgImgCon"><i class="glyphicon glyphicon-remove"></i><img src="" alt=""/></div>
+                            <div id="bgImg3" class="bgImgCon"><i class="glyphicon glyphicon-remove"></i><img src="" alt=""/></div>
+                        </li>
+                        <li style="clear: both; min-height: 26px"><span style="float: left">分享卡片图片:  </span><input id="shareImg" type="file" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="uploadShareImg()" style="width: 60px;"/>
+                            <div id="shareImg1" class="shareImgCon"><i class="glyphicon glyphicon-remove"></i><img src="/" alt=""/></div>
+                        </li>
+                        <li style="clear: both"><span>活动时间:  </span><input id="startTime" type="date"/><span> 至 </span><input id="endTime" type="date"/>
+                        </li>
+                        <li><span>活动介绍:  </span><div id="desc"></div></li>
+                        <li><span>活动规则:  </span><div id="rule"></div></li>
+                        <li><span>分享标题自定义:  </span><textarea id="shareTitle" cols="60" rows="1"></textarea></li>
+                        <li><span>分享描述自定义:  </span><textarea id="shareDesc" cols="60" rows="1"></textarea></li>
+                        <li><span>基础积分:  </span><input id="base_points" type="text"/></li>
+                        <li><span>好友助力单次奖励:  </span><input id="friend_help_min_points" type="text"/><span> 至 </span><input id="friend_help_max_points" type="text"/></li>
+                        <li><span>好友助力上限人数:  </span><input id="friend_help_count_limit" type="text"/></li>
+                        <li style="text-align: center; margin-top: 1em"><input class="btn btn-success" type="button"
+                                                                               id="submit" value="提交"/></li>
+                        <input type="hidden" id="activityType" value="flmh"/>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!--/span-->
+    </div>
+    <!--/row-->
+
+
+</div>
+{% endblock %}

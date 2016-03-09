@@ -12,4 +12,10 @@ module.exports = function(app){
 
     app.use(require('./boss')());
 
+    app.use(require('./power')());
+
+    app.use(require('./points')());
+
+    app.use(require('./marketing')());
+
 }
