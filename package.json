@@ -4,7 +4,7 @@
   "author": "Henry Leu",
   "version": "0.0.1",
   "dependencies": {
-    "@private/base-settings": "0.1.0",
+    "@private/base-settings": "0.1.2",
     "@private/vmark-settings": "0.1.0",
     "@private/vk": "git+https://henryleu:c148960791ab761064ecfbb07b7fdf582ff008df@github.com/trillers/vk.git",
     "amqplib": "0.4.0",
