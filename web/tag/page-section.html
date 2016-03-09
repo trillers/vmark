@@ -318,7 +318,6 @@
             self.parent.trigger('cancel', self.section);
         };
         self.submitSectionNote = function(e){
-            console.log(self.section);
             if(!self.section._id
                     || (self.section && self.section.mates && self.section.mates.length <=0)){
                 return;
@@ -378,7 +377,7 @@
                 publishNote.newInvocation(self.section)
                     .onDone(function(data){
                         try {
-                            util.mixin(self.section, data);
+                            _.mixin(self.section, data);
                             if(self.isNew){
                                 self.parent.pageNote.mates.push(self.section);
                             }

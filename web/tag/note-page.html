@@ -98,7 +98,6 @@
             return null;
         };
         var onLoadNote = function(res){
-            console.log(res)
             if(!res.error){
                 self.pageNote = res.note;
                 if(self.pageNote.mates && self.pageNote.mates.length){
@@ -108,7 +107,7 @@
                         }
                     });
                     if(draftSections && draftSections.length){
-                        self.pageNote.mates = util.arr.rest(self.pageNote.mates, draftSections);
+                        self.pageNote.mates = _.arr.rest(self.pageNote.mates, draftSections);
                         self.newSection = draftSections[0];
                         self.selectNote(self.newSection);
                     }

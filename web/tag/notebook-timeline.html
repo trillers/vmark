@@ -198,7 +198,13 @@
             self.state.doEdit(section);
         });
         self.onSaveNote = function(data){
-            util.mixin(self.currNote, data.section);
+            if( data.section
+                && data.section.hasOwnProperty('initiator')
+                && typeof data.section.initiator != 'object'){
+
+                delete data.section['initiator'];
+            }
+            _.mixin(self.currNote, data.section);
             !self.currNote.mates && (self.currNote.mates = []);
             self.currNote.mates.push(data.note);
             self.trigger('noteSave', data.note);

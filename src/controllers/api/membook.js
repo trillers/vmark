@@ -85,6 +85,7 @@ module.exports = function (router) {
                 initiator: page.initiator._id,
                 status: NoteStatus.Publish.value()
             };
+            //filter out the cover img from notes
             let imgs = page.notes.filter(function(note){
                 return note.type === 'img'
             });
@@ -256,21 +257,29 @@ module.exports = function (router) {
 
     router.put('/note/publish/_:id', function* (){
         try{
-            let note = this.request.body;
+            var note = this.request.body;
+            var noteUpdated = null;
             if(!note.status || note.status === NoteStatus.Draft.value()){
                 rankAction.addSectionNote(note.parentNote);
                 note.status = NoteStatus.Publish.value();
-                yield noteService.updateByIdAsync(note._id, note);
+                noteUpdated = yield noteService.updateByIdAsync(note._id, note);
             }
             if(note.mates && note.mates.length){
-                let asyncArr = [];
+                var asyncArr = [];
+                var coverImg = null;
                 note.mates.forEach(function(mate){
+                    if(mate.url && !coverImg){
+                        coverImg = mate.url
+                    }
                     if(!mate.status || (mate.status === NoteStatus.Draft.value())){
                         mate.status = NoteStatus.Publish.value();
                         asyncArr.push(noteService.updateByIdAsync(mate._id, mate))
                     }
                 });
-                let arr = yield Promise.all(asyncArr);
+                if(!noteUpdated.meta && coverImg){
+                    yield noteService.updateByIdAsync(note._id, {meta: coverImg});
+                }
+                var arr = yield Promise.all(asyncArr);
                 arr.map(function(newMate){
                     note.mates.map(function(mate, index){
                         if(newMate._id === mate._id){
