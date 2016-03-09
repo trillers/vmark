@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}跟谁学{% endblock %}</title>
+
+    {% block head %}
+    <link href="../../../../public/components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../../../public/components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="../../../../public/components/summernote/dist/summernote.css" rel="stylesheet">
+
+    <script src="../../../../public/components/jquery/jquery.min.js"></script>
+    <script src="../../../../public/components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../../../../public/components/summernote/dist/summernote.min.js"></script>
+
+    <script type="text/javascript">
+        window.__app = {{ JSON.stringify(__app) }};
+        window.__page = {{ JSON.stringify(__page) }};
+        window.prdOrNot =( __app.settings.env.NODE_ENV === "production" );
+    </script>
+    {% endblock %}
+    <style type="text/css">
+        .navbtn{padding-left: 3em}
+        .active{color: #ffffff !important;}
+    </style>
+    <script>
+        $(function(){
+            $('#logout').click(function(){
+                $.get('/logout', function(data){
+                    window.location.href = '/login';
+                });
+            })
+        })
+    </script>
+    <style>
+        .navbtn{padding-left: 20px; font-size:16px}
+        .myActive{color: #ffffff !important; border:0; outline: none !important;}
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-inverse" role="navigation" style="margin-bottom: 5px; border-radius: 0;">
+    <div class="collapse navbar-collapse">
+        <a class="navbar-brand" style="font-size:20px; color: #ffffff">微节点</a>
+        <ul class="nav navbar-nav" style="width: 88%">
+            <li class="navbtn"><a id="tenants" href="/boss#tenants">租户</a></li>
+            <li class="navbtn"><a id="power" class="myActive" href="/marketing/boss/power" >助力活动</a></li>
+            <li  style="float: right;"><a href="#" style="font-size: 1.4em" class="glyphicon glyphicon-off" title="退出" id="logout"></a></li>
+            <li style="float: right; margin-right: 20px; padding-top: 5px;">
+                <img src="{{__page.user.headimgurl}}" style="height: 40px; width: 40px" alt=""/><span style="margin-left: 10px; color: white">{{__page.user.nickname}}</span>
+            </li>
+        </ul>
+    </div>
+</nav>
+</nav>
+    {% block content %}{% endblock %}
+</body>
+</html>

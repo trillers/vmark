@@ -1,5 +1,7 @@
 var cbUtil = require('../../../framework/callback');
 var WechatMediaUserType = require('../../common/models/TypeRegistry').item('WechatMediaUserType');
+var agentToken = require('../../auth/agentToken');
+var openToken = require('../../auth/openToken');
 
 var Service = function(context){
     this.context = context;
@@ -65,6 +67,10 @@ Service.prototype.loadById = function(id, callback){
 
 Service.prototype.create = function(mediaUserJson, callback){
     var WechatMediaUser = this.context.models.WechatMediaUser;
+    var kv = this.context.kvs.wechatMediaUser;
+    mediaUserJson.at = agentToken.generate(mediaUserJson.openid);
+    mediaUserJson.ot = openToken.generate(mediaUserJson.openid);
+
     var mediaUser = new WechatMediaUser(mediaUserJson);
     mediaUser.save(function (err, result, affected) {
         cbUtil.logCallback(
@@ -74,6 +80,7 @@ Service.prototype.create = function(mediaUserJson, callback){
 
         cbUtil.handleAffected(function(err, doc){
             var json = !err && doc && doc.toObject({virtuals: true});
+            kv.saveByOpenid(json, callback);
             if(callback) callback(err, json);
         }, err, result, affected);
     });
@@ -150,6 +157,28 @@ Service.prototype.find = function(params, callback){
         }
 
         if (callback) callback(null, docs);
+    });
+};
+
+Service.prototype.loadByOpenid = function(openid, callback){
+    var kv = this.context.kvs.wechatMediaUser;
+    kv.loadByOpenid(openid, callback);
+};
+
+Service.prototype.updateByOpenid = function(openid, json, callback){
+    var kv = this.context.kvs.wechatMediaUser;
+    var WechatMediaUser = this.context.models.WechatMediaUser;
+    WechatMediaUser.findOneAndUpdate({openid: openid}, json, {new: true}, function (err, doc) {
+        if(err){
+            return callback(err);
+        }
+        var obj = doc && doc.toObject({virtuals: true});
+        if(obj){
+            kv.saveByOpenid(obj, callback);
+        }
+        else{
+            callback(null, null);
+        }
     });
 };
 

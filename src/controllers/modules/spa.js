@@ -5,7 +5,7 @@ module.exports = function(router){
     require('../../app/routes-spa')(router);
 
     router.get('/', function *(){
-        if(!this.session.auth){
+        if(!this.session.auth || this.session.auth.user.type === 'c'){
             this.redirect('/login');
         }else{
             yield this.render('index');
@@ -17,5 +17,13 @@ module.exports = function(router){
     router.get('/logout', function *(){
         this.session.auth = null;
         this.body = null;
+    });
+
+    router.get('/func-list', function *(){
+        if(!this.session.auth){
+            this.redirect('/login');
+        }else{
+            yield this.render('func-list');
+        }
     });
 };

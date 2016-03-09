@@ -51,4 +51,15 @@ module.exports = function(app){
     require('./recontent')(router);
     app.use(router.routes());
 
+    //marketing power activity
+    router = new Router();
+    router.prefix('/api/marketing/power');
+    require('./power')(router);
+    app.use(router.routes());
+
+    //marketing points
+    router = new Router();
+    router.prefix('/api/marketing/points');
+    require('./points')(router);
+    app.use(router.routes());
 }

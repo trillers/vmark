@@ -76,6 +76,17 @@ registry
     .addChild('Dark','dark', '深色')
     .addChild('Light','light', '浅色')
 
+    .up().item('UserStatus', 'UserStatus', '用户状态')
+    .addChild('Anonymous','a', '匿名')
+    .addChild('Registered','r', '已注册')
+    .addChild('Verified','v', '已验证')
 
+    .up().item('UserType', 'UserType', '用户类型')
+    .addChild('Admin','a', '系统管理员')
+    .addChild('Tenant','t', '租户')
+    .addChild('Customer','c', '终端用户') /*参与活动用户等*/
 
+    .up().item('PowerType', 'PowerType', '助力活动类型')
+    .addChild('RedPacket','rp', '红包助力')
+    .addChild('Points','po', '积分助力')
 module.exports = registry;
