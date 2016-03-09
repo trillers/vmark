@@ -125,6 +125,7 @@ Service.prototype.filter = function*(params){
 Service.prototype.getStatus = function*(participant, user){
     var kv = this.context.kvs.power;
     var status = {
+        homeLink: '',
         active: true,
         join: '',
         joined: 'none',
@@ -158,6 +159,7 @@ Service.prototype.getStatus = function*(participant, user){
             if (participantId) {
                 status.join = 'none';
                 status.joined = '';
+                status.homeLink = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participantId;
             }
             var helpArr = yield kv.getHelpFriendsSetAsync(participant.id);
             if (_.indexOf(helpArr, user.openid) !== -1) {
