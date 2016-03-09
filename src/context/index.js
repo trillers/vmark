@@ -23,8 +23,7 @@ context.mongoose.main = mongooseMain;
 context.domainBuilder.main = require('../framework/model/DomainBuilder');
 ar.ready(function(){
     require('../modules');
-    require('../jobs/syncRedpacketActivity');
-    require('../jobs/syncPointsActivity');
+    require('../jobs/syncPowerActivity');
     context.wechatBotManager.start();
 });
 

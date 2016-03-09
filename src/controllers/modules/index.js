@@ -12,7 +12,7 @@ module.exports = function(app){
 
     app.use(require('./boss')());
 
-    app.use(require('./redpacket')());
+    app.use(require('./power')());
 
     app.use(require('./points')());
 
