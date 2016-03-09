@@ -9,7 +9,8 @@ var Model = function(domainBuilder){
         .withRank()
         .withProperties({
             title: {type: String},
-            initiator: {type: String, ref: 'User'}
+            initiator: {type: String, ref: 'User'},
+            coverImg: {type: String}
         })
         .build();
     return schema.model(true);

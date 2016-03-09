@@ -1,0 +1,40 @@
+<note-share>
+    <div if="{!hidden}">
+        <ul>
+            <li each="{note in notes}" onclick="{parent.routeToShareDetail}">
+                <img riot-src="{note.meta}"/><span>{note.title}</span>
+            </li>
+        </ul>
+    </div>
+    <style>
+        ul li {
+            height: 60px;
+            line-height: 60px;
+            border-bottom: 1px solid #ddd;
+        }
+        ul li img{
+            width:40px;
+            height:40px;
+            vertical-align: middle;
+        }
+    </style>
+    <script>
+        var self = this;
+        var loadAllNotesForShare = domain.action('loadAllNotesForShare');
+
+        self.hidden = true;
+        self.routeToShareDetail = function(e){
+            riot.route('share/_' + e.item.note._id);
+        };
+        self.on('open', function(){
+            loadAllNotesForShare.newInvocation({
+                initiator: __page.user._id
+            })
+            .onDone(function(res){
+                self.notes = res.notes;
+                self.trigger('ready');
+            })
+            .execute();
+        })
+    </script>
+</note-share>

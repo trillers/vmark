@@ -24,14 +24,13 @@
         });
         self.on('open', function(){
             loadSummaryInNotebooksByIds.newInvocation({
-                notebooks: opts.notebooks.map(function(notebook){return notebook._id})
+                notebooks: self.opts.notebooks.map(function(notebook){return notebook._id})
             })
             .onDone(function(res){
                 if(res.error){
                     console.log('Failed to load summary', data.error);
                     return;
                 }
-                //own state
                 self.notebooks = self.opts.notebooks.map(function(notebook){
                     return _.mixin(notebook, res.data.filter(function(item){
                         return item.id === notebook._id

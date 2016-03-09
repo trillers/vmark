@@ -17,9 +17,9 @@ module.exports = function (router) {
 
     router.get('/notebook/latest', function*(){
         try{
-            var auth = this.session.auth;
-            var latestNotebook = yield notebookService.fetchByIdAsync(auth.userBiz.latest, auth.user);
-            var sectionNotes = yield noteService.loadSectionNotesByNotebookIdAsync(latestNotebook._id);
+            let auth = this.session.auth;
+            let latestNotebook = yield notebookService.fetchByIdAsync(auth.userBiz.latest, auth.user);
+            let sectionNotes = yield noteService.loadSectionNotesByNotebookIdAsync(latestNotebook._id);
             if(!sectionNotes || !sectionNotes.length){
                 sectionNotes = yield noteService.createAsync({
                     initiator: this.session.auth.user,
@@ -29,10 +29,10 @@ module.exports = function (router) {
                 sectionNotes.initiator = auth.user;
             }
             latestNotebook.mates = Array.isArray(sectionNotes) ? sectionNotes: [sectionNotes];
-            var promiseArr = latestNotebook.mates.map(function(sectionNote){
+            let promiseArr = latestNotebook.mates.map(function(sectionNote){
                 return noteService.loadMatesByIdAsync(sectionNote._id);
             });
-            var results = yield Promise.all(promiseArr);
+            let results = yield Promise.all(promiseArr);
             results.forEach(function(notes, i){
                 latestNotebook.mates[i].mates = notes;
             });
@@ -44,18 +44,54 @@ module.exports = function (router) {
     });
 
     /**
+     * load all notes for share
+     * in used
+     * @params id initiator_id
+     * @return notes Array<Object>
+     */
+    router.get('/note/share/user/_:id', function* (){
+        try{
+            let initiatorId = this.params.id;
+            let notes = yield noteService.filterAsync({
+                conditions: {
+                    notebook: {$exists: false},
+                    initiator: initiatorId,
+                    type: NoteType.Page.value()
+                },
+                sort:{
+                    crtOn: -1
+                }
+            });
+            this.body = {error: null, notes: notes};
+        } catch(e) {
+            context.logger.error(e);
+            this.body = {error :e};
+        }
+    });
+
+    /**
      * add a note page for share
+     * in used
+     * @params note Object
+     * @return note Object
      */
     router.post('/share', function* (){
         try{
             let page = this.request.body;
-            page.initiaor = _.pick(page.initiaor, '_id', 'headimgurl', 'nickname');
-            let pageNote = yield noteService.createAsync({
+            page.initiator = _.pick(page.initiator, '_id', 'headimgurl', 'nickname');
+            let pageNoteJson = {
                 title: '默认',
                 type: NoteType.Page.value(),
                 initiator: page.initiator._id,
                 status: NoteStatus.Publish.value()
+            };
+            let imgs = page.notes.filter(function(note){
+                return note.type === 'img'
             });
+            if(imgs.length){
+                pageNoteJson.meta = imgs[0].url;
+            }
+            let pageNote = yield noteService.createAsync(pageNoteJson);
             pageNote.initiator = page.initiator;
             let sectionNote = yield noteService.createAsync({
                 parentNote: pageNote._id,
@@ -183,7 +219,8 @@ module.exports = function (router) {
             }
             this.body = {notebooks: notebooks, latestNotebook: latestNotebook};
         }catch(e){
-            console.log(e);
+            context.logger.error(e);
+            this.body = {error: e};
         }
     });
 
@@ -206,7 +243,7 @@ module.exports = function (router) {
 
     router.post('/note', function*(){
         try{
-            var json = this.request.body;
+            let json = this.request.body;
             json._id = this.session['draftId'];
             json.initiator = this.session.auth.user._id;
             this.session['draftId'] = null;
@@ -219,21 +256,21 @@ module.exports = function (router) {
 
     router.put('/note/publish/_:id', function* (){
         try{
-            var note = this.request.body;
+            let note = this.request.body;
             if(!note.status || note.status === NoteStatus.Draft.value()){
                 rankAction.addSectionNote(note.parentNote);
                 note.status = NoteStatus.Publish.value();
                 yield noteService.updateByIdAsync(note._id, note);
             }
             if(note.mates && note.mates.length){
-                var asyncArr = [];
+                let asyncArr = [];
                 note.mates.forEach(function(mate){
                     if(!mate.status || (mate.status === NoteStatus.Draft.value())){
                         mate.status = NoteStatus.Publish.value();
                         asyncArr.push(noteService.updateByIdAsync(mate._id, mate))
                     }
                 });
-                var arr = yield Promise.all(asyncArr);
+                let arr = yield Promise.all(asyncArr);
                 arr.map(function(newMate){
                     note.mates.map(function(mate, index){
                         if(newMate._id === mate._id){
@@ -254,13 +291,12 @@ module.exports = function (router) {
 
     router.post('/note/like', function*(){
         try{
-            var noteId = this.request.body.note;
-            var originalInteraction = this.request.body.interaction;
+            let noteId = this.request.body.note;
+            let originalInteraction = this.request.body.interaction;
             originalInteraction.type = InteractType.Like.value();
-            var interaction = yield interactService.createAsync(originalInteraction);
-            var note = yield noteService.likeAsync(noteId, interaction);
+            let interaction = yield interactService.createAsync(originalInteraction);
+            let note = yield noteService.likeAsync(noteId, interaction);
             rankAction.like(note.parentNote);
-            console.error(note);
             this.body = {like: interaction};
         }catch(e){
             context.logger.error(e);
@@ -270,11 +306,11 @@ module.exports = function (router) {
 
     router.post('/note/comment', function*(){
         try{
-            var noteId = this.request.body.note;
-            var originalInteraction = this.request.body.interaction;
+            let noteId = this.request.body.note;
+            let originalInteraction = this.request.body.interaction;
             originalInteraction.type = InteractType.Comment.value();
-            var interaction = yield interactService.createAsync(originalInteraction);
-            var note = yield noteService.addCommentAsync(noteId, interaction);
+            let interaction = yield interactService.createAsync(originalInteraction);
+            let note = yield noteService.addCommentAsync(noteId, interaction);
             rankAction.comment(note.parentNote);
             this.body = {comment: interaction};
         }catch(e){
@@ -285,7 +321,7 @@ module.exports = function (router) {
 
     router.delete('/note/comment/_:id', function*(){
         try{
-            var id = this.params.id;
+            let id = this.params.id;
             yield interactService.deleteByIdAsync(id);
             this.body = {success: true};
         }catch(e){
@@ -296,9 +332,9 @@ module.exports = function (router) {
 
     router.post('/note/unlike', function*(){
         try{
-            var noteId = this.request.body.note;
-            var userId = this.session.auth.user._id;
-            var interactId = this.request.body.interaction;
+            let noteId = this.request.body.note;
+            let userId = this.session.auth.user._id;
+            let interactId = this.request.body.interaction;
             yield interactService.deleteByIdAsync(interactId);
             yield noteService.unlikeAsync(noteId, userId);
             this.body = {success: true};
@@ -409,11 +445,11 @@ module.exports = function (router) {
 
     router.post('/notes', function*(){
         try{
-            var notes = this.request.body.notes;
-            var sectionNote = null;
-            var me = this;
+            let notes = this.request.body.notes;
+            let sectionNote = null;
+            let me = this;
             this.session['draftId'] && (this.session['draftId'] = null);
-            var asyncArr = [];
+            let asyncArr = [];
             if(!notes[0].parentNote){
                 sectionNote = yield noteService.createAsync({
                     initiator: this.session.auth.user._id,
@@ -426,7 +462,7 @@ module.exports = function (router) {
                 note.parentNote = note.parentNote || sectionNote._id;
                 asyncArr.push(noteService.createAsync(note));
             });
-            var mates = yield Promise.all(asyncArr);
+            let mates = yield Promise.all(asyncArr);
             this.body = {mates: mates, parentNote: sectionNote};
         }catch(e){
             context.logger.error(e);
@@ -436,7 +472,7 @@ module.exports = function (router) {
 
     router.put('/notes', function*(){
         try{
-            var noteIds = this.request.body.notes;
+            let noteIds = this.request.body.notes;
             yield noteService.deleteNotesByIdAsync(noteIds);
             this.body = {success: true};
         }catch(e){
@@ -447,14 +483,14 @@ module.exports = function (router) {
 
     router.post('/section/note', function*(){
         try{
-            var json = this.request.body;
+            let json = this.request.body;
             this.session['draftId'] && (this.session['draftId'] = null);
             if(!json.parentNote){
                 let sectionNote = {
                     initiator: this.session.auth.user._id,
                         type: NoteType.Section.value(),
                     notebook: json.notebook
-                }
+                };
                 if(json.pageNoteId){
                     sectionNote['parentNote'] = json.pageNoteId;
                 }
@@ -472,8 +508,8 @@ module.exports = function (router) {
 
     router.put('/note/_:id', function*(){
         try{
-            var id = this.params.id;
-            var json = this.request.body;
+            let id = this.params.id;
+            let json = this.request.body;
             this.body = yield noteService.updateByIdAsync(id, json);
         }catch(e){
             context.logger.error(e);
@@ -483,11 +519,22 @@ module.exports = function (router) {
 
     router.post('/note/uploadimgs', function* (){
         try{
-            var notes = this.request.body.notes;
+            let notes = this.request.body.notes;
+            console.log(notes);
             for(let i=0, len=notes.length; i<len; i++){
-                var note = notes[i];
-                note.url = yield context.services.mediaService.uploadImgAsync(note.url);
-                yield context.services.noteService.createAsync(note);
+                let note = notes[i];
+                try{
+                    note.url = yield context.services.mediaService.uploadImgAsync(note.url);
+                }catch(e){
+                    context.logger.error('......');
+                }
+                if(note.notebook){
+                    let notebook = yield notebookService.loadByIdAsync(note.notebook);
+                    if(!notebook.coverImg){
+                        yield notebookService.updateByIdAsync(notebook._id, {coverImg: note.url});
+                    }
+                }
+                yield noteService.createAsync(note);
             }
             this.body = {notes: notes};
         }catch(e){
@@ -497,7 +544,7 @@ module.exports = function (router) {
     });
 
     router.get('/note/onShare', function*(){
-        var noteId = this.query.id;
+        let noteId = this.query.id;
         if(noteId) {
             rankAction.share(noteId);
         }
@@ -505,9 +552,9 @@ module.exports = function (router) {
     });
 
     router.post('/note/find', function*(){
-        var params = {};
+        let params = {};
         //params.page = this.request.body.page;
-        var lFlg = this.request.body.status == 'active' ? 'a' : 'd';
+        let lFlg = this.request.body.status == 'active' ? 'a' : 'd';
         params.conditions = {
             lFlg: lFlg,
             type: 'pg'
@@ -524,7 +571,7 @@ module.exports = function (router) {
     });
 
     router.get('/note/delete', function*(){
-        var noteId = this.query.id;
+        let noteId = this.query.id;
         yield noteService.updateByIdAsync(noteId, {lFlg: 'd'});
         this.body = {success: true};
     });

@@ -1,5 +1,5 @@
 <notebook-timelines>
-    <div id="shareMask" class="mask" if="{currentState === 'share'}" style="height: {window.innerHeight + 'px'}"></div>
+    <div id="shareMask" class="mask" if="{currentState === 'share'}" style="z-index: 5;height: {window.innerHeight + 'px'}"></div>
     <div class="timeline_container" if="{!hidden}">
         <notebook-timeline each="{note in opts.notebooks}" if="{parent.opts.latestnotebook._id === note._id}" notebook="{note}" latest="{parent.opts.latestnotebook}" mode="{parent.currentState}" shares="{parent.shares}"></notebook-timeline>
         <div class="btn_group" style="position: fixed; top: {300}px">
@@ -17,7 +17,7 @@
             position: fixed;
             top: 0px;
             left: 0px;
-            z-index: 2;
+            z-index: 5;
             background: black;
             opacity: 0.2;
         }
@@ -28,6 +28,7 @@
             width: 40px;
             height: 40px;
             background: red;
+            z-index: 4;
         }
         .timeline_container{
             overflow: hidden;
@@ -35,6 +36,7 @@
         .btn_group{
             width: 100%;
             position: fixed;
+            z-index: 4;
         }
         .route_btn{
             width:40px;
@@ -64,10 +66,9 @@
             }
             addShareNotePage.newInvocation({
                 notes: self.shares,
-                initiator: __page.user._id
+                initiator: __page.user
             })
             .onDone(function(res){
-                console.log(res.pageNote);
                 self.currentState = 'view';
                 self.shares = [];
                 riot.route('share/_' + res.pageNote._id);
@@ -84,7 +85,6 @@
             }else{
                 self.shares.push(note);
             }
-            console.log(self.shares)
             self.update({shares: self.shares});
         });
         var routeToNotebook = function(index){
@@ -109,7 +109,7 @@
             routeToNotebook(currentIndex+1);
         };
         self.on('mount', function(){
-
+            console.warn("timelines mounted........")
         });
         self.on('open', function(){
             try{

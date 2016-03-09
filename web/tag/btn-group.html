@@ -1,6 +1,6 @@
 <btn-group>
     <div class="mask" if="{state.current === 'menu' || state.current === 'edit'}" ontouchstart="{viewMode}" style="height: {window.innerHeight + 'px'}"></div>
-    <div class="add-section-bar" if="{state.current == 'view'}" style="position: fixed; bottom: 0px">
+    <div class="add-section-bar" if="{state.current == 'view'}" style="position: fixed; z-index:4; bottom: 0px">
         <div onclick="{showSubMenu}" style="width:48px;height:48px;background: red;float:left">单</div>
         <div if="{editableOrNot()}" onclick="{addNewNote}" style="width:48px;height:48px;background: red;float:right">新</div>
     </div>
@@ -13,7 +13,7 @@
                 <a href="#notebook/index">笔记本</a>
             </li>
             <li class="{active: opts.active === 'share'}">
-                <a href="#">趣分享</a>
+                <a href="#share">趣分享</a>
             </li>
         </ul>
     </div>
@@ -23,7 +23,7 @@
             position: fixed;
             top: 0px;
             left: 0px;
-            z-index: 2;
+            z-index: 5;
             background: black;
             opacity: 0.2;
         }
@@ -67,8 +67,8 @@
             self.state.current = 'menu';
         };
         self.viewMode = function(){
-            app.trigger('viewMode');
             self.state.current = 'view';
+            app.trigger('viewMode');
         };
         self.editableOrNot = function(){
             return ((self.opts.latestnotebook.participates.map(function(participate){return participate._id})).indexOf(__page.user._id) >= 0)

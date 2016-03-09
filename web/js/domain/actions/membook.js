@@ -5,6 +5,10 @@ domain.action('loadNotebooksByUserId').onExecute(function(data){
     apiFactory.get('/membook/notebooks/user/_' + data.userId).drive(this).send();
 });
 //in used
+domain.action('loadAllNotesForShare').onExecute(function(data){
+    apiFactory.get('/membook/note/share/user/_' + data.initiator).drive(this).send();
+});
+//in used
 domain.action('loadSummaryInNotebooksByIds').onExecute(function(data){
     apiFactory.post('/membook/notebooks/summary').drive(this).send(data);
 });
@@ -50,6 +54,9 @@ domain.action('updateNotebook').onExecute(function(data){
     apiFactory.put('/membook/notebook/_' + data.id).drive(this).send(data);
 });
 domain.action('updateNote').onExecute(function(data){
+    apiFactory.put('/membook/note/_' + data.id).drive(this).send(data);
+});
+domain.action('updatePageNote').onExecute(function(data){
     apiFactory.put('/membook/note/_' + data.id).drive(this).send(data);
 });
 domain.action('saveNotesInSection').onExecute(function(data){

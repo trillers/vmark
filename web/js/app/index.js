@@ -52,6 +52,7 @@ Navigation.prototype.doRouteView = function(ctx, id){
     view.on('ready', readyHandler);
     try{
         var context = _.toObjectFromRiot(this.current);
+        context.id = id;
     } catch (e){
         console.error('ctx parse error.');
     }
@@ -116,10 +117,16 @@ var mount_timeline = function(ctx, id){
     return riot.mount('note-page', {id: id})[0];
 };
 var view_timeline = function(ctx, id){
-    console.log("........")
+
+};
+var mount_shareList = function(ctx, id){
+    return riot.mount('note-share', {id: id})[0];
+};
+var view_shareList = function(ctx, id){
 };
 
 nav.addRouteView('share/_', mount_timeline, view_timeline);
+nav.addRouteView('share', mount_shareList, view_shareList);
 
 /*
  * route for timeline index page

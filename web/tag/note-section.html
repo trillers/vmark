@@ -19,7 +19,7 @@
             </div>
         </div>
         <div class="noteItems">
-            <div class="{share_div: parent.inShareItems(note)}" each="{note in section.mates}" noteId="{_id}" style="position:relative;z-index: 3;margin-top: 5px" onclick="{parent.deleteNote}">
+            <div class="{share_div: parent.inShareItems(note)}" each="{note in section.mates}" noteId="{_id}" style="position:relative;z-index: {parent.opts.mode === 'share' ? 6 : 3};margin-top: 5px" onclick="{parent.deleteNote}">
                 <div if="{note.type==='txt'}" class="note-text">{note.content}</div>
                 <div if="{note.type==='img'}" class="note_img"><img style="width: 100%" riot-src="{note.url}"/></div>
                 <div if="{note.type==='voi'}" class="note-voice" style="float:left">
@@ -135,7 +135,6 @@
         //private properties
         var self = this;
         var saveNoteInSection = domain.action('saveNoteInSection');
-        var updateNote = domain.action('updateNote');
         var deleteNotes = domain.action('deleteNotes');
         var publishNote = domain.action('publishNote');
         var saveNotesInSection = domain.action('saveNotesInSection');
@@ -190,20 +189,21 @@
             return self.opts.mode === 'share' && (self.initiator._id === self.parent.user._id);
         };
         self.deleteNote = function(e){
-//            if(!(self.isOnEdit() && (self.initiator._id === self.parent.user._id))){
-//                return false;
-//            }
+            if(self.initiator._id != self.parent.user._id){
+                return false;
+            }
             if(self.opts.mode === 'share'){
                 return app.trigger('shareToggle', e.item.note);
             }
             self.confirm({text: '是否删除该行'}, function(){
+                var noteId = e.item.note._id;
                 deleteNotes.newInvocation({
-                    notes: [e.item._id]
+                    notes: [noteId]
                 })
                 .onDone(function(data){
                     if(data.success){
                         self.section.mates.forEach(function(mate, index){
-                            if(mate._id === e.item._id){
+                            if(mate._id === noteId){
                                 self.section.mates.splice(index, 1);
                             }
                         });

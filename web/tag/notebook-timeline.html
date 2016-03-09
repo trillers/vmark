@@ -50,7 +50,6 @@
     </style>
     <script>
         "use strict";
-        //private properties
         var self = this;
         var id = this.opts.id;
         var url = window.location.href;
@@ -81,6 +80,7 @@
             return null;
         };
         var onUpdateNote = function(data){
+            console.log("~~~~~~~~~~~~");
             if(!data.error){
                 util.mixin(self.notebook, data);
                 self.updateWxShareConfig();
@@ -91,14 +91,12 @@
         var onLoadNote = function(data){
 
         };
-        //instance properties
         self.hidden = true;
         self.notebook = self.opts.notebook;
         self.currNote = {};
         self.parent = self.parent.parent;
         self.user = __page.user;
         self.user.headimgurl = self.user.headimgurl || '/public/images/def-avatar.png';
-        //instance methods
         self.formatDate = function(date){
             return new Date(date).toLocaleString();
         };
@@ -225,8 +223,6 @@
         });
         self.on('noteSave', function(note){
             self.update();
-//            var scrollHeight = self.root.querySelector('.panel').scrollHeight;
-//            window.scrollTo(0, scrollHeight-200);
             var h = document.documentElement.scrollHeight || document.body.scrollHeight;
             window.scrollTo(0,h);
         });

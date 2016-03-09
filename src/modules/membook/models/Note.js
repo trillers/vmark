@@ -31,7 +31,9 @@ var Model = function(domainBuilder){
 
             status: {type: String, enum: NoteStatus.valueList(), default: NoteStatus.Draft.value()},
 
-            rank: {type: Number, default: 0}
+            rank: {type: Number, default: 0},
+
+            meta: {type: String}
         })
         .build();
     return schema.model(true);

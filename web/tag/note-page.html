@@ -44,7 +44,7 @@
             position: fixed;
             top: 0px;
             left: 0px;
-            z-index: 2;
+            z-index: 5;
         }
         :focus{
             outline: none;
@@ -79,7 +79,7 @@
         var id = this.opts.id;
         var url = window.location.href;
         var loadNote = domain.action('loadNote');
-        var updateNote = domain.action('updateNote');
+        var updatePageNote = domain.action('updatePageNote');
         var shareAction = domain.action('shareAction');
         var getShareImg = function(){
             if(self.pageNote && self.pageNote.mates && self.pageNote.mates.length){
@@ -97,15 +97,8 @@
             }
             return null;
         };
-        var onUpdateNote = function(data){
-            if(!data.error){
-                util.mixin(self.pageNote, data);
-                self.updateWxShareConfig();
-            }else{
-                alert(data.error.message);
-            }
-        };
         var onLoadNote = function(res){
+            console.log(res)
             if(!res.error){
                 self.pageNote = res.note;
                 if(self.pageNote.mates && self.pageNote.mates.length){
@@ -123,7 +116,6 @@
             }
             self.updateWxShareConfig();
             self.trigger('ready');
-            self.update();
         };
         //instance properties
         self.hidden = true;
@@ -202,15 +194,6 @@
                 wx.onMenuShareAppMessage(shareConfig);
             }, 500);
         };
-        self.init = function(){
-            self.pageNote = {
-                comments: null,
-                crtOn: null,
-                _id: null,
-                title: null
-            };
-            self.titleInput.value = '';
-        };
         self.sectionShowOrNot = function(item){
             if(self.pageNoteMode.status.view && item.status != 'dr'){
                 return true;
@@ -260,10 +243,16 @@
             if(self.pageNote.initiator != self.user._id || !title){
                 return;
             }
-            updateNote.execute({
+            updatePageNote.newInvocation({
                 id: self.pageNote._id,
                 title: title
-            });
+            }).onDone(function(data){
+                if(!data.error){
+                    self.updateWxShareConfig();
+                }else{
+                    alert(data.error.message);
+                }
+            }).execute();
         };
         self.selectNote = function(note, tag){
             self.currNote = note;
@@ -298,20 +287,24 @@
         self.on('active', function(tag){
             self.selectNote(tag.section, tag)
         });
-        self.on('open', function(){
-            loadNote.onDone(onLoadNote);
+        self.on('open', function(ctx){
+            self.pageNote = {
+                comments: null,
+                crtOn: null,
+                _id: null,
+                title: null
+            };
+            self.titleInput.value = '';
+            self.pageNote._id = id;
             loadNote.execute({
-                noteId: self.pageNote._id
+                noteId: ctx.id || self.pageNote._id
             });
         });
         self.on('mount', function(){
-            updateNote.onDone(onUpdateNote);
-            self.init();
-            self.pageNote._id = id;
+            loadNote.onDone(onLoadNote);
         });
         self.on('unmount', function(){
             loadNote.offDone(onLoadNote);
-            updateNote.offDone(onUpdateNote);
         });
 
         var remote_playing = false, local_playing = false, voiceUrl = '', playVoiceEnd;
