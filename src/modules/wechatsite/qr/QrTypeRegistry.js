@@ -214,7 +214,7 @@ QrType.prototype.createQr = function(qrData, cb){
             qr.ticket = result.ticket;
             qr.scene_id = sceneId;
             qr.typeObj = me;
-            yield service.createAsync(qr);
+            qr = yield service.createAsync(qr);
             callback && callback(null, new Qr(qr));
         }
         catch(e){

@@ -64,6 +64,8 @@
                 $('#activityName').val('');
                 $('#shareTitle').val('');
                 $("input[name='activity_type']")[0].checked = true;
+                $("#with_pic").attr('checked', false);
+
                 bgImgCount = 0;
                 bgImg = [];
                 shareImg = '';
@@ -107,6 +109,7 @@
         $('#submit').click(function () {
             var json = {
                 type: $(':radio[name="activity_type"]:checked').val()
+                , withPic: false
                 , name: $('#activityName').val()
                 , bgImg: bgImg
                 , shareImg: shareImg
@@ -120,6 +123,9 @@
                 , friend_help_max_power: $('#friend_help_max_power').val()
                 , rule: $('#rule').summernote('code')
                 , desc: $('#desc').summernote('code')
+            }
+            if($("#with_pic").is(':checked')){
+                json.withPic = true;
             }
             if($('#add-or-update').val() === 'add'){
                 add(json);
@@ -167,6 +173,9 @@
                     $("input[name='activity_type']")[0].checked = true;
                 }else if(data.type === 'po'){
                     $("input[name='activity_type']")[1].checked = true;
+                }
+                if(data.withPic === 'true'){
+                    $("#with_pic").attr('checked', true);
                 }
                 if(data.bgImg && data.bgImg.length > 0){
                     bgImgCount = data.bgImg.length;
@@ -302,6 +311,7 @@
                             <label><input id="type_rp" name="activity_type" type="radio" value="rp" checked="checked"/>红包</label>
                             <label><input id="type_po" name="activity_type" type="radio" value="po" />积分</label>
                         </li>
+                        <li><span>启动图片助力:  </span><input id="with_pic" type="checkbox"></li>
                         <li><span>活动名称:  </span><input id="activityName" type="text"/></li>
                         <li class="bgImg" style="min-height: 26px"><span style="float: left">背景图片(3张):  </span><input id="bgImg" type="file" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="uploadBgImg()" style="width: 60px;"/>
 

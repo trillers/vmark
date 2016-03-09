@@ -23,6 +23,7 @@ module.exports = function(router){
             ,friend_help_max_power: this.request.body.friend_help_max_power
             ,rule: this.request.body.rule
             ,desc: this.request.body.desc
+            ,withPic: this.request.body.withPic
         }
         var data = yield powerActivityService.create(json);
         this.body = data;
@@ -43,6 +44,7 @@ module.exports = function(router){
         var id = this.request.body.id;
         var json = {
             type:  this.request.body.type
+            ,withPic: this.request.body.withPic
             ,name: this.request.body.name
             ,shareTitle: this.request.body.shareTitle
             ,shareDesc: this.request.body.shareDesc

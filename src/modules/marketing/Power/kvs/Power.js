@@ -33,12 +33,13 @@ Kv.prototype.saveActivity = function(json, callback){
     var redis = this.context.redis.main;
     var obj = _.clone(json);
     obj.crtOn && (delete obj.crtOn);
-    var key = idToActivityKey(obj.id || obj._id);
+    var id = obj.id || obj._id;
+    var key = idToActivityKey(id);
     redis.hmset(key, obj, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to save power activity by id ' + obj.id + ': ' + err,
-            'Succeed to save power activity by id ' + obj.id);
+            'Fail to save power activity by id ' + id + ': ' + err,
+            'Succeed to save power activity by id ' + id);
         cbUtil.handleOk(callback, err, result, obj);
     });
 }
