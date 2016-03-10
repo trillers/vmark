@@ -149,14 +149,14 @@ Service.prototype.putParticipantToMapString = function*(id, participantUserBrief
     return userMap;
 }
 
-Service.prototype.getParticipantRankingList = function*(id){
+Service.prototype.getParticipantRankingList = function*(id, count){
     var kv = this.context.kvs.power;
     var userMapString = yield kv.getParticipantMapStringAsync(id);
 
     //return to see: this is blank
     if(!userMapString) return null;
     var userMap = JSON.parse(userMapString);
-    var rankingList = yield kv.getRankingListAsync(id);
+    var rankingList = yield kv.getRankingListAsync(id, count);
 
     //return to say: this is blank
     if(!rankingList || rankingList.length==0) return null;

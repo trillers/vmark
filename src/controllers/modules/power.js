@@ -36,7 +36,7 @@ module.exports = function(){
                 this.redirect('/marketing/power/participant?id=' + status.participant);
             }else {
                 util.extend(activity, status);
-                var participants = yield powerActivityService.getRankingList(activity._id, 200);
+                var participants = yield powerActivityService.getParticipantRankingList(activity._id, 200);
                 yield powerActivityService.increaseViews(activity._id);
                 if(activity.type === PowerType.RedPacket.value()) {
                     yield this.render('/marketing/power/activity-redpacket', {activity: activity, participants: participants});
@@ -58,7 +58,7 @@ module.exports = function(){
                 if (participant.activity.lFlg === 'a') {
                     var status = yield powerParticipantService.getStatus(participant, user);
                     util.extend(participant, status);
-                    var participants = yield powerActivityService.getRankingList(participant.activity._id, 200);
+                    var participants = yield powerActivityService.getParticipantRankingList(participant.activity._id, 200);
                     yield powerActivityService.increaseViews(participant.activity._id);
                     if(participant.activity.type === PowerType.RedPacket.value()) {
                         yield this.render('/marketing/power/participant-redpacket', {
