@@ -21,6 +21,10 @@ var idToRankingListKey = function(id){
     return 'pw:ranking:id:' + id;
 };
 
+var idToParticipantUserMapKey = function(id){
+    return 'pw:usrs:id:' + id;
+};
+
 var Kv = function(context){
     this.context = context;
 };
@@ -285,18 +289,43 @@ Kv.prototype.getParticipantRank = function(activityId, userId, callback){
  * the item of the list is like [user 0, 200, user 1, 198, ... user n, 10]
  * with score descending order
  * @param activityId
+ * @param count
  * @param callback
  */
-Kv.prototype.getRankingList = function(activityId, callback){
+Kv.prototype.getRankingList = function(activityId, count, callback){
     var redis = this.context.redis.main;
     var key = idToRankingListKey(activityId);
-    var args = [ key, 0, -1, 'WITHSCORES'];
+    var args = [ key, 0, count-1 , 'WITHSCORES'];
     redis.zrevrange(args, function(err, result){
         cbUtil.logCallback(
             err,
             'Fail to get ranking list, activity id ' + activityId + ': ' + err,
             'Succeed to get ranking list, activity id ' + activityId);
 
+        cbUtil.handleSingleValue(callback, err, result);
+    });
+};
+
+Kv.prototype.setParticipantMapString = function(activityId, listString, callback){
+    var redis = this.context.redis.main;
+    var key = idToParticipantUserMapKey(activityId);
+    redis.set(key, listString, function(err, result){
+        cbUtil.logCallback(
+            err,
+            'Fail to set participant user map string for activity: ' + activityId + ': ' + err,
+            'Succeed to set participant user map string for activity: ' + activityId);
+        cbUtil.handleOk(callback, err, result);
+    });
+};
+
+Kv.prototype.getParticipantMapString = function(activityId, callback){
+    var redis = this.context.redis.main;
+    var key = idToParticipantUserMapKey(activityId);
+    redis.get(key, function(err, result){
+        cbUtil.logCallback(
+            err,
+            'Fail to get participant user map string for activity: ' + activityId + ': ' + err,
+            'Succeed to get participant user map string for activity: ' + activityId);
         cbUtil.handleSingleValue(callback, err, result);
     });
 };
@@ -341,8 +370,11 @@ return re\
         ct = count - 1;
     }
     redis.eval(lua, 2, key, ct, function(err, result){
-        var listJsonString = '[' + result.join(',') + ']';
-        var listJson = JSON.parse(listJsonString);
+        var listJson = {};
+        if(!err) {
+            var listJsonString = '[' + result.join(',') + ']';
+            listJson = JSON.parse(listJsonString);
+        }
         cbUtil.logCallback(
             err,
             'Fail to get ranking list with score, activity id ' + activityId + ': ' + err,

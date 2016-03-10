@@ -146,4 +146,54 @@ Service.prototype.increaseViews = function*(id){
     var kv = this.context.kvs.power;
     return yield kv.incActivityViewsByIdAsync(id);
 }
+
+Service.prototype.putParticipantToMapString = function*(id, participantUserBrief){
+    var kv = this.context.kvs.power;
+    var logger = this.context.logger;
+    var userMap = null;
+    var userMapString = yield kv.getParticipantMapStringAsync(id);
+    if(!userMapString) {
+        userMap = {};
+    }
+    else{
+        try{
+            userMap = JSON.parse(userMapString);
+        }
+        catch(e){
+            logger.error('Fail to parse participant user map: ' + e);
+            logger.error(userMapString);
+            userMap = {};
+        }
+    }
+    userMap[participantUserBrief.id] = participantUserBrief;
+    yield kv.setParticipantMapStringAsync(id, JSON.stringify(userMap));
+
+    return userMap;
+}
+
+Service.prototype.getParticipantRankingList = function*(id, count){
+    var kv = this.context.kvs.power;
+    var userMapString = yield kv.getParticipantMapStringAsync(id);
+
+    //return to see: this is blank
+    if(!userMapString) return null;
+    var userMap = JSON.parse(userMapString);
+    var rankingList = yield kv.getRankingListAsync(id, count);
+
+    //return to say: this is blank
+    if(!rankingList || rankingList.length==0) return null;
+    var userRankingList = [];
+    var len = rankingList.length;
+    for(var i=0; i<len; i++, i++){
+        var userId = rankingList[i];
+        var user = userMap[userId];
+        if(user){
+            user.score = rankingList[i+1];
+            userRankingList.push(user);
+        }
+    }
+
+    return userRankingList;
+}
+
 module.exports = Service;

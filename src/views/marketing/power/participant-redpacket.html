@@ -252,16 +252,16 @@
                         <li>
                             <div class="userBox">
                                 <div class="fl userAvatar">
-                                    <img src="{{item.user.headimgurl}}">
+                                    <img src="{{item.headimgurl}}">
                                 </div>
                                 <div class="userDesc">
-                                    <h2>{{item.user.nickname}}</h2>
+                                    <h2>{{item.nickname}}</h2>
                                 </div>
                                 <div class="tipBox">
                                     <div class="tip tip1">
                                         <h3>红包</h3>
                                         <br>
-                                        <p>￥{{item.total_power}}</p>
+                                        <p>￥{{item.score}}</p>
                                     </div>
                                 </div>
                                 <div class="num">
@@ -284,7 +284,8 @@
         <a href="{{participant.participateLink}}" style="display: {{ participant.join }}" id="modaltrigger_notice">我要参加</a>
         <a style="display: {{ participant.help }}" id="helpTa">我要助力</a>
         <a style="background-color: gray; display: {{ participant.helped }}" id="helped">已助力</a>
-        <a style="background-color: gray; display: {{participant.joined}}">已参加</a>
+        <a href="{{participant.homeLink}}" style="background: #fbe601;color: #464215;display: {{ participant.joined }}" id="home_page">我的主页</a>
+        <!--<a style="background-color: gray; display: {{participant.joined}}">已参加</a>-->
         <a style="background-color: gray; display: {{participant.noActivated}}">未开始</a>
         <a style="background-color: gray; display: {{participant.closed}}">已结束</a>
         <a style="background-color: gray; display: {{participant.helpLimited}}">助力已达上限</a>
