@@ -288,12 +288,13 @@ Kv.prototype.getParticipantRank = function(activityId, userId, callback){
  * the item of the list is like [user 0, 200, user 1, 198, ... user n, 10]
  * with score descending order
  * @param activityId
+ * @param count
  * @param callback
  */
-Kv.prototype.getRankingList = function(activityId, callback){
+Kv.prototype.getRankingList = function(activityId, count, callback){
     var redis = this.context.redis.main;
     var key = idToRankingListKey(activityId);
-    var args = [ key, 0, -1, 'WITHSCORES'];
+    var args = [ key, 0, count-1 , 'WITHSCORES'];
     redis.zrevrange(args, function(err, result){
         cbUtil.logCallback(
             err,

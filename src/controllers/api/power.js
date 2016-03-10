@@ -127,6 +127,12 @@ module.exports = function(router){
                             , help_friends: []
                         }
                         var data = yield powerParticipantService.create(json);
+                        var userBrief = {
+                            id: user._id,
+                            nickname: user.nickname,
+                            headimgurl: user.headimgurl
+                        }
+                        yield powerActivityService.putParticipantToMapString(id, userBrief);
                         this.body = data;
                     }
                 } else {
