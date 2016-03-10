@@ -9,10 +9,8 @@ var debug = false;
 
 var wechatConfiguring = function*(next) {
     var url = this.request.href;
-    console.error('***********'+ url);
     try {
         var jsConfig = yield token.getJc({url: url, jsApiList: jsApiList, debug: debug});
-        console.error(jsConfig);
         this.state.__page.jc = jsConfig;
     }catch (err){
         logger.error('Fail to get jc: ' + err);
