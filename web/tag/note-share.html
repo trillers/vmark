@@ -2,7 +2,7 @@
     <div if="{!hidden}">
         <ul>
             <li each="{note in notes}" onclick="{parent.routeToShareDetail}">
-                <img riot-src="{note.meta}"/><span>{note.title}</span>
+                <img riot-src="{note.meta || '/public/images/notebook.png'}"/><span>{note.title}</span>
             </li>
         </ul>
     </div>

@@ -28,7 +28,7 @@
             })
             .onDone(function(res){
                 if(res.error){
-                    console.log('Failed to load summary', data.error);
+                    console.log('Failed to load summary', res.error);
                     return;
                 }
                 self.notebooks = self.opts.notebooks.map(function(notebook){

@@ -1,8 +1,8 @@
 <note-page>
     <div class="page" if="{!hidden}">
         <div class="title">
-            <input class="input" if="{pageNote.initiator != user._id}" readonly type="text" value="{pageNote.title}" name="titleInput"/>
-            <input class="input" if="{pageNote.initiator === user._id}" onblur="{updatePageNote}" type="text" value="{pageNote.title}" placeholder="添加标题" name="titleInput"/>
+            <input class="input" if="{pageNote.initiator != user._id}" readonly type="text" value="{pageNote.title}"/>
+            <input class="input" if="{pageNote.initiator === user._id}" onblur="{updatePageNote}" type="text" value="{pageNote.title || '默认...'}" placeholder="添加标题"/>
             <div if="{false}" class="reference">
                 <img class="user-icon" riot-src="{user.headimgurl}"/>
                 <label class="user-icon"> {user.nickname}</label>
@@ -293,7 +293,6 @@
                 _id: null,
                 title: null
             };
-            self.titleInput.value = '';
             self.pageNote._id = id;
             loadNote.execute({
                 noteId: ctx.id || self.pageNote._id

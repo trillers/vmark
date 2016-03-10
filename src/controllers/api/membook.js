@@ -529,7 +529,7 @@ module.exports = function (router) {
     router.post('/note/uploadimgs', function* (){
         try{
             let notes = this.request.body.notes;
-            console.log(notes);
+            let sectionNote = null;
             for(let i=0, len=notes.length; i<len; i++){
                 let note = notes[i];
                 try{
@@ -542,6 +542,13 @@ module.exports = function (router) {
                     if(!notebook.coverImg){
                         yield notebookService.updateByIdAsync(notebook._id, {coverImg: note.url});
                     }
+                }
+                if(!note.parentNote && note.notebook && !sectionNote){
+                    sectionNote = yield noteService.createAsync({
+                        notebook: note.notebook,
+                        type: NoteType.Section.value()
+                    });
+                    note.parentNote = sectionNote._id;
                 }
                 yield noteService.createAsync(note);
             }
