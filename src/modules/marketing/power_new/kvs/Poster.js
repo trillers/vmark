@@ -31,7 +31,7 @@ Kv.prototype.save = function(json, callback){
     redis.hmset(key, obj, function(err, result){
         if(!err){
             if(obj.type === 'pa') {
-                self.linkUserId(id, obj.user, obj.power, function (err, res) {
+                self.linkUserId(id, obj.user, obj.activity, function (err, res) {
                     //Todo
                 })
             }
@@ -101,14 +101,14 @@ Kv.prototype.loadById = function(id, callback){
  * load poster id by user id
  * @param uid: user id
  * */
-Kv.prototype.loadIdByUserId = function(uid, callback){
+Kv.prototype.loadIdByUserIdActivityId = function(uid, activityId, callback){
     var redis = this.context.redis.main;
-    var key = userIdToIdKey(uid);
+    var key = userIdAndActivityIdToIdKey(uid, activityId);
     redis.get(key, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to get power poster id by user id ' + uid + ': ' + err,
-            'Succeed to get power poster id by user id ' + uid);
+            'Fail to get power poster id by user id ' + uid + ' and activityId : ' + activityId + ' err:' + err,
+            'Succeed to get power poster id by user id ' + uid + ' and activityId: ' + activityId);
         cbUtil.handleSingleValue(callback, err, result);
     });
 }
