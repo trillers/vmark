@@ -290,7 +290,7 @@ function Qr(qr){
     this.temp = qr && qr.temp || false;
     this.type = qr && qr.type || null;
     this.ticket = qr && qr.ticket || null;
-    this.sceneId = qr && qr.sceneId || null;
+    this.sceneId = qr && qr.sceneId || qr.scene_id || null;
     this.expire = qr && qr.expire || null;
     this.data = qr && qr.data || null;
     this.views = 0;

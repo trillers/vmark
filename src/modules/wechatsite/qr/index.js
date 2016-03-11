@@ -171,7 +171,6 @@ activityType.onAccess(function(qr, openid){
                     user: user._id,
                     activity: activity._id,
                     bgImg: activity.bgImg,
-                    sceneId: qr.sceneId,
                     type: 'ac'
                 }
                 var poster = yield powerPosterService.create(posterJson);
