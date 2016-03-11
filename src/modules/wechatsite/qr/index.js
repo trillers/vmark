@@ -164,7 +164,7 @@ activityType.onAccess(function(qr, openid){
             var userKv = context.kvs.platformUser;
 
             var activity = yield powerActivityService.loadByQrCodeId(qr._id);
-            var user = yield userKv.loadPlatformUserByOpenidAsync(openid);
+            var user = yield userKv.loadByOpenidAsync(openid);
             if(!activity.poster || !activity.poster.mediaId){
                 var posterJson = {
                     user: user._id,
