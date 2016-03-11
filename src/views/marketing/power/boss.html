@@ -48,7 +48,7 @@
         $.get('/api/marketing/power/load', function (data) {
             data.forEach(function (item) {
                 item.type = getActivityType(item.type);
-                $('#list').append($('<li style="height: 17px; overflow: hidden; margin-top: 2px;"> <strong class="col-md-2 activity-name" _id="'+ item._id +'">' + item.name + '</strong> <strong class="col-md-2">' + formatDate(item.startTime) + '</strong> <strong class="col-md-2">' + formatDate(item.endTime) + '</strong><strong class="col-md-2">' + item.type + '</strong> <strong class="col-md-4 actionCon"><a href="'+ window.__app.settings.app.url + '/marketing/power/activity?id=' + item._id +'" target="_blank">查看</a><a href="{{api}}' + '/marketing/power/exportParticipants?id=' + item._id + '" target="_blank" >导出</a></strong> </li>'));
+                $('#list').append($('<li style="height: 17px; overflow: hidden; margin-top: 2px;"> <strong class="col-md-2 activity-name" _id="'+ item._id +'">' + item.name + '</strong> <strong class="col-md-2">' + formatDate(item.startTime) + '</strong> <strong class="col-md-2">' + formatDate(item.endTime) + '</strong><strong class="col-md-2">' + item.type + '</strong> <strong class="col-md-4 actionCon"><a href="'+ window.__app.settings.app.url + '/marketing/power/activity?id=' + item._id +'" target="_blank">查看</a><a href="{{api}}' + '/marketing/power/exportParticipants?id=' + item._id + '" target="_blank" >导出</a><a href="' + (item.qrCodeUrl || '#') +'" target="_blank" >二维码</a></strong> </li>'));
             });
             $('.activity-name').off('click').click(function(){
                 edit($(this).attr('_id'));

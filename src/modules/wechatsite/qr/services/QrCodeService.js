@@ -111,6 +111,18 @@ Service.loadBySceneId = function (sceneId, callback) {
     });
 }
 
+Service.loadById = function (id, callback) {
+    QrCode.findByIdAndUpdate(id, {$inc: {'views': 1}}, function(err, doc){
+        if(err){
+            if(callback) callback(err);
+        }
+        else{
+            if(callback) callback(null, doc);
+        }
+        //TODO: update to increase views by one
+    });
+}
+
 Service = Promise.promisifyAll(Service);
 
 module.exports = Service;

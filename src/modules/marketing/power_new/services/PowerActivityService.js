@@ -69,6 +69,12 @@ Service.prototype.loadById = function*(id){
     if(doc) {
         doc.bgImg = doc.bgImg.split(',');
         doc.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + doc._id;
+        //if(doc.withPic === 'true') {
+        //    var qrType = qrRegistry.getQrType('ac');
+        //    console.error(doc);
+        //    var qr = yield qrType.getQrByIdAsync(doc.qrCode);
+        //    doc.qrCodeUrl = qrType.getQrCodeUrl(qr.ticket);
+        //}
         logger.info('success load power by id: ' + id);
     }else{
         logger.info('failed load power by id: ' + id + ' err: no such activity');
@@ -101,7 +107,15 @@ Service.prototype.deleteById = function*(id){
 Service.prototype.loadAll = function*(){
     var logger = this.context.logger;
     var PowerActivity = this.context.models.PowerActivity;
-    var docs = yield PowerActivity.find({lFlg: 'a'}).lean().exec();
+    var docs = yield PowerActivity.find({lFlg: 'a'}).populate({path: 'qrCode'}).lean().exec();
+    var qrType = qrRegistry.getQrType('ac');
+    docs = docs.map(function(item){
+        console.error(item)
+        if(item.withPic) {
+            item.qrCodeUrl = qrType.getQrCodeUrl(item.qrCode.ticket);
+        }
+        return item;
+    })
     logger.info('success load all power ');
     return docs;
 }

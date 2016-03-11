@@ -248,6 +248,38 @@ QrType.prototype.getQr = function(sceneId, callback){
 QrType.prototype.getQrAsync = Promise.promisify(QrType.prototype.getQr);
 
 /**
+ * get qr from db
+ * @param id string
+ * @param callback function
+ * @returns {Qr|null}
+ */
+QrType.prototype.getQrById = function(id, callback){
+    var me = this;
+    co(function*(){
+        try{
+            var qrDoc = yield service.loadByIdAsync(id);
+            qrDoc.sceneId = qrDoc.scene_id;
+            var qr = new Qr(qrDoc);
+            qr.typeObj = me;
+            callback(null, qr);
+        }catch(e){
+            callback(e);
+        }
+    })
+};
+QrType.prototype.getQrByIdAsync = Promise.promisify(QrType.prototype.getQrById);
+
+/**
+ * get qr code url by ticket
+ * @param ticket
+ * @param callback
+ * */
+QrType.prototype.getQrCodeUrl = function(ticket){
+    var url = wechatApi.showQRCodeURL(ticket);
+    return url;
+}
+
+/**
  * Qr
  * @param qr
  * @constructor
