@@ -12,6 +12,7 @@ var logger = context.logger;
 var co = require('co');
 
 rule.hour = 4;
+rule.minute = 1;
 schedule.scheduleJob(rule, function(){
     logger.info('sync power activity job starting');
     co(function*(){
