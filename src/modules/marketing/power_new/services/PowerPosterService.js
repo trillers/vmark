@@ -67,37 +67,19 @@ Service.prototype.updateById = function*(id, update){
 
 Service.prototype.loadById = function*(id){
     var logger = this.context.logger;
-    var kv = this.context.kvs.power;
-    //var ActivityPower = this.context.models.ActivityPower;
-    //var doc = yield ActivityPower.findById(id, {}, {lean: true}).exec();
-    var doc = yield kv.loadActivityByIdAsync(id);
-    doc.bgImg = doc.bgImg.split(',');
-    doc.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + doc._id;
-    logger.info('success load power by id: ' + id);
-    return doc;
-}
-
-Service.prototype.loadByUserId = function*(uid){
-    var logger = this.context.logger;
-    var kv = this.context.kvs.power;
-    //var ActivityPower = this.context.models.ActivityPower;
-    //var doc = yield ActivityPower.findById(id, {}, {lean: true}).exec();
-    var doc = yield kv.loadActivityByIdAsync(id);
-    doc.bgImg = doc.bgImg.split(',');
-    doc.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + doc._id;
-    logger.info('success load power by id: ' + id);
+    var kv = this.context.kvs.poster;
+    var doc = yield kv.loadByIdAsync(id);
+    logger.info('success load poster by id: ' + id);
     return doc;
 }
 
 Service.prototype.loadBySceneId = function*(sid){
     var logger = this.context.logger;
-    var kv = this.context.kvs.power;
-    //var ActivityPower = this.context.models.ActivityPower;
-    //var doc = yield ActivityPower.findById(id, {}, {lean: true}).exec();
-    var doc = yield kv.loadActivityByIdAsync(id);
-    doc.bgImg = doc.bgImg.split(',');
-    doc.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + doc._id;
-    logger.info('success load power by id: ' + id);
+    var kv = this.context.kvs.poster;
+    var posterId = yield kv.loadIdBySceneIdAsync(sid);
+    var doc = yield kv.loadByIdAsync(posterId);
+
+    logger.info('success load poster by sceneId: ' + sid);
     return doc;
 }
 

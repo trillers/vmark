@@ -110,7 +110,6 @@ Service.prototype.loadAll = function*(){
     var docs = yield PowerActivity.find({lFlg: 'a'}).populate({path: 'qrCode'}).lean().exec();
     var qrType = qrRegistry.getQrType('ac');
     docs = docs.map(function(item){
-        console.error(item)
         if(item.withPic) {
             item.qrCodeUrl = qrType.getQrCodeUrl(item.qrCode.ticket);
         }

@@ -196,7 +196,9 @@ activityPosterType.onAccess(function(qr, openid){
     var logger = context.logger;
     co(function*(){
         try{
-
+            var powerPosterService = context.services.powerPosterService;
+            var poster = yield powerPosterService.loadBySceneId(qr.sceneId);
+            console.log(poster);
         }
         catch(e){
             logger.error(e);
