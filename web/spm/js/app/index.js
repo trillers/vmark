@@ -95,6 +95,7 @@ app.on('init', function () {
     if(!window.app){
         window.app = app;
     }
+    console.log('!!!')
     riot.mount('btn-group', {notebooks: app.notebooks, latestnotebook: app.latestnotebook});
     riot.mount('mask');
 });

@@ -13,23 +13,24 @@ var App = function(options){
 };
 App.prototype = {
     init: function(){
-        var app = this;
-        riot.route.parser(routeParser);
-        riot.route(app._doRoute.bind(app));
-        this.on('init', function(){
-            //var id = window.location.pathname.split('/_')[1];
-            //app.trigger('mount', id);
-            riot.route(window.location.hash || 'timeline');
-        });
-
-        if(!window.devOrNot){
-            window.onload = function(){
-                app.trigger('init');
-            };
-        }else{
-            riot.compile(function(){
-                app.trigger('init');
+        try {
+            var app = this;
+            riot.route.parser(routeParser);
+            riot.route(app._doRoute.bind(app));
+            this.on('init', function () {
+                //var id = window.location.pathname.split('/_')[1];
+                //app.trigger('mount', id);
+                riot.route(window.location.hash || 'timeline');
             });
+            if (!window.devOrNot) {
+                app.trigger('init');
+            } else {
+                riot.compile(function () {
+                    app.trigger('init');
+                });
+            }
+        }catch(e){
+            console.error(e)
         }
     },
 
