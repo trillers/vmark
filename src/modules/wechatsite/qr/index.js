@@ -165,12 +165,13 @@ activityType.onAccess(function(qr, openid){
 
             var activity = yield powerActivityService.loadByQrCodeId(qr._id);
             var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
+            console.error(user);
             if(!activity.poster || !activity.poster.mediaId){
                 var posterJson = {
                     user: user._id,
                     activity: activity._id,
                     bgImg: activity.bgImg,
-                    type: 'acp'
+                    type: 'ac'
                 }
                 var poster = yield powerPosterService.create(posterJson);
                 activity.poster = poster;
