@@ -15,7 +15,7 @@ var util = {
         }
         return a;
     },
-    deepClone(o, flag){
+    deepClone: function(o, flag){
         var o2 = null;
         flag && (o2 = {}) || (o2 = []);
         for(var p in o){

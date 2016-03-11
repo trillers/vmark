@@ -9,20 +9,34 @@ var util = {
         }
     },
     range: function(count){
-        //es6 SUPPORT
-        //var o = {
-        //    [Symbol.iterator]: function* () {
-        //        for (var i = 0; i < count; i++) {
-        //            yield {key: i, value: '111'};
-        //        }
-        //    }
-        //};
-        //return o[Symbol.iterator]();
         var a = [];
         for(var i=0; i<count; i++){
             a.push(i);
         }
         return a;
+    },
+    deepClone: function(o, flag){
+        var o2 = null;
+        flag && (o2 = {}) || (o2 = []);
+        for(var p in o){
+            if(typeof o[p] === 'function'){
+                return;
+            }
+            if(typeof o[p] === 'object'){
+                if(!Array.isArray(o[p])){
+                    o[p] = util.deepClone(o[p]);
+                }else{
+                    o[p]=o[p].map(function(i){
+                        util.deepClone(i, true)
+                    });
+                }
+            }
+            o2[p] = o[p];
+        }
+        return o2;
+    },
+    in: function(arr, el){
+        return arr.indexOf(el) >=0
     },
     assign: function(){
         var objs = [].slice.apply(arguments);
@@ -31,8 +45,14 @@ var util = {
         }, undefined)
     },
     mixin: function(t, s){
-        for(var p in s){
-            t[p] = s[p]
+        if(typeof s === 'object'){
+            if(!Array.isArray(s)){
+                for(var p in s){
+                    t[p] = s[p]
+                }
+                return t;
+            }
+            s.map(function(i, index){ util.mixin(t[index], s[index])});
         }
         return t;
     },
@@ -41,6 +61,18 @@ var util = {
             target[p] = source[p];
         }
         return target;
+    },
+    toObjectFromRiot: function(tagInstance){
+        var o = {};
+        for(var p in tagInstance) {
+            if (tagInstance.hasOwnProperty(p) && typeof tagInstance[p] != 'function') {
+                if(!util.in(['parent', 'root', 'opts', 'tags', 'hidden'], p)){
+                    //TODO need deep clone
+                    o[p] = tagInstance[p];
+                }
+            }
+        }
+        return o;
     },
     htmlParser: {
         parse: function(str){
@@ -77,4 +109,5 @@ var util = {
 if(!window._){
     window._ = util;
 }
+
 module.exports = util;
