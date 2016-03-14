@@ -18,13 +18,13 @@ Service.prototype.create = function*(jsonData){
     return doc.toObject();
 }
 
-Service.prototype.updateById = function*(id, update, helpPower){
+Service.prototype.updateById = function*(id, update){
     var logger = this.context.logger;
     var PowerParticipant = this.context.models.PowerParticipant;
     var kv = this.context.kvs.power;
 
     var doc = yield PowerParticipant.findByIdAndUpdate(id, update, {new: true}).lean().exec();
-    yield kv.increaseParticipantScoreInRankingListAsync(doc.activity, doc.user, helpPower);
+    yield kv.saveParticipantAsync(doc);
     logger.info('success update participant by id: ' + id);
     return doc;
 }
