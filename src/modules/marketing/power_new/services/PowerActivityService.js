@@ -276,12 +276,12 @@ Service.prototype.scanActivityPoster = function*(qr, openid){
         var platformUserService = this.context.services.platformUserService;
         var powerParticipantService = this.context.services.powerParticipantService;
         var powerPosterService = this.context.services.powerPosterService;
-        var kv = this.context.kvs.power;
         var poster = yield powerPosterService.loadBySceneId(qr.sceneId);
         var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
-        var participant = yield kv.getParticipantIdByUserIdAndActivityIdAsync(poster.activity, user.id);
+        var activity = yield this.loadById(poster.activity);
+        var status = yield this.getStatus(poster.activity, user);
         var reply = '';
-        if(participant){
+        if(status.participant){
             var participantUrl = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participant;
             reply = '您已经参与过该活动: <a href="' + participantUrl + '">点击查看</a>';
             return {
@@ -289,8 +289,14 @@ Service.prototype.scanActivityPoster = function*(qr, openid){
                 reply: reply,
                 mediaId: null
             }
+        }else if(!status.active){
+            reply = '活动[' + activity.name + ']不在活动期';
+            return {
+                success: false,
+                reply: reply,
+                mediaId: null
+            }
         }else{
-            var activity = yield this.loadById(poster.activity);
             var participantJson = {
                 activity: activity._id
                 , user: user._id
