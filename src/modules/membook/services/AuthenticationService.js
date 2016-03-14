@@ -202,6 +202,7 @@ Service.prototype.signupOnSubscription = function(openid, callback){
     var atToOpenidKv = this.context.kvs.atToOpenid;
     var otToOpenidKv = this.context.kvs.otToOpenid;
     var notebookService = this.context.services.notebookService;
+    var userNotebookService = this.context.services.userNotebookService;
     var userBizKv = this.context.kvs.userBiz;
 
     co(function*(){
@@ -277,6 +278,7 @@ Service.prototype.signupOnSubscription = function(openid, callback){
             var userBiz = yield userBizKv.loadByIdAsync(userId);
             if(!userBiz){
                 var notebook = yield notebookService.createAsync({title: '默认', initiator: userId});
+                yield userNotebookService.createAsync({user: userId, notebook: notebook._id});
                 userBiz = yield userBizKv.saveByIdAsync(userId, {latest: notebook._id});
             }
 

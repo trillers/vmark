@@ -11,6 +11,9 @@ module.exports.mediaService = Promise.promisifyAll(new MediaService(context));
 var NotebookService = require('./NotebookService');
 module.exports.notebookService = Promise.promisifyAll(new NotebookService(context));
 
+var UserNotebookService = require('./UserNotebookService');
+module.exports.userNotebookService = Promise.promisifyAll(new UserNotebookService(context));
+
 var InvitationService = require('./InvitationService');
 module.exports.invitationService = Promise.promisifyAll(new InvitationService(context));
 
