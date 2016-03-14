@@ -67,8 +67,8 @@ Kv.prototype.saveParticipant = function(json, callback){
         }
         cbUtil.logCallback(
             err,
-            'Fail to save power activity participant by id ' + obj.id + ': ' + err,
-            'Succeed to save power activity participant by id ' + obj.id);
+            'Fail to save power activity participant by id ' + participantId + ': ' + err,
+            'Succeed to save power activity participant by id ' + participantId);
         cbUtil.handleOk(callback, err, result, obj);
     });
 }

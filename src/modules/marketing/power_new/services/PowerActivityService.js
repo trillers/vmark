@@ -324,7 +324,7 @@ Service.prototype.scanActivityPoster = function*(qr, openid){
                 nickname: user.nickname,
                 headimgurl: user.headimgurl
             }
-            yield this.putParticipantToMapString(id, userBrief);
+            yield this.putParticipantToMapString(activity._id, userBrief);
             var detailUrl = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + data._id;
             reply = '您已成功参与活动: ' + activity.name + '/n' +
                     '活动详情: <a href="' + detailUrl + '" >点击查看</a>' +
