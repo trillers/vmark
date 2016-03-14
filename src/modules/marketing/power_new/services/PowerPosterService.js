@@ -87,33 +87,19 @@ Service.prototype.loadBySceneId = function*(sid){
 
 /**
  * get activity poster media id
- * @params activity
- * @params user
+ * @params poster
  *
  * return poster media id
  **/
-Service.prototype.getActivityPosterMediaId = function*(activity, user){
-    var powerActivityService = this.context.services.powerActivityService;
-    if(!activity.poster){
-        var posterJson = {
-            user: user._id,
-            activity: activity._id,
-            bgImg: activity.bgImg,
-            type: PosterType.activity.value()
-        }
-        var poster = yield this.create(posterJson);
-        yield powerActivityService.updateById(activity._id, {poster: poster._id});
+Service.prototype.getPosterMediaId = function*(poster){
+    var expired = this.isInvalid(poster);
+    if(expired){
+        var imageData = yield wechatApi.uploadMediaAsync(activity.poster.path, 'image');
+        var mediaId = imageData[0].media_id;
+        yield this.updateById(activity.poster._id, {mediaId: mediaId});
+        return mediaId;
+    }else {
         return poster.mediaId;
-    }else{
-        var expired = this.isInvalid(activity.poster);
-        if(expired){
-            var imageData = yield wechatApi.uploadMediaAsync(activity.poster.path, 'image');
-            var mediaId = imageData[0].media_id;
-            yield this.updateById(activity.poster._id, {mediaId: mediaId});
-            return mediaId;
-        }else {
-            return activity.poster.mediaId;
-        }
     }
 }
 

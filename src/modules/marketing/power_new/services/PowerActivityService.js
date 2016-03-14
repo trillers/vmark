@@ -1,6 +1,7 @@
 var util = require('util');
 var settings = require('@private/vmark-settings');
 var qrRegistry = require('../../../wechatsite/qr');
+var PosterType = require('../../../common/models/TypeRegistry').item('PosterType');
 
 var Service = function(context){
     this.context = context
@@ -119,7 +120,7 @@ Service.prototype.loadAll = function*(){
     return docs;
 }
 
-Service.prototype.getStatus = function*(power, user){
+Service.prototype.getStatus = function*(activity, user){
     var status = {
         participant: '',
         join: '',
@@ -128,21 +129,20 @@ Service.prototype.getStatus = function*(power, user){
         noActivated: 'none'
     }
     var kv = this.context.kvs.power;
-    status.participant = yield kv.getParticipantIdByUserIdAndActivityIdAsync
-    (power._id, user.id);
+    status.participant = yield kv.getParticipantIdByUserIdAndActivityIdAsync(activity._id, user.id);
     if(status.participant){
         status.join = 'none';
         status.joined = '';
     }
     var today = new Date();
-    var active = today >= new Date(power.startTime) && today <= new Date(power.endTime);
+    var active = today >= new Date(activity.startTime) && today <= new Date(activity.endTime);
     if(!active){
         status.join = 'none';
         status.joined = 'none';
-        if(today < new Date(power.startTime)){
+        if(today < new Date(activity.startTime)){
             status.noActivated = '';
         }
-        if(today > new Date(power.endTime)){
+        if(today > new Date(activity.endTime)){
             status.closed = '';
         }
     }
@@ -229,7 +229,20 @@ Service.prototype.getActivityPoster = function*(qr, openid){
 
         var activity = yield powerActivityService.loadByQrCodeId(qr._id);
         var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
-        var mediaId = yield powerPosterService.getActivityPosterMediaId(activity, user);
+        var mediaId = '';
+        if(!activity.poster){
+            var posterJson = {
+                user: user._id,
+                activity: activity._id,
+                bgImg: activity.bgImg,
+                type: PosterType.activity.value()
+            }
+            var poster = yield powerPosterService.create(posterJson);
+            yield this.updateById(activity._id, {poster: poster._id});
+            mediaId = poster.mediaId;
+        }else {
+            mediaId = yield powerPosterService.getPosterMediaId(activity.poster);
+        }
         var res = {
             success: true,
             reply: '助力活动 [' + activity.name + '] 活动海报获取成功:',
@@ -258,10 +271,66 @@ Service.prototype.getActivityPoster = function*(qr, openid){
  * }
  * */
 Service.prototype.scanActivityPoster = function*(qr, openid){
-    var platformUserService = context.services.platformUserService;
-    var powerPosterService = context.services.powerPosterService;
-    var poster = yield powerPosterService.loadBySceneId(qr.sceneId);
-    var user = yield platformUserService.loadPlatformUserByOpenidAsync()
+    var logger = this.context.logger;
+    try {
+        var platformUserService = this.context.services.platformUserService;
+        var powerParticipantService = this.context.services.powerParticipantService;
+        var powerPosterService = this.context.services.powerPosterService;
+        var kv = this.context.kvs.power;
+        var poster = yield powerPosterService.loadBySceneId(qr.sceneId);
+        var user = yield platformUserService.loadPlatformUserByOpenidAsync();
+        var participant = yield kv.getParticipantIdByUserIdAndActivityIdAsync(poster.activity, user.id);
+        var reply = '';
+        if(participant){
+            var participantUrl = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participant;
+            reply = '您已经参与过该活动: <a href="' + participantUrl + '">点击查看</a>';
+            return {
+                success: false,
+                reply: reply,
+                mediaId: null
+            }
+        }else{
+            var activity = yield this.loadById(poster.activity);
+            var participantJson = {
+                activity: activity._id
+                , user: user._id
+                , total_power: activity.base_power
+                , help_friends: []
+            }
+            var data = yield powerParticipantService.create(participantJson);
+            var posterJson = {
+                user: user._id,
+                participant: data._id,
+                bgImg: activity.bgImg,
+                type: PosterType.participant.value()
+            }
+            var poster = yield powerPosterService.create(posterJson);
+            yield powerParticipantService.updateById(data._id, {poster: poster._id});
+            var userBrief = {
+                id: user._id,
+                nickname: user.nickname,
+                headimgurl: user.headimgurl
+            }
+            yield this.putParticipantToMapString(id, userBrief);
+            var detailUrl = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + data._id;
+            reply = '您已成功参与活动: ' + activity.name + '/n' +
+                    '活动详情: <a href="' + detailUrl + '" >点击查看</a>' +
+                    '我的海报图片，点击查看和分享:';
+            return {
+                success: true,
+                reply: reply,
+                mediaId: poster.mediaId
+            }
+        }
+
+    }catch(e){
+        logger.error('scan activity poster err: ' + e + ', qr: ' + qr._id + ', user openid: ' + openid);
+        return {
+            success: false,
+            reply: '参与活动失败',
+            mediaId: null
+        }
+    }
 }
 
 module.exports = Service;

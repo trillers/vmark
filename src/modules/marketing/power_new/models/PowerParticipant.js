@@ -10,6 +10,7 @@ var Model = function(DomainBuilder) {
                     , phone: {type: String}
                     , total_power: {type: Number}
                     , help_friends: [{type: String}] //openid array
+                    , poster: {type: String, ref: 'PowerPoster'} //participant poster
             })
             .build();
         return schema.model(true);

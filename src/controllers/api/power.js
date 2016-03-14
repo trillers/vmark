@@ -114,7 +114,7 @@ module.exports = function(router){
         var phone = this.request.body.phone;
         var user = this.session.auth && this.session.auth.user;
         if(user && user.type === UserType.Customer.value()) {
-            if (phone) {
+            //if (phone) {
                 var activity = yield powerActivityService.loadById(id);
                 if (activity) {
                     var status = yield powerActivityService.getStatus(activity, user);
@@ -140,9 +140,9 @@ module.exports = function(router){
                 } else {
                     this.body = {error: 'no such activity'};
                 }
-            } else {
-                this.body = {error: 'phone no is must'};
-            }
+            //} else {
+            //    this.body = {error: 'phone no is must'};
+            //}
         }else{
             this.body = {err: 'please open url in wechat browser'};
         }

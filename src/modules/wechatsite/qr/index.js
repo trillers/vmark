@@ -185,7 +185,14 @@ activityPosterType.onAccess(function(qr, openid){
         try{
             var powerActivityService = context.services.powerActivityService;
             var res = yield powerActivityService.scanActivityPoster(qr, openid);
-            console.log(res);
+            wechatApi.sendText(openid, res.reply, function (err) {
+                if(err) logger.error(err);
+            });
+            if(res.success) {
+                wechatApi.sendImage(openid, res.mediaId, function (err) {
+                    if (err) logger.error(err);
+                });
+            }
         }
         catch(e){
             logger.error(e);
