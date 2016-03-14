@@ -313,6 +313,7 @@ Service.prototype.scanActivityPoster = function*(qr, openid){
             var data = yield powerParticipantService.create(participantJson);
             var posterJson = {
                 user: user._id,
+                activity: activity._id,
                 participant: data._id,
                 bgImg: activity.bgImg,
                 type: PosterType.participant.value()
@@ -326,8 +327,8 @@ Service.prototype.scanActivityPoster = function*(qr, openid){
             }
             yield this.putParticipantToMapString(activity._id, userBrief);
             var detailUrl = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + data._id;
-            reply = '您已成功参与活动: ' + activity.name + '/n' +
-                    '活动详情: <a href="' + detailUrl + '" >点击查看</a>' +
+            reply = '您已成功参与活动: ' + activity.name + '\n' +
+                    '活动详情: <a href="' + detailUrl + '" >点击查看</a>\n' +
                     '我的海报图片，点击查看和分享:';
             return {
                 success: true,

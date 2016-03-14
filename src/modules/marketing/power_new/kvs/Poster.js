@@ -58,8 +58,8 @@ Kv.prototype.linkUserId = function(pid, uid, activityId, callback){
     redis.set(key, pid, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to link power poster and user, uid: ' + uid + 'pid: ' + pid + ' err:' + err,
-            'Succeed to link power poster and user, uid: ' + uid + 'pid: ' + pid);
+            'Fail to link power poster and user, uid: ' + uid + ' pid: ' + pid + ' err:' + err,
+            'Succeed to link power poster and user, uid: ' + uid + ' pid: ' + pid);
         cbUtil.handleOk(callback, err, result, pid);
     });
 }
