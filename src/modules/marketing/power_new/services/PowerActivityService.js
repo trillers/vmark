@@ -278,7 +278,7 @@ Service.prototype.scanActivityPoster = function*(qr, openid){
         var powerPosterService = this.context.services.powerPosterService;
         var kv = this.context.kvs.power;
         var poster = yield powerPosterService.loadBySceneId(qr.sceneId);
-        var user = yield platformUserService.loadPlatformUserByOpenidAsync();
+        var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
         var participant = yield kv.getParticipantIdByUserIdAndActivityIdAsync(poster.activity, user.id);
         var reply = '';
         if(participant){
