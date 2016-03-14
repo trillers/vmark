@@ -95,7 +95,6 @@ app.on('init', function () {
     if(!window.app){
         window.app = app;
     }
-    console.log('!!!')
     riot.mount('btn-group', {notebooks: app.notebooks, latestnotebook: app.latestnotebook});
     riot.mount('mask');
 });
@@ -136,6 +135,7 @@ var mount_timeline = function(ctx, id){
     var tagInstance = null;
     tagInstance = this.views['timeline'] || this.views['timeline/_'];
     if(!tagInstance){
+        console.log(app.notebooks);
         tagInstance = riot.mount('notebook-timelines', {id: id, notebooks: app.notebooks, latestnotebook: app.latestnotebook})[0];
     }
     return tagInstance;
