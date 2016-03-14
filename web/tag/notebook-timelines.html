@@ -122,6 +122,11 @@
             self.trigger('ready')
         });
         self.openShareMode = function(){
+            if(!self.opts.latestnotebook
+                || !self.opts.latestnotebook.mates
+                || !self.opts.latestnotebook.mates.length){
+                return;
+            }
             self.currentState='share';
         }
     </script>

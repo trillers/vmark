@@ -80,7 +80,6 @@
             return null;
         };
         var onUpdateNote = function(data){
-            console.log("~~~~~~~~~~~~");
             if(!data.error){
                 util.mixin(self.notebook, data);
                 self.updateWxShareConfig();
@@ -244,6 +243,14 @@
                     return alert('error occur!');
                 }
                 self.notebook.mates = data.sections;
+                if(self.opts.latest
+                        && self.opts.latest
+                        && self.opts.latest._id
+                        && self.notebook._id
+                        && self.opts.latest._id === self.notebook._id
+                ){
+                    self.opts.latest = _.assign({}, self.opts.latest, self.notebook);
+                }
                 self.state.doView(self.notebook.mates[self.notebook.mates.length-1]);
                 self.updateWxShareConfig();
                 self.hidden = false;
