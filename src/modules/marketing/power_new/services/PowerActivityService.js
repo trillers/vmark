@@ -289,8 +289,15 @@ Service.prototype.scanActivityPoster = function*(qr, openid){
                 reply: reply,
                 mediaId: null
             }
-        }else if(!status.active){
-            reply = '活动[' + activity.name + ']不在活动期';
+        }else if(!status.noActivated){
+            reply = '活动[' + activity.name + ']未开始';
+            return {
+                success: false,
+                reply: reply,
+                mediaId: null
+            }
+        }else if(!status.closed){
+            reply = '活动[' + activity.name + ']已结束';
             return {
                 success: false,
                 reply: reply,
