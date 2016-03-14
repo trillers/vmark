@@ -49,7 +49,7 @@ Navigation.prototype.doRouteView = function(ctx, id){
         }
         this.views[viewId] = view;
     }
-    view.on('ready', readyHandler);
+    view.off('ready').on('ready', readyHandler);
     try{
         var context = _.toObjectFromRiot(this.current);
         context.id = id;
@@ -140,7 +140,7 @@ var mount_timeline = function(ctx, id){
     return tagInstance;
 };
 var view_timeline = function(ctx, id){
-
+    console.log(ctx)
 };
 
 nav.addRouteView('timeline', mount_timeline, view_timeline);
@@ -173,7 +173,7 @@ var mount_notebook_new = function(ctx, id){
     return riot.mount('notebook-new', {id: id})[0];
 };
 var view_notebook_new = function(ctx, id){
-
+    console.log(this);
 };
 nav.addRouteView('notebook/new', mount_notebook_new, view_notebook_new);
 

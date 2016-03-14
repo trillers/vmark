@@ -82,6 +82,28 @@ var util = {
             return str.replace(/\\n/g,'<br>');
         }
     },
+    formatDateForNote: function(date){
+        var d_minutes,d_hours,d_days;
+        var timeNow = parseInt(new Date().getTime()/1000);
+        var time = parseInt(date.getTime()/1000);
+        var d;
+        d = timeNow - time;
+        d_days = parseInt(d/86400);
+        d_hours = parseInt(d/3600);
+        d_minutes = parseInt(d/60);
+        if(d_days>2 && d_days<4){
+            return d_days+"天前";
+        }
+        else if(d_days<=2 && d_days>1){
+            return '昨天';
+        }else if(d_days<=1){
+            return '今天';
+        }
+        else{
+            var s = new Date(time*1000);
+            return (s.getMonth()+1)+"月"+s.getDate()+"日";
+        }
+    },
     formatDateForComments: function(date){
         var d_minutes,d_hours,d_days;
         var timeNow = parseInt(new Date().getTime()/1000);

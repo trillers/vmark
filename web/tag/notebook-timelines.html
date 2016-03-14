@@ -1,7 +1,7 @@
 <notebook-timelines>
     <div id="shareMask" class="mask" if="{currentState === 'share'}" style="z-index: 5;height: {window.innerHeight + 'px'}"></div>
     <div class="timeline_container" if="{!hidden}">
-        <notebook-timeline each="{note in opts.notebooks}" if="{parent.opts.latestnotebook._id === note._id}" notebook="{note}" latest="{parent.opts.latestnotebook}" mode="{parent.currentState}" shares="{parent.shares}"></notebook-timeline>
+        <notebook-timeline each="{notebook in opts.notebooks}" if="{parent.opts.latestnotebook._id === notebook._id}" notebook="{notebook}" latest="{parent.opts.latestnotebook}" mode="{parent.currentState}" shares="{parent.shares}"></notebook-timeline>
         <div class="btn_group" style="position: fixed; top: {300}px">
             <div id="prev_page_btn" onclick="{onPrevPageClick}" class="route_btn" style="float:left">上</div>
             <div id="next_page_btn" onclick="{onNextPageClick}" class="route_btn" style="float: right">下</div>
@@ -11,7 +11,7 @@
         </div>
         <note-confirm></note-confirm>
     </div>
-    <style>
+    <style scoped>
         .mask{
             width: 100%;
             position: fixed;
@@ -54,7 +54,6 @@
         self.shares = [];
         app.on('viewMode', function(e){
             self.trigger('viewMode');
-            console.log("%%%%")
             self.update({
                 currentState: 'view',
                 shares: []
@@ -102,25 +101,16 @@
             })
         };
         self.onPrevPageClick = function(e){
-            e.preventDefault();
             var currentIndex = self.opts.notebooks.map(function(notebook){return notebook._id}).indexOf(self.opts.latestnotebook._id);
             routeToNotebook(currentIndex-1);
-            e.stopPropagation();
         };
         self.onNextPageClick = function(e){
-            console.log("~~~~~~")
-            e.preventDefault();
             var currentIndex = self.opts.notebooks.map(function(notebook){return notebook._id}).indexOf(self.opts.latestnotebook._id);
             routeToNotebook(currentIndex+1);
-            e.stopPropagation();
         };
-        self.on('update', function(){
-            console.warn("updated")
-        })
         self.on('mount', function(){
         });
         self.on('open', function(){
-            console.log("******")
             try{
                 var notebook = self.opts.notebooks.filter(function(notebook){
                     return notebook._id === window.location.hash.split('_')[1]

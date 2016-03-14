@@ -7,16 +7,9 @@
     <div class="section" sectionId="{_id}">
         <div class="panel">
         <div class="top-padding" />
-        <div class="author">
-            <div style="display: inline; float: left;">
-                <img class="user-icon" riot-src="{section.initiator.headimgurl}"/>
-            </div>
-            <div style="display: inline; float: left; padding-left: 10px;">
-                <label class="user-nickname"> {initiator.nickname}</label>
-            </div>
-            <div style="display: inline; float: left; padding-left: 10px;">
-                <span if="{section.parentNote && section.status != 'dr'}">{formatDate(new Date(section.crtOn))}</span>
-            </div>
+        <div style="width:100%; text-align: center">
+            <span if="{section.crtOn}">{_.formatDateForNote(new Date(section.crtOn))}</span>
+            <span if="{!section.crtOn}">今天</span>
         </div>
         <div class="noteItems">
             <div class="{share_div: parent.inShareItems(note)}" each="{note in section.mates}" noteId="{_id}" style="position:relative;z-index: {parent.opts.mode === 'share' ? 6 : 3};margin-top: 5px" onclick="{parent.deleteNote}">

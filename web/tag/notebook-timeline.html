@@ -155,8 +155,10 @@
             return false;
         };
         self.on('update', function(){
-            console.error('updated')
-            self.updateWxShareConfig();
+//            self.updateWxShareConfig();
+        });
+        self.on('open', function(){
+            console.log('1111')
         });
         self.updatePageNote = function(e){
             var title = e.currentTarget.value;
@@ -252,7 +254,6 @@
                 ){
                     self.opts.latest = _.assign({}, self.opts.latest, self.notebook);
                 }
-                console.warn("~~~~~~~~~~~~~~~")
                 self.updateWxShareConfig();
                 self.hidden = false;
                 self.state.doView(self.notebook.mates[self.notebook.mates.length-1]);

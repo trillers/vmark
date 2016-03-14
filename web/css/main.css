@@ -13,6 +13,7 @@ div.page {
   background-color: #F2F6F9;
   margin: 0px;
   padding: 0px;
+  overflow: hidden;
 }
 div.page div.title {
   margin: 0px;

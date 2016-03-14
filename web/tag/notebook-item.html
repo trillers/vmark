@@ -1,15 +1,21 @@
 <notebook-item>
     <div class="page" if="{!hidden}">
         <div class="title">
-            <div>{opts.notebook.title}</div>
-            <div>共{opts.notebook.total}条笔记, 最近一周{opts.notebook.countForWeek}条笔记</div>
-            <div if="{__page.user._id === opts.notebook.initiator._id}">个人笔记</div>
-            <div if="{__page.user._id != opts.notebook.initiator._id}">
-                共有笔记
-                <div each="{opts.notebook.participates}">
-                    <img riot-src="{headimgurl}"/>
+            <div style="width: 30%; float: left">
+                <img style="width: 48px; height: 48px" riot-src="{opts.notebook.coverImg || '/public/images/notebook.png'}"/>
+                <div>{opts.notebook.title}</div>
+            </div>
+            <div style="width: 70%; float: right">
+                <div>共{opts.notebook.total}条笔记, 最近一周{opts.notebook.countForWeek}条笔记</div>
+                <div if="{__page.user._id === opts.notebook.initiator._id}">个人笔记</div>
+                <div if="{__page.user._id != opts.notebook.initiator._id}">
+                    共有笔记
+                    <div each="{opts.notebook.participates}">
+                        <img riot-src="{headimgurl}"/>
+                    </div>
                 </div>
             </div>
+
         </div>
     </div>
     <!--play voice panel end-->

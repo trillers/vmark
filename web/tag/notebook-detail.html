@@ -1,6 +1,6 @@
 <notebook-detail>
-    <div class="mask" if="{shareing}" ontouchstart="{resetShare}" style="height: {window.innerHeight + 'px'}">
-        分享给朋友,邀请加入
+    <div class="mask" if="{shareing}" ontouchstart="{resetShare}" style="text-align: center;height: {window.innerHeight + 'px'}">
+        <span style="color:white; display: inline-block; margin-top: 200px">分享给朋友,邀请加入</span>
     </div>
     <div class="page" if="{!hidden}">
         <div class="title">
@@ -21,7 +21,7 @@
             <ul>
                 <li each="{notes}">
                     <div>{content}</div>
-                    <div>{crtOn}</div>
+                    <div>{_.formatDateForNote(new Date(crtOn))}</div>
                 </li>
             </ul>
         </div>
@@ -34,12 +34,14 @@
             top: 0px;
             left: 0px;
             z-index: 2;
-            background: black;
-            opacity: 0.2;
+            background: rgba(0, 0, 0, 0.5);
         }
         ul{
             margin: 0px;
             padding: 0px;
+        }
+        ul li{
+            overflow: hidden;
         }
         ul li img{
             width:40px;
