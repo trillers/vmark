@@ -124,7 +124,12 @@
         self.openShareMode = function(){
             if(!self.opts.latestnotebook
                 || !self.opts.latestnotebook.mates
-                || !self.opts.latestnotebook.mates.length){
+                || !self.opts.latestnotebook.mates.length
+                || !self.opts.latestnotebook.mates.filter(function(note){
+                        return note._id
+                    }).length
+            ){
+                alert('请添加一条笔记先');
                 return;
             }
             self.currentState='share';
