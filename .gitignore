@@ -132,6 +132,8 @@ public/uploads/*
 !public/uploads/README
 public/uploads/images/*
 !public/uploads/images/README
+public/uploads/posters/*
+!public/uploads/posters/README
 
 
 

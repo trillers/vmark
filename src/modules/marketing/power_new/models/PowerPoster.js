@@ -10,6 +10,7 @@ var Model = function(DomainBuilder) {
             user: {type: String, ref: 'PlatformUser'}
             , activity: {type: String, ref: 'PowerActivity', require: true}
             , participant: {type: String, ref: 'PowerParticipant'}
+            , path: {type: String, require: true}
             , mediaId: {type: String, require: true}
             , sceneId: {type: String, require: true}
             , expire:{type: Number, default: 259200} //temp media will expire after 3 days

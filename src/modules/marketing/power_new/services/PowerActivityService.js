@@ -209,4 +209,59 @@ Service.prototype.getParticipantRankingList = function*(id, count){
     return userRankingList;
 }
 
+/**
+ * wechat scan activity qrCode get activity poster
+ * @params qr activity qrCode
+ * @openid platform user openid
+ *
+ * return {
+ *    success: true or false,
+ *    reply: 'xxxxx', reply msg send to user
+ *    mediaId: 'abc', poster mediaId, will expired after three days
+ * }
+ **/
+Service.prototype.getActivityPoster = function*(qr, openid){
+    var logger = this.context.logger;
+    try{
+        var powerActivityService = this.context.services.powerActivityService;
+        var powerPosterService = this.context.services.powerPosterService;
+        var platformUserService = this.context.services.platformUserService;
+
+        var activity = yield powerActivityService.loadByQrCodeId(qr._id);
+        var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
+        var mediaId = yield powerPosterService.getActivityPosterMediaId(activity, user);
+        var res = {
+            success: true,
+            reply: '助力活动 [' + activity.name + '] 活动海报获取成功:',
+            mediaId: mediaId
+        }
+        return res;
+    }catch(e){
+        logger.error('get activity poster err: ' + e + ', qr: ' + qr._id + ', user openid: ' + openid);
+        return {
+            success: false,
+            reply: '获取助力活动海报失败, 请联系管理员',
+            mediaId: null
+        }
+    }
+}
+
+/**
+ * handle user scan activity poster
+ * @params qr
+ * @params openid
+ *
+ * return {
+ *    success: true or false,
+ *    reply: 'xxxxx', reply msg send to user
+ *    mediaId: 'abc', participant poster mediaId, will expired after three days
+ * }
+ * */
+Service.prototype.scanActivityPoster = function*(qr, openid){
+    var platformUserService = context.services.platformUserService;
+    var powerPosterService = context.services.powerPosterService;
+    var poster = yield powerPosterService.loadBySceneId(qr.sceneId);
+    var user = yield platformUserService.loadPlatformUserByOpenidAsync()
+}
+
 module.exports = Service;

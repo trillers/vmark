@@ -158,31 +158,18 @@ defaultType.onAccess(function(qr, openid){
 
 activityType.onAccess(function(qr, openid){
     var logger = context.logger;
+    var powerActivityService = context.services.powerActivityService;
     co(function*(){
         try{
-            var powerActivityService = context.services.powerActivityService;
-            var powerPosterService = context.services.powerPosterService;
-            var platformUserService = context.services.platformUserService;
-
-            var activity = yield powerActivityService.loadByQrCodeId(qr._id);
-            var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
-            if(!activity.poster || !activity.poster.mediaId){
-                var posterJson = {
-                    user: user._id,
-                    activity: activity._id,
-                    bgImg: activity.bgImg,
-                    type: 'ac'
-                }
-                var poster = yield powerPosterService.create(posterJson);
-                activity.poster = poster;
-                yield powerActivityService.updateById(activity._id, {poster: poster._id});
+            var res = yield powerActivityService.getActivityPoster(qr, openid);
+            wechatApi.sendText(openid, res.reply, function (err) {
+                if(err) logger.error(err);
+            });
+            if(res.success) {
+                wechatApi.sendImage(openid, res.mediaId, function (err) {
+                    if (err) logger.error(err);
+                });
             }
-            wechatApi.sendText(openid, '助力活动 [' + activity.name + '] 活动海报获取成功:', function (err) {
-                if(err) logger.error(err);
-            });
-            wechatApi.sendImage(openid, activity.poster.mediaId, function (err) {
-                if(err) logger.error(err);
-            });
         }
         catch(e){
             logger.error(e);
@@ -196,9 +183,9 @@ activityPosterType.onAccess(function(qr, openid){
     var logger = context.logger;
     co(function*(){
         try{
-            var powerPosterService = context.services.powerPosterService;
-            var poster = yield powerPosterService.loadBySceneId(qr.sceneId);
-            console.log(poster);
+            var powerActivityService = context.services.powerActivityService;
+            var res = yield powerActivityService.scanActivityPoster(qr, openid);
+            console.log(res);
         }
         catch(e){
             logger.error(e);

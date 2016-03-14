@@ -125,4 +125,5 @@ describe('PowerActivityService', function(){
         });
 
     });
+
 });
