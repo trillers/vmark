@@ -86,7 +86,7 @@
                 throw new Error('hash parse error.');
             }
             if(ctx && ctx.notebooks && ctx.notebooks.length){
-                //有部分信息,需要加载相关笔记
+                //have partial info, need to load relevant notes
                 self.notebook = ctx.notebooks.filter(function(notebook){
                     return notebook._id === notebookId
                 })[0];
@@ -108,7 +108,7 @@
                 .execute();
             }
             else{
-                //没有该notebook的信息
+                //no relevant notebook
                 loadNoteDetail.execute({
                     notebook: notebookId
                 }).onDone(onLoadNoteDetail)

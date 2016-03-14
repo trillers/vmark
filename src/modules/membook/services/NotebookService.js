@@ -33,6 +33,11 @@ Service.prototype.load = function(callback){
     })
 };
 
+Service.prototype.updateLatest = function(userId, latestId, callback){
+    var userBizKv = this.context.kvs.userBiz;
+    userBizKv.saveById(userId, {latest: latestId}, callback);
+};
+
 Service.prototype.loadNotebookByIdAndUserId = function(json, callback){
     var UserNotebook = this.context.models.UserNotebook;
 

@@ -14,7 +14,7 @@
             JUST_ON_TOUCH_DEVICES = false; // default value ( decide whether you want to use the Tocca.js events only on the touch devices )
     </script>
     <link rel="stylesheet" href="/web/css/main.css"/>
-    {% set devOrNot = !__app.settings.env.debug %}
+    {% set devOrNot = __app.settings.env.debug %}
     {% if devOrNot %}
     <script src="/public/components/seajs/dist/sea.js"></script>
     <script src="/public/components/seajs-wrap/dist/seajs-wrap.js"></script>
@@ -22,7 +22,7 @@
     <script>
     window.__app = {{ JSON.stringify(__app) }};
     window.__page = {{ JSON.stringify(__page) }};
-    window.devOrNot =( !__app.settings.env.debug );
+    window.devOrNot =( __app.settings.env.debug );
     var scripthook = document.createElement( "script" );
     if(devOrNot){
         scripthook.src = "/web/index.js";
@@ -80,6 +80,7 @@
         </script>
 
         <notebook-index></notebook-index>
+        <notebook-new></notebook-new>
         <notebook-detail></notebook-detail>
         <notebook-timelines></notebook-timelines>
         <btn-group></btn-group>
@@ -91,6 +92,7 @@
         <script src="/web/tag/notebook-timelines.html" type="riot/tag"></script>
         <script src="/web/tag/notebook-timeline.html" type="riot/tag"></script>
         <script src="/web/tag/notebook-index.html" type="riot/tag"></script>
+        <script src="/web/tag/notebook-new.html" type="riot/tag"></script>
         <script src="/web/tag/notebook-item.html" type="riot/tag"></script>
         <script src="/web/tag/notebook-detail.html" type="riot/tag"></script>
         <script src="/web/tag/note-page.html" type="riot/tag"></script>

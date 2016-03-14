@@ -1,8 +1,9 @@
 <btn-group>
     <div class="mask" if="{state.current === 'menu' || state.current === 'edit'}" ontouchstart="{viewMode}" style="height: {window.innerHeight + 'px'}"></div>
-    <div class="add-section-bar" if="{state.current == 'view'}" style="position: fixed; z-index:4; bottom: 0px">
+    <div class="add-section-bar btn-group" if="{state.current == 'view'}" style="position: fixed;bottom: 0px">
         <div onclick="{showSubMenu}" style="width:48px;height:48px;background: red;float:left">单</div>
-        <div if="{editableOrNot()}" onclick="{addNewNote}" style="width:48px;height:48px;background: red;float:right">新</div>
+        <div if="{isEditable()}" onclick="{addNewNote}" style="width:48px;height:48px;background: red;float:right">新</div>
+        <div if="{!isEditable()}" onclick="{addNewNotebook}" style="width:48px;height:48px;background: red;float:right">新</div>
     </div>
     <div if="{state.current === 'menu'}" style="width: 100%; position: fixed; bottom: 0px; z-index: 100">
         <ul class="group_ul">
@@ -51,6 +52,10 @@
             height: 100%;
             color: white;
         }
+        .btn-group >div{
+            position: relative;
+            z-index: 4;
+        }
     </style>
     <script>
         "use strict";
@@ -70,7 +75,7 @@
             self.state.current = 'view';
             app.trigger('viewMode');
         };
-        self.editableOrNot = function(){
+        self.isEditable = function(){
             return ((self.opts.latestnotebook.participates.map(function(participate){return participate._id})).indexOf(__page.user._id) >= 0)
                 && (window.location.hash.split('/')[0] === '#timeline')
         };
@@ -81,6 +86,9 @@
         self.addNewNote = function(){
             app.trigger('addNewNote');
             self.state.current = 'edit';
+        };
+        self.addNewNotebook = function(){
+            riot.route('notebook/new')
         };
         self.onMenuClick = function(e){
             console.log(e)

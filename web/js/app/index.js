@@ -135,7 +135,6 @@ var mount_timeline = function(ctx, id){
     var tagInstance = null;
     tagInstance = this.views['timeline'] || this.views['timeline/_'];
     if(!tagInstance){
-        console.log(app.notebooks);
         tagInstance = riot.mount('notebook-timelines', {id: id, notebooks: app.notebooks, latestnotebook: app.latestnotebook})[0];
     }
     return tagInstance;
@@ -170,6 +169,13 @@ var view_notebook_detail = function(ctx, id){
 };
 nav.addRouteView('notebook/_', mount_notebook_detail, view_notebook_detail);
 
+var mount_notebook_new = function(ctx, id){
+    return riot.mount('notebook-new', {id: id})[0];
+};
+var view_notebook_new = function(ctx, id){
+
+};
+nav.addRouteView('notebook/new', mount_notebook_new, view_notebook_new);
 
 var bootstrap = applyMiddlewares(loadNotebooksByUserId(app), logger(app), listenToChange(app));
 

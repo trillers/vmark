@@ -10,6 +10,9 @@ exports.logger = function(app){
 exports.listenToChange = function(app){
     return function(next){
         return function(){
+            domain.action('createNotebookAction').onDone(function(res){
+                app.notebooks = (app.notebooks || []).push(res.notebook);
+            });
             domain.action('updateLatestNotebook').onDone(function(res){
                 app.latestnotebook = res.notebook;
                 app.trigger('changeForUpdate');

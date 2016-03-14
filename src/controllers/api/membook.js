@@ -8,6 +8,7 @@ var NoteStatus = typeRegistry.item('NoteStatus');
 var InteractType = typeRegistry.item('InteractType');
 var noteService = context.services.noteService;
 var notebookService = context.services.notebookService;
+var userNotebookService = context.services.userNotebookService;
 var interactService = context.services.interactService;
 var invitationService = context.services.invitationService;
 
@@ -225,6 +226,30 @@ module.exports = function (router) {
         }
     });
 
+    /**
+     * in used
+     * @params notebook Object<{title: String}>
+     * @return notebook Object
+     */
+    router.post('/notebooks', function* (){
+        try {
+            let notebook = this.request.body;
+            let userId = this.session.auth.user._id;
+            notebook.initiator = this.session.auth.user._id;
+            let notebookPersisted = yield notebookService.createAsync(notebook);
+            yield userNotebookService.createAsync({
+                notebook: notebookPersisted._id,
+                user: userId
+            });
+            yield notebookService.updateLatestAsync(userId, notebookPersisted._id);
+            this.session.auth.userBiz.latest = notebookPersisted._id;
+            this.body = {notebook: notebookPersisted};
+        } catch (e) {
+            context.logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
     router.get('/notebook/note', function*(){
         try{
             let notebookId = this.query.notebookId;
@@ -390,6 +415,7 @@ module.exports = function (router) {
      */
     router.put('/notebook/latest/_:id', function*(){
         try{
+            yield notebookService.updateLatestAsync(this.session.auth.user._id, this.params.id);
             this.session.auth.userBiz.latest = this.params.id;
             this.body = {data: true, error: null};
         }catch(e){

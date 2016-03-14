@@ -155,6 +155,7 @@
             return false;
         };
         self.on('update', function(){
+            console.error('updated')
             self.updateWxShareConfig();
         });
         self.updatePageNote = function(e){
@@ -251,10 +252,10 @@
                 ){
                     self.opts.latest = _.assign({}, self.opts.latest, self.notebook);
                 }
-                self.state.doView(self.notebook.mates[self.notebook.mates.length-1]);
+                console.warn("~~~~~~~~~~~~~~~")
                 self.updateWxShareConfig();
                 self.hidden = false;
-                self.update();
+                self.state.doView(self.notebook.mates[self.notebook.mates.length-1]);
             })
             .execute();
             loadNote.onDone(onLoadNote);

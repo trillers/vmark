@@ -1,0 +1,33 @@
+<notebook-new>
+    <div if="{!hidden}">
+        <div>
+            <a href="#notebook/index">取消</a>
+            <a onclick="{onSubmit}">保存</a>
+        </div>
+        <div>
+            <lable>笔记本</lable><input name="title" value="" type="text"/>
+        </div>
+    </div>
+    <script>
+        var createNotebookAction = domain.action('createNotebookAction');
+        var self = this;
+        self.hidden = true;
+        self.on('open', function(){
+            self.title.value = "";
+            self.trigger('ready');
+        });
+        self.onSubmit = function(e){
+            if(!self.title.value.trim()){
+                return;
+            }
+            createNotebookAction
+                .newInvocation({
+                    title: self.title.value.trim()
+                })
+                .onDone(function(res){
+                    riot.route('timeline/_' + res.notebook._id);
+                })
+                .execute();
+        };
+    </script>
+</notebook-new>

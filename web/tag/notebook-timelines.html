@@ -54,6 +54,7 @@
         self.shares = [];
         app.on('viewMode', function(e){
             self.trigger('viewMode');
+            console.log("%%%%")
             self.update({
                 currentState: 'view',
                 shares: []
@@ -101,16 +102,25 @@
             })
         };
         self.onPrevPageClick = function(e){
+            e.preventDefault();
             var currentIndex = self.opts.notebooks.map(function(notebook){return notebook._id}).indexOf(self.opts.latestnotebook._id);
             routeToNotebook(currentIndex-1);
+            e.stopPropagation();
         };
         self.onNextPageClick = function(e){
+            console.log("~~~~~~")
+            e.preventDefault();
             var currentIndex = self.opts.notebooks.map(function(notebook){return notebook._id}).indexOf(self.opts.latestnotebook._id);
             routeToNotebook(currentIndex+1);
+            e.stopPropagation();
         };
+        self.on('update', function(){
+            console.warn("updated")
+        })
         self.on('mount', function(){
         });
         self.on('open', function(){
+            console.log("******")
             try{
                 var notebook = self.opts.notebooks.filter(function(notebook){
                     return notebook._id === window.location.hash.split('_')[1]

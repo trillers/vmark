@@ -4,6 +4,9 @@ var apiFactory = domain.restApi();
 domain.action('loadNotebooksByUserId').onExecute(function(data){
     apiFactory.get('/membook/notebooks/user/_' + data.userId).drive(this).send();
 });
+domain.action('createNotebookAction').onExecute(function(data){
+    apiFactory.post('/membook/notebooks').drive(this).send(data);
+});
 //in used
 domain.action('loadAllNotesForShare').onExecute(function(data){
     apiFactory.get('/membook/note/share/user/_' + data.initiator).drive(this).send();
