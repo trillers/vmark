@@ -40,7 +40,7 @@ module.exports = function(){
             let invitationId = this.params.id;
             let invitation = yield invitationService.loadByIdAsync(invitationId);
             if(!invitation.valid){
-                return yield this.render('/error', {error: '邀请已被他们认领.'});
+                return yield this.render('/error', {error: '邀请已被他人认领.'});
             }
             let notebook = yield notebookService.loadNotebookByIdAndUserIdAsync({
                 user: this.session.auth.user._id,
@@ -57,7 +57,7 @@ module.exports = function(){
             yield this.render('note', {id: notebook._id});
         } catch (e){
             context.logger.error(e);
-            yield this.render('/error', {error: '邀请已被他们认领.'});
+            yield this.render('/error', {error: '邀请已被他人认领.'});
         }
     });
 

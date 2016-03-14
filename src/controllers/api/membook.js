@@ -207,9 +207,15 @@ module.exports = function (router) {
     router.get('/notebooks/user/_:userId', function*(){
         try{
             let latestNotebookId = this.session.auth.userBiz.latest;
+            console.warn("latest notebook id is " + latestNotebookId);
             let latestNotebook = null;
             let result = yield notebookService.loadNotebooksByUserIdAsync(this.params.userId);
             let notebooks = result.map(function(r){ return r.notebook});
+            console.log("notebooks....");
+            console.log(notebooks);
+            if(!notebooks.length){
+                console.log("no notebooks");
+            }
             for(let i=0, len=notebooks.length; i<len; i++){
                 let notebook = notebooks[i];
                 let participatesTemp = yield notebookService.loadUsersByNotebookIdAsync(notebook._id);

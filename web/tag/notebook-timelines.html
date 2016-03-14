@@ -112,7 +112,6 @@
         });
         self.on('open', function(){
             try{
-                console.log(self.opts);
                 var notebook = self.opts.notebooks.filter(function(notebook){
                     return notebook._id === window.location.hash.split('_')[1]
                 })[0];
