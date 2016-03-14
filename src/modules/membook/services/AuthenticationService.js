@@ -303,6 +303,7 @@ Service.prototype.signinWithOpenid = function(openid, callback){
     var wechatSiteUserKv = this.context.kvs.wechatSiteUser;
     var userKv = this.context.kvs.user;
     var notebookService = this.context.services.notebookService;
+    var userNotebookService = this.context.services.userNotebookService;
     var userBizKv = this.context.kvs.userBiz;
 
     co(function*(){
@@ -320,6 +321,7 @@ Service.prototype.signinWithOpenid = function(openid, callback){
                 var userBiz = yield userBizKv.loadByIdAsync(user._id);
                 if(!userBiz){
                     var notebook = yield notebookService.createAsync({title: '默认', initiator: user._id});
+                    yield userNotebookService.createAsync({user: user._id, notebook: notebook._id});
                     userBiz = yield userBizKv.saveByIdAsync(user._id, {latest: notebook._id});
                 }
 
