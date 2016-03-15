@@ -14,13 +14,11 @@ module.exports = function(router){
      * */
     router.post('/voice', function* (){
         var self = this;
-        console.log(self.request.body);
         var media_id = self.request.body.media_id;
         try {
-            console.error(media_id);
             var voiceBuffer = yield wechatApi.getMediaAsync(media_id);
             console.log(voiceBuffer[0]);
-            var res = yield qnClient.uploadBufAsync(voiceBuffer[0], 'qn/test/voice/' + media_id + '.amr');
+            var res = yield qnClient.uploadBufAsync(voiceBuffer[0], 'qn/voice/' + media_id + '.amr');
             console.error(res);
             this.body = {url: res.url};
         }catch(err){
@@ -33,7 +31,7 @@ module.exports = function(router){
         var media_id = self.request.body.media_id;
         try {
             var imageBuffer = yield wechatApi.getMediaAsync(media_id);
-            var res = yield qnClient.uploadBufAsync(imageBuffer[0], media_id + '.jpg');
+            var res = yield qnClient.uploadBufAsync(imageBuffer[0], 'qn/image/' + media_id + '.jpg');
             console.error(res);
             this.body = {url: res.url};
         }catch(err){

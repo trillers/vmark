@@ -56,7 +56,6 @@
         var loadNote = domain.action('loadNote');
         var loadSectionNotesByNotebookId = domain.action('loadSectionNotesByNotebookId');
         var updateNote = domain.action('updateNote');
-        var shareAction = domain.action('shareAction');
         var getNewSection = function(){
             return {
                 mates: [],
@@ -130,11 +129,7 @@
                     title: self.notebook && self.notebook.title || __app.resources.app.title,
                     desc: '',
                     link: url,
-                    imgUrl: getShareImg() || __page.baseUrl + '/public/images/logo_share_48x48.jpg',
-                    success: function(){
-                        shareAction.execute({id: self.notebook._id});
-                    },
-                    cancel: function(){}
+                    imgUrl: getShareImg() || __page.baseUrl + '/public/images/logo_share_48x48.jpg'
                 };
                 wx.onMenuShareTimeline(shareConfig);
                 wx.onMenuShareAppMessage(shareConfig);
@@ -154,12 +149,6 @@
             }
             return false;
         };
-        self.on('update', function(){
-//            self.updateWxShareConfig();
-        });
-        self.on('open', function(){
-            console.log('1111')
-        });
         self.updatePageNote = function(e){
             var title = e.currentTarget.value;
             if(self.notebook.initiator != self.user._id || !title){

@@ -124,7 +124,6 @@
                 success: function(res){
                     uploadImg(res.localIds);
                     function uploadImg(localIds){
-                        console.warn(localIds)
                         if(localIds.length){
                             var localId = localIds.splice(0, 1);
                             wx.uploadImage({

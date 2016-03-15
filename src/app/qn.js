@@ -1,15 +1,15 @@
 var qiniu = require('qiniu');
 
-var qn = function(accessKey, secretKey, bucket, origin){
+var Qn = function(accessKey, secretKey, bucket, origin){
     this.accessKey = accessKey;
     this.secretKey = secretKey;
     this.bucket = bucket;
     this.origin = origin;
     qiniu.conf.ACCESS_KEY = accessKey;
     qiniu.conf.SECRET_KEY = secretKey;
-}
+};
 
-qn.prototype.uptoken = function(bucketname){
+Qn.prototype.uptoken = function(bucketname){
     var putPolicy = new qiniu.rs.PutPolicy(bucketname);
     //putPolicy.callbackUrl = callbackUrl;
     //putPolicy.callbackBody = callbackBody;
@@ -23,9 +23,13 @@ qn.prototype.uptoken = function(bucketname){
     //    putPolicy.persistentOps = transOpt.persistentOps + "|saveas/" + encodedEntryURI;
     //}
     return putPolicy.token();
-}
+};
 
-qn.prototype.uploadBuf = function(buf, key, cb){
+Qn.prototype.getByName = function(name){
+    return 'http://' + this.origin + name;
+};
+
+Qn.prototype.uploadBuf = function(buf, key, cb){
     var self = this;
     var extra = new qiniu.io.PutExtra();
     //extra.params = params;
@@ -36,16 +40,16 @@ qn.prototype.uploadBuf = function(buf, key, cb){
     qiniu.io.put(uptoken, key, buf, extra, function(err, ret) {
         if (!err) {
             // 上传成功， 处理返回值
-            console.log(ret.key, ret.hash);
+            //console.log(ret.key, ret.hash);
             // ret.key & ret.hash
             ret.url = 'http://' + self.origin + '/' + ret.key;
             if(cb) cb(null, ret);
         } else {
             // 上传失败， 处理返回代码
-            console.log(err)
+            //console.log(err)
             if(cb) cb(err, null);
         }
     });
-}
+};
 
-module.exports = qn;
+module.exports = Qn;

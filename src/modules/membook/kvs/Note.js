@@ -33,6 +33,10 @@ Kv.prototype.saveById = function(json, callback){
 
 Kv.prototype.deleteByIds = function(ids, callback){
     var redis = this.context.redis.main;
+    if(!ids || !ids.length){
+        console.warn('something wrong with delete by ids');
+        return callback(null);
+    }
     var keys = ids.map(function(id){
         return idToObjKey(id)
     });

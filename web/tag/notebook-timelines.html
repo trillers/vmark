@@ -97,7 +97,34 @@
                 notebookId: notebookId
             })
             .onDone(function(){
+                setTimeout(function(){
+                    var conf = {
+                        title: self.opts.latestnotebook && self.opts.latestnotebook.title || __app.resources.app.title,
+                        desc: '',
+                        link: __page.baseUrl + '/note#timeline/_' + self.opts.latestnotebook._id,
+                        imgUrl: getShareImg() || __page.baseUrl + '/public/images/logo_share_48x48.jpg'
+                    };
+                    wx.onMenuShareTimeline(conf);
+                    wx.onMenuShareAppMessage(conf);
+                }, 100);
                 riot.route('timeline/_' + notebookId);
+                function getShareImg(){
+                    var notebook = self.opts.latestnotebook;
+                    if(notebook && notebook.mates && notebook.mates.length){
+                        for(var i= 0, len=notebook.mates.length; i<len; i++){
+                            var sec = notebook.mates[i];
+                            if(sec && sec.mates && sec.mates.length){
+                                for(var j= 0, len2=sec.mates.length; j<len2; j++){
+                                    var note = sec.mates[j];
+                                    if(note.type && note.type === 'img' && note.status != 'dr'){
+                                        return sec.mates[j].url
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return null;
+                }
             })
         };
         self.onPrevPageClick = function(e){

@@ -561,7 +561,7 @@ module.exports = function (router) {
                 try{
                     note.url = yield context.services.mediaService.uploadImgAsync(note.url);
                 }catch(e){
-                    context.logger.error('......');
+                    note.url = context.services.mediaService.getByNameAndType(note.url, 'image');
                 }
                 if(note.notebook){
                     let notebook = yield notebookService.loadByIdAsync(note.notebook);
@@ -580,6 +580,7 @@ module.exports = function (router) {
             }
             this.body = {notes: notes};
         }catch(e){
+            console.log("*********");
             context.logger.error(e);
             this.body = {error: e};
         }
@@ -608,7 +609,7 @@ module.exports = function (router) {
             {
                 path: 'initiator'
             }
-        ]
+        ];
         this.body = yield noteService.filterAsync(params);
     });
 
