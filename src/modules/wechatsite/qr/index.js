@@ -196,19 +196,25 @@ activityPosterType.onAccess(function(qr, openid){
         }
         catch(e){
             logger.error(e);
-            logger.error('扫描活动海报参与活动,活动海报二维码ID:' + qr._id);
+            logger.error('扫描活动海报参与活动失败,活动海报二维码ID:' + qr._id);
         }
     });
 });
 activityPosterType.onExpire(function(){});
 
 participantPosterType.onAccess(function(qr, openid){
+    var logger = context.logger;
     co(function*(){
         try{
-            console.log('activity type qr code been scanned, qr:' + qr.sceneId + 'user: ' + openid);
+            var powerParticipantService = context.services.powerParticipantService;
+            var reply = yield powerParticipantService.scanParticipantPoster(qr, openid);
+            wechatApi.sendText(openid, reply, function (err) {
+                if(err) logger.error(err);
+            });
         }
         catch(e){
-            console.error(e);
+            logger.error(e);
+            logger.error('扫描参与者海报参失败,活动海报二维码ID:' + qr._id);
         }
     });
 });

@@ -2,6 +2,7 @@ var util = require('util');
 var settings = require('@private/vmark-settings');
 var _ = require('underscore');
 var myUtil = require('../../../../app/util');
+var PowerType = require('../../../common/models/TypeRegistry').item('PowerType');
 
 var Service = function(context){
     this.context = context;
@@ -60,6 +61,7 @@ Service.prototype.loadById = function*(id){
         var rank = yield kv.getParticipantRankAsync(participant.activity, participant.user);
         var helpArr = yield kv.getHelpFriendsSetAsync(id);
         participant.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + activity._id;
+        participant.homePage = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participant._id;
         participant.activity = activity;
         participant.user = user;
         participant.rank = rank;
@@ -189,7 +191,7 @@ Service.prototype.help = function*(participant, user){
             var data = yield kv.incParticipantPowerByIdAsync(participant.id, helpPower);
             yield kv.increaseParticipantScoreInRankingListAsync(participant.activity._id, participant.user.id, helpPower);
             var rank = yield kv.getParticipantRankAsync(participant.activity, participant.user);
-            result = {rank: rank, total_power: data};
+            result = {rank: rank, total_power: data, helpPower: helpPower};
         } else if(res === 0) {
             result = {helped: true};
         } else {
@@ -200,4 +202,49 @@ Service.prototype.help = function*(participant, user){
     }
     return result;
 }
+
+/**
+ * handle user scan participant poster
+ * @params qr
+ * @params openid
+ *
+ * return {
+ *    reply: 'xxxxx', reply msg send to user
+ * }
+ * */
+Service.prototype.scanParticipantPoster = function*(qr, openid){
+    var logger = this.context.logger;
+    try {
+        var platformUserService = this.context.services.platformUserService;
+        var powerPosterService = this.context.services.powerPosterService;
+        var poster = yield powerPosterService.loadBySceneId(qr.sceneId);
+        var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
+        var participant = yield this.loadById(poster.participant);
+        var res = yield this.help(participant, user);
+        var reply = '';
+        if(res.limited){
+            reply = '<' + participant.user.nickname + '> 助力人数已达上限\n'
+                    + '活动主页: <a href="' + participant.homePage + '"> 点击查看</a>';
+        }else if(res.error){
+            reply = '助力<' + participant.user.nickname + '> 失败\n'
+                + '活动主页: <a href="' + participant.homePage + '"> 点击查看</a>';
+        }else if(res.helped){
+            reply = '您已经助力过 <' + participant.user.nickname + '> \n'
+                + '活动主页: <a href="' + participant.homePage + '"> 点击查看</a>';
+        }else {
+            if (participant.activity.type = PowerType.RedPacket.value()) {
+                reply = '<' + user.nickname + '> 您已成功为 <' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 红包, <' + participant.user.nickname + '> 目前总红包数: ' + res.total_power + ', 排名: ' + res.rank + '\n' + '活动主页: <a href="' + participant.homePage + '"> 点击查看</a>';
+            }else if(participant.activity.type = PowerType.Points.value()){
+                reply = '<' + user.nickname + '> 您已成功为 <' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 积分, <' + participant.user.nickname + '> 目前总积分: ' + res.total_power + ', 排名: ' + res.rank + '\n' + '活动主页: <a href="' + participant.homePage + '"> 点击查看</a>';
+            }
+        }
+
+        return reply;
+
+    }catch(e){
+        logger.error('scan paticipant poster err: ' + e + ', qr: ' + qr._id + ', user openid: ' + openid);
+        return '助力好友失败';
+    }
+}
+
 module.exports = Service;

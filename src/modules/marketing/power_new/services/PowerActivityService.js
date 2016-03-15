@@ -280,29 +280,18 @@ Service.prototype.scanActivityPoster = function*(qr, openid){
         var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
         var activity = yield this.loadById(poster.activity);
         var status = yield this.getStatus(poster.activity, user);
-        var reply = '';
+        var res =  {
+            success: false,
+            reply: '',
+            mediaId: null
+        }
         if(status.participant){
             var participantUrl = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participant;
-            reply = '您已经参与过该活动: <a href="' + participantUrl + '">点击查看</a>';
-            return {
-                success: false,
-                reply: reply,
-                mediaId: null
-            }
+            res.reply = '您已经参与过该活动: <a href="' + participantUrl + '">点击查看</a>';
         }else if(!status.noActivated){
-            reply = '活动[' + activity.name + ']未开始';
-            return {
-                success: false,
-                reply: reply,
-                mediaId: null
-            }
+            res.reply = '活动[' + activity.name + ']未开始';
         }else if(!status.closed){
-            reply = '活动[' + activity.name + ']已结束';
-            return {
-                success: false,
-                reply: reply,
-                mediaId: null
-            }
+            res.reply = '活动[' + activity.name + ']已结束';
         }else{
             var participantJson = {
                 activity: activity._id
@@ -327,15 +316,14 @@ Service.prototype.scanActivityPoster = function*(qr, openid){
             }
             yield this.putParticipantToMapString(activity._id, userBrief);
             var detailUrl = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + data._id;
-            reply = '您已成功参与活动: ' + activity.name + '\n' +
+            res.reply = '您已成功参与活动: ' + activity.name + '\n' +
                     '活动详情: <a href="' + detailUrl + '" >点击查看</a>\n' +
                     '我的海报图片，点击查看和分享:';
-            return {
-                success: true,
-                reply: reply,
-                mediaId: poster.mediaId
-            }
+            res.success = true;
+            res.mediaId = poster.mediaId;
         }
+
+        return res;
 
     }catch(e){
         logger.error('scan activity poster err: ' + e + ', qr: ' + qr._id + ', user openid: ' + openid);
