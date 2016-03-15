@@ -140,7 +140,6 @@ var mount_timeline = function(ctx, id){
     return tagInstance;
 };
 var view_timeline = function(ctx, id){
-    console.log(ctx)
 };
 
 nav.addRouteView('timeline', mount_timeline, view_timeline);
