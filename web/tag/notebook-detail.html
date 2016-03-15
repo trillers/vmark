@@ -83,6 +83,7 @@
         self.shareing = false;
         self.resetShare = resetShare;
         self.on('open', function(ctx){
+            self.notes = [];
             var notebookId = window.location.hash.split('_')[1];
             if(!notebookId){
                 throw new Error('hash parse error.');
