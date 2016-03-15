@@ -1,4 +1,57 @@
 var util = {
+    date: {
+        current: function(){
+            return new Date()
+        },
+        format: function(date, fmt){
+            var o = {
+                "M+" : date.getMonth()+1,
+                "d+" : date.getDate(),
+                "h+" : date.getHours(),
+                "m+" : date.getMinutes(),
+                "s+" : date.getSeconds(),
+                "q+" : Math.floor((date.getMonth()+3)/3),
+                "S"  : date.getMilliseconds()
+            };
+            if(/(y+)/.test(fmt))
+                fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+            for(var k in o)
+                if(new RegExp("("+ k +")").test(fmt))
+                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+            return fmt;
+        },
+        today: function(){
+            var t = new Date();
+            t.setHours(0);
+            t.setMinutes(0);
+            t.setSeconds(0);
+            return t;
+        },
+        isYesterday: function(date){
+            return date.toDateString() === util.date.yesterday().toDateString();
+        },
+        yesterday: function(){
+            var t = new Date();
+            t.setDate(t.getDate()-1);
+            t.setHours(0);
+            t.setMinutes(0);
+            t.setSeconds(0);
+            return t;
+        },
+        isTheDayBeforeYesterday: function(date){
+            return date.toDateString() === util.date.addDay(new Date(), -2).toDateString();
+        },
+        addDay: function(date, count){
+            var t = new Date();
+            t.setFullYear(date.getFullYear());
+            t.setMonth(date.getMonth());
+            t.setDate(date.getDate() + count);
+            t.setHours(0);
+            t.setMinutes(0);
+            t.setSeconds(0);
+            return t;
+        }
+    },
     arr: {
         rest: function(full, part){
             return full.filter(function(f){
@@ -83,21 +136,22 @@ var util = {
         }
     },
     formatDateForNote: function(date){
-        var d_minutes,d_hours,d_days;
+        var d_days;
         var timeNow = parseInt(new Date().getTime()/1000);
         var time = parseInt(date.getTime()/1000);
         var d;
         d = timeNow - time;
         d_days = parseInt(d/86400);
-        d_hours = parseInt(d/3600);
-        d_minutes = parseInt(d/60);
-        if(d_days>2 && d_days<=4){
-            return d_days+"天前";
+        if(util.date.isTheDayBeforeYesterday(date)){
+            return '前天';
         }
-        else if(d_days<=2 && d_days>0){
+        else if(util.date.isYesterday(date)){
             return '昨天';
-        }else if(d_days<=0){
+        }else if(d_days===0){
             return '今天';
+        }
+        else if(d_days>2 && d_days<=4){
+            return d_days+"天前";
         }
         else{
             var s = new Date(time*1000);
