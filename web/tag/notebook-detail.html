@@ -104,7 +104,6 @@
                         return;
                     }
                     if(res && res.notes && res.notes.length){
-                        console.log(res.notes)
                         self.notes = res.notes.reverse().slice(0, 2);
                     }
                     self.trigger('ready');
