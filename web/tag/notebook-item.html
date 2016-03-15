@@ -7,15 +7,14 @@
             </div>
             <div style="width: 70%; float: right">
                 <div>共{opts.notebook.total}条笔记, 最近一周{opts.notebook.countForWeek}条笔记</div>
-                <div if="{__page.user._id === opts.notebook.initiator._id}">个人笔记</div>
-                <div if="{__page.user._id != opts.notebook.initiator._id}">
-                    共有笔记
+                <div if="{__page.user._id === (opts.notebook.initiator._id || opts.notebook.initiator)}">个人笔记</div>
+                <div if="{__page.user._id != (opts.notebook.initiator._id || opts.notebook.initiator)}">
+                    共有笔记{opts.notebook.initiator}
                     <div each="{opts.notebook.participates}">
                         <img riot-src="{headimgurl}"/>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
     <!--play voice panel end-->

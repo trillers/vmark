@@ -172,7 +172,6 @@ var mount_notebook_new = function(ctx, id){
     return riot.mount('notebook-new', {id: id})[0];
 };
 var view_notebook_new = function(ctx, id){
-    console.log(this);
 };
 nav.addRouteView('notebook/new', mount_notebook_new, view_notebook_new);
 

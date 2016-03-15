@@ -12,7 +12,8 @@ exports.listenToChange = function(app){
         return function(){
             domain.action('createNotebookAction').onDone(function(res){
                 var arr = app.notebooks || [];
-                app.notebooks = arr.push(res.notebook);
+                arr.push(res.notebook);
+                app.notebooks = arr;
             });
             domain.action('updateLatestNotebook').onDone(function(res){
                 app.latestnotebook = res.notebook;
