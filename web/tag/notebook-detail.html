@@ -104,7 +104,8 @@
                         return;
                     }
                     if(res && res.notes && res.notes.length){
-                        self.notes = res.notes.slice(0, 2);
+                        console.log(res.notes)
+                        self.notes = res.notes.reverse().slice(0, 2);
                     }
                     self.trigger('ready');
                 })
