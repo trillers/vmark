@@ -233,9 +233,9 @@ Service.prototype.scanParticipantPoster = function*(qr, openid){
                 + '活动主页: <a href="' + participant.homePage + '"> 点击查看</a>';
         }else {
             if (participant.activity.type = PowerType.RedPacket.value()) {
-                reply = '<' + user.nickname + '> 您已成功为 <' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 红包, <' + participant.user.nickname + '> 目前总红包数: ' + res.total_power + ', 排名: ' + res.rank + '\n' + '活动主页: <a href="' + participant.homePage + '"> 点击查看</a>';
+                reply = '<' + user.nickname + '> 您已成功为 \n<' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 红包,\n <' + participant.user.nickname + '> 目前总红包数: ' + res.total_power + ', 排名: ' + res.rank + '\n' + '活动主页: <a href="' + participant.homePage + '"> 点击查看</a>';
             }else if(participant.activity.type = PowerType.Points.value()){
-                reply = '<' + user.nickname + '> 您已成功为 <' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 积分, <' + participant.user.nickname + '> 目前总积分: ' + res.total_power + ', 排名: ' + res.rank + '\n' + '活动主页: <a href="' + participant.homePage + '"> 点击查看</a>';
+                reply = '<' + user.nickname + '> 您已成功为 \n<' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 积分,\n <' + participant.user.nickname + '> 目前总积分: ' + res.total_power + ', 排名: ' + res.rank + '\n' + '活动主页: <a href="' + participant.homePage + '"> 点击查看</a>';
             }
         }
 
