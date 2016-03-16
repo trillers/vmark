@@ -21,6 +21,18 @@ app.routeView('tenants', nest.viewable({
   }
 }));
 
+app.routeView('tenant/_:id', nest.viewable({
+  name: 'tenant',
+  mount: function(ctx){
+    var tags = riot.mount('tenant', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx);
+  }
+}));
+
 app.routeView('redpacket', nest.viewable({
   name: 'redpacket',
   mount: function(ctx){

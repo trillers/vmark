@@ -2,7 +2,11 @@ var domain = require('../domain');
 var apiFactory = domain.restApi();
 
 domain.action('findTenants').onExecute(function(data){
-    apiFactory.get('/tenant/filter').drive(this).send();
+    apiFactory.post('/tenant/filter').drive(this).send(data);
+});
+
+domain.action('loadTenantById').onExecute(function(data){
+    apiFactory.get('/tenant/_' + data.id).drive(this).send();
 });
 
 domain.action('loadRedpackets').onExecute(function(data){
