@@ -7,12 +7,36 @@ var agent = require('./agent-boss').init();
 var util = require('./util');
 
 var Spa = require('./spa');
-var app = new Spa({defaultHash: 'tenants'});
+var app = new Spa({defaultHash: 'tenant'});
 
 app.routeView('tenant', nest.viewable({
   name: 'tenant',
   mount: function(ctx){
     var tags = riot.mount('boss-tenant', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx.req.query);
+  }
+}));
+
+app.routeView('wechatsite', nest.viewable({
+  name: 'wechatsite',
+  mount: function(ctx){
+    var tags = riot.mount('boss-tenant-wechatsite', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx.req.query);
+  }
+}));
+
+app.routeView('wechatsite/edit', nest.viewable({
+  name: 'wechatsite/edit',
+  mount: function(ctx){
+    var tags = riot.mount('boss-wechatsite-edit', {filter: ctx.req.query, app: this.parent});
     this.tag = tags[0];
   },
   route: function(ctx){

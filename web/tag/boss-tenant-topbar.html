@@ -2,9 +2,9 @@
     <nav class="navbar navbar-default navbar-inverse" role="navigation" style="margin-bottom: 5px; border-radius: 0;">
         <div class="collapse navbar-collapse">
             <a class="navbar-brand" style="font-size:20px; color: #ffffff">百加宝-平台端</a>
-            <ul class="nav navbar-nav" style="width: 88%">
-                <li class="navbtn"><a id="tenants" href="#" route="tenant" class="myActive" onclick={nav}>机构</a></li>
-                <li class="navbtn"><a id="power" href="#" route="wechatSite" onclick="{nav}" >公众号</a></li>
+            <ul class="nav navbar-nav" style="width: 86%">
+                <li class="navbtn"><a id="tenant" href="#" route="tenant" class="myActive" onclick={nav}>机构</a></li>
+                <li class="navbtn"><a id="wechatsite" href="#" route="wechatsite" onclick="{nav}" >公众号</a></li>
                 <li  style="float: right;"><a href="#" style="font-size: 1.4em" class="glyphicon glyphicon-off" title="退出" onclick="{logout}"></a></li>
                 <li style="float: right; margin-right: 20px; padding-top: 5px;">
                     <img src="{headimgurl}" style="height: 40px; width: 40px" alt=""/><span style="margin-left: 10px; color: white">{nickname}</span>
@@ -23,7 +23,9 @@
         this.on('mount', function(){
             if(window.location.hash) {
                 $('.navbtn a').removeClass('myActive');
-                $(window.location.hash).addClass('myActive');
+                var reg = new RegExp(/^#[a-z, A-Z, _]+/);
+                var res = reg.exec(window.location.hash);
+                $(res[0]).addClass('myActive');
             }
         });
 

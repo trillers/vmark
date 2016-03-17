@@ -1,0 +1,66 @@
+<boss-wechatsite-edit>
+    <div class="container" if="{!hidden}">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2" style="text-align: center"><h3>公众号管理</h3></div>
+        </div>
+        <div class="row" style="margin-top: 10px">
+            <div class="action col-md-offset-2 col-lg-offset-2">
+                <button class="btn btn-default" onclick="add">添加</button>
+            </div>
+            <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
+                <div class="row panel-container">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>名称</th>
+                                <th>类型</th>
+                                <th>状态</th>
+                                <th>创建时间</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>金榜教育</td>
+                                <td>认证服务号</td>
+                                <td>已激活</td>
+                                <td>2016-03-17</td>
+                            </tr>
+                            <tr>
+                                <td>金榜教育</td>
+                                <td>认证服务号</td>
+                                <td>已激活</td>
+                                <td>2016-03-17</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style scoped>
+        .panel-container >div{
+            height: 40px;
+            line-height: 40px;
+        }
+    </style>
+    <script>
+        var self = nest.presentable(this);
+        var loadTenantById = domain.action('loadTenantById');
+        var onLoadTenantById = function(res){
+            self.update({tenant: res.tenant});
+            console.log(res.tenant);
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+        };
+        self.on('open', function(){
+            loadTenantById.execute({id: __app.tenant});
+        });
+        self.on('mount', function(){
+            loadTenantById.onDone(onLoadTenantById);
+        })
+
+        self.add = function(e){
+            riot.route('wechatsite/edit');
+        }
+    </script>
+</boss-wechatsite-edit>

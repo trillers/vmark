@@ -8,6 +8,7 @@
 
     <script type="text/javascript">
         window.__app = {{ JSON.stringify(__app) }};
+        window.__app.tenant = {{JSON.stringify(tenant)}};
         window.__page = {{ JSON.stringify(__page) }};
         window.prdOrNot =( __app.settings.env.NODE_ENV === "production" );
         var scripthook = document.createElement( "script" );
@@ -37,8 +38,12 @@
     <div>
         <boss-tenant-topbar></boss-tenant-topbar>
         <boss-tenant></boss-tenant>
+        <boss-tenant-wechatsite></boss-tenant-wechatsite>
+        <boss-wechatsite-edit></boss-wechatsite-edit>
         <script src="/web/tag/boss-tenant-topbar.html" type="riot/tag"></script>
         <script src="/web/tag/boss-tenant.html" type="riot/tag"></script>
+        <script src="/web/tag/boss-tenant-wechatsite.html" type="riot/tag"></script>
+        <script src="/web/tag/boss-wechatsite-edit.html" type="riot/tag"></script>
 
     </div>
 

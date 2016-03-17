@@ -1,91 +1,45 @@
 <boss-tenant>
-    <div if="{!hidden}">
-        <div if="{tip}" class="alert {addClass}" style="margin-top: -5px; float: left; width: 100%; text-align: center; margin-bottom: 0; position: absolute; z-index: 9999">
-            <strong>{tipInfo}</strong>
+    <div class="container" if="{!hidden}">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2" style="text-align: center"><h3>{tenant.name}</h3></div>
         </div>
-        <div class="container" style="width: 100%; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0">
-            <div class="row">
-                &nbsp;
+        <div class="row" style="margin-top: 30px">
+            <div class="col-md-4 col-md-offset-3 col-lg-4 col-lg-offset-3">
+                <div class="row panel-container">
+                    <div class="col-md-6">名称</div>
+                    <div class="col-md-6">{tenant.name}</div>
+                    <div class="col-md-6">类型</div>
+                    <div class="col-md-6">{__app.enums.PartyType.values[tenant.type]}</div>
+                    <div class="col-md-6">状态</div>
+                    <div class="col-md-6">{ __app.enums.LifeFlag.values[tenant.lFlg]}</div>
+                    <div class="col-md-6">创建时间</div>
+                    <div class="col-md-6">{_.date.format(new Date(tenant.crtOn), 'yyyy-MM-dd hh点mm分')}</div>
+                    <div class="col-md-6">备注</div>
+                    <div class="col-md-6">{tenant.desc}</div>
+                </div>
             </div>
-            <div class="row">
-                <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2" >
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>名称</th>
-                            <th>类型</th>
-                            <th>状态</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-
-                        <tr each="{tenants}">
-                            <td>
-                                <a href="/tenant-recontent-{_id}">
-                                    {name}
-                                </a>
-                            </td>
-                            <td>
-                                { __app.enums.PartyType.values[type] }
-                            </td>
-                            <td>
-                                { __app.enums.LifeFlag.values[lFlg] }
-                            </td>
-                        </tr>
-
-                        </tbody>
-                    </table>
-                </div><!--/span-->
-            </div><!--/row-->
-        </div><!--/container-->
-
-        <style scoped>
-
-        </style>
-
-        <script>
-            "use strict";
-            this.app = this.opts.app; //keep spa object
-            var self = nest.presentable(this);
-            self.api =  __app.settings.api.url;
-            self.tip = false;
-            self.tipInfo = "";
-
-            var findTenants = domain.action('findTenants');
-            var onFindTenants = function(tenants){
-                console.log(tenants);
-                self.tenants = tenants;
-                self.update();
-            };
-
-            this.on('mount', function(){
-                findTenants.onDone(onFindTenants);
-            });
-            this.on('unmount', function(){
-                findTenants.offDone(onFindTenants);
-            });
-            this.on('open', function(options){
-                self.trigger('ready', false);
-                self.trigger('view-route-to');
-                findTenants.execute({});
-                console.info('tag tenants is opening');
-            });
-
-            this.on('leave', function(){
-                self.mask = true;
-                self.update();
-            });
-
-            this.on('reenter', function(){
-                self.mask = false;
-                self.update();
-            });
-
-            this.on('refresh', function(){
-                console.info('tag tenants is refreshing');
-                //_refresh();
-            });
-
-        </script>
+        </div>
     </div>
+    <style scoped>
+        .panel-container >div{
+            height: 40px;
+            line-height: 40px;
+        }
+    </style>
+    <script>
+        var self = nest.presentable(this);
+        var loadTenantById = domain.action('loadTenantById');
+        var onLoadTenantById = function(res){
+            self.update({tenant: res.tenant});
+            console.log(res.tenant);
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+        };
+        self.on('open', function(){
+            loadTenantById.execute({id: __app.tenant});
+        });
+        self.on('mount', function(){
+            loadTenantById.onDone(onLoadTenantById);
+        })
+    </script>
 </boss-tenant>
