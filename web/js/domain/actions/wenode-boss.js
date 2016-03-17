@@ -13,8 +13,8 @@ domain.action('updateTenantById').onExecute(function(data){
     apiFactory.put('/tenant/_' + data.id).drive(this).send(data);
 });
 
-domain.action('loadRedpackets').onExecute(function(data){
-    apiFactory.get('/marketing/redpacket/load').drive(this).send();
+domain.action('addTenantWechatSite').onExecute(function(data){
+    apiFactory.post('/tenant/add-wechatsite').drive(this).send(data);
 });
 
 module.exports = null;

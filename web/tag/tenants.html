@@ -46,7 +46,7 @@
                                 { __app.enums.LifeFlag.values[lFlg] }
                             </td>
                             <td>
-                                { new Date() }
+                                {_.date.format(new Date(crtOn), 'yyyy-MM-dd hh点mm分')}
                             </td>
                             <td>
                                 { desc }

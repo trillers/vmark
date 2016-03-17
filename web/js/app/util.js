@@ -212,7 +212,6 @@ var util = {
     },
     widget: {
         confirm: function(opts){
-            console.log(app)
             window.app.trigger('confirm', {title: opts.title, content: opts.content})
                 .one('confirmOk', function(){
                     app.off('confirmOk');
@@ -223,6 +222,9 @@ var util = {
                     app.off('confirmOk');
                     app.off('confirmCancel');
                 });
+        },
+        alert: function(opts){
+            window.app.trigger('alert', opts);
         }
     }
 };

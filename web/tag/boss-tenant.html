@@ -31,15 +31,17 @@
         var loadTenantById = domain.action('loadTenantById');
         var onLoadTenantById = function(res){
             self.update({tenant: res.tenant});
-            console.log(res.tenant);
-            self.trigger('ready', false);
-            self.trigger('view-route-to');
         };
         self.on('open', function(){
             loadTenantById.execute({id: __app.tenant});
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
         });
         self.on('mount', function(){
             loadTenantById.onDone(onLoadTenantById);
+        })
+        self.on('unmount', function(){
+            loadTenantById.offDone(onLoadTenantById);
         })
     </script>
 </boss-tenant>

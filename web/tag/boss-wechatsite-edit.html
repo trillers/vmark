@@ -45,18 +45,13 @@
     </style>
     <script>
         var self = nest.presentable(this);
-        var loadTenantById = domain.action('loadTenantById');
-        var onLoadTenantById = function(res){
-            self.update({tenant: res.tenant});
-            console.log(res.tenant);
+
+        self.on('open', function(){
             self.trigger('ready', false);
             self.trigger('view-route-to');
-        };
-        self.on('open', function(){
-            loadTenantById.execute({id: __app.tenant});
         });
         self.on('mount', function(){
-            loadTenantById.onDone(onLoadTenantById);
+
         })
 
         self.add = function(e){

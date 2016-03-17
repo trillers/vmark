@@ -19,7 +19,6 @@ module.exports = function (router) {
             if(this.request.body.id){
                 delete this.request.body['id'];
             }
-            console.log(this.request.body);
             let tenantUpdated = yield tenantOrgService.updateByIdAsync(this.params.id, this.request.body);
             console.log(tenantUpdated);
             this.body = {error: null};
@@ -40,4 +39,17 @@ module.exports = function (router) {
             this.body = {error: e};
         }
     });
+
+    router.post('/add-wechatsite', function*(){
+        try{
+            let filter = {
+                conditions: this.request.body
+            };
+            let tenants = yield tenantOrgService.findTenantsAsync(filter);
+            this.body = {tenants: tenants, error: null};
+        }catch(e){
+            this.body = {error: e};
+        }
+    });
+
 };

@@ -1,66 +1,111 @@
-<boss-wechatsite-edit>
+<boss-wechatsite-add>
     <div class="container" if="{!hidden}">
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2" style="text-align: center"><h3>公众号管理</h3></div>
-        </div>
         <div class="row" style="margin-top: 10px">
             <div class="action col-md-offset-2 col-lg-offset-2">
-                <button class="btn btn-default" onclick="add">添加</button>
+                <a href="#wechatsite">返回公众号列表</a>
             </div>
-            <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
-                <div class="row panel-container">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>名称</th>
-                                <th>类型</th>
-                                <th>状态</th>
-                                <th>创建时间</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>金榜教育</td>
-                                <td>认证服务号</td>
-                                <td>已激活</td>
-                                <td>2016-03-17</td>
-                            </tr>
-                            <tr>
-                                <td>金榜教育</td>
-                                <td>认证服务号</td>
-                                <td>已激活</td>
-                                <td>2016-03-17</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <div class="form-con col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
+                <div class="panel panel-default">
+                    <div class="panel-heading">基本信息</div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-3">名称</div>
+                            <div class="col-md-9"><input name="name" class="form-control" type="text"/></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">类型</div>
+                            <div class="col-md-9">
+                                <select id="selectType" class="form-control">
+                                    <option value="vf">认证服务号</option>
+                                    <option value="vd">认证订阅号</option>
+                                    <option value="f">服务号</option>
+                                    <option value="d">订阅号</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">公众号邮箱</div>
+                            <div class="col-md-9"><input name="email" class="form-control" type="email"/></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">原始ID</div>
+                            <div class="col-md-9"><input name="originalId" class="form-control" type="text"/></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">AppID</div>
+                            <div class="col-md-9"><input name="appId" class="form-control" type="text"/></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">AppSecret</div>
+                            <div class="col-md-9"><input name="appSecret" class="form-control" type="text"/></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="sub">
+                    <input disabled="{allowSubmit}" class="btn btn-primary" onclick="{submit}" type="button" value="提交">
+                    <input class="btn btn-default" onclick="{cancel}" type="button" value="取消">
                 </div>
             </div>
         </div>
     </div>
     <style scoped>
+        a {
+          cursor: pointer;
+        }
+        .row{
+            margin-top: 7px;
+        }
         .panel-container >div{
             height: 40px;
             line-height: 40px;
         }
+        .form-con {
+            margin-top: 15px;
+            padding: 0 0;
+        }
+        #selectType{
+            width: 30% !important;
+        }
+        .sub{
+             text-align: center;
+        }
+        .sub input{
+            margin-left: 30px;
+        }
     </style>
     <script>
         var self = nest.presentable(this);
-        var loadTenantById = domain.action('loadTenantById');
-        var onLoadTenantById = function(res){
-            self.update({tenant: res.tenant});
-            console.log(res.tenant);
+        var addTenantWechatSite = domain.action('addTenantWechatSite');
+        self.allowSubmit = true;
+
+        var onAddTenantWechatSite = function(data){
+            if(!data.error){
+
+            }
+        }
+        self.on('open', function(){
             self.trigger('ready', false);
             self.trigger('view-route-to');
-        };
-        self.on('open', function(){
-            loadTenantById.execute({id: __app.tenant});
         });
+
         self.on('mount', function(){
-            loadTenantById.onDone(onLoadTenantById);
+            addTenantWechatSite.onDone(onAddTenantWechatSite)
         })
 
-        self.add = function(e){
-            riot.route('wechatsite/edit');
+        self.cancel = function(e){
+            riot.route('wechatsite');
+        }
+
+        self.submit = function(e){
+            var json = {
+                org: __app.tenant,
+                name: self.name,
+                email: self.email,
+                originalId: self.originalId,
+                appId: self.appId,
+                appSecret: self.appSecret
+            }
+            addTenantWechatSite.execute(json);
         }
     </script>
-</boss-wechatsite-edit>
+</boss-wechatsite-add>

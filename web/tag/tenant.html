@@ -1,7 +1,10 @@
 <tenant>
     <div class="container" if="{!hidden}">
         <div class="row">
-            <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2" style="text-align: center"><h3>{tenant.name}</h3></div>
+            <div class="col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3" style="position: relative;text-align: center">
+                <a href="#tenants" style="position: absolute; left: 0px; top: 20px;">返回机构列表</a>
+                <h3>{tenant.name}</h3>
+            </div>
         </div>
         <div class="row" style="margin-top: 30px">
             <div class="col-md-4 col-md-offset-3 col-lg-4 col-lg-offset-3">
@@ -21,10 +24,10 @@
         </div>
         <div class="row" style="margin-top: 30px">
             <div class="col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4" style="text-align: center">
-                <input class="btn btn-default" type="button" value="修改">
+                <a href="#tenant/edit/_{tenant._id}" class="btn btn-default">修改</a>
                 <input if="{tenant.lFlg != 'a'}" onclick="{unlockTenant}" class="btn btn-default" data-toggle="modal" data-target="#modal" type="button" value="激活">
                 <input if="{tenant.lFlg != 'i'}" onclick="{lockTenant}" class="btn btn-default" data-toggle="modal" data-target="#modal" type="button" value="锁定">
-                <input class="btn btn-default" type="button" value="删除">
+                <input if="{tenant.lFlg != 'd'}" onclick="{delTenant}" class="btn btn-default" data-toggle="modal" data-target="#modal" type="button" value="删除">
             </div>
         </div>
         <div class="row" style="margin-top: 30px">
@@ -33,7 +36,7 @@
             </div>
         </div>
     </div>
-    <style scoped>
+    <style>
         .panel-container >div{
             height: 40px;
             line-height: 40px;
@@ -43,12 +46,6 @@
         var self = nest.presentable(this);
         var loadTenantById = domain.action('loadTenantById');
         var updateTenantById = domain.action('updateTenantById');
-        var onLoadTenantById = function(res){
-            self.update({tenant: res.tenant});
-            console.log(res.tenant);
-            self.trigger('ready', false);
-            self.trigger('view-route-to');
-        };
         self.unlockTenant = function(){
             _.widget.confirm({
                 title: '操作确认?',
@@ -79,11 +76,28 @@
                 }
             });
         };
+        self.delTenant = function(){
+            _.widget.confirm({
+                title: '操作确认?',
+                content: '你确认要“删除”机构吗？',
+                callback: function(){
+                    self.tenant.lFlg = __app.enums.LifeFlag.names.Deleted;
+                    updateTenantById.newInvocation({
+                        id: self.tenant._id,
+                        lFlg: self.tenant.lFlg
+                    }).onDone(function(res){
+                        self.update();
+                    }).execute();
+                }
+            });
+        };
         self.on('open', function(ctx){
-            loadTenantById.execute({id: ctx.req.paramList[0]});
+            loadTenantById.newInvocation({id: ctx.req.paramList[0]})
+                .onDone(function(res){
+                    self.update({tenant: res.tenant});
+                    self.trigger('ready', false);
+                    self.trigger('view-route-to');
+                }).execute();
         });
-        self.on('mount', function(){
-            loadTenantById.onDone(onLoadTenantById);
-        })
     </script>
 </tenant>
