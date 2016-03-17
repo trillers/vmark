@@ -10,8 +10,8 @@ var Model = function(domainBuilder){
         .withLifeFlag()
         .withCreatedOn()
         .withProperties({
-            status: {type: String, enum: UserStatus.valueList(), default: UserStatus.Anonymous.value(), required: true}
-            ,posts: [{
+            //status: {type: String, enum: UserStatus.valueList(), default: UserStatus.Anonymous.value(), required: true}
+            posts: [{
                 org: {type: String, ref: 'Org', required: true}
                 , member: {type: String, required: true}
                 , role: {type: String, enum: OrgMemberRole.valueList(), required: true}

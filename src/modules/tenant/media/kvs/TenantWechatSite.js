@@ -2,8 +2,8 @@ var util = require('util');
 var cbUtil = require('../../../../framework/callback');
 var WechatMediaKv = require('../../../media/kvs/WechatMedia');
 
-var tenantKey = function(){
-    return 'te:md:id';
+var originalIdToTenantWechatSiteKey = function(originalId){
+    return 'te:md:oid:' + originalId;
 };
 
 var Kv = function(context){
@@ -12,26 +12,27 @@ var Kv = function(context){
 
 util.inherits(Kv, WechatMediaKv);
 
-Kv.prototype.getTenantWechatSiteId = function(callback){
+Kv.prototype.getTenantWechatSiteByOriginalId = function(originalId, callback){
     var redis = this.context.redis.main;
-    var key = tenantKey();
-    redis.get(key, function(err, result){
+    var key = originalIdToTenantWechatSiteKey(originalId);
+    redis.hgetall(key, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to get tenant wechat siteid: ' + err,
-            'Succeed to get tenant wechat site id ' + result);
+            'Fail to get tenant wechat site by originalId: ' + originalId + ' err:' + err,
+            'Succeed to get tenant wechat site by originalId:' + originalId);
         cbUtil.handleSingleValue(callback, err, result);
     });
 };
 
-Kv.prototype.setTenantWechatSiteId = function(id, callback){
+Kv.prototype.setTenantWechatSite = function(json, callback){
     var redis = this.context.redis.main;
-    var key = tenantKey();
-    redis.set(key, id, function(err, result){
+    var key = originalIdToTenantWechatSiteKey(json.originalId);
+    json.crtOn && delete json.crtOn;
+    redis.hmset(key, json, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to set tenant wechat siteid ' + id + ': ' + err,
-            'Succeed to set tenant wechat site id ' + id);
+            'Fail to set tenant wechat site ' + json._id + ': ' + err,
+            'Succeed to set tenant wechat site ' + json._id);
         cbUtil.handleOk(callback, err, result);
     });
 };
