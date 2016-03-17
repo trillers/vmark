@@ -9,6 +9,10 @@ domain.action('loadTenantById').onExecute(function(data){
     apiFactory.get('/tenant/_' + data.id).drive(this).send();
 });
 
+domain.action('updateTenantById').onExecute(function(data){
+    apiFactory.put('/tenant/_' + data.id).drive(this).send(data);
+});
+
 domain.action('loadRedpackets').onExecute(function(data){
     apiFactory.get('/marketing/redpacket/load').drive(this).send();
 });

@@ -1,0 +1,31 @@
+<confirm>
+    <div class="modal fade" id="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">{title || '操作确认'}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{content || '确定吗?'}&hellip;</p>
+                </div>
+                <div class="modal-footer">
+                    <button onclick="{Cancel}" type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button onclick="{Confirm}" type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var self = this;
+        app.on('confirm', function(data){
+            self.update({title: data.title, content: data.content})
+        });
+        this.Cancel = function(e){
+            app.trigger('confirmCancel')
+        };
+        this.Confirm = function(e){
+            app.trigger('confirmOk');
+        };
+    </script>
+</confirm>

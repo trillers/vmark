@@ -13,7 +13,7 @@
                     <div class="col-md-6">状态</div>
                     <div class="col-md-6">{ __app.enums.LifeFlag.values[tenant.lFlg]}</div>
                     <div class="col-md-6">创建时间</div>
-                    <div class="col-md-6">{tenant.crtOn}</div>
+                    <div class="col-md-6">{_.date.format(new Date(tenant.crtOn), 'yyyy-MM-dd hh点mm分')}</div>
                     <div class="col-md-6">备注</div>
                     <div class="col-md-6">{tenant.desc}</div>
                 </div>
@@ -22,8 +22,14 @@
         <div class="row" style="margin-top: 30px">
             <div class="col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4" style="text-align: center">
                 <input class="btn btn-default" type="button" value="修改">
-                <input class="btn btn-default" type="button" value="锁定">
+                <input if="{tenant.lFlg != 'a'}" onclick="{unlockTenant}" class="btn btn-default" data-toggle="modal" data-target="#modal" type="button" value="激活">
+                <input if="{tenant.lFlg != 'i'}" onclick="{lockTenant}" class="btn btn-default" data-toggle="modal" data-target="#modal" type="button" value="锁定">
                 <input class="btn btn-default" type="button" value="删除">
+            </div>
+        </div>
+        <div class="row" style="margin-top: 30px">
+            <div class="col-md-12 col-lg-12" style="text-align: center">
+                <input class="btn btn-primary" type="button" value="机构管理">
             </div>
         </div>
     </div>
@@ -36,10 +42,42 @@
     <script>
         var self = nest.presentable(this);
         var loadTenantById = domain.action('loadTenantById');
+        var updateTenantById = domain.action('updateTenantById');
         var onLoadTenantById = function(res){
             self.update({tenant: res.tenant});
+            console.log(res.tenant);
             self.trigger('ready', false);
             self.trigger('view-route-to');
+        };
+        self.unlockTenant = function(){
+            _.widget.confirm({
+                title: '操作确认?',
+                content: '你确认要“激活”机构吗？',
+                callback: function(){
+                    self.tenant.lFlg = __app.enums.LifeFlag.names.Active;
+                    updateTenantById.newInvocation({
+                        id: self.tenant._id,
+                        lFlg: self.tenant.lFlg
+                    }).onDone(function(res){
+                        self.update();
+                    }).execute();
+                }
+            });
+        };
+        self.lockTenant = function(){
+            _.widget.confirm({
+                title: '操作确认?',
+                content: '你确认要“锁定”机构吗？',
+                callback: function(){
+                    self.tenant.lFlg = __app.enums.LifeFlag.names.Inactive;
+                    updateTenantById.newInvocation({
+                        id: self.tenant._id,
+                        lFlg: self.tenant.lFlg
+                    }).onDone(function(res){
+                        self.update();
+                    }).execute();
+                }
+            });
         };
         self.on('open', function(ctx){
             loadTenantById.execute({id: ctx.req.paramList[0]});

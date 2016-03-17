@@ -14,6 +14,21 @@ module.exports = function (router) {
         }
     });
 
+    router.put('/_:id', function*(){
+        try{
+            if(this.request.body.id){
+                delete this.request.body['id'];
+            }
+            console.log(this.request.body);
+            let tenantUpdated = yield tenantOrgService.updateByIdAsync(this.params.id, this.request.body);
+            console.log(tenantUpdated);
+            this.body = {error: null};
+        }catch(e){
+            context.logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
     router.post('/filter', function*(){
         try{
             let filter = {
