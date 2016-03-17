@@ -1,44 +1,21 @@
 <alert>
-    <div class="alert-container" each="{validator in validators}">
-        <div style="width: 300px; margin: 0px auto;" class="alert {alert-warning: !validator.success, alert-success: validator.success} alert-dismissible fade in" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-            <strong>{validator.field && ('【' + validator.field + '】')}</strong> {validator.desc}
+    <div class="alert-container" if="{opts.validators.length}">
+        <div style="width: 300px; margin: 0px auto;" class="alert {alert-warning: !opts.validator.success, alert-success: opts.validator.success} alert-dismissible fade in" role="alert">
+            <button onclick="{onCancel}" type="button" class="close" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <p each="{validator in opts.validators}"><strong>{validator.field && ('【' + validator.field + '】')}</strong> {validator.desc}</p>
         </div>
     </div>
     <style scoped>
         .alert-container{
-            position: fixed;
             top: 60px;
             width: 100%;
         }
     </style>
     <script>
         var self = this;
-        this.validators = [];
-        this.busy = false;
-        app.on('alert', function(validator){
-            if(self.validators.filter(function(val){
-                return val.field === validator.field && (val.desc = validator.desc)
-            }).length <=0){
-                self.validators.push(validator);
-            }
+        this.onCancel = function(e){
+            self.opts.clear();
             self.update();
-            if(!self.busy){
-                self.busy = true;
-                iterator();
-            }
-        });
-        function iterator(){
-            if(!self.validators.length){
-                self.busy = false;
-                return;
-            }
-            setTimeout(function(){
-                self.validators.splice(0, 1);
-                self.update();
-                iterator();
-            }, 2000)
-        }
-
+        };
     </script>
 </alert>

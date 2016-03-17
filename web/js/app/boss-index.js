@@ -67,7 +67,6 @@ app.on('init', function(){
   window.app = app;
   riot.mount('boss-topbar');
   riot.mount('confirm');
-  riot.mount('alert');
   riot.route(hash);
 });
 
