@@ -11,7 +11,7 @@ var Model = function(domainBuilder){
         .withRank()
         .withProperties({
             name:                  {type: String, required: true},
-            slogan:                [{type: String, required: true}],
+            slogan:                {type: String, required: true},
             listPrice:             {type: String, required: true},
             upLine1CommissionType: {type: String, enum: CommissionType.valueList(), default: CommissionType.Cash.value()},
             upLine2CommissionType: {type: String, enum: CommissionType.valueList(), default: CommissionType.Cash.value()},
@@ -24,7 +24,7 @@ var Model = function(domainBuilder){
             memberDiscounts:       {type: String},
             desc:                  {type: String},
             details:               {type: String},
-            org:                   {type: String},
+            tenant:                {type: String, ref: 'Org', required: true},
             operator:              {type: String, ref: 'OrgMember'}
         })
         .build();

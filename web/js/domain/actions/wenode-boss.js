@@ -28,4 +28,12 @@ domain.action('updateTenantWechatSiteById').onExecute(function(data){
     apiFactory.put('/tenant/wechatsite/_' + data.id).drive(this).send(data);
 });
 
+domain.action('createCourse').onExecute(function(data){
+    apiFactory.post('/tenant/sd/course').drive(this).send(data);
+});
+
+domain.action('findCourses').onExecute(function(data){
+    apiFactory.get('/tenant/sd/course?tenant=' + data.tenant + '&').drive(this).send(data);
+});
+
 module.exports = null;

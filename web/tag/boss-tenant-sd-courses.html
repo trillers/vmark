@@ -13,14 +13,14 @@
                         <div class="col-md-6 col-lg-6">
                             <div class="form-group">
                                 <label for="coursesStatus">状态</label>
-                                <select id="coursesStatus" class="form-control">
-                                    <option>全部状态</option>
-                                    <option>待上架</option>
-                                    <option>已上架</option>
-                                    <option>已下架</option>
+                                <select id="coursesStatus" class="form-control" onchange="{onSelect}">
+                                    <option value="">全部状态</option>
+                                    <option value="{__app.enums.LiveStatus.names.Idle}">待上架</option>
+                                    <option value="{__app.enums.LiveStatus.names.GoLive}">已上架</option>
+                                    <option value="{__app.enums.LiveStatus.names.Sunset}">已下架</option>
                                 </select>
                             </div>
-                            <input class="btn btn-primary" type="button" value="查询"/>
+                            <input onclick="{onSearch}" class="btn btn-primary" type="button" value="查询"/>
                         </div>
                         <div class="col-md-6 col-lg-6 text-right">
                             <a class="btn btn-primary" href="#sd/courses/add">添加</a>
@@ -32,25 +32,25 @@
                         <thead>
                         <tr>
                             <th>名称</th>
-                            <th>类型</th>
                             <th>状态</th>
+                            <th>上/下架时间</th>
                             <th>创建时间</th>
                             <th>备注</th>
                         </tr>
                         </thead>
                         <tbody>
 
-                        <tr each="{tenants}">
+                        <tr each="{courses}">
                             <td>
                                 <a href="#tenants/_{_id}">
                                     {name}
                                 </a>
                             </td>
                             <td>
-                                { __app.enums.PartyType.values[type] }
+                                { __app.enums.LiveStatus.values[liveStatus] }
                             </td>
                             <td>
-                                { __app.enums.LifeFlag.values[lFlg] }
+                                { __app.enums.LiveTime.values[liveTime] }
                             </td>
                             <td>
                                 {_.date.format(new Date(crtOn), 'yyyy-MM-dd hh点mm分')}
@@ -68,11 +68,33 @@
     </div>
     <style></style>
     <script>
+        console.log(__app.enums);
         var self = nest.presentable(this);
+        var findCoursesAction = domain.action('findCourses');
+        self.courses = [];
+        self.filter = {};
         self.on('open', function(){
             self.trigger('ready', false);
             self.trigger('view-route-to');
         });
-
+        self.onSearch = function(e){
+            findCoursesAction.newInvocation({
+                tenant: __app.tenant,
+                filter: self.filter
+            }).onDone(function(res){
+                console.log(res);
+                self.courses = res.courses;
+            }).execute();
+        };
+        self.onSelect = function(e){
+            var liveStatus = self.coursesStatus.value;
+            if(!liveStatus){
+                if(self.filter.hasOwnProperty('liveStatus')){
+                    delete self.filter['liveStatus'];
+                }
+                return;
+            }
+            self.filter.liveStatus = liveStatus;
+        }
     </script>
 </boss-tenant-sd-courses>

@@ -1,6 +1,7 @@
 "use strict";
 var context = require('../../context/context');
 var tenantOrgService = context.services.tenantOrgService;
+var courseService = context.services.courseService;
 var logger = context.logger;
 
 module.exports = function (router) {
@@ -35,6 +36,28 @@ module.exports = function (router) {
             };
             let tenants = yield tenantOrgService.findTenantsAsync(filter);
             this.body = {tenants: tenants, error: null};
+        }catch(e){
+            this.body = {error: e};
+        }
+    });
+
+    router.post('/sd/course', function*(){
+        try{
+            let course = this.request.body;
+            course.operator = this.session.auth.post.member;
+            let coursePersisted = yield courseService.createAsync(course);
+            this.body = {course: coursePersisted, error: null};
+        }catch(e){
+            this.body = {error: e};
+        }
+    });
+
+    router.get('/sd/course', function*(){
+        try{
+            let course = this.request.body;
+            course.operator = this.session.auth.post.member;
+            let coursePersisted = yield courseService.createAsync(course);
+            this.body = {course: coursePersisted, error: null};
         }catch(e){
             this.body = {error: e};
         }
