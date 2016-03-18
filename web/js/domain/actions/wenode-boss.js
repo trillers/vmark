@@ -24,4 +24,8 @@ domain.action('loadTenantWechatSite').onExecute(function(id){
     apiFactory.get('/tenant/wechatsite/load?id=' + id).drive(this).send();
 });
 
+domain.action('updateTenantWechatSiteById').onExecute(function(data){
+    apiFactory.put('/tenant/wechatsite/_' + data.id).drive(this).send(data);
+});
+
 module.exports = null;

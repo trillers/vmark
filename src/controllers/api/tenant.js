@@ -79,4 +79,19 @@ module.exports = function (router) {
             this.body = {error: 'failed load wechat site'};
         }
     })
+
+    router.put('/wechatsite/_:id', function*(){
+        try{
+            if(this.request.body.id){
+                delete this.request.body['id'];
+            }
+            let tenantWechatSiteService = context.services.tenantWechatSiteService;
+
+            let wechatSiteUpdated = yield tenantWechatSiteService.updateByIdAsync(this.params.id, this.request.body);
+            this.body = {error: null};
+        }catch(e){
+            context.logger.error(e);
+            this.body = {error: e};
+        }
+    });
 };

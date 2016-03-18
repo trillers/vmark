@@ -58,7 +58,7 @@ Service.prototype.findBotByOpenid = function(openid, callback){
     });
 };
 
-Service.prototype.updateById = function(id, json){
+Service.prototype.updateById = function(id, json, callback){
     var kv = this.context.kvs.wechatMedia;
     var WechatMedia = this.context.models.WechatMedia;
     WechatMedia.findByIdAndUpdate(id, json, {new: true}, function (err, result) {

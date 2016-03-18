@@ -82,7 +82,7 @@
 
         var onAddTenantWechatSite = function(data){
             if(!data.error){
-
+                riot.route('wechatsite/_' + data.wechatSite._id);
             }
         }
         self.on('open', function(){
