@@ -19,8 +19,7 @@ module.exports = function (router) {
             if(this.request.body.id){
                 delete this.request.body['id'];
             }
-            let tenantUpdated = yield tenantOrgService.updateByIdAsync(this.params.id, this.request.body);
-            console.log(tenantUpdated);
+            yield tenantOrgService.updateByIdAsync(this.params.id, this.request.body);
             this.body = {error: null};
         }catch(e){
             context.logger.error(e);
