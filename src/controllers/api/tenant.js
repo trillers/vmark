@@ -52,11 +52,13 @@ module.exports = function (router) {
         }
     });
 
-    router.get('/sd/course', function*(){
+    router.post('/sd/courses', function*(){
         try{
-            let course = this.request.body;
-            course.operator = this.session.auth.post.member;
-            let coursePersisted = yield courseService.createAsync(course);
+            let tenant = this.request.body.tenant;
+            let params = {
+                conditions: this.request.body.filter
+            };
+            let coursePersisted = yield courseService.findAsync(params);
             this.body = {course: coursePersisted, error: null};
         }catch(e){
             this.body = {error: e};

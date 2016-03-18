@@ -33,7 +33,7 @@ domain.action('createCourse').onExecute(function(data){
 });
 
 domain.action('findCourses').onExecute(function(data){
-    apiFactory.get('/tenant/sd/course?tenant=' + data.tenant + '&').drive(this).send(data);
+    apiFactory.post('/tenant/sd/courses').drive(this).send(data);
 });
 
 module.exports = null;
