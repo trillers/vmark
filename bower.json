@@ -17,6 +17,7 @@
     "seajs-wrap": "~1.0.2",
     "bootstrap": "3.3.5",
     "sockjs-client": "~1.0.3",
-    "summernote": "~0.7.0"
+    "summernote": "~0.7.0",
+    "zeroclipboard": "~2.2.0"
   }
 }
