@@ -21,6 +21,42 @@ app.routeView('tenant', nest.viewable({
   }
 }));
 
+app.routeView('sd', nest.viewable({
+  name: 'sd',
+  mount: function(ctx){
+    var tags = riot.mount('boss-tenant-sd', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx.req.query);
+  }
+}));
+
+app.routeView('sd/courses', nest.viewable({
+  name: 'sd/courses',
+  mount: function(ctx){
+    var tags = riot.mount('boss-tenant-sd-courses', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx.req.query);
+  }
+}));
+
+app.routeView('sd/courses/add', nest.viewable({
+  name: 'sd/courses/add',
+  mount: function(ctx){
+    var tags = riot.mount('boss-tenant-sd-courses-add', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx.req.query);
+  }
+}));
+
 app.routeView('wechatsite', nest.viewable({
   name: 'wechatsite',
   mount: function(ctx){

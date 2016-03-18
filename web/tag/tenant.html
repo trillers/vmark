@@ -24,7 +24,7 @@
         </div>
         <div class="row" style="margin-top: 30px">
             <div class="col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4" style="text-align: center">
-                <a href="#tenant/edit/_{tenant._id}" class="btn btn-default">修改</a>
+                <a href="#tenants/edit/_{tenant._id}" class="btn btn-default">修改</a>
                 <input if="{tenant.lFlg != 'a'}" onclick="{unlockTenant}" class="btn btn-default" data-toggle="modal" data-target="#modal" type="button" value="激活">
                 <input if="{tenant.lFlg != 'i'}" onclick="{lockTenant}" class="btn btn-default" data-toggle="modal" data-target="#modal" type="button" value="锁定">
                 <input if="{tenant.lFlg != 'd'}" onclick="{delTenant}" class="btn btn-default" data-toggle="modal" data-target="#modal" type="button" value="删除">

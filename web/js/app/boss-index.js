@@ -21,7 +21,7 @@ app.routeView('tenants', nest.viewable({
   }
 }));
 
-app.routeView('tenant/edit/_:id', nest.viewable({
+app.routeView('tenants/edit/_:id', nest.viewable({
   name: 'tenant-edit',
   mount: function(ctx){
     var tags = riot.mount('tenant-edit', {filter: ctx.req.query, app: this.parent});
@@ -33,7 +33,7 @@ app.routeView('tenant/edit/_:id', nest.viewable({
   }
 }));
 
-app.routeView('tenant/_:id', nest.viewable({
+app.routeView('tenants/_:id', nest.viewable({
   name: 'tenant',
   mount: function(ctx){
     var tags = riot.mount('tenant', {filter: ctx.req.query, app: this.parent});

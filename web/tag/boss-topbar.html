@@ -23,7 +23,9 @@
         this.on('mount', function(){
             if(window.location.hash) {
                 $('.navbtn a').removeClass('myActive');
-                $(window.location.hash).addClass('myActive');
+                var reg = new RegExp(/^#[a-z, A-Z, _]+/);
+                var res = reg.exec(window.location.hash);
+                $(res[0]).addClass('myActive');
             }
         });
 

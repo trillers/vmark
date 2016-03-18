@@ -40,6 +40,15 @@ registry
     .addChild('Logged','logged', '已启动')
     .addChild('Exited','exited', '已停止')
 
+    .up().item('LiveStatus', 'LiveStatus', '上下架状态')
+    .addChild('Idle','i', '待上架')
+    .addChild('GoLive','g', '已上架')
+    .addChild('Sunset','s', '已下架')
+
+    .up().item('CommissionType', 'commissionType', '佣金类型')
+    .addChild('Percent','p', '比率')
+    .addChild('Cash','c', '现金')
+
     .up().item('WechatBotStatus', 'WechatBotStatus', '状态') //助手号状态
     .addChild('Starting','starting', '启动中')
     .addChild('Logging','logging', '登录中')
