@@ -8,5 +8,10 @@ module.exports = function(){
     router.get('/boss', function *(){
         yield this.render('boss/index', {});
     });
+
+    router.get('/boss/tenant/_:id', function *(){
+        var id = this.params.id;
+        yield this.render('boss/tenant-index', {tenant: id});
+    });
     return router.routes();
 };

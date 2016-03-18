@@ -93,4 +93,10 @@ registry
     .up().item('PowerType', 'PowerType', '助力活动类型')
     .addChild('RedPacket','rp', '红包助力')
     .addChild('Points','po', '积分助力')
+
+    .up().item('WechatSiteType', 'WechatSiteType', '公众号类型')
+    .addChild('VerifyOfficialAccount','voa', '认证服务号')
+    .addChild('VerifySubscriptionAccount','vsa', '认证订阅号')
+    .addChild('OfficialAccount','oa', '服务号')
+    .addChild('SubscriptionAccount','sa', '认证订阅号')
 module.exports = registry;

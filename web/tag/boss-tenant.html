@@ -1,0 +1,47 @@
+<boss-tenant>
+    <div class="container" if="{!hidden}">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2" style="text-align: center"><h3>{tenant.name}</h3></div>
+        </div>
+        <div class="row" style="margin-top: 30px">
+            <div class="col-md-4 col-md-offset-3 col-lg-4 col-lg-offset-3">
+                <div class="row panel-container">
+                    <div class="col-md-6">名称</div>
+                    <div class="col-md-6">{tenant.name}</div>
+                    <div class="col-md-6">类型</div>
+                    <div class="col-md-6">{__app.enums.PartyType.values[tenant.type]}</div>
+                    <div class="col-md-6">状态</div>
+                    <div class="col-md-6">{ __app.enums.LifeFlag.values[tenant.lFlg]}</div>
+                    <div class="col-md-6">创建时间</div>
+                    <div class="col-md-6">{_.date.format(new Date(tenant.crtOn), 'yyyy-MM-dd hh点mm分')}</div>
+                    <div class="col-md-6">备注</div>
+                    <div class="col-md-6">{tenant.desc}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style scoped>
+        .panel-container >div{
+            height: 40px;
+            line-height: 40px;
+        }
+    </style>
+    <script>
+        var self = nest.presentable(this);
+        var loadTenantById = domain.action('loadTenantById');
+        var onLoadTenantById = function(res){
+            self.update({tenant: res.tenant});
+        };
+        self.on('open', function(){
+            loadTenantById.execute({id: __app.tenant});
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+        });
+        self.on('mount', function(){
+            loadTenantById.onDone(onLoadTenantById);
+        })
+        self.on('unmount', function(){
+            loadTenantById.offDone(onLoadTenantById);
+        })
+    </script>
+</boss-tenant>

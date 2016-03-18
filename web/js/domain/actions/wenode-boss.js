@@ -13,8 +13,15 @@ domain.action('updateTenantById').onExecute(function(data){
     apiFactory.put('/tenant/_' + data.id).drive(this).send(data);
 });
 
-domain.action('loadRedpackets').onExecute(function(data){
-    apiFactory.get('/marketing/redpacket/load').drive(this).send();
+domain.action('addTenantWechatSite').onExecute(function(data){
+    apiFactory.post('/tenant/add-wechatsite').drive(this).send(data);
+});
+
+domain.action('loadAllTenantWechatSite').onExecute(function(id){
+    apiFactory.get('/tenant/wechatsite/loadAll?tenant=' + id).drive(this).send();
+});
+domain.action('loadTenantWechatSite').onExecute(function(id){
+    apiFactory.get('/tenant/wechatsite/load?id=' + id).drive(this).send();
 });
 
 module.exports = null;

@@ -20,12 +20,6 @@ Service.prototype.createTenantWechatSiteUser = function(mediaUserJson, callback)
     var kv = this.context.kvs.tenantWechatSiteUser;
     var tenantUserKv = this.context.kvs.tenantUser;
     var me = this;
-    tenantWechatSiteService.ensureTenantWechatSite(function(err, wechatSite){
-        if(err){
-            logger.error('Fail to create tenant wechat site user: ' + err);
-            if(callback) callback(err);
-            return;
-        }
         mediaUserJson.host = wechatSite.id;
         mediaUserJson.type = WechatMediaUserType.WechatSiteUser.value();
         var openid = mediaUserJson.openid;
@@ -40,7 +34,6 @@ Service.prototype.createTenantWechatSiteUser = function(mediaUserJson, callback)
                 kv.saveByOpenid(json, callback);
             });
         });
-    });
 };
 
 Service.prototype.deleteTenantWechatSiteUserByOpenid = function(openid, callback){
