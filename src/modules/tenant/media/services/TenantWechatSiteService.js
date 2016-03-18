@@ -1,8 +1,8 @@
 var util = require('util');
 var settings = require('@private/vmark-settings');
-var cbUtil = require('../../../../framework/callback');
 var WechatMediaType = require('../../../common/models/TypeRegistry').item('WechatMediaType');
 var WechatMediaService = require('../../../media/services/WechatMediaService');
+var myUtil = require('../../../../app/util');
 
 var Service = function (context) {
     this.context = context;
@@ -21,8 +21,12 @@ Service.prototype.createTenantWechatSite = function (json, callback) {
         , originalId: json.originalId
         , name: json.name
         , qrcodeurl:  json.qrcodeurl
-        , appId: json.appKey
+        , appId: json.appId
         , appSecret: json.appSecret
+        , wechatSiteType: json.wechatSiteType
+        , encodingAESKey: myUtil.generateRandomString(43)
+        , token: myUtil.generateRandomString(20)
+        , email: json.email
     };
     me.create(tenantWechatSite, function (err, wechatSite) {
         if (err) {
@@ -42,6 +46,11 @@ Service.prototype.createTenantWechatSite = function (json, callback) {
         });
     });
 
+};
+
+Service.prototype.loadAllTenantWechatSite = function (org, callback) {
+    var WechatMedia = this.context.models.WechatMedia;
+    WechatMedia.find({org: org}, null, {lean: true}).exec(callback);
 };
 
 Service.prototype.loadTenantWechatSiteByOriginalId = function(originalId, callback){

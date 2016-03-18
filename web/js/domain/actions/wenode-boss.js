@@ -17,4 +17,11 @@ domain.action('addTenantWechatSite').onExecute(function(data){
     apiFactory.post('/tenant/add-wechatsite').drive(this).send(data);
 });
 
+domain.action('loadAllTenantWechatSite').onExecute(function(id){
+    apiFactory.get('/tenant/wechatsite/loadAll?tenant=' + id).drive(this).send();
+});
+domain.action('loadTenantWechatSite').onExecute(function(id){
+    apiFactory.get('/tenant/wechatsite/load?id=' + id).drive(this).send();
+});
+
 module.exports = null;

@@ -33,8 +33,20 @@ app.routeView('wechatsite', nest.viewable({
   }
 }));
 
+app.routeView('wechatsite/_:id', nest.viewable({
+  name: 'wechatsite/_:id',
+  mount: function(ctx){
+    var tags = riot.mount('boss-wechatsite', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', {id: ctx.req.params.id});
+  }
+}));
+
 app.routeView('wechatsite/edit/_:id', nest.viewable({
-  name: 'wechatsite/edit',
+  name: 'wechatsite/edit/_:id',
   mount: function(ctx){
     var tags = riot.mount('boss-wechatsite-edit', {filter: ctx.req.query, app: this.parent});
     this.tag = tags[0];

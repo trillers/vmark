@@ -3,17 +3,18 @@
         <div class="row">
             <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2" style="text-align: center"><h3>{tenant.name}</h3></div>
         </div>
+        <alert validators="{validators}" clear="{clear}"></alert>
         <div class="row" style="margin-top: 30px">
-            <div class="col-md-4 col-md-offset-3 col-lg-4 col-lg-offset-3">
+            <div class="col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
                 <div class="row panel-container">
-                    <div class="col-md-6">名称</div>
-                    <div class="col-md-6">
+                    <div class="col-md-3">名称</div>
+                    <div class="col-md-9">
                         <div class="{has-error: !tenantNameInput.value.trim()} has-feedback">
                             <input type="text" onblur="{onNameBlur}" class="form-control" name="tenantNameInput" value="{tenant.name}" required>
                         </div>
                     </div>
-                    <div class="col-md-6">类型</div>
-                    <div class="col-md-6">
+                    <div class="col-md-3">类型</div>
+                    <div class="col-md-9">
                         <div class="btn-group" data-toggle="buttons">
                             <label onclick="{selectPersonalType}" class="btn btn-default {active: tenant.type == 'p'}">
                                 <input type="radio" name="orgTypeRadio" autocomplete="off" checked="{tenant.type == 'p'}" value="p"> 个人
@@ -23,12 +24,12 @@
                             </label>
                         </div>
                     </div>
-                    <div class="col-md-6">状态</div>
-                    <div class="col-md-6">{ __app.enums.LifeFlag.values[tenant.lFlg]}</div>
-                    <div class="col-md-6">创建时间</div>
-                    <div class="col-md-6">{_.date.format(new Date(tenant.crtOn), 'yyyy-MM-dd hh点mm分')}</div>
-                    <div class="col-md-6">备注</div>
-                    <div class="col-md-6"><textarea name="tenantDescInput" class="form-control" onblur="{descOnBlur}">{tenant.desc}</textarea></div>
+                    <div class="col-md-3">状态</div>
+                    <div class="col-md-9">{ __app.enums.LifeFlag.values[tenant.lFlg]}</div>
+                    <div class="col-md-3">创建时间</div>
+                    <div class="col-md-9">{_.date.format(new Date(tenant.crtOn), 'yyyy-MM-dd hh点mm分')}</div>
+                    <div class="col-md-3">备注</div>
+                    <div class="col-md-9"><textarea name="tenantDescInput" class="form-control" onblur="{descOnBlur}">{tenant.desc}</textarea></div>
                 </div>
             </div>
         </div>
@@ -45,10 +46,10 @@
         var updateTenantById = domain.action('updateTenantById');
         var onLoadTenantById = function(res){
             self.update({tenant: res.tenant});
-            console.log(res.tenant);
             self.trigger('ready', false);
             self.trigger('view-route-to');
         };
+        self.validators = [];
         self.on('open', function(ctx){
             loadTenantById.newInvocation({id: ctx.req.paramList[0]})
                 .onDone(onLoadTenantById)
@@ -65,10 +66,6 @@
         self.onSubmit = function(){
             updateTenantById.newInvocation(self.tenant)
                 .onDone(function(){
-                    _.widget.alert({
-                        success: true,
-                        desc: '机构信息修改成功！'
-                    });
                     riot.route('tenant/_' + self.tenant._id);
                 })
                 .execute();
@@ -76,14 +73,16 @@
         self.onNameBlur = function(){
             var name = self.tenantNameInput.value.trim();
             if(!name){
-                _.widget.alert({
+                return self.validators.push({
                     success: false,
                     field: '名称',
                     desc: '不能为空!'
                 });
-                return;
             }
             self.tenant.name = name;
+        };
+        self.clear = function(){
+            self.validators = [];
         };
         self.descOnBlur = function(){
             var desc = self.tenantDescInput.value.trim();

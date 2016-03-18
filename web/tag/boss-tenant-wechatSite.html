@@ -19,17 +19,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>金榜教育</td>
-                                <td>认证服务号</td>
-                                <td>已激活</td>
-                                <td>2016-03-17</td>
-                            </tr>
-                            <tr>
-                                <td>金榜教育</td>
-                                <td>认证服务号</td>
-                                <td>已激活</td>
-                                <td>2016-03-17</td>
+                            <tr each="{wechatSites}">
+                                <td><a href="#wechatsite/_{_id}">{name}</a></td>
+                                <td>{ __app.enums.WechatSiteType.values[wechatSiteType] }</td>
+                                <td>{ __app.enums.LifeFlag.values[lFlg] }</td>
+                                <td>{_.date.format(new Date(crtOn), 'yyyy-MM-dd hh点mm分')}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -45,12 +39,19 @@
     </style>
     <script>
         var self = nest.presentable(this);
+        var loadAllWechatSite = domain.action('loadAllTenantWechatSite');
+
+        var onLoadAllWechatSite = function(data){
+            self.update({wechatSites: data});
+        }
 
         self.on('open', function(){
+            loadAllWechatSite.execute(__app.tenant);
             self.trigger('ready', false);
             self.trigger('view-route-to');
         });
         self.on('mount', function(){
+            loadAllWechatSite.onDone(onLoadAllWechatSite);
         })
 
         self.add = function(e){

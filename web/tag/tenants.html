@@ -72,10 +72,12 @@
             self.tipInfo = "";
             var findTenants = domain.action('findTenants');
             var onFindTenants = function(res){
-                console.log(res);
-                self.update({tenants: res.tenants});
+                let ts = res.tenants;
+                ts = ts.filter(function(t){return t.lFlg==='a'})
+                        .concat(ts.filter(function(t){return t.lFlg==='i'}))
+                        .concat(ts.filter(function(t){return t.lFlg==='d'}));
+                self.update({tenants: ts});
             };
-
             self.queryTenantsByFilter = function(e){
                 var filter = {};
                 self.statusSelect.value && (filter['lFlg'] = self.statusSelect.value);
@@ -103,11 +105,6 @@
             this.on('reenter', function(){
                 self.mask = false;
                 self.update();
-            });
-
-            this.on('refresh', function(){
-                console.info('tag tenants is refreshing');
-                //_refresh();
             });
 
         </script>
