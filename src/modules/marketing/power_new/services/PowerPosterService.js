@@ -94,9 +94,9 @@ Service.prototype.loadBySceneId = function*(sid){
 Service.prototype.getPosterMediaId = function*(poster){
     var expired = this.isInvalid(poster);
     if(expired){
-        var imageData = yield wechatApi.uploadMediaAsync(activity.poster.path, 'image');
+        var imageData = yield wechatApi.uploadMediaAsync(poster.path, 'image');
         var mediaId = imageData[0].media_id;
-        yield this.updateById(activity.poster._id, {mediaId: mediaId});
+        yield this.updateById(poster._id, {mediaId: mediaId});
         return mediaId;
     }else {
         return poster.mediaId;
