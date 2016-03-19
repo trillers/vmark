@@ -185,7 +185,8 @@ activityPosterType.onAccess(function(qr, openid){
     var logger = context.logger;
     co(function*(){
         try{
-            yield platformUserService.ensurePlatformUserAsync(openid);
+            var user = yield platformUserService.ensurePlatformUserAsync(openid);
+            console.error(user);
             var powerActivityService = context.services.powerActivityService;
             var res = yield powerActivityService.scanActivityPoster(qr, openid);
             wechatApi.sendText(openid, res.reply, function (err) {
