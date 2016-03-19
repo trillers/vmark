@@ -22,9 +22,9 @@ Service.prototype.authResults = authResults;
 Service.prototype.signupWithBaseInfo = function(openid, callback){
     var logger = this.context.logger;
     var wechatMediaUserKv = this.context.kvs.wechatMediaUser;
-    var userKv = this.context.kvs.platformUser;
+    var userKv = this.context.kvs.tenantUser;
     var wechatMediaUserService = this.context.services.wechatMediaUserService;
-    var platformUserService = this.context.services.platformUserService;
+    var tenantUserService = this.context.services.tenantUserService;
     var openidToIdKv = this.context.kvs.openidToId;
     var atToOpenidKv = this.context.kvs.atToOpenid;
     var otToOpenidKv = this.context.kvs.otToOpenid;
@@ -56,7 +56,7 @@ Service.prototype.signupWithBaseInfo = function(openid, callback){
                 openid: openid,
                 type: type
             };
-            user = yield platformUserService.createAsync(createUserJson);
+            user = yield tenantUserService.createAsync(createUserJson);
             userId = user.id;
 
             /*
@@ -100,9 +100,9 @@ Service.prototype.signupWithBaseInfo = function(openid, callback){
 Service.prototype.signupWithUserInfo = function(userInfo, callback){
     var logger = this.context.logger;
     var wechatMediaUserKv = this.context.kvs.wechatMediaUser;
-    var userKv = this.context.kvs.platformUser;
+    var userKv = this.context.kvs.tenantUser;
     var wechatMediaUserService = this.context.services.wechatMediaUserService;
-    var platformUserService = this.context.services.platformUserService;
+    var tenantUserService = this.context.services.tenantUserService;
     var openidToIdKv = this.context.kvs.openidToId;
     var atToOpenidKv = this.context.kvs.atToOpenid;
     var otToOpenidKv = this.context.kvs.otToOpenid;
@@ -133,7 +133,7 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
                 helper.copyLocation(user, userInfo);
                 userId = user.id;
                 user._id && (delete user._id);
-                user = yield platformUserService.updateAsync({_id: userId}, user);
+                user = yield tenantUserService.updateAsync({_id: userId}, user);
             }
             else{
                 var createUserJson = {};
@@ -144,7 +144,7 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
                 createUserJson.headimgurl = userInfo.headimgurl;
                 createUserJson.sex = userInfo.sex;
                 helper.copyLocation(createUserJson, userInfo);
-                user = yield platformUserService.createAsync(createUserJson);
+                user = yield tenantUserService.createAsync(createUserJson);
                 userId = user.id;
             }
 
@@ -194,9 +194,9 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
 Service.prototype.signupOnSubscription = function(openid, callback){
     var logger = this.context.logger;
     var wechatMediaUserKv = this.context.kvs.wechatMediaUser;
-    var userKv = this.context.kvs.platformUser;
+    var userKv = this.context.kvs.tenantUser;
     var wechatMediaUserService = this.context.services.wechatMediaUserService;
-    var platformUserService = this.context.services.platformUserService;
+    var tenantUserService = this.context.services.tenantUserService;
     var openidToIdKv = this.context.kvs.openidToId;
     var atToOpenidKv = this.context.kvs.atToOpenid;
     var otToOpenidKv = this.context.kvs.otToOpenid;
@@ -230,7 +230,7 @@ Service.prototype.signupOnSubscription = function(openid, callback){
 
                 userId = user.id;
                 user._id && (delete user._id);
-                user = yield platformUserService.updateByIdAsync(userId, user);
+                user = yield tenantUserService.updateByIdAsync(userId, user);
             }
             else{
                 var createUserJson = {};
@@ -241,7 +241,7 @@ Service.prototype.signupOnSubscription = function(openid, callback){
                 createUserJson.headimgurl = userInfo.headimgurl;
                 createUserJson.sex = userInfo.sex;
                 helper.copyLocation(createUserJson, userInfo);
-                user = yield platformUserService.createAsync(createUserJson);
+                user = yield tenantUserService.createAsync(createUserJson);
                 userId = user.id;
             }
 
@@ -291,7 +291,7 @@ Service.prototype.signupOnSubscription = function(openid, callback){
 Service.prototype.signinWithOpenid = function(openid, callback){
     var logger = this.context.logger;
     var wechatMediaUserKv = this.context.kvs.wechatMediaUser;
-    var userKv = this.context.kvs.platformUser;
+    var userKv = this.context.kvs.tenantUser;
     co(function*(){
         var wechatMediaUser = null;
         var user = null

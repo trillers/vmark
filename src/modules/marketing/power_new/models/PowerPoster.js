@@ -7,7 +7,7 @@ var Model = function(DomainBuilder) {
         .withLifeFlag()
         .withCreatedOn()
         .withProperties({
-            user: {type: String, ref: 'PlatformUser'}
+            user: {type: String, ref: 'TenantUser'}
             , activity: {type: String, ref: 'PowerActivity', require: true}
             , participant: {type: String, ref: 'PowerParticipant'}
             , path: {type: String, require: true}

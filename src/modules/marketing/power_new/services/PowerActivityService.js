@@ -212,7 +212,7 @@ Service.prototype.getParticipantRankingList = function*(id, count){
 /**
  * wechat scan activity qrCode get activity poster
  * @params qr activity qrCode
- * @openid platform user openid
+ * @openid tenant user openid
  *
  * return {
  *    success: true or false,
@@ -225,10 +225,10 @@ Service.prototype.getActivityPoster = function*(qr, openid){
     try{
         var powerActivityService = this.context.services.powerActivityService;
         var powerPosterService = this.context.services.powerPosterService;
-        var platformUserService = this.context.services.platformUserService;
+        var tenantUserService = this.context.services.tenantUserService;
 
         var activity = yield powerActivityService.loadByQrCodeId(qr._id);
-        var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
+        var user = yield tenantUserService.loadTenantUserByOpenidAsync(openid);
         var mediaId = '';
         if(!activity.poster){
             var posterJson = {
@@ -273,11 +273,11 @@ Service.prototype.getActivityPoster = function*(qr, openid){
 Service.prototype.scanActivityPoster = function*(qr, openid){
     var logger = this.context.logger;
     try {
-        var platformUserService = this.context.services.platformUserService;
+        var tenantUserService = this.context.services.tenantUserService;
         var powerParticipantService = this.context.services.powerParticipantService;
         var powerPosterService = this.context.services.powerPosterService;
         var poster = yield powerPosterService.loadBySceneId(qr.sceneId);
-        var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
+        var user = yield tenantUserService.loadTenantUserByOpenidAsync(openid);
         var activity = yield this.loadById(poster.activity);
         var status = yield this.getStatus(poster.activity, user);
         var res =  {
