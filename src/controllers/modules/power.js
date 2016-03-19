@@ -51,8 +51,8 @@ module.exports = function(){
 
     router.get('/participant', needBaseInfoFilter, function *(){
         var id = this.query.id;
-        var user = this.session.auth && this.session.auth.user || {};
-        if(user.type === UserType.Customer.value()) {
+        var user = this.session.auth && this.session.auth.user;
+        if(user) {
             var participant = yield powerParticipantService.loadById(id);
             if(participant) {
                 if (participant.activity.lFlg === 'a') {
@@ -85,7 +85,7 @@ module.exports = function(){
     router.get('/join', needUserInfoFilter, function *(){
         var id = this.query.id;
         var user = this.session.auth && this.session.auth.user || {};
-        if(user.type === UserType.Customer.value() && user.openid) {
+        if(user && user.openid) {
             var activity = yield powerActivityService.loadById(id);
             if (activity) {
                 yield this.render('/marketing/power/join', {
