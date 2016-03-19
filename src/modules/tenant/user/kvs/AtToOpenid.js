@@ -1,7 +1,7 @@
 var cbUtil = require('../../../../framework/callback');
 
 var atToOpenidKey = function(at){
-    return 'usr:oid:at:' + at;
+    return 'te:usr:oid:at:' + at;
 };
 
 var Kv = function(context){
