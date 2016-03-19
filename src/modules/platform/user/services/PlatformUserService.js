@@ -221,6 +221,7 @@ Service.prototype.deleteById = function(id, callback) {
  * @param callback
  */
 Service.prototype.ensurePlatformUser = function(openid, callback){
+    console.log("****************************")
     var me = this;
     co(function*(){
         var user = yield me.loadPlatformUserByOpenidAsync(openid);
