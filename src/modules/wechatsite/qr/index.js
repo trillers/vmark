@@ -4,7 +4,7 @@ var qrRegistry = new QrTypeRegistry();
 var context = require('../../../context/context');
 var wsConns = require('../../../app/wsConns');
 var tenantService = context.services.tenantService;
-var tenantUserService = context.services.tenantUserService;
+var platformUserService = context.services.platformUserService;
 var bindBotResults = tenantService.bindBotResults;
 var securityService = context.services.securityService;
 var authResults = securityService.authResults;
@@ -162,7 +162,7 @@ activityType.onAccess(function(qr, openid){
     var powerActivityService = context.services.powerActivityService;
     co(function*(){
         try{
-            yield tenantUserService.ensureTenantUserAsync(openid);
+            yield platformUserService.ensurePlatformUserAsync(openid);
             var res = yield powerActivityService.getActivityPoster(qr, openid);
             wechatApi.sendText(openid, res.reply, function (err) {
                 if(err) logger.error(err);
@@ -185,7 +185,7 @@ activityPosterType.onAccess(function(qr, openid){
     var logger = context.logger;
     co(function*(){
         try{
-            yield tenantUserService.ensureTenantUserAsync(openid);
+            yield platformUserService.ensurePlatformUserAsync(openid);
             var powerActivityService = context.services.powerActivityService;
             var res = yield powerActivityService.scanActivityPoster(qr, openid);
             wechatApi.sendText(openid, res.reply, function (err) {
@@ -209,7 +209,7 @@ participantPosterType.onAccess(function(qr, openid){
     var logger = context.logger;
     co(function*(){
         try{
-            yield tenantUserService.ensureTenantUserAsync(openid);
+            yield platformUserService.ensurePlatformUserAsync(openid);
             var powerParticipantService = context.services.powerParticipantService;
             var reply = yield powerParticipantService.scanParticipantPoster(qr, openid);
             wechatApi.sendText(openid, reply, function (err) {
