@@ -215,4 +215,24 @@ Service.prototype.deleteById = function(id, callback) {
     });
 };
 
+/**
+ * ensure platform user created
+ * @param openid
+ * @param callback
+ */
+Service.prototype.ensurePlatformUser = function(openid, callback){
+    var me = this;
+    co(function*(){
+        var user = yield me.loadPlatformUserByOpenidAsync(openid);
+        if(!user){
+            user = yield me.createPlatformUserAsync(openid);
+        }
+        callback(null, user);
+    }).catch(function(err){
+        logger.error('Fail to ensure platform user by wechat site user\'s openid '+openid+' : ' + err);
+        logger.error(err.stack);
+        if(callback) callback(err);
+    })
+}
+
 module.exports = Service;

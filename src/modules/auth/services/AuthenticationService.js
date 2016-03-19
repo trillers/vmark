@@ -22,12 +22,12 @@ Service.prototype.authResults = authResults;
 Service.prototype.signupWithBaseInfo = function(openid, callback){
     var logger = this.context.logger;
     var wechatMediaUserKv = this.context.kvs.wechatMediaUser;
-    var userKv = this.context.kvs.tenantUser;
+    var userKv = this.context.kvs.platformUser;
     var wechatMediaUserService = this.context.services.wechatMediaUserService;
-    var tenantUserService = this.context.services.tenantUserService;
-    var openidToIdKv = this.context.kvs.teOpenidToId;
-    var atToOpenidKv = this.context.kvs.teAtToOpenid;
-    var otToOpenidKv = this.context.kvs.teOtToOpenid;
+    var platformUserService = this.context.services.platformUserService;
+    var openidToIdKv = this.context.kvs.openidToId;
+    var atToOpenidKv = this.context.kvs.atToOpenid;
+    var otToOpenidKv = this.context.kvs.otToOpenid;
 
     co(function*(){
         var wechatMediaUser = null;
@@ -58,7 +58,7 @@ Service.prototype.signupWithBaseInfo = function(openid, callback){
                 openid: openid,
                 type: type
             };
-            user = yield tenantUserService.createAsync(createUserJson);
+            user = yield platformUserService.createAsync(createUserJson);
             userId = user.id;
 
             /*
@@ -104,12 +104,12 @@ Service.prototype.signupWithBaseInfo = function(openid, callback){
 Service.prototype.signupWithUserInfo = function(userInfo, callback){
     var logger = this.context.logger;
     var wechatMediaUserKv = this.context.kvs.wechatMediaUser;
-    var userKv = this.context.kvs.tenantUser;
+    var userKv = this.context.kvs.platformUser;
     var wechatMediaUserService = this.context.services.wechatMediaUserService;
-    var tenantUserService = this.context.services.tenantUserService;
-    var openidToIdKv = this.context.kvs.teOpenidToId;
-    var atToOpenidKv = this.context.kvs.teAtToOpenid;
-    var otToOpenidKv = this.context.kvs.teOtToOpenid;
+    var platformUserService = this.context.services.platformUserService;
+    var openidToIdKv = this.context.kvs.openidToId;
+    var atToOpenidKv = this.context.kvs.atToOpenid;
+    var otToOpenidKv = this.context.kvs.otToOpenid;
 
     co(function*(){
         var openid = userInfo.openid;
@@ -137,7 +137,7 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
                 helper.copyLocation(user, userInfo);
                 userId = user.id;
                 user._id && (delete user._id);
-                user = yield tenantUserService.updateAsync({_id: userId}, user);
+                user = yield platformUserService.updateAsync({_id: userId}, user);
             }
             else{
                 var createUserJson = {};
@@ -148,7 +148,7 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
                 createUserJson.headimgurl = userInfo.headimgurl;
                 createUserJson.sex = userInfo.sex;
                 helper.copyLocation(createUserJson, userInfo);
-                user = yield tenantUserService.createAsync(createUserJson);
+                user = yield platformUserService.createAsync(createUserJson);
                 userId = user.id;
             }
 
@@ -198,12 +198,12 @@ Service.prototype.signupWithUserInfo = function(userInfo, callback){
 Service.prototype.signupOnSubscription = function(openid, callback){
     var logger = this.context.logger;
     var wechatMediaUserKv = this.context.kvs.wechatMediaUser;
-    var userKv = this.context.kvs.tenantUser;
+    var userKv = this.context.kvs.platformUser;
     var wechatMediaUserService = this.context.services.wechatMediaUserService;
-    var tenantUserService = this.context.services.tenantUserService;
-    var openidToIdKv = this.context.kvs.teOpenidToId;
-    var atToOpenidKv = this.context.kvs.teAtToOpenid;
-    var otToOpenidKv = this.context.kvs.teOtToOpenid;
+    var platformUserService = this.context.services.platformUserService;
+    var openidToIdKv = this.context.kvs.openidToId;
+    var atToOpenidKv = this.context.kvs.atToOpenid;
+    var otToOpenidKv = this.context.kvs.otToOpenid;
 
     co(function*(){
         var userInfo = null;
@@ -234,7 +234,7 @@ Service.prototype.signupOnSubscription = function(openid, callback){
 
                 userId = user.id;
                 user._id && (delete user._id);
-                user = yield tenantUserService.updateByIdAsync(userId, user);
+                user = yield platformUserService.updateByIdAsync(userId, user);
             }
             else{
                 var createUserJson = {};
@@ -245,7 +245,7 @@ Service.prototype.signupOnSubscription = function(openid, callback){
                 createUserJson.headimgurl = userInfo.headimgurl;
                 createUserJson.sex = userInfo.sex;
                 helper.copyLocation(createUserJson, userInfo);
-                user = yield tenantUserService.createAsync(createUserJson);
+                user = yield platformUserService.createAsync(createUserJson);
                 userId = user.id;
             }
 
@@ -295,7 +295,7 @@ Service.prototype.signupOnSubscription = function(openid, callback){
 Service.prototype.signinWithOpenid = function(openid, callback){
     var logger = this.context.logger;
     var wechatMediaUserKv = this.context.kvs.wechatMediaUser;
-    var userKv = this.context.kvs.tenantUser;
+    var userKv = this.context.kvs.platformUser;
     co(function*(){
         var wechatMediaUser = null;
         var user = null
