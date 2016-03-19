@@ -113,7 +113,7 @@ module.exports = function(router){
         var id = this.request.body.id;
         var phone = this.request.body.phone;
         var user = this.session.auth && this.session.auth.user;
-        if(user && user.type === UserType.Customer.value()) {
+        if(user) {
             //if (phone) {
                 var activity = yield powerActivityService.loadById(id);
                 if (activity) {
@@ -150,8 +150,8 @@ module.exports = function(router){
 
     router.post('/help', function *() {
         var id = this.request.body.id;
-        var user = this.session.auth && this.session.auth.user || {};
-        if(user.openid && user.type === UserType.Customer.value()){
+        var user = this.session.auth && this.session.auth.user;
+        if(user && user.openid){
             var participant = yield powerParticipantService.loadById(id);
             var res = yield powerParticipantService.help(participant, user);
             this.body = res;

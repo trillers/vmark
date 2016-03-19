@@ -27,7 +27,7 @@ module.exports = function(){
 
     router.get('/activity', needBaseInfoFilter, function *(){
         var id = this.query.id;
-        var user = this.session.auth && this.session.auth.user || {};
+        var user = this.session.auth && this.session.auth.user;
         var activity = yield powerActivityService.loadById(id);
         if(activity && activity.lFlg === 'a'){
             var status = yield powerActivityService.getStatus(activity, user);
@@ -84,7 +84,7 @@ module.exports = function(){
 
     router.get('/join', needUserInfoFilter, function *(){
         var id = this.query.id;
-        var user = this.session.auth && this.session.auth.user || {};
+        var user = this.session.auth && this.session.auth.user;
         if(user && user.openid) {
             var activity = yield powerActivityService.loadById(id);
             if (activity) {
