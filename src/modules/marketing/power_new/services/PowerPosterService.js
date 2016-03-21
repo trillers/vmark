@@ -16,13 +16,13 @@ var Service = function(context){
  *    type: 'acp' or 'pap' //poster type, activity poster or participant poster, required
  *    activity: 'ddd' //activity id
  *    participant: 'participant id'
- *    user: 'tenant user id' // required
+ *    user: 'platform user id' // required
  * }
 * **/
 Service.prototype.create = function*(jsonData){
     var logger = this.context.logger;
     var PowerPoster = this.context.models.PowerPoster;
-    var userKv = this.context.kvs.tenantUser;
+    var userKv = this.context.kvs.platformUser;
     var posterKv = this.context.kvs.poster;
     var user = yield userKv.loadByIdAsync(jsonData.user);
     var posterData = {};
