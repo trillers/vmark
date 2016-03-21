@@ -45,6 +45,18 @@ app.routeView('sd/courses', nest.viewable({
   }
 }));
 
+app.routeView('sd/courses/_:id', nest.viewable({
+  name: 'boss-tenant-sd-courses-detail',
+  mount: function(ctx){
+    var tags = riot.mount('boss-tenant-sd-courses-detail', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx);
+  }
+}));
+
 app.routeView('sd/courses/add', nest.viewable({
   name: 'sd/courses/add',
   mount: function(ctx){
@@ -54,6 +66,30 @@ app.routeView('sd/courses/add', nest.viewable({
   route: function(ctx){
     this.context = ctx;
     this.tag.trigger('open', ctx.req.query);
+  }
+}));
+
+app.routeView('sd/courses/edit/_:id', nest.viewable({
+  name: 'boss-tenant-sd-courses-edit',
+  mount: function(ctx){
+    var tags = riot.mount('boss-tenant-sd-courses-edit', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx);
+  }
+}));
+
+app.routeView('sd/courses/edit/details/_:id', nest.viewable({
+  name: 'boss-tenant-sd-courses-edit-detail',
+  mount: function(ctx){
+    var tags = riot.mount('boss-tenant-sd-courses-edit-detail', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx);
   }
 }));
 

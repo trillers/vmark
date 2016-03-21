@@ -31,8 +31,9 @@ module.exports = function (router) {
 
     router.post('/filter', function*(){
         try{
+            let conditions = this.request.body;
             let filter = {
-                conditions: this.request.body
+                conditions: conditions
             };
             let tenants = yield tenantOrgService.findTenantsAsync(filter);
             this.body = {tenants: tenants, error: null};
@@ -41,13 +42,60 @@ module.exports = function (router) {
         }
     });
 
+    router.get('/sd/course/_:id', function*(){
+        try{
+            let courseId = this.params.id;
+            let course = yield courseService.loadByIdAsync(courseId);
+            this.body = {course: course, error: null};
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.put('/sd/course/_:id', function*(){
+        try{
+            let courseId = this.params.id;
+            let json = this.request.body.o;
+            let intention = this.request.body.intention;
+            json['updOn'] = new Date();
+            if(intention === 'GoLiveOrSunset'){
+                json['actionTime'] = new Date();
+            }
+            let course = yield courseService.updateByIdAsync(courseId, json);
+            this.body = {course: course, error: null};
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.put('/sd/course/_:id/goLive', function*(){
+        try{
+            let courseId = this.params.id;
+            let json = this.request.body.o;
+            json['updOn'] = new Date();
+
+            let course = yield courseService.updateByIdAsync(courseId, json);
+            this.body = {course: course, error: null};
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
     router.post('/sd/course', function*(){
         try{
             let course = this.request.body;
-            course.operator = this.session.auth.post.member;
+            try{
+                course.operator = this.session.auth.post.member;
+            }catch (e){
+                this.throw('have not enough info in session [field]=auth.post.member');
+            }
             let coursePersisted = yield courseService.createAsync(course);
             this.body = {course: coursePersisted, error: null};
         }catch(e){
+            logger.error(e);
             this.body = {error: e};
         }
     });
@@ -55,12 +103,14 @@ module.exports = function (router) {
     router.post('/sd/courses', function*(){
         try{
             let tenant = this.request.body.tenant;
-            let params = {
-                conditions: this.request.body.filter
-            };
+            let params = {};
+            params.conditions = this.request.body.filter || {};
+            params.conditions['tenant'] = tenant;
+            params.conditions['lFlg'] = 'a';
             let coursePersisted = yield courseService.findAsync(params);
-            this.body = {course: coursePersisted, error: null};
+            this.body = {courses: coursePersisted, error: null};
         }catch(e){
+            logger.error(e);
             this.body = {error: e};
         }
     });

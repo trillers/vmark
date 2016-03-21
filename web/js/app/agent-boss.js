@@ -16,6 +16,9 @@ require('./camera');
 //console.log(wx);
 domain = require('../domain/index');
 
+require('bootstrap');
+require('summernote');
+
 /*
 * wechat js config
 */

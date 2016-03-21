@@ -42,7 +42,7 @@
 
                         <tr each="{courses}">
                             <td>
-                                <a href="#tenants/_{_id}">
+                                <a href="#sd/courses/_{_id}">
                                     {name}
                                 </a>
                             </td>
@@ -50,7 +50,7 @@
                                 { __app.enums.LiveStatus.values[liveStatus] }
                             </td>
                             <td>
-                                { __app.enums.LiveTime.values[liveTime] }
+                                { actionTime && _.date.format(new Date(actionTime), 'yyyy-MM-dd hh点mm分') || '空'}
                             </td>
                             <td>
                                 {_.date.format(new Date(crtOn), 'yyyy-MM-dd hh点mm分')}
@@ -68,22 +68,32 @@
     </div>
     <style></style>
     <script>
-        console.log(__app.enums);
         var self = nest.presentable(this);
         var findCoursesAction = domain.action('findCourses');
         self.courses = [];
         self.filter = {};
         self.on('open', function(){
-            self.trigger('ready', false);
-            self.trigger('view-route-to');
+            findCoursesAction.newInvocation({
+                tenant: __app.tenant,
+                filter: self.filter
+            }).onDone(function(res){
+                if(res.error){
+                    return alert("failed to search courses");
+                }
+                self.courses= res.courses;
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+            }).execute();
         });
         self.onSearch = function(e){
             findCoursesAction.newInvocation({
                 tenant: __app.tenant,
                 filter: self.filter
             }).onDone(function(res){
-                console.log(res);
-                self.courses = res.courses;
+                if(res.error){
+                    return alert("failed to search courses");
+                }
+                self.update({courses: res.courses});
             }).execute();
         };
         self.onSelect = function(e){

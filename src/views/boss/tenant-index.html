@@ -5,6 +5,7 @@
     <title>微节点</title>
     <script src="/public/components/seajs/dist/sea.js"></script>
     <script src="/public/components/seajs-wrap/dist/seajs-wrap.js"></script>
+    <script src="/public/components/jquery/jquery.min.js"></script>
 
     <script type="text/javascript">
         window.__app = {{ JSON.stringify(__app) }};
@@ -23,6 +24,7 @@
     <!-- Bootstrap core CSS -->
     <link href="/public/components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/public/components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/public/components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/public/components/summernote/dist/summernote.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
@@ -46,11 +48,17 @@
         <boss-tenant-sd></boss-tenant-sd>
         <boss-tenant-sd-courses></boss-tenant-sd-courses>
         <boss-tenant-sd-courses-add></boss-tenant-sd-courses-add>
+        <boss-tenant-sd-courses-edit></boss-tenant-sd-courses-edit>
+        <boss-tenant-sd-courses-edit-detail></boss-tenant-sd-courses-edit-detail>
+        <boss-tenant-sd-courses-detail></boss-tenant-sd-courses-detail>
         <script src="/web/tag/boss-tenant-topbar.html" type="riot/tag"></script>
         <script src="/web/tag/boss-tenant-sd.html" type="riot/tag"></script>
         <script src="/web/tag/boss-tenant-sd-left.html" type="riot/tag"></script>
         <script src="/web/tag/boss-tenant-sd-courses.html" type="riot/tag"></script>
         <script src="/web/tag/boss-tenant-sd-courses-add.html" type="riot/tag"></script>
+        <script src="/web/tag/boss-tenant-sd-courses-edit.html" type="riot/tag"></script>
+        <script src="/web/tag/boss-tenant-sd-courses-detail.html" type="riot/tag"></script>
+        <script src="/web/tag/boss-tenant-sd-courses-edit-detail.html" type="riot/tag"></script>
         <script src="/web/tag/accordion.html" type="riot/tag"></script>
         <script src="/web/tag/boss-tenant.html" type="riot/tag"></script>
         <script src="/web/tag/boss-tenant-wechatsite.html" type="riot/tag"></script>
@@ -59,15 +67,14 @@
         <script src="/web/tag/alert.html" type="riot/tag"></script>
         <script src="/web/tag/boss-wechatsite.html" type="riot/tag"></script>
         <script src="/web/tag/confirm.html" type="riot/tag"></script>
+        <script src="/web/tag/raw.html" type="riot/tag"></script>
 
     </div>
 
     <!-- Bootstrap import -->
-    <script src="/public/components/jquery/jquery.min.js"></script>
-    <script src="/public/components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="/public/components/zeroclipboard/dist/ZeroClipboard.min.js"></script>
 
-    <!--<script src="/public/components/summernote/dist/summernote.min.js"></script>-->
+
 
 </body>
 </html>

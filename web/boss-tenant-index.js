@@ -10,7 +10,9 @@ seajs.config({
         'zepto': '/public/components/cmd-zepto/zepto',
         'isjs':'/web/js/app/is.js',
         'util':'/web/js/app/util.js',
-        'seedriot':'/public/components/cmd-riot/riot+compiler.js'
+        'seedriot':'/public/components/cmd-riot/riot+compiler.js',
+        'bootstrap': '/public/components/bootstrap/dist/js/bootstrap.min.js',
+        'summernote': '/public/components/summernote/dist/summernote.min.js'
     },
     vars: {
         'mainpath':'/web/js/app/boss-tenant-index'

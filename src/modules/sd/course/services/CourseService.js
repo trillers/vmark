@@ -25,7 +25,7 @@ Service.prototype.create = function(courseJson, callback){
     });
 };
 
-Service.find = function (params, callback) {
+Service.prototype.find = function (params, callback) {
     var Course = this.context.models.Course;
     var query = Course.find();
 
@@ -61,13 +61,30 @@ Service.find = function (params, callback) {
 
 
 Service.prototype.loadById = function(id, callback){
-    var Group = this.context.models.Group;
-    Group.findById(id, null, {lean: true}).populate({path: 'operator'}).exec(callback);
+    var courseKv = this.context.kvs.course;
+    var Course = this.context.models.Course;
+    courseKv.loadById(id, function(e, o){
+        if(e){
+            return callback(e);
+        }
+        if(o){
+            return callback(null, o);
+        }
+        Course.findById(id, null, {lean: true}).exec(callback);
+    });
 };
 
 Service.prototype.updateById = function(id, json, callback){
-    var Group = this.context.models.Group;
-    Group.findByIdAndUpdate(id, json, {lean: true, new: true}).exec(callback);
+    console.log(json);
+    var Course = this.context.models.Course;
+    var courseKv = this.context.kvs.course;
+    !json['_id'] && (json['_id'] = id);
+    courseKv.saveById(json, function(err, result){
+        if(err){
+            return callback(err);
+        }
+        Course.findByIdAndUpdate(id, json, {lean: true, new: true}).exec(callback);
+    })
 };
 
 Service.prototype.removeGroupById = function(id, callback){
@@ -84,5 +101,11 @@ Service.prototype.removeGroupById = function(id, callback){
             }
         });
 };
+
+function mixin(t, s){
+    for(var p in s){
+        t[p] = s[p];
+    }
+}
 
 module.exports = Service;

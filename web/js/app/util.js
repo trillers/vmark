@@ -225,6 +225,51 @@ var util = {
         },
         alert: function(opts){
             window.app.trigger('alert', opts);
+        },
+        validatify: function(arr){
+            if(!Array.isArray(arr)){
+                throw new Error('validatify expected to be a Array.');
+            }
+            var api = {
+                meta: {}
+            };
+            api.addToSet = function(o){
+                if(!(o && o.hasOwnProperty('success'))){
+                    throw new Error('expected a success flag')
+                }
+                if(!(o && o.field)){
+                    throw new Error('expected a field')
+                }
+                if(!(o && o.desc)){
+                    throw new Error('expected a desc')
+                }
+                if(!(o && o.key)){
+                    throw new Error('expected a key')
+                }
+                console.log(this.meta)
+                if(this.meta[o.key]){
+                    return;
+                }
+                this.meta[o.key] = delete o['key'] && o;
+            };
+            api.pass = function(key){
+                this.meta[key] && delete this.meta[key];
+            };
+            api.raw = function(){
+                var me = this;
+                return Object.keys(me.meta).map(function(k){
+                    return me.meta[k];
+                })
+            };
+            api.notOk = function(k){
+                return this.meta[k];
+            };
+            api.clear = function(){
+                this.meta = {};
+                return this;
+            };
+            util.mixin(arr, api);
+            return arr;
         }
     },
     /**

@@ -16,16 +16,19 @@ var Model = function(domainBuilder){
             upLine1CommissionType: {type: String, enum: CommissionType.valueList(), default: CommissionType.Cash.value()},
             upLine2CommissionType: {type: String, enum: CommissionType.valueList(), default: CommissionType.Cash.value()},
             upLine3CommissionType: {type: String, enum: CommissionType.valueList(), default: CommissionType.Cash.value()},
-            upLine1CommissionValue:{type: String},
-            upLine2CommissionValue:{type: String},
-            upLine3CommissionValue:{type: String},
+            upLine1CommissionValue:{type: Number, default: 0},
+            upLine2CommissionValue:{type: Number, default: 0},
+            upLine3CommissionValue:{type: Number, default: 0},
             liveStatus:            {type: String, enum: LiveStatus.valueList(), default: LiveStatus.Idle.value(), required: true},
             actionTime:            {type: String},
-            memberDiscounts:       {type: String},
+            memberDiscountsType:   {type: String, enum: CommissionType.valueList(), default: CommissionType.Cash.value()},
+            memberDiscountsValue:  {type: Number, default: 0},
             desc:                  {type: String},
             details:               {type: String},
             tenant:                {type: String, ref: 'Org', required: true},
-            operator:              {type: String, ref: 'OrgMember'}
+            operator:              {type: String, ref: 'OrgMember'},
+            updOn:                 {type: Date},
+            poster:                {type: String}
         })
         .build();
     return schema.model(true);

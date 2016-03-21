@@ -36,4 +36,12 @@ domain.action('findCourses').onExecute(function(data){
     apiFactory.post('/tenant/sd/courses').drive(this).send(data);
 });
 
+domain.action('loadCourseById').onExecute(function(data){
+    apiFactory.get('/tenant/sd/course/_' + data.id).drive(this).send(data);
+});
+
+domain.action('updateCourseById').onExecute(function(data){
+    apiFactory.put('/tenant/sd/course/_' + data.id).drive(this).send(data);
+});
+
 module.exports = null;

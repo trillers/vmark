@@ -1,9 +1,0 @@
-{
-  "button":[
-    {
-      "type":"click",
-      "name":"进入",
-      "url":"http://note.wenode.org/note"
-    }
-  ]
-}
