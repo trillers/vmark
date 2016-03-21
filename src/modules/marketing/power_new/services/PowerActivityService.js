@@ -76,9 +76,9 @@ Service.prototype.loadById = function*(id){
         //    var qr = yield qrType.getQrByIdAsync(doc.qrCode);
         //    doc.qrCodeUrl = qrType.getQrCodeUrl(qr.ticket);
         //}
-        logger.info('success load power by id: ' + id);
+        logger.info('success load power activity by id: ' + id);
     }else{
-        logger.info('failed load power by id: ' + id + ' err: no such activity');
+        logger.info('failed load power activity by id: ' + id + ' err: no such activity');
     }
     return doc;
 }
@@ -212,7 +212,7 @@ Service.prototype.getParticipantRankingList = function*(id, count){
 /**
  * wechat scan activity qrCode get activity poster
  * @params qr activity qrCode
- * @openid tenant user openid
+ * @openid platform user openid
  *
  * return {
  *    success: true or false,
@@ -225,10 +225,10 @@ Service.prototype.getActivityPoster = function*(qr, openid){
     try{
         var powerActivityService = this.context.services.powerActivityService;
         var powerPosterService = this.context.services.powerPosterService;
-        var tenantUserService = this.context.services.tenantUserService;
+        var platformUserService = this.context.services.platformUserService;
 
         var activity = yield powerActivityService.loadByQrCodeId(qr._id);
-        var user = yield tenantUserService.loadTenantUserByOpenidAsync(openid);
+        var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
         var mediaId = '';
         if(!activity.poster){
             var posterJson = {
@@ -273,11 +273,11 @@ Service.prototype.getActivityPoster = function*(qr, openid){
 Service.prototype.scanActivityPoster = function*(qr, openid){
     var logger = this.context.logger;
     try {
-        var tenantUserService = this.context.services.tenantUserService;
+        var platformUserService = this.context.services.platformUserService;
         var powerParticipantService = this.context.services.powerParticipantService;
         var powerPosterService = this.context.services.powerPosterService;
         var poster = yield powerPosterService.loadBySceneId(qr.sceneId);
-        var user = yield tenantUserService.loadTenantUserByOpenidAsync(openid);
+        var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
         var activity = yield this.loadById(poster.activity);
         var status = yield this.getStatus(poster.activity, user);
         var res =  {
