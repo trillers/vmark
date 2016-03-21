@@ -131,7 +131,7 @@ Service.prototype.getStatus = function*(activity, user){
         noActivated: 'none'
     }
     var kv = this.context.kvs.power;
-    status.participant = yield kv.getParticipantIdByUserIdAndActivityIdAsync(activity._id, user.id);
+    status.participant = yield kv.getParticipantIdByUserIdAndActivityIdAsync(activity._id, user._id);
     if(status.participant){
         status.join = 'none';
         status.joined = '';
@@ -285,6 +285,7 @@ Service.prototype.scanActivityPoster = function*(qr, openid){
         activity = yield this.loadById(poster.activity);
         var status = yield this.getStatus(poster.activity, user);
         var reply = '', sendActivityCard = false, sendParticipantCard = false, posterMediaId = '';
+        console.error(status);
         if(status.participant){
             var homePage = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + status.participant;
             participant = {
@@ -331,15 +332,6 @@ Service.prototype.scanActivityPoster = function*(qr, openid){
         wechatApi.sendText(openid, reply, function (err) {
             if(err) logger.error(err);
         });
-        if(posterMediaId) {
-            wechatApi.sendText(openid, user.nickname + '  的活动海报，点击查看和分享', function (err) {
-                if(err) logger.error(err);
-            });
-            wechatApi.sendImage(openid, posterMediaId, function (err) {
-                if (err) logger.error(err);
-            });
-
-        }
         if(sendActivityCard){
             var articles = [
                 {
@@ -363,6 +355,15 @@ Service.prototype.scanActivityPoster = function*(qr, openid){
             wechatApi.sendNews(openid, articles, function (err) {
                 if(err) logger.error(err);
             });
+        }
+        if(posterMediaId) {
+            wechatApi.sendText(openid, user.nickname + '  的活动海报，点击查看和分享', function (err) {
+                if(err) logger.error(err);
+            });
+            wechatApi.sendImage(openid, posterMediaId, function (err) {
+                if (err) logger.error(err);
+            });
+
         }
 
     }catch(e){

@@ -99,6 +99,8 @@ Kv.prototype.getParticipantIdByUserIdAndActivityId = function(activityId, userId
     var redis = this.context.redis.main;
     var key = activityIdToUserIdParticipantIdHashKey(activityId);
     redis.hget(key, userId, function(err, result){
+        console.error('*************');
+        console.log(result);
         cbUtil.logCallback(
             err,
             'Fail to get power activity participantId by user:' + userId + 'err: ' + err,
