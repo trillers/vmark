@@ -285,7 +285,6 @@ Service.prototype.scanActivityPoster = function*(qr, openid){
         activity = yield this.loadById(poster.activity);
         var status = yield this.getStatus(poster.activity, user);
         var reply = '', sendActivityCard = false, sendParticipantCard = false, posterMediaId = '';
-        console.error(status);
         if(status.participant){
             var homePage = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + status.participant;
             participant = {
@@ -329,7 +328,7 @@ Service.prototype.scanActivityPoster = function*(qr, openid){
             sendParticipantCard = true;
         }
 
-        wechatApi.sendText(openid, reply, function (err) {
+        yield wechatApi.sendText(openid, reply, function (err) {
             if(err) logger.error(err);
         });
         if(sendActivityCard){
@@ -340,9 +339,7 @@ Service.prototype.scanActivityPoster = function*(qr, openid){
                     "url": activity.url,
                     "picurl": activity.shareImg
                 }];
-            wechatApi.sendNews(openid, articles, function (err) {
-                if(err) logger.error(err);
-            });
+            yield wechatApi.sendNewsAsync(openid, articles);
         }
         if(sendParticipantCard){
             var articles = [
@@ -352,17 +349,11 @@ Service.prototype.scanActivityPoster = function*(qr, openid){
                     "url": participant.homePage,
                     "picurl": activity.shareImg
                 }];
-            wechatApi.sendNews(openid, articles, function (err) {
-                if(err) logger.error(err);
-            });
+            yield wechatApi.sendNewsAsync(openid, articles);
         }
         if(posterMediaId) {
-            wechatApi.sendText(openid, user.nickname + '  的活动海报，点击查看和分享', function (err) {
-                if(err) logger.error(err);
-            });
-            wechatApi.sendImage(openid, posterMediaId, function (err) {
-                if (err) logger.error(err);
-            });
+            yield wechatApi.sendTextAsync(openid, user.nickname + '  的活动海报，点击查看和分享');
+            yield wechatApi.sendImage(openid, posterMediaId);
 
         }
 

@@ -238,9 +238,7 @@ Service.prototype.scanParticipantPoster = function*(qr, openid){
             }
         }
 
-        wechatApi.sendText(openid, reply, function (err) {
-            if(err) logger.error(err);
-        });
+        yield wechatApi.sendTextAsync(openid, reply);
         var articles = [
             {
                 "title": user.nickname + '  的活动主页，点击查看详情',
@@ -248,9 +246,7 @@ Service.prototype.scanParticipantPoster = function*(qr, openid){
                 "url": participant.homePage,
                 "picurl": participant.activity.shareImg
             }];
-        wechatApi.sendNews(openid, articles, function (err) {
-            if(err) logger.error(err);
-        });
+        yield wechatApi.sendNewsAsync(openid, articles);
 
     }catch(e){
         logger.error('scan paticipant poster err: ' + e + ', qr: ' + qr._id + ', user openid: ' + openid);
