@@ -35,13 +35,16 @@ Handler.prototype.create = function*(bgImg, user) {
                 qrType = qrRegistry.getQrType('pap');
                 qr = yield qrType.createQrAsync();
                 qrCodeUrl = wechatApi.showQRCodeURL(qr.ticket);
-                yield drawImg(qrCodeUrl, qrPath, 0, 300, 200, 200);
-                yield drawImg(user.headimgurl, headImgPath, 0, 150, 150, 150);
+                yield drawImg(qrCodeUrl, qrPath, 150, 500, 300, 300);
+                yield drawImg(user.headimgurl, headImgPath, 200, 100, 200, 200, 'headImg');
+                yield drawText(user.nickname, 300, 350, 600);
+                yield drawText('长按图片识别二维码', 300, 850, 600);
             } else if(this.type === PosterType.activity.value()){
                 qrType = qrRegistry.getQrType('acp');
                 qr = yield qrType.createQrAsync();
                 qrCodeUrl = wechatApi.showQRCodeURL(qr.ticket);
-                yield drawImg(qrCodeUrl, qrPath, 0, 300, 200, 200);
+                yield drawImg(qrCodeUrl, qrPath, 150, 300, 300, 300);
+                yield drawText('长按图片识别二维码', 300, 650, 600);
             }
             yield fs.writeFileAsync(posterPath, canvas.toBuffer());
             var imageData = yield wechatApi.uploadMediaAsync(posterPath, 'image');
@@ -55,12 +58,30 @@ Handler.prototype.create = function*(bgImg, user) {
     }
 }
 
-var drawImg = function*(url, path, offsetX, offsetY, width, height){
+var drawImg = function*(url, path, offsetX, offsetY, width, height, type){
+    ctx.save();
     yield saveImgAsync(url, path);
     var ImgData = yield fs.readFileAsync(path);
     var img = new Image;
     img.src = ImgData;
+    // Create a circular clipping path
+    if(type === 'headImg') {
+        ctx.beginPath();
+        ctx.arc(300, 200, 100, 0, Math.PI * 2, true);
+        ctx.clip();
+    }
     ctx.drawImage(img, offsetX, offsetY, width, height);
+    ctx.closePath();
+    ctx.restore();
+}
+
+var drawText = function*(text, offsetX, offsetY, maxWidth){
+    ctx.save();
+    ctx.font = "30px 'Arial Unicode MS'";
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.fillText(text, offsetX, offsetY, maxWidth);
+    ctx.restore();
 }
 
 var saveImg = function (url, savePath, callback) {

@@ -2,6 +2,7 @@ var util = require('util');
 var settings = require('@private/vmark-settings');
 var qrRegistry = require('../../../wechatsite/qr');
 var PosterType = require('../../../common/models/TypeRegistry').item('PosterType');
+var wechatApi = require('../../../wechat/common/api').api;
 
 var Service = function(context){
     this.context = context
@@ -70,6 +71,7 @@ Service.prototype.loadById = function*(id){
     if(doc) {
         doc.bgImg = doc.bgImg.split(',');
         doc.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + doc._id;
+        doc.url = 'http://' + settings.app.domain + '/marketing/power/activity?id=' + doc._id;
         //if(doc.withPic === 'true') {
         //    var qrType = qrRegistry.getQrType('ac');
         //    console.error(doc);
@@ -272,26 +274,30 @@ Service.prototype.getActivityPoster = function*(qr, openid){
  * */
 Service.prototype.scanActivityPoster = function*(qr, openid){
     var logger = this.context.logger;
+    var activity = null;
+    var participant = null;
     try {
         var platformUserService = this.context.services.platformUserService;
         var powerParticipantService = this.context.services.powerParticipantService;
         var powerPosterService = this.context.services.powerPosterService;
         var poster = yield powerPosterService.loadBySceneId(qr.sceneId);
         var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
-        var activity = yield this.loadById(poster.activity);
+        activity = yield this.loadById(poster.activity);
         var status = yield this.getStatus(poster.activity, user);
-        var res =  {
-            success: false,
-            reply: '',
-            mediaId: null
-        }
+        var reply = '', sendActivityCard = false, sendParticipantCard = false, posterMediaId = '';
         if(status.participant){
-            var participantUrl = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participant;
-            res.reply = '您已经参与过该活动: <a href="' + participantUrl + '">点击查看</a>';
+            var homePage = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + status.participant;
+            participant = {
+                homePage: homePage
+            }
+            reply = '您已经参与过该活动';
+            sendParticipantCard = true;
         }else if(!status.noActivated){
-            res.reply = '活动[' + activity.name + ']未开始';
+            reply = '活动[' + activity.name + ']未开始';
+            sendActivityCard = true;
         }else if(!status.closed){
-            res.reply = '活动[' + activity.name + ']已结束';
+            reply = '活动[' + activity.name + ']已结束';
+            sendActivityCard = true;
         }else{
             var participantJson = {
                 activity: activity._id
@@ -315,23 +321,55 @@ Service.prototype.scanActivityPoster = function*(qr, openid){
                 headimgurl: user.headimgurl
             }
             yield this.putParticipantToMapString(activity._id, userBrief);
-            var detailUrl = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + data._id;
-            res.reply = '您已成功参与活动: ' + activity.name + '\n' +
-                    '活动详情: <a href="' + detailUrl + '" >点击查看</a>\n' +
-                    '我的海报图片，点击查看和分享:';
-            res.success = true;
-            res.mediaId = poster.mediaId;
+            data.homePage = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + data._id;
+            reply = '您已成功参与活动: ' + activity.name;
+            participant = data;
+            posterMediaId = poster.mediaId;
+            sendParticipantCard = true;
         }
 
-        return res;
+        wechatApi.sendText(openid, reply, function (err) {
+            if(err) logger.error(err);
+        });
+        if(posterMediaId) {
+            wechatApi.sendText(openid, user.nickname + '  的活动海报，点击查看和分享', function (err) {
+                if(err) logger.error(err);
+            });
+            wechatApi.sendImage(openid, posterMediaId, function (err) {
+                if (err) logger.error(err);
+            });
+
+        }
+        if(sendActivityCard){
+            var articles = [
+                {
+                    "title": activity.shareTitle,
+                    "description": activity.shareDesc,
+                    "url": activity.url,
+                    "picurl": activity.shareImg
+                }];
+            wechatApi.sendNews(openid, articles, function (err) {
+                if(err) logger.error(err);
+            });
+        }
+        if(sendParticipantCard){
+            var articles = [
+                {
+                    "title": user.nickname + '  的活动主页，点击查看详情',
+                    "description": activity.shareDesc,
+                    "url": participant.homePage,
+                    "picurl": activity.shareImg
+                }];
+            wechatApi.sendNews(openid, articles, function (err) {
+                if(err) logger.error(err);
+            });
+        }
 
     }catch(e){
         logger.error('scan activity poster err: ' + e + ', qr: ' + qr._id + ', user openid: ' + openid);
-        return {
-            success: false,
-            reply: '参与活动失败',
-            mediaId: null
-        }
+        wechatApi.sendText(openid, '抱歉,参与活动失败', function (err) {
+            if(err) logger.error(err);
+        });
     }
 }
 

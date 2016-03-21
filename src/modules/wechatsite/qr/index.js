@@ -187,15 +187,7 @@ activityPosterType.onAccess(function(qr, openid){
         try{
             yield platformUserService.ensurePlatformUserAsync(openid);
             var powerActivityService = context.services.powerActivityService;
-            var res = yield powerActivityService.scanActivityPoster(qr, openid);
-            wechatApi.sendText(openid, res.reply, function (err) {
-                if(err) logger.error(err);
-            });
-            if(res.success) {
-                wechatApi.sendImage(openid, res.mediaId, function (err) {
-                    if (err) logger.error(err);
-                });
-            }
+            yield powerActivityService.scanActivityPoster(qr, openid);
         }
         catch(e){
             logger.error(e);
@@ -211,10 +203,7 @@ participantPosterType.onAccess(function(qr, openid){
         try{
             yield platformUserService.ensurePlatformUserAsync(openid);
             var powerParticipantService = context.services.powerParticipantService;
-            var reply = yield powerParticipantService.scanParticipantPoster(qr, openid);
-            wechatApi.sendText(openid, reply, function (err) {
-                if(err) logger.error(err);
-            });
+            yield powerParticipantService.scanParticipantPoster(qr, openid);
         }
         catch(e){
             logger.error(e);

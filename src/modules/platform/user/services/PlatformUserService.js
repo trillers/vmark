@@ -222,14 +222,11 @@ Service.prototype.deleteById = function(id, callback) {
  * @param callback
  */
 Service.prototype.ensurePlatformUser = function(openid, callback){
-    console.log("****************************")
     var me = this;
     co(function*(){
         var user = yield me.loadPlatformUserByOpenidAsync(openid);
-        console.error(user);
         if(!user){
             user = yield me.createPlatformUserAsync(openid);
-            console.error(user);
         }
         callback(null, user);
     }).catch(function(err){

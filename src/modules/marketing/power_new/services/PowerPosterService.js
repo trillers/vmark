@@ -26,7 +26,7 @@ Service.prototype.create = function*(jsonData){
     var posterKv = this.context.kvs.poster;
     var user = yield userKv.loadByIdAsync(jsonData.user);
     var posterData = {};
-    jsonData.bgImg = 'http://picm.photophoto.cn/085/056/002/0560020133.jpg';
+    jsonData.bgImg = 'http://b.zol-img.com.cn/sjbizhi/images/5/320x510/1379321712730.jpg';
     if(jsonData.type === PosterType.activity.value()){
         posterData = yield posterHandler.activityPosterHandler.create(jsonData.bgImg, user);
     }else if(jsonData.type === PosterType.participant.value()){
