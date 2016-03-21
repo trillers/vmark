@@ -40,13 +40,13 @@
                                 <div class="form-group">
                                     <label class="col-sm-2 control-label">上/下架状态</label>
                                     <div class="col-sm-10" style="height: 32px;line-height: 32px">
-                                        <span>待上架</span>
+                                        <span>{__app.enums.LiveStatus.values[course.liveStatus]}</span>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="col-sm-2 control-label">上/下架时间</label>
                                     <div class="col-sm-10" style="height: 32px;line-height: 32px">
-                                        <span>空</span>
+                                        <span>{course.actionTime && _.date.format(new Date(course.actionTime), 'yyyy-MM-dd hh点mm分') || '空'}</span>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -212,6 +212,17 @@
                                     <tr>
                                         <td colspan="3" style="text-align: center">注： 如果佣金按百分比计算，佣金基数以实际消费者实付金额为准（即线下实际核销金额）</td>
                                     </tr>
+
+                                    <tr>
+                                        <td>
+                                            <strong>分销海报背景</strong>
+                                        </td>
+                                        <td>
+                                            <input onchange="{onFileChange}" id="posterInput" type="file" accept="image/jpeg, image/png, image/jpg"/>
+                                            <img style="width: 100px" riot-src="{course.poster && !course.poster.data && __app.settings.api.url + '/file?media_id=' + course.poster || course.poster.data}"/>
+                                        </td>
+                                        <td></td>
+                                    </tr>
                                 </table>
 
 
@@ -263,6 +274,7 @@
         };
         self.on('open', function(ctx){
             var courseId = ctx.req.paramList[0];
+            self.posterInput.value = "";
             loadCourseByIdAction.newInvocation({
                 id: courseId
             }).onDone(function(res){
@@ -365,15 +377,58 @@
             self.course.upLine3CommissionValue = e.target.value;
         };
 
+        self.onFileChange = function(e){
+            var file = document.getElementById("posterInput").files[0];
+            if(file.size > 2*1024*1024){
+                alert("文件大小超过限制-2M");
+                return;
+            }
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(e){
+                self.course.poster = {
+                    file: file,
+                    data: e.target.result
+                };
+                self.update();
+            };
+        };
+
         self.onSubmit = function(){
-            updateCourseByIdAction.newInvocation({
-                    id: self.course._id,
-                    o: self.course
-                })
-                .onDone(function(res){
-                    riot.route('sd/courses');
-                })
-                .execute();
+            var req = {
+                id: self.course._id,
+                o: self.course
+            };
+            if(self.course.poster && self.course.poster.file){
+                var formData = new FormData();
+                formData.append('file', self.course.poster.file);
+                $.ajax({
+                    url: __app.settings.api.url + '/file/upload',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        req.o.poster = res.media_id;
+                        updateCourseById();
+                    },
+                    error: function (responseStr) {
+                        console.error("失败:" + JSON.stringify(responseStr));
+                    }
+                });
+                return;
+            }
+
+            updateCourseById();
+
+            function updateCourseById(){
+                updateCourseByIdAction.newInvocation(req)
+                        .onDone(function(res){
+                            riot.route('sd/courses');
+                        })
+                        .execute();
+            }
+
         };
     </script>
 </boss-tenant-sd-courses-edit>

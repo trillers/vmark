@@ -72,6 +72,7 @@
         var findCoursesAction = domain.action('findCourses');
         self.courses = [];
         self.filter = {};
+        console.log(__app.enums)
         self.on('open', function(){
             findCoursesAction.newInvocation({
                 tenant: __app.tenant,

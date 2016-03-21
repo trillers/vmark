@@ -31,6 +31,8 @@ module.exports = function(router){
      * */
     router.post('/upload', function* (){
         var self = this;
+        console.error(self.request.body.files);
+
         if(self.request.body.files) {
             var file = self.request.body.files.file;
             var mediaId = self.request.body.fields.mediaId;
@@ -80,6 +82,8 @@ module.exports = function(router){
                 logger.error('save file info err: file type invalid');
                 this.body = {err: 'file_type_invalid', media_id: null, wx_media_id: null, custom_id: null};
             }
+        }else{
+            this.body = {error: 'no file'}
         }
     });
 
