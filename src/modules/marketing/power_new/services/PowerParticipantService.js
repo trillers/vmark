@@ -52,7 +52,7 @@ Service.prototype.loadById = function*(id){
     //var PowerParticipant = this.context.models.PowerParticipant;
     //var doc = yield PowerParticipant.findById(id, {}, {lean: true}).populate({path: 'power'}).populate({path: 'user'}).exec();
     var kv = this.context.kvs.power;
-    var userKv = this.context.kvs.tenantUser;
+    var userKv = this.context.kvs.platformUser;
     var participant = yield kv.loadParticipantByIdAsync(id);
     if(participant){
         var activity = yield kv.loadActivityByIdAsync(participant.activity);
@@ -215,10 +215,10 @@ Service.prototype.help = function*(participant, user){
 Service.prototype.scanParticipantPoster = function*(qr, openid){
     var logger = this.context.logger;
     try {
-        var tenantUserService = this.context.services.tenantUserService;
+        var platformUserService = this.context.services.platformUserService;
         var powerPosterService = this.context.services.powerPosterService;
         var poster = yield powerPosterService.loadBySceneId(qr.sceneId);
-        var user = yield tenantUserService.loadTenantUserByOpenidAsync(openid);
+        var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
         var participant = yield this.loadById(poster.participant);
         var res = yield this.help(participant, user);
         var reply = '';
