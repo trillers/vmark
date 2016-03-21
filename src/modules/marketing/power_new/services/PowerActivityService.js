@@ -328,9 +328,7 @@ Service.prototype.scanActivityPoster = function*(qr, openid){
             sendParticipantCard = true;
         }
 
-        yield wechatApi.sendText(openid, reply, function (err) {
-            if(err) logger.error(err);
-        });
+        yield wechatApi.sendTextAsync(openid, reply);
         if(sendActivityCard){
             var articles = [
                 {
@@ -353,7 +351,7 @@ Service.prototype.scanActivityPoster = function*(qr, openid){
         }
         if(posterMediaId) {
             yield wechatApi.sendTextAsync(openid, user.nickname + '  的活动海报，点击查看和分享');
-            yield wechatApi.sendImage(openid, posterMediaId);
+            yield wechatApi.sendImageAsync(openid, posterMediaId);
 
         }
 
