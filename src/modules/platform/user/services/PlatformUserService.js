@@ -18,6 +18,7 @@ Service.prototype.loadPlatformUserByOpenid = function(openid, callback) {
         var wechatSiteUser = yield platformWechatSiteUserKv.loadByOpenidAsync(openid);
         if(!wechatSiteUser){
             if(callback) callback(null, null);
+            return;
         }
         var userId = wechatSiteUser.user;
         var user = null;
@@ -30,7 +31,7 @@ Service.prototype.loadPlatformUserByOpenid = function(openid, callback) {
         }
 
         if(callback) callback(null, user);
-    }).catch(Error, function(err){
+    }).catch(function(err){
         logger.error('Fail to load platform user by wechat site user\'s openid '+openid+' : ' + err);
         logger.error(err.stack);
         if(callback) callback(err);
@@ -103,7 +104,7 @@ Service.prototype.createPlatformUser = function(openid, callback) {
             user.wechatSiteUser = wechatSiteUser;
         }
         if(callback) callback(null, user);
-    }).catch(Error, function(err){
+    }).catch(function(err){
         logger.error('Fail to create platform user linked to wechat site user: ' + err);
         logger.error(err.stack);
         if(callback) callback(err);

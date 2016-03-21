@@ -11,7 +11,7 @@ before(function(done){
 
 describe('TenantUserService', function(){
     //var openid = 'okvXqs_VftHruzwFV9rx4Pbd_fno'; //小小星星妹
-    var openid = 'oqSpUuDlnKxHxwZa4xylKuyxaXNM'; //包三哥
+    var openid = 'oqSpUuDlnKxHxwZa4xylKuyxaXNM'; //包三哥 错题本测试号
     describe.only('ensureTenantUser', function(){
         it('Succeed to ensure a tenant user created', function(done){
             var service = context.services.tenantUserService;
