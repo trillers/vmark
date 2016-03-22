@@ -191,7 +191,11 @@ Service.prototype.help = function*(participant, user){
             var helpPower = myUtil.random(min, max);
             var data = yield kv.incParticipantPowerByIdAsync(participant.id, helpPower);
             yield kv.increaseParticipantScoreInRankingListAsync(participant.activity._id, participant.user.id, helpPower);
+            console.error('&&&&&&&&&&')
+            console.log(participant.activity);
+            console.log(participant.user);
             var rank = yield kv.getParticipantRankAsync(participant.activity, participant.user);
+            console.error('排名' + rank);
             result = {rank: rank, total_power: data, helpPower: helpPower};
         } else if(res === 0) {
             result = {helped: true};
@@ -241,7 +245,7 @@ Service.prototype.scanParticipantPoster = function*(qr, openid){
         yield wechatApi.sendTextAsync(openid, reply);
         var articles = [
             {
-                "title": user.nickname + '  的活动主页，点击查看详情',
+                "title": participant.user.nickname + '  的活动主页，点击查看详情',
                 "description": participant.activity.shareDesc,
                 "url": participant.homePage,
                 "picurl": participant.activity.shareImg
