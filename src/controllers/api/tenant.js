@@ -107,6 +107,9 @@ module.exports = function (router) {
             params.conditions = this.request.body.filter || {};
             params.conditions['tenant'] = tenant;
             params.conditions['lFlg'] = 'a';
+            params.sort = {
+                crtOn: -1
+            };
             let coursePersisted = yield courseService.findAsync(params);
             this.body = {courses: coursePersisted, error: null};
         }catch(e){
