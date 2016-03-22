@@ -310,7 +310,7 @@ Service.prototype.scanActivityPoster = function*(qr, openid){
                 user: user._id,
                 activity: activity._id,
                 participant: data._id,
-                bgImg: activity.bgImg,
+                posterBgImg: activity.posterBgImg,
                 type: PosterType.participant.value()
             }
             var poster = yield powerPosterService.create(posterJson);
