@@ -191,12 +191,9 @@ Service.prototype.help = function*(participant, user){
             var helpPower = myUtil.random(min, max);
             var data = yield kv.incParticipantPowerByIdAsync(participant.id, helpPower);
             yield kv.increaseParticipantScoreInRankingListAsync(participant.activity._id, participant.user.id, helpPower);
-            console.error('&&&&&&&&&&')
-            console.log(participant.activity);
-            console.log(participant.user);
-            var rank = yield kv.getParticipantRankAsync(participant.activity, participant.user);
-            console.error('排名' + rank);
-            result = {rank: rank, total_power: data, helpPower: helpPower};
+
+            //var rank = yield kv.getParticipantRankAsync(participant.activity._id, participant.user._id);
+            result = {total_power: data, helpPower: helpPower};
         } else if(res === 0) {
             result = {helped: true};
         } else {
@@ -236,9 +233,9 @@ Service.prototype.scanParticipantPoster = function*(qr, openid){
             reply = '您已经助力过 <' + participant.user.nickname + '>';
         }else {
             if (participant.activity.type = PowerType.RedPacket.value()) {
-                reply = '<' + user.nickname + '> 您已成功为 \n<' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 红包,\n <' + participant.user.nickname + '> 目前总红包数: ' + res.total_power + ', 排名: ' + res.rank;
+                reply = '<' + user.nickname + '> 您已成功为 \n<' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 红包,\n <' + participant.user.nickname + '> 目前总红包数: ' + res.total_power + ', 排名: ' + participant.rank;
             }else if(participant.activity.type = PowerType.Points.value()){
-                reply = '<' + user.nickname + '> 您已成功为 \n<' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 积分,\n <' + participant.user.nickname + '> 目前总积分: ' + res.total_power + ', 排名: ' + res.rank;
+                reply = '<' + user.nickname + '> 您已成功为 \n<' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 积分,\n <' + participant.user.nickname + '> 目前总积分: ' + res.total_power + ', 排名: ' + participant.rank;
             }
         }
 
