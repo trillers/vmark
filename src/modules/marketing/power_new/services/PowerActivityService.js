@@ -236,7 +236,7 @@ Service.prototype.getActivityPoster = function*(qr, openid){
             var posterJson = {
                 user: user._id,
                 activity: activity._id,
-                bgImg: activity.bgImg,
+                posterBgImg: activity.posterBgImg,
                 type: PosterType.activity.value()
             }
             var poster = yield powerPosterService.create(posterJson);
