@@ -78,7 +78,8 @@
                 $('#activityName').val('');
                 $('#shareTitle').val('');
                 $("input[name='activity_type']")[0].checked = true;
-                $("#with_pic").attr('checked', false);
+                $("#with_pic").removeAttr('checked');
+                $('#poster').hide();
                 posterBgImg = '';
                 $('#posterBgImg1 img').attr('src', '').parent().css('display', 'none');
                 $('#posterBgImg').show();
@@ -197,11 +198,18 @@
                     $("input[name='activity_type']")[1].checked = true;
                 }
                 if(data.withPic === 'true'){
-                    $("#with_pic").attr('checked', true);
+                    console.error($("#with_pic").attr('checked'));
+                    $("#with_pic").prop('checked', true);
                     $("#poster").show();
-                    $('#posterBgImg1 img').attr('src', data.posterBgImg).parent().css('display', '-webkit-inline-box');
-                    posterBgImg = data.posterBgImg;
+                    $('#posterBgImg1 img').attr('src', data.posterBgImg || '').parent().css('display', '-webkit-inline-box');
+                    posterBgImg = data.posterBgImg || '';
                     $('#posterBgImg').hide();
+                }else{
+                    $("#with_pic").attr('checked', false);
+                    $("#poster").hide();
+                    $('#posterBgImg1 img').attr('src', '');
+                    posterBgImg = '';
+                    $('#posterBgImg').show();
                 }
                 if(data.bgImg && data.bgImg.length > 0){
                     bgImgCount = data.bgImg.length;

@@ -69,7 +69,7 @@ Service.prototype.loadById = function*(id){
     //var doc = yield PowerActivity.findById(id, {}, {lean: true}).exec();
     var doc = yield kv.loadActivityByIdAsync(id);
     if(doc) {
-        doc.bgImg = doc.bgImg.split(',');
+        doc.bgImg = doc.bgImg ? doc.bgImg.split(',') : [];
         doc.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + doc._id;
         doc.url = 'http://' + settings.app.domain + '/marketing/power/activity?id=' + doc._id;
         if(doc.withPic === 'true') {

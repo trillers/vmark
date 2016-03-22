@@ -54,10 +54,10 @@ Service.prototype.loadById = function*(id){
     //var doc = yield PowerParticipant.findById(id, {}, {lean: true}).populate({path: 'power'}).populate({path: 'user'}).exec();
     var kv = this.context.kvs.power;
     var userKv = this.context.kvs.platformUser;
+    var powerActivityService = this.context.services.powerActivityService;
     var participant = yield kv.loadParticipantByIdAsync(id);
     if(participant){
-        var activity = yield kv.loadActivityByIdAsync(participant.activity);
-        activity.bgImg = activity.bgImg.split(',');
+        var activity = yield powerActivityService.loadById(participant.activity);
         var user = yield userKv.loadByIdAsync(participant.user);
         var rank = yield kv.getParticipantRankAsync(participant.activity, participant.user);
         var helpArr = yield kv.getHelpFriendsSetAsync(id);
