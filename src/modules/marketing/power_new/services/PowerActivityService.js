@@ -72,12 +72,9 @@ Service.prototype.loadById = function*(id){
         doc.bgImg = doc.bgImg.split(',');
         doc.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + doc._id;
         doc.url = 'http://' + settings.app.domain + '/marketing/power/activity?id=' + doc._id;
-        //if(doc.withPic === 'true') {
-        //    var qrType = qrRegistry.getQrType('ac');
-        //    console.error(doc);
-        //    var qr = yield qrType.getQrByIdAsync(doc.qrCode);
-        //    doc.qrCodeUrl = qrType.getQrCodeUrl(qr.ticket);
-        //}
+        if(doc.withPic === 'true') {
+            doc.posterQrCodeUrl = this.context.services.powerPosterService.getPosterQrCodeUrlById(doc.poster);
+        }
         logger.info('success load power activity by id: ' + id);
     }else{
         logger.info('failed load power activity by id: ' + id + ' err: no such activity');

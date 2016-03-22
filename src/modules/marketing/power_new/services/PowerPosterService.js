@@ -3,6 +3,7 @@ var settings = require('@private/vmark-settings');
 var posterHandler = require('../../poster');
 var wechatApi = require('../../../wechat/common/api').api;
 var PosterType = require('../../../common/models/TypeRegistry').item('PosterType');
+var activityQrType = require('../../../wechatsite/qr').getQrType('ac');
 
 var Service = function(context){
     this.context = context
@@ -112,4 +113,17 @@ Service.prototype.isInvalid = function(poster){
     var nowTimestamp = (new Date()).getTime();
     return nowTimestamp >= oldTimestamp + poster.expire * 1000;
 }
+
+/**
+ * get activity poster qrCode url
+ * @params posterId
+ *
+ * return poster media id
+ **/
+Service.prototype.getPosterQrCodeUrlById = function*(posterId){
+    var poster = yield this.loadById(posterId);
+    var qrCode = yield activityQrType.getQrAsync(poster.sceneId);
+    return activityQrType.getQrCodeUrl(qrCode.ticket);
+}
+
 module.exports = Service;
