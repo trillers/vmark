@@ -26,11 +26,11 @@ Service.prototype.create = function*(jsonData){
     var posterKv = this.context.kvs.poster;
     var user = yield userKv.loadByIdAsync(jsonData.user);
     var posterData = {};
-    jsonData.bgImg = 'http://b.zol-img.com.cn/sjbizhi/images/5/320x510/1379321712730.jpg';
+    //jsonData.posterBgImg = 'http://b.zol-img.com.cn/sjbizhi/images/5/320x510/1379321712730.jpg';
     if(jsonData.type === PosterType.activity.value()){
-        posterData = yield posterHandler.activityPosterHandler.create(jsonData.bgImg, user);
+        posterData = yield posterHandler.activityPosterHandler.create(jsonData.posterBgImg, user);
     }else if(jsonData.type === PosterType.participant.value()){
-        posterData = yield posterHandler.participantPosterHandler.create(jsonData.bgImg, user);
+        posterData = yield posterHandler.participantPosterHandler.create(jsonData.posterBgImg, user);
     }
     if(posterData.err){
         logger.error('poster handler err: ' + posterData.err);

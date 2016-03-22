@@ -23,6 +23,7 @@ var Model = function(DomainBuilder){
             ,rule: {type: String}
             ,desc: {type: String}
             ,withPic: {type: Boolean} //是否启动图片助力功能
+            ,posterBgImg: {type: String} //海报背景图片
             ,qrCode: {type: String, ref: 'QrCode'} //scan get activity post
             ,poster: {type: String, ref: 'PowerPoster'} //activity poster
             ,type: {type: String, enum: PowerType.valueList(), default: PowerType.RedPacket.value(), required: true}

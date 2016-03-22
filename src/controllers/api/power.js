@@ -24,7 +24,8 @@ module.exports = function(router){
             ,rule: this.request.body.rule
             ,desc: this.request.body.desc
             ,withPic: this.request.body.withPic
-        }
+            ,posterBgImg: this.request.body.posterBgImg
+    }
         var data = yield powerActivityService.create(json);
         this.body = data;
     });
@@ -58,6 +59,7 @@ module.exports = function(router){
             ,friend_help_max_power: this.request.body.friend_help_max_power
             ,rule: this.request.body.rule
             ,desc: this.request.body.desc
+            ,posterBgImg: this.request.body.posterBgImg
         }
         var data = yield powerActivityService.updateById(id, json);
         this.body = data;
