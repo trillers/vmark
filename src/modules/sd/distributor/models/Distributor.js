@@ -10,10 +10,9 @@ var Model = function(domainBuilder){
         .withCreatedOn()
         .withRank()
         .withProperties({
-            name:                  {type: String, required: true},
-            upLine:                {type: String, ref: 'WechatMediaUser'},
-            desc:                  {type: String},
-            user:                  {type: String, ref: 'WechatMediaUser', required: true}
+            user:                  {type: String, ref: 'TenantUser', required: true},
+            upLine:                {type: String, ref: 'TenantUser'},
+            desc:                  {type: String}
         })
         .build();
     return schema.model(true);
