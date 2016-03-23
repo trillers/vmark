@@ -27,6 +27,7 @@ Service.prototype.create = function*(jsonData){
             }
             var poster = yield powerPosterService.create(posterJson);
             doc.poster = poster._id;
+            doc.posterQrCodeUrl = qrType.getQrCodeUrl(qr.ticket);
             yield this.updateById(doc._id, {poster: poster._id, qrCode: qr._id});
         }
         yield kv.saveActivityAsync(doc.toObject());
@@ -83,9 +84,9 @@ Service.prototype.loadById = function*(id){
         doc.bgImg = doc.bgImg ? doc.bgImg.split(',') : [];
         doc.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + doc._id;
         doc.url = 'http://' + settings.app.domain + '/marketing/power/activity?id=' + doc._id;
-        if(doc.withPic === 'true') {
-            doc.posterQrCodeUrl = yield this.context.services.powerPosterService.getPosterQrCodeUrlById(doc.poster);
-        }
+        //if(doc.withPic === 'true') {
+        //    doc.posterQrCodeUrl = yield this.context.services.powerPosterService.getPosterQrCodeUrlById(doc.poster);
+        //}
         logger.info('success load power activity by id: ' + id);
     }else{
         logger.info('failed load power activity by id: ' + id + ' err: no such activity');
