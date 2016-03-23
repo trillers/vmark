@@ -15,24 +15,25 @@ Service.prototype.create = function*(jsonData){
     try{
         var power = new PowerActivity(jsonData);
         var doc = yield power.save();
+        var obj = doc.toObject();
         if(jsonData.withPic) {
             var powerPosterService = this.context.services.powerPosterService;
             var qrType = qrRegistry.getQrType('ac');
             var qr = yield qrType.createQrAsync();
-            doc.qrCode = qr._id;
+            obj.qrCode = qr._id;
             var posterJson = {
-                activity: doc._id,
-                posterBgImg: doc.posterBgImg,
+                activity: obj._id,
+                posterBgImg: obj.posterBgImg,
                 type: PosterType.activity.value()
             }
             var poster = yield powerPosterService.create(posterJson);
-            doc.poster = poster._id;
-            doc.posterQrCodeUrl = qrType.getQrCodeUrl(qr.ticket);
-            yield this.updateById(doc._id, {poster: poster._id, qrCode: qr._id});
+            obj.poster = poster._id;
+            obj.posterQrCodeUrl = qrType.getQrCodeUrl(qr.ticket);
+            yield this.updateById(obj._id, {poster: poster._id, qrCode: qr._id});
         }
-        yield kv.saveActivityAsync(doc.toObject());
-        logger.info('success create power: ' + util.inspect(doc));
-        return doc.toObject();
+        yield kv.saveActivityAsync(obj);
+        logger.info('success create power: ' + util.inspect(obj));
+        return obj;
     }catch (err){
         logger.error('failed create power, err: ' + err);
         return null;
