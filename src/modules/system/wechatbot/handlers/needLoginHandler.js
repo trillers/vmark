@@ -5,6 +5,7 @@ var fs = require('fs');
 var os = require('os');
 var request = require('request');
 var ws = require('../../../../app/ws')();
+var path = require('path');
 
 module.exports = function(msg){
     co(function*(){
@@ -17,7 +18,7 @@ module.exports = function(msg){
             var wechatMediaService = context.services.wechatMediaService;
             var media = yield  wechatMediaService.findBotByOpenidAsync(botId);
             var operator = yield kv.getOperatorOpenidAsync(botId);
-            var loginQrCodePath = os.tmpdir() + operator + '.png';
+            var loginQrCodePath = path.join(os.tmpdir(), operator + '.png');
 
             console.warn(media);
 
