@@ -291,7 +291,7 @@ Service.prototype.scanActivityPoster = function*(qr, openid){
         var poster = yield powerPosterService.loadBySceneId(qr.sceneId);
         var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
         activity = yield this.loadById(poster.activity);
-        var status = yield this.getStatus(poster.activity, user);
+        var status = yield this.getStatus(activity, user);
         var reply = '', sendActivityCard = false, sendParticipantCard = false, posterMediaId = '';
         if(status.participant){
             var homePage = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + status.participant;
