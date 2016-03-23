@@ -1,3 +1,4 @@
+"use strict";
 var co = require('co');
 var util = require('util');
 var cbUtil = require('../../../../framework/callback');
@@ -20,7 +21,7 @@ Service.prototype.createTenantWechatSiteUser = function(mediaUserJson, callback)
     var kv = this.context.kvs.tenantWechatSiteUser;
     var tenantUserKv = this.context.kvs.tenantUser;
     var me = this;
-        mediaUserJson.host = wechatSite.id;
+        mediaUserJson.host = 'xxxxxxx';
         mediaUserJson.type = WechatMediaUserType.WechatSiteUser.value();
         var openid = mediaUserJson.openid;
         var at = agentToken.generate(openid);
@@ -88,6 +89,36 @@ Service.prototype.updateTenantWechatSiteUserById = function(id, update, callback
         logger.error(err.stack);
         if(callback) callback(err);
     });
+};
+
+Service.prototype.findByTenantId = function(org, options, callback){
+    var tenantWechatSiteService = this.context.services.tenantWechatSiteService;
+    var me = this;
+    co(function*(){
+        try{
+            if(!callback && typeof options === 'function'){
+                callback = options;
+                options = undefined;
+            }
+            let wechatSites = yield tenantWechatSiteService.loadAllTenantWechatSiteAsync(org);
+            let results = [];
+            for(let i=0,len=wechatSites.length; i<len; i++){
+                let params = {
+                    conditions: {host: wechatSites[i]._id}
+                };
+                if(options && options.populate){
+                    params['populate'] = options.populate
+                }
+                let users = yield me.findAsync(params);
+                users.forEach(user=>{user.host = wechatSites[i]});
+                results = results.concat(users);
+            }
+            callback(null, results);
+        } catch(e) {
+            logger.error('Fail to find tenant wechat users by tenant id ' + util.inspect(err));
+            callback(e);
+        }
+    })
 };
 
 module.exports = Service;

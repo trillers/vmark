@@ -1,0 +1,1 @@
+console.log(require('path').join(require('os').tmpdir(), '/xx'));

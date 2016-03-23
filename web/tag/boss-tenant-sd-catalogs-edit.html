@@ -1,0 +1,132 @@
+<boss-tenant-sd-catalogs-edit>
+    <div if="{!hidden}" class="container" style="margin-top: 0px">
+        <div class="row">
+            <div class="col-md-3 col-lg-3">
+                <boss-tenant-sd-left path="sd/catalogs"></boss-tenant-sd-left>
+            </div>
+            <div class="col-md-9 col-lg-9">
+                <div class="row" style="text-align: center">
+                    <h4>{catalog.name}</h4>
+                </div>
+                <alert validators="{validators.raw()}" clear="{clear}"></alert>
+                <div class="row">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <form class="form-horizontal">
+                                <div class="form-group text-left">
+                                    <label for="catalogNameInput" class="col-sm-2 control-label text-left">课程目录名称</label>
+                                    <div class="col-sm-10 {has-error: !catalogNameInput.value.trim()} has-feedback">
+                                        <input onblur="{catalogNameInputBlur}" value="{catalog.name}" id="catalogNameInput" type="text" class="form-control ">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="catalogMediaInput" class="col-sm-2 control-label">公众号</label>
+                                    <div class="col-sm-10">
+                                        <select id="catalogMediaInput" class="form-control">
+                                            <option each="{wechatsites}" value="{_id}">{name}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="catalogDescInput" class="col-sm-2 control-label">备注</label>
+                                    <div class="col-sm-10">
+                                        <textarea onblur="{catalogDescInputBlur}" type="password" class="form-control" id="catalogDescInput">
+                                            {catalog.desc}
+                                        </textarea>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-md-12 col-lg-12 text-center">
+                        <input disabled="{!courseMediaPriceInput.value.trim() || !courseNameInput.value.trim()}" onclick="{onSubmit}" type="button" class="btn btn-primary" value="保存"/>
+                        <a href="#sd/courses" class="btn btn-default">取消</a>
+                    </div>
+                </div>
+
+            </div><!-- right end -->
+
+
+
+        </div>
+    </div>
+    </div>
+    <style>
+        .form-horizontal .control-label{
+            text-align: left !important;
+        }
+        .vcenter {
+            vertical-align: middle;
+        }
+        .my-table{
+            width: 100%;
+        }
+        .my-table td{
+            width: 33.33333%;
+        }
+        .panel-default {
+            border-top: none;
+            border-color: #ddd;
+        }
+    </style>
+    <script>
+        var self = nest.presentable(this);
+        var loadCatalogByIdAction = domain.action('loadCatalogById');
+        var updateCatalogByIdAction = domain.action('updateCatalogById');
+        var loadAllTenantWechatSiteAction = domain.action('loadAllTenantWechatSite');
+
+        self.on('open', function(ctx){
+            var courseId = ctx.req.paramList[0];
+            loadCatalogByIdAction.newInvocation({
+                id: courseId
+            }).onDone(function(res){
+                self.catalog = res.catalog;
+                loadAllTenantWechatSiteAction.newInvocation(__app.tenant)
+                    .onDone(function(res){
+                        self.wechatsites = res;
+                        self.trigger('ready', false);
+                        self.trigger('view-route-to');
+                    })
+                    .execute();
+            }).execute();
+        });
+        self.on('mount', function(){
+            self.validators = _.widget.validatify([]);
+        });
+        self.catalogNameInputBlur = function(){
+            let catalogName = self.catalogNameInput.value.trim();
+            if(!catalogName){
+                return self.validators.addToSet({
+                    success: false,
+                    field: '课程名称',
+                    desc: '不能为空!',
+                    key: 'courseNameInput'
+                });
+            }
+            self.catalog.name = catalogName;
+        };
+        self.clear = function(){
+            self.validators.clear();
+        };
+        self.catalogDescInputBlur = function(){
+            self.catalog.desc = self.catalogDescInput.value.trim();
+        };
+
+        self.onSubmit = function(){
+            var req = {
+                id: self.catalog._id,
+                o: self.catalog
+            };
+
+            updateCatalogByIdAction.newInvocation(req)
+                .onDone(function(res){
+                    riot.route('sd/catalogs');
+                })
+                .execute();
+
+        };
+    </script>
+</boss-tenant-sd-catalogs-edit>

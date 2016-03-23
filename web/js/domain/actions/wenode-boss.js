@@ -28,6 +28,10 @@ domain.action('updateTenantWechatSiteById').onExecute(function(data){
     apiFactory.put('/tenant/wechatsite/_' + data.id).drive(this).send(data);
 });
 
+domain.action('findDistributorsByTenantId').onExecute(function(data){
+    apiFactory.get('/tenant/sd/distributors?tenant=' + data.tenant).drive(this).send();
+});
+
 domain.action('createCourse').onExecute(function(data){
     apiFactory.post('/tenant/sd/course').drive(this).send(data);
 });
@@ -43,5 +47,28 @@ domain.action('loadCourseById').onExecute(function(data){
 domain.action('updateCourseById').onExecute(function(data){
     apiFactory.put('/tenant/sd/course/_' + data.id).drive(this).send(data);
 });
+
+domain.action('createCatalog').onExecute(function(data){
+    apiFactory.post('/tenant/sd/catalog').drive(this).send(data);
+});
+
+domain.action('loadCatalogById').onExecute(function(data){
+    apiFactory.get('/tenant/sd/catalog/_' + data.id).drive(this).send();
+});
+
+domain.action('updateCatalogById').onExecute(function(data){
+    apiFactory.put('/tenant/sd/catalog/_' + data.id).drive(this).send(data);
+});
+
+domain.action('findCatalogs').onExecute(function(data){
+    var querystring = Object.keys(data.filter).map(function(k){
+        return k + "=" + data.filter[k]
+    }).join("&");
+    console.log(querystring);
+    apiFactory.get('/tenant/sd/catalog?' + querystring).drive(this).send();
+});
+
+
+
 
 module.exports = null;

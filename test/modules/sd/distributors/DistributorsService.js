@@ -1,4 +1,4 @@
-var contextLoader = require('../../../../../src/context');
+var contextLoader = require('../../../../src/context');
 var context = contextLoader.context;
 
 before(function(done){
@@ -10,14 +10,8 @@ before(function(done){
 describe('PlatformWechatSiteUserService', function(){
     describe('createPlatformWechatSiteUser', function(){
         it('create a platform wechat site user', function(done){
-            var service = context.services.tenantWechatSiteUserService;
-            var wechatSiteUser = {
-                nickname: '包三哥',
-                openid: 'xxx',
-                user: ''
-            };
-
-            service.createTenantWechatSiteUser(wechatSiteUser, function(err, result){
+            var service = context.services.distributorService;
+            service.findAllByTenantId('kvsCe', function(err, result){
                 context.logger.debug(result);
                 done();
             });

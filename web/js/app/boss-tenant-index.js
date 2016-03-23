@@ -45,6 +45,66 @@ app.routeView('sd/courses', nest.viewable({
   }
 }));
 
+app.routeView('sd/catalogs', nest.viewable({
+  name: 'boss-tenant-sd-catalogs',
+  mount: function(ctx){
+    var tags = riot.mount('boss-tenant-sd-catalogs', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx.req.query);
+  }
+}));
+
+app.routeView('sd/catalogs/add', nest.viewable({
+  name: 'boss-tenant-sd-catalogs-add',
+  mount: function(ctx){
+    var tags = riot.mount('boss-tenant-sd-catalogs-add', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx.req.query);
+  }
+}));
+
+app.routeView('sd/catalogs/edit/_:id', nest.viewable({
+  name: 'boss-tenant-sd-catalogs-edit',
+  mount: function(ctx){
+    var tags = riot.mount('boss-tenant-sd-catalogs-edit', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx);
+  }
+}));
+
+app.routeView('sd/catalogs/_:id', nest.viewable({
+  name: 'boss-tenant-sd-catalogs-detail',
+  mount: function(ctx){
+    var tags = riot.mount('boss-tenant-sd-catalogs-detail', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx);
+  }
+}));
+
+app.routeView('sd/distributors', nest.viewable({
+  name: 'boss-tenant-sd-distributors',
+  mount: function(ctx){
+    var tags = riot.mount('boss-tenant-sd-distributors', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx.req.query);
+  }
+}));
+
 app.routeView('sd/courses/_:id', nest.viewable({
   name: 'boss-tenant-sd-courses-detail',
   mount: function(ctx){

@@ -4,7 +4,7 @@ var CommissionType = typeRegistry.item('CommissionType');
 
 var Model = function(domainBuilder){
     var schema = domainBuilder
-        .i('Course')
+        .i('Distributor')
         .withBasis()
         .withLifeFlag()
         .withCreatedOn()

@@ -1,7 +1,7 @@
 var cbUtil = require('../../../../framework/callback');
 
 var idToObjKey = function(id){
-    return 'sd:cs:o:id:' + id;
+    return 'sd:ct:o:id:' + id;
 };
 
 var Kv = function(context){

@@ -1,4 +1,5 @@
 module.exports = {
     course:      require('./course'),
-    distributor: require('./distributor')
+    distributor: require('./distributor'),
+    catalog:     require('./catalog')
 };

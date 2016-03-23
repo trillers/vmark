@@ -70,20 +70,6 @@ module.exports = function (router) {
         }
     });
 
-    router.put('/sd/course/_:id/goLive', function*(){
-        try{
-            let courseId = this.params.id;
-            let json = this.request.body.o;
-            json['updOn'] = new Date();
-
-            let course = yield courseService.updateByIdAsync(courseId, json);
-            this.body = {course: course, error: null};
-        }catch(e){
-            logger.error(e);
-            this.body = {error: e};
-        }
-    });
-
     router.post('/sd/course', function*(){
         try{
             let course = this.request.body;
@@ -100,6 +86,20 @@ module.exports = function (router) {
         }
     });
 
+    router.put('/sd/course/_:id/goLive', function*(){
+        try{
+            let courseId = this.params.id;
+            let json = this.request.body.o;
+            json['updOn'] = new Date();
+
+            let course = yield courseService.updateByIdAsync(courseId, json);
+            this.body = {course: course, error: null};
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
     router.post('/sd/courses', function*(){
         try{
             let tenant = this.request.body.tenant;
@@ -110,9 +110,80 @@ module.exports = function (router) {
             params.sort = {
                 crtOn: -1
             };
-            let coursePersisted = yield courseService.findAsync(params);
-            this.body = {courses: coursePersisted, error: null};
+            let courses = yield courseService.findAsync(params);
+            this.body = {courses: courses, error: null};
         }catch(e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.get('/sd/catalog', function*(){
+        try{
+            let query = this.request.query;
+            let params = {
+                conditions: query,
+                populate: [
+                    {path: 'tenant'},
+                    {path: 'product'},
+                    {path: 'media'}
+                ]
+            };
+            let catalogs = yield context.services.catalogService.findAsync(params);
+            this.body = {catalogs: catalogs, error: null};
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.get('/sd/catalog/_:id', function*(){
+        try{
+            let catalogId = this.params.id;
+            let catalog = yield context.services.catalogService.loadFullInfoByIdAsync(catalogId);
+            this.body = {catalog: catalog, error: null};
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.put('/sd/catalog/_:id', function*(){
+        try{
+            let catalogId = this.params.id;
+            let catalog = this.request.body.o;
+            console.log(catalog);
+            let catalogUpdated = yield context.services.catalogService.updateByIdAsync(catalogId, catalog);
+            this.body = {catalog: catalogUpdated, error: null};
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.post('/sd/catalog', function*(){
+        try{
+            let catalog = this.request.body;
+            let catalogPersisted = yield context.services.catalogService.createAsync(catalog);
+            this.body = {courses: catalogPersisted, error: null};
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.get('/sd/distributors', function*(){
+        try{
+            let tenantId = this.request.query.tenant;
+            let options = {
+                populate: [
+                    {path:'user', model: 'TenantUser'},
+                    {path: 'upLine', model: 'TenantUser'}
+                ]
+            };
+            let distributors = yield context.services.distributorService.findAllByTenantIdAsync(tenantId, options);
+            this.body = {distributors: distributors, error: null};
+        } catch (e){
             logger.error(e);
             this.body = {error: e};
         }
