@@ -13,11 +13,22 @@ Service.prototype.create = function*(jsonData){
     var PowerActivity = this.context.models.PowerActivity;
     var kv = this.context.kvs.power;
     try{
-        var qrType = qrRegistry.getQrType('ac');
-        var qr = yield qrType.createQrAsync();
-        jsonData.qrCode = qr._id;
         var power = new PowerActivity(jsonData);
         var doc = yield power.save();
+        if(jsonData.withPic) {
+            var powerPosterService = this.context.services.powerPosterService;
+            var qrType = qrRegistry.getQrType('ac');
+            var qr = yield qrType.createQrAsync();
+            doc.qrCode = qr._id;
+            var posterJson = {
+                activity: doc._id,
+                posterBgImg: doc.posterBgImg,
+                type: PosterType.activity.value()
+            }
+            var poster = yield powerPosterService.create(posterJson);
+            doc.poster = poster._id;
+            yield this.updateById(doc._id, {poster: poster._id, qrCode: qr._id});
+        }
         yield kv.saveActivityAsync(doc.toObject());
         logger.info('success create power: ' + util.inspect(doc));
         return doc.toObject();
@@ -73,7 +84,7 @@ Service.prototype.loadById = function*(id){
         doc.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + doc._id;
         doc.url = 'http://' + settings.app.domain + '/marketing/power/activity?id=' + doc._id;
         if(doc.withPic === 'true') {
-            doc.posterQrCodeUrl = this.context.services.powerPosterService.getPosterQrCodeUrlById(doc.poster);
+            doc.posterQrCodeUrl = yield this.context.services.powerPosterService.getPosterQrCodeUrlById(doc.poster);
         }
         logger.info('success load power activity by id: ' + id);
     }else{
@@ -110,8 +121,8 @@ Service.prototype.loadAll = function*(){
     var docs = yield PowerActivity.find({lFlg: 'a'}).populate({path: 'qrCode'}).lean().exec();
     var qrType = qrRegistry.getQrType('ac');
     docs = docs.map(function(item){
-        if(item.withPic) {
-            item.qrCodeUrl = qrType.getQrCodeUrl(item.qrCode.ticket);
+        if(item.withPic && item.qrCode) {
+            item.qrCodeUrl = qrType.getQrCodeUrl(item.qrCode.ticket );
         }
         return item;
     })

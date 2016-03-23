@@ -18,6 +18,11 @@ var Handler = function (type) {
 
 Handler.prototype.create = function*(bgImg, user) {
     if (bgImg) {
+        if(!user){
+            user = {
+                openid: 'temp_user001'
+            }
+        }
         try {
             var qrType = null;
             var qr = null;

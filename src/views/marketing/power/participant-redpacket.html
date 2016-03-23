@@ -142,6 +142,19 @@
     });
 </script>
 <style>
+    .activity_poster {
+        display: none;
+        position: fixed;
+        padding-top: 200px;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 99;
+    }
+
     .share_bg {
         display: none;
         position: fixed;
@@ -167,12 +180,25 @@
 <div id="lean_overlay" style="display: none; opacity: 0.45;"></div>
 <script type="text/javascript">
     $(function () {
-        $('#modaltrigger_notice').leanModal({
-            top: 110,
-            overlay: 0.45,
-            closeButton: ".hidemodal"
-        });
+//        $('#modaltrigger_notice').leanModal({
+//            top: 110,
+//            overlay: 0.45,
+//            closeButton: ".hidemodal"
+//        });
     });
+    function join(){
+        if(!{{pariticipant.activity.withPic}}){
+            window.location.href = "{{pariticipant.activity.participateLink}}";
+        }else{
+            $('.activity_poster').show();
+            $('.activity_poster').click(function () {
+                if ($(this).css('display') == 'block') {
+                    $(this).css('display', 'none');
+                }
+            });
+        }
+    }
+
 </script>
 <header class="scroll">
     <!-- Swiper -->
@@ -281,7 +307,7 @@
 </section>
 <footer style="top: 505px;">
     <div class="oBtn">
-        <a href="{{participant.participateLink}}" style="display: {{ participant.join }}" id="modaltrigger_notice">我要参加</a>
+        <a onclick="join()" style="display: {{ participant.join }}" id="modaltrigger_notice">我要参加</a>
         <a style="display: {{ participant.help }}" id="helpTa">我要助力</a>
         <a style="background-color: gray; display: {{ participant.helped }}" id="helped">已助力</a>
         <a href="{{participant.homeLink}}" style="background: #fbe601;color: #464215;display: {{ participant.joined }}" id="home_page">我的主页</a>
@@ -332,6 +358,10 @@
 <div class="fullBg2" style="height: 1794px;"></div>
 <div class="share_bg">
     <img src="../../../../web/marketing/power/images/share-guide.png">
+</div>
+<div class="activity_poster">
+    <span style="z-index: 100; color: white;">长按识别下方二维码即可参与活动</span>
+    <img style="z-index: 100; width: 300px; height: 300px; margin-top: 50px" src="{{participant.activity.posterQrCodeUrl}}">
 </div>
 <style>
     .fullBg2 {
