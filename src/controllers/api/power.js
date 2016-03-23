@@ -162,5 +162,20 @@ module.exports = function(router){
         }
     });
 
+    router.post('/fullInfo', function *() {
+        var id = this.request.body.id;
+        var phone = this.request.body.phone;
+        var user = this.session.auth && this.session.auth.user;
+        if(user && user.openid){
+            var res = yield powerParticipantService.updateById(id, {phone: phone});
+            if(res.phone === phone){
+                this.body = {error: null, msg: 'success'};
+            }else{
+                this.body = {error: 'unknown error', msg: 'failed'};
+            }
+        }else {
+            this.body = {error: 'please open in wechat browser'};
+        }
+    });
 }
 

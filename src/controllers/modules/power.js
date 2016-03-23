@@ -55,6 +55,9 @@ module.exports = function(){
         if(user) {
             var participant = yield powerParticipantService.loadById(id);
             if(participant) {
+                if(!participant.phone){
+                    yield this.render('/marketing/power/fullInfo', {participantId: participant._id, headimgurl: user.headimgurl});
+                }
                 if (participant.activity.lFlg === 'a') {
                     var status = yield powerParticipantService.getStatus(participant, user);
                     util.extend(participant, status);
