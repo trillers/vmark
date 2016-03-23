@@ -9,19 +9,33 @@
             </div>
             <div class="row">
                 <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2" >
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label for="statusSelect">状态</label>
+                            <select id="statusSelect" class="form-control">
+                                <option value="" selected>请选择</option>
+                                <option value="{__app.enums.LifeFlag.names.Active}">{__app.enums.LifeFlag.values.a}</option>
+                                <option value="{__app.enums.LifeFlag.names.Inactive}">{__app.enums.LifeFlag.values.i}</option>
+                                <option value="{__app.enums.LifeFlag.names.Deleted}">{__app.enums.LifeFlag.values.d}</option>
+                            </select>
+                        </div>
+                        <button onclick="{queryTenantsByFilter}" class="btn btn-primary">查询</button>
+                    </form>
                     <table class="table table-striped">
                         <thead>
                         <tr>
                             <th>名称</th>
                             <th>类型</th>
                             <th>状态</th>
+                            <th>创建时间</th>
+                            <th>备注</th>
                         </tr>
                         </thead>
                         <tbody>
 
                         <tr each="{tenants}">
                             <td>
-                                <a href="/tenant-recontent-{_id}">
+                                <a href="#tenants/_{_id}">
                                     {name}
                                 </a>
                             </td>
@@ -30,6 +44,12 @@
                             </td>
                             <td>
                                 { __app.enums.LifeFlag.values[lFlg] }
+                            </td>
+                            <td>
+                                {_.date.format(new Date(crtOn), 'yyyy-MM-dd hh点mm分')}
+                            </td>
+                            <td>
+                                { desc }
                             </td>
                         </tr>
 
@@ -50,12 +70,18 @@
             self.api =  __app.settings.api.url;
             self.tip = false;
             self.tipInfo = "";
-
             var findTenants = domain.action('findTenants');
-            var onFindTenants = function(tenants){
-                console.log(tenants);
-                self.tenants = tenants;
-                self.update();
+            var onFindTenants = function(res){
+                let ts = res.tenants;
+                ts = ts.filter(function(t){return t.lFlg==='a'})
+                        .concat(ts.filter(function(t){return t.lFlg==='i'}))
+                        .concat(ts.filter(function(t){return t.lFlg==='d'}));
+                self.update({tenants: ts});
+            };
+            self.queryTenantsByFilter = function(e){
+                var filter = {};
+                self.statusSelect.value && (filter['lFlg'] = self.statusSelect.value);
+                findTenants.execute(filter);
             };
 
             this.on('mount', function(){
@@ -69,21 +95,6 @@
                 self.trigger('view-route-to');
                 findTenants.execute({});
                 console.info('tag tenants is opening');
-            });
-
-            this.on('leave', function(){
-                self.mask = true;
-                self.update();
-            });
-
-            this.on('reenter', function(){
-                self.mask = false;
-                self.update();
-            });
-
-            this.on('refresh', function(){
-                console.info('tag tenants is refreshing');
-                //_refresh();
             });
 
         </script>

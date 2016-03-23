@@ -14,7 +14,7 @@ var Model = function(domainBuilder){
             ,host:           {type: String, ref: 'WechatMedia', required: true}
             , type:         {type: String, enum: WechatMediaUserType.valueList(), default: WechatMediaUserType.WechatSiteUser.value(), required: true}
 
-            , user:         {type: String} //平台用户id
+            , user:         {type: String} //平台用户id or tenant user id
             , openid:       {type: String} //服务号粉丝openid 或者 助手号联系人buid (bot's contact id)
             , nickname:     {type: String, required: true}
             , remark:       {type: String}

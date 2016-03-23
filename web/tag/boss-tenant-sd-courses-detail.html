@@ -1,0 +1,234 @@
+<boss-tenant-sd-courses-detail>
+    <div if="{!hidden}" class="container" style="margin-top: 0px">
+        <div class="row">
+            <div class="col-md-3 col-lg-3">
+                <boss-tenant-sd-left path="sd/courses"></boss-tenant-sd-left>
+            </div>
+            <div class="col-md-9 col-lg-9">
+                <div>
+                    <div class="row" style="text-align: center">
+                        <a href="#sd/courses" style="position: absolute; left: 0px; top: 10px">返回课程列表</a>
+                        <h4>{course.name}</h4>
+                    </div>
+                    <alert validators="{validators.raw()}" clear="{clear}"></alert>
+                    <div class="row">
+                        <ul class="nav nav-tabs">
+                            <li role="presentation" class="{active: currNav === 0}"><a onclick="{onChangeTab(0)}">课程</a></li>
+                            <li role="presentation" class="{active: currNav === 1}"><a onclick="{onChangeTab(1)}">分销</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="row" if="{currNav === 0}">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <div>
+                                    <table class="table table-narrow">
+                                        <tr>
+                                            <td>课程名称</td>
+                                            <td>{course.name}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>推广语</td>
+                                            <td>{course.slogan}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>媒体价 ( :元 )</td>
+                                            <td>{course.listPrice}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>上/下架状态</td>
+                                            <td>{__app.enums.LiveStatus.values[course.liveStatus]}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>上/下架时间</td>
+                                            <td>{course.actionTime && _.date.format(new Date(course.actionTime), 'yyyy-MM-dd hh点mm分') || '空'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>备注</td>
+                                            <td>{course.desc}</td>
+                                        </tr>
+                                    </table>
+                                    <div class="row text-center">
+                                        <div class="col-md-12 col-lg-12">
+                                            <a href="#sd/courses/edit/details/_{course._id}" class="btn btn-primary">编辑课程详情</a>
+                                        </div>
+                                    </div>
+                                    <div class="row text-center" style="margin-top: 20px; margin-bottom: 20px">
+                                        <div class="col-md-12 col-lg-12">
+                                            <a href="#sd/courses/edit/_{course._id}" class="btn btn-default">修改</a>
+                                            <input if="{course.liveStatus === __app.enums.LiveStatus.names.Idle}" onclick="{onGoLive}" data-toggle="modal" data-target="#modal" value="上架" type="button" class="btn btn-default"/>
+                                            <input if="{course.liveStatus === __app.enums.LiveStatus.names.GoLive}" onclick="{onSunset}" data-toggle="modal" data-target="#modal" value="下架" type="button" class="btn btn-default"/>
+                                            <input onclick="{onDelete}" data-toggle="modal" data-target="#modal" value="删除" type="button" class="btn btn-default"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" if="{currNav === 1}">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <td class="text-left">
+                                    <table class="my-table table table-narrow">
+                                        <tr>
+                                            <td><strong>会员折扣</strong></td>
+                                            <td>单位课程优惠</td>
+                                            <td>
+                                                <span>{__app.enums.CommissionType.names.Cash === course.memberDiscountsType && '金额' || '百分比'}</span>
+                                                <span>{ course.memberDiscountsValue }</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>直接分销商-直接推荐人</strong></td>
+                                            <td>单位课程佣金</td>
+                                            <td>
+                                                <span>{__app.enums.CommissionType.names.Cash === course.upLine1CommissionType && '金额' || '百分比'}</span>
+                                                <span>{ course.upLine1CommissionValue }</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>间接分销商-间接推荐人</strong></td>
+                                            <td>单位课程佣金</td>
+                                            <td>
+                                                <span>{__app.enums.CommissionType.names.Cash === course.upLine2CommissionType && '金额' || '百分比'}</span>
+                                                <span>{ course.upLine2CommissionValue }</span>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td><strong>第三级分销商-间接推荐人的推荐人</strong></td>
+                                            <td>单位课程佣金</td>
+                                            <td>
+                                                <span>{__app.enums.CommissionType.names.Cash === course.upLine3CommissionType && '金额' || '百分比'}</span>
+                                                <span>{ course.upLine3CommissionValue }</span>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td colspan="3" style="text-align: center">注： 如果佣金按百分比计算，佣金基数以实际消费者实付金额为准（即线下实际核销金额）</td>
+                                        </tr>
+
+                                        <tr>
+                                            <td><strong>分销海报背景</strong></td>
+                                            <td><img style="width: 200px" riot-src="{course.poster &&__app.settings.api.url + '/file?media_id=' + course.poster}"/></td>
+                                            <td></td>
+                                        </tr>
+
+                                    </table>
+
+
+                            </div>
+                        </div>
+                    </div> <!-- panel end -->
+
+                </div>
+
+            </div><!-- right end -->
+
+
+
+        </div>
+    </div>
+    </div>
+    <style scoped>
+        .form-horizontal .control-label{
+            text-align: left !important;
+        }
+        .vcenter {
+            vertical-align: middle;
+        }
+        .table-narrow tr td{
+            border: none !important;
+            width: 30% !important;
+        }
+        .my-table{
+            width: 100%;
+        }
+        .my-table td{
+            width: 33.33333%;
+        }
+        .panel-default {
+            border-top: none;
+            border-color: #ddd;
+        }
+    </style>
+    <script>
+        var self = nest.presentable(this);
+        var loadCourseByIdAction = domain.action('loadCourseById');
+        var updateCourseByIdAction = domain.action('updateCourseById');
+        self.currNav = 0;
+        self.onChangeTab = function(index){
+            return function(){
+                self.currNav = index;
+            };
+        };
+        self.on('open', function(ctx){
+            var courseId = ctx.req.paramList[0];
+            loadCourseByIdAction.newInvocation({
+                id: courseId
+            }).onDone(function(res){
+                self.course = res.course;
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+            }).execute();
+        });
+        self.on('mount', function(){
+            self.validators = _.widget.validatify([]);
+        });
+
+        self.onGoLive = function(e){
+            _.widget.confirm({
+                title: '操作确认',
+                content: '你确认要“上架”该课程吗？',
+                callback: function(){
+                    self.course.liveStatus = __app.enums.LiveStatus.names.GoLive;
+                    updateCourseByIdAction.newInvocation({
+                        id: self.course._id,
+                        intention: 'GoLiveOrSunset',
+                        o: self.course
+                    }).onDone(function(res){
+                        self.course.actionTime = res.course.actionTime;
+                        self.update();
+                    }).execute();
+                }
+            });
+        };
+
+        self.onSunset = function(){
+            _.widget.confirm({
+                title: '操作确认',
+                content: '你确认要“下架”该课程吗？',
+                callback: function(){
+                    self.course.liveStatus = __app.enums.LiveStatus.names.Sunset;
+                    updateCourseByIdAction.newInvocation({
+                        id: self.course._id,
+                        intention: 'GoLiveOrSunset',
+                        o: self.course
+                    }).onDone(function(res){
+                        self.course.actionTime = res.course.actionTime;
+                        self.update();
+                    }).execute();
+                }
+            });
+        };
+
+        self.onDelete = function(){
+            _.widget.confirm({
+                title: '操作确认',
+                content: '你确认要“删除”该课程吗？',
+                callback: function(){
+                    self.course.lFlg = __app.enums.LifeFlag.names.Deleted;
+                    updateCourseByIdAction.newInvocation({
+                        id: self.course._id,
+                        o: self.course
+                    }).onDone(function(res){
+                        if(!res.error){
+                            riot.route('sd/courses');
+                        }
+                    }).execute();
+                }
+            });
+        };
+    </script>
+</boss-tenant-sd-courses-detail>

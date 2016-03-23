@@ -1,0 +1,111 @@
+<boss-tenant-sd-courses>
+    <div if="{!hidden}" class="container" style="margin-top: 0px">
+        <div class="row">
+            <div class="col-md-3 col-lg-3">
+                <boss-tenant-sd-left path="sd/courses"></boss-tenant-sd-left>
+            </div>
+            <div class="col-md-9 col-lg-9">
+                <div class="row" style="text-align: center">
+                    <h4>课程管理</h4>
+                </div>
+                <div class="row">
+                    <form class="form-inline">
+                        <div class="col-md-6 col-lg-6">
+                            <div class="form-group">
+                                <label for="coursesStatus">状态</label>
+                                <select id="coursesStatus" class="form-control" onchange="{onSelect}">
+                                    <option value="">全部状态</option>
+                                    <option value="{__app.enums.LiveStatus.names.Idle}">待上架</option>
+                                    <option value="{__app.enums.LiveStatus.names.GoLive}">已上架</option>
+                                    <option value="{__app.enums.LiveStatus.names.Sunset}">已下架</option>
+                                </select>
+                            </div>
+                            <input onclick="{onSearch}" class="btn btn-primary" type="button" value="查询"/>
+                        </div>
+                        <div class="col-md-6 col-lg-6 text-right">
+                            <a class="btn btn-primary" href="#sd/courses/add">添加</a>
+                        </div>
+                    </form>
+                </div>
+                <div class="row" style="margin-top: 10px">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th>状态</th>
+                            <th>上/下架时间</th>
+                            <th>创建时间</th>
+                            <th>备注</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr each="{courses}">
+                            <td>
+                                <a href="#sd/courses/_{_id}">
+                                    {name}
+                                </a>
+                            </td>
+                            <td>
+                                { __app.enums.LiveStatus.values[liveStatus] }
+                            </td>
+                            <td>
+                                { actionTime && _.date.format(new Date(actionTime), 'yyyy-MM-dd hh点mm分') || '空'}
+                            </td>
+                            <td>
+                                {_.date.format(new Date(crtOn), 'yyyy-MM-dd hh点mm分')}
+                            </td>
+                            <td>
+                                { desc }
+                            </td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style></style>
+    <script>
+        var self = nest.presentable(this);
+        var findCoursesAction = domain.action('findCourses');
+        self.courses = [];
+        self.filter = {};
+        console.log(__app.enums)
+        self.on('open', function(){
+            findCoursesAction.newInvocation({
+                tenant: __app.tenant,
+                filter: self.filter
+            }).onDone(function(res){
+                if(res.error){
+                    return alert("failed to search courses");
+                }
+                self.courses= res.courses;
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+            }).execute();
+        });
+        self.onSearch = function(e){
+            findCoursesAction.newInvocation({
+                tenant: __app.tenant,
+                filter: self.filter
+            }).onDone(function(res){
+                if(res.error){
+                    return alert("failed to search courses");
+                }
+                self.update({courses: res.courses});
+            }).execute();
+        };
+        self.onSelect = function(e){
+            var liveStatus = self.coursesStatus.value;
+            if(!liveStatus){
+                if(self.filter.hasOwnProperty('liveStatus')){
+                    delete self.filter['liveStatus'];
+                }
+                return;
+            }
+            self.filter.liveStatus = liveStatus;
+        }
+    </script>
+</boss-tenant-sd-courses>

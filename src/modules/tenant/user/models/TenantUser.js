@@ -16,6 +16,8 @@ var Model = function(domainBuilder){
             , headimgurl:   {type: String}
             , sex:          {type: Number, default: 0} //0: unknown, 1: male, 2: female
 
+            , upLine:       {type: String, ref: 'TenantUser'}
+
             , country: {type: String}
             , province: {type: String}
             , city: {type: String}

@@ -5,6 +5,7 @@
     <title>微节点</title>
     <script src="/public/components/seajs/dist/sea.js"></script>
     <script src="/public/components/seajs-wrap/dist/seajs-wrap.js"></script>
+    <script src="/public/components/summernote/dist/summernote.min.js"></script>
 
     <script type="text/javascript">
         window.__app = {{ JSON.stringify(__app) }};
@@ -37,17 +38,21 @@
     <div>
         <boss-topbar></boss-topbar>
         <tenants></tenants>
-        <redpacket-boss></redpacket-boss>
+        <tenant></tenant>
+        <tenant-edit></tenant-edit>
+        <confirm></confirm>
         <script src="/web/tag/boss-topbar.html" type="riot/tag"></script>
         <script src="/web/tag/tenants.html" type="riot/tag"></script>
-        <script src="/web/tag/redpacket-boss.html" type="riot/tag"></script>
-
+        <script src="/web/tag/tenant.html" type="riot/tag"></script>
+        <script src="/web/tag/alert.html" type="riot/tag"></script>
+        <script src="/web/tag/tenant-edit.html" type="riot/tag"></script>
+        <script src="/web/tag/confirm.html" type="riot/tag"></script>
     </div>
 
     <!-- Bootstrap import -->
     <script src="/public/components/jquery/jquery.min.js"></script>
     <script src="/public/components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <!--<script src="/public/components/summernote/dist/summernote.min.js"></script>-->
+
 
 </body>
 </html>
