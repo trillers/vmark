@@ -1,5 +1,6 @@
 var fs = require('fs');
 var os = require('os');
+var path = require('path');
 var request = require('request');
 var logger = require('../../../../app/logging').logger;
 var wechatApi = require('../../../wechat/common/api').api;
@@ -13,7 +14,7 @@ module.exports = function (context) {
     try{
         tenantAdminQrType.createQr(function(err, qr){
             var url = wechatApi.showQRCodeURL(qr.ticket);
-            var qrCodePath = os.tmpdir() + openid + '.png';
+            var qrCodePath = path.join(os.tmpdir(), 'recontent_' + openid + '.png');
             request(url).pipe(fs.createWriteStream(qrCodePath)).on('close', function () {
                 wechatApi.uploadMedia(qrCodePath, 'image', function (err, data) {
                     if (err) {
