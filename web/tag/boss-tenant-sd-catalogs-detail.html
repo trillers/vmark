@@ -39,7 +39,7 @@
                                         </tr>
                                         <tr>
                                             <td>微站URL</td>
-                                            <td><span>http://tools.baijiabao.com/catalog?id={catalog._id}</span></td>
+                                            <td><span>{__app.settings.app.url + "/catalog?id=" + catalog._id}</span></td>
                                         </tr>
                                     </table>
                                     <div class="row text-center" style="margin-top: 20px; margin-bottom: 20px">
@@ -198,7 +198,6 @@
         var loadCatalogByIdAction = domain.action('loadCatalogById');
         var findCoursesAction = domain.action('findCourses');
         var updateCatalogByIdAction = domain.action('updateCatalogById');
-        console.log(__app.enums)
 
         self.on('open', function(ctx){
             var catalogId = ctx.req.paramList[0];
@@ -209,11 +208,7 @@
                 findCoursesAction.newInvocation({
                     tenant: __app.tenant
                 }).onDone(function(res){
-                    console.log(res);
-                    if(res.error){
-                        return alert("failed to search courses");
-                    }
-                    self.courses= res.courses;
+                    self.courses = res.courses;
                     self.trigger('ready', false);
                     self.trigger('view-route-to');
                 }).execute();
@@ -230,7 +225,7 @@
         self.populateProducts = function(products){
             return products.map(function(product){
                 return self.courses.filter(function(course){
-                    return course._id = product;
+                    return course._id === product;
                 })[0]
             });
         };
