@@ -15,7 +15,7 @@ module.exports = {
         root: __dirname,
         alias: {
             fetch: '../../../../public/components/fetch/fetch.js',
-            riot: '../../../../public/components/cmd-riot/riot.js',
+            riot: '../../../../public/components/cmd-riot/riot+compiler.js',
             wx: '../../../../web/js/app/jssdk.js'
         }
     },
