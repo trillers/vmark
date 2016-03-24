@@ -2,16 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <script src="/web/js/app/jssdk.js"></script>
-    <script src="/public/components/fetch/fetch.js"></script>
-    <script src="/public/components/cmd-riot/riot+compiler.min.js"></script>
-    <scrpit src="/web/"></scrpit>
     <title>商城页</title>
+    <script>
+        window.__app = {{ JSON.stringify(__app) }};
+        window.__app.tenant = {{JSON.stringify(tenant)}};
+        window.__page = {{ JSON.stringify(__page) }};
+        window.prdOrNot =( __app.settings.env.NODE_ENV === "production" );
+    </script>
+    <script src="/web/build/common.js"></script>
+    <script src="/web/build/build.js"></script>
 </head>
 <body>
-    {{id}}
-    <script>
-
-    </script>
+    hello world.
 </body>
 </html>
