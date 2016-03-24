@@ -19,6 +19,7 @@
     "sockjs-client": "~1.0.3",
     "summernote": "~0.7.0",
     "zeroclipboard": "~2.2.0",
-    "bootstrap-material-design": "*"
+    "bootstrap-material-design": "*",
+    "fetch": "~0.11.0"
   }
 }

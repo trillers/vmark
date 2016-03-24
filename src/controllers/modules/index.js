@@ -16,6 +16,8 @@ module.exports = function(app){
 
     app.use(require('./points')());
 
+    app.use(require('./sd')());
+
     app.use(require('./marketing')());
 
 }

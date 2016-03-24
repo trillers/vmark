@@ -64,7 +64,6 @@ domain.action('findCatalogs').onExecute(function(data){
     var querystring = Object.keys(data.filter).map(function(k){
         return k + "=" + data.filter[k]
     }).join("&");
-    console.log(querystring);
     apiFactory.get('/tenant/sd/catalog?' + querystring).drive(this).send();
 });
 

@@ -219,6 +219,7 @@
         });
 
         self.isChecked = function(id){
+            console.log(self.catalog.products);
             return self.catalog.products.indexOf(id)>=0;
         };
 
