@@ -15,18 +15,29 @@ module.exports = {
         root: __dirname,
         alias: {
             fetch: '../../../../public/components/fetch/fetch.js',
-            riot: '../../../../public/components/cmd-riot/riot+compiler.js',
             wx: '../../../../web/js/app/jssdk.js'
         }
     },
     module: {
+        preLoaders: [
+            { test: /\.html$/, loader: 'riotjs-loader', query: { type: 'none' } }
+        ],
         loaders: [{
             test: /\.js$/,
+            exclude: path.resolve(__dirname, '../../../../public'),
             loader: 'babel-loader',
             query: {
                 presets: ['es2015']
             }
         }]
     },
-    plugins: [commonsPlugin]
+    plugins: [commonsPlugin,
+        new webpack.ProvidePlugin({
+            riot: 'riot'
+        })
+    ],
+    //devServer: {
+    //    contentBase: './public'
+    //}
+    //webpack-dev-server --inline --hot
 };
