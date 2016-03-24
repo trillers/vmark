@@ -9,10 +9,10 @@
         window.__page = {{ JSON.stringify(__page) }};
         window.prdOrNot =( __app.settings.env.NODE_ENV === "production" );
     </script>
-    <script src="/web/build/common.js"></script>
-    <script src="/web/build/build.js"></script>
+    <script src="/web/build/js/common.js"></script>
 </head>
 <body>
-    hello world.
+    <app></app>
+    <script src="/web/build/js/build.js"></script>
 </body>
 </html>

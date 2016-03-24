@@ -1,4 +1,8 @@
 import {} from 'fetch';
-import * as riot from 'riot';
+import {} from 'wx';
 
-console.log(riot);
+require('../tag/app.html');
+console.log(wx);
+let tags = riot.mount('*');
+console.log(tags);
+console.log(fetch);
