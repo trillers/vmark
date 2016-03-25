@@ -14,3 +14,7 @@ export var dispatcher = {
         }
     }
 };
+
+function isPromise(o){
+    return typeof o === 'object' && typeof o.then === 'function';
+}
