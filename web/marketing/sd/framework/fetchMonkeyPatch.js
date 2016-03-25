@@ -50,7 +50,7 @@ function checkStatus(response) {
 
 function parseJSON(response) {
     try{
-        response.json()
+        return response.json()
     }catch(e){
         var error = new Error('parse json error');
         error.response = response;

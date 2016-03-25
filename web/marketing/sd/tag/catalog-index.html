@@ -3,5 +3,17 @@
     <ul>
         <li>11</li>
     </ul>
-    console.log("!!!!")
+
+    <script>
+        this.mixin('dispatcher');
+
+        this.on('mount', ()=>{
+            this.on('loadCatalogById', function(res){
+                console.log(res)
+            });
+
+            this.dispatch(actions.loadCatalogById(this.opts.id));
+        });
+
+    </script>
 </catalog-index>
