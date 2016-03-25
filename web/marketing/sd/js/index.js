@@ -3,9 +3,9 @@ import {} from 'wx';
 
 import {app} from './app';
 import {actions} from '../actions/index';
+import * as AppStore from '../store/AppStore';
 import {mixins} from '../mixins/index';
 
-console.log(wx);
 require('../tag/catalog-index.html');
 require('../tag/product.html');
 

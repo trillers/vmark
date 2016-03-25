@@ -7,42 +7,39 @@
         <li>{product.details}</li>
 
     </ul>
+    <div>
+        <input type="button" value="预约" onclick="{appointment}">
+    </div>
+    <div id="form" if="{formShow}" onclick="{cancelAppointment}">
+        <input type="text" placeholder="请输入电话号码">
+        <input type="text" value="提交">
+    </div>
+    <style scoped>
+        #form{
+        }
+    </style>
     <script>
         'use strict'
+        this.mixin('dispatcher');
+
         let self = this;
         self.id = this.opts.id;
-        console.log(this.opts.id);
 
         self.on('mount', opts => {
-            console.log('product tag mounted');
-            console.log(opts);
-        productAction.on('done', data => {
-            console.error('dddddd');
-        console.error(data);
+            self.dispatch(actions.productActions.loadProduct(self.id));
         })
-            productAction.get();
-        });
-        function checkStatus(response) {
-            if (response.status >= 200 && response.status < 300) {
-                return response
-            } else {
-                var error = new Error(response.statusText)
-                error.response = response
-                throw error
-            }
+
+        self.on('loadProduct', data => {
+            self.update({product: data.course});
+        })
+
+        self.appointment = e => {
+            self.update({formShow: true});
         }
 
-        function parseJSON(response) {
-            return response.json()
+        self.cancelAppointment = e => {
+            self.update({formShow: false});
         }
-        fetch(__app.settings.api.url + '/tenant/sd/course/_' + self.id)
-                .then(checkStatus)
-                .then(parseJSON)
-                .then(data => {
-                    console.log('request succeeded with JSON response', data)
-                    self.update({product: data.course});
-                }).catch(function(error) {
-            console.log('request failed', error)
-        })
+
     </script>
 </product>
