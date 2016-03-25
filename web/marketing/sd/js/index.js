@@ -1,8 +1,9 @@
-import {} from 'fetch';
+import {} from 'jQuery';
 import {} from 'wx';
 
-require('../tag/app.html');
-console.log(wx);
+require('../tag/catalog-index.html');
+
+console.log($.post);
+
+
 let tags = riot.mount('*');
-console.log(tags);
-console.log(fetch);
