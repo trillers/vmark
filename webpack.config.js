@@ -16,12 +16,19 @@ module.exports = {
         alias: {
             fetch: '../../../../public/components/fetch/fetch.js',
             jQuery: '../../../../web/marketing/sd/framework/jQueryLean.js',
-            wx: '../../../../web/js/app/jssdk.js'
+            wx: '../../../../web/js/app/jssdk.js',
+            h2: '../../../../web/js/h2/index.js'
         }
     },
     module: {
         preLoaders: [
-            { test: /\.html$/, loader: 'riotjs-loader', query: { type: 'none' } }
+            {
+                test: /\.html$/,
+                loader: 'riotjs-loader',
+                query: {
+                    type: 'none'
+                }
+            }
         ],
         loaders: [{
             test: /\.js$/,

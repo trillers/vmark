@@ -5,14 +5,14 @@
     </ul>
 
     <script>
+        this.mixin('dispatcher');
+
         this.on('mount', ()=>{
-            $.get(__app.settings.api.url + '/tenant/sd/catalog/_' + this.opts.id)
-                .then((res)=>{
-                    console.log(res)
-                })
-                .catch(e=>{
-                    console.warn(e)
-                })
+            this.on('loadCatalogById', function(res){
+                console.log(res)
+            });
+
+            this.dispatch(actions.loadCatalogById(this.opts.id));
         });
 
     </script>
