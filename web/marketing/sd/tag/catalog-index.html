@@ -3,5 +3,17 @@
     <ul>
         <li>11</li>
     </ul>
-    console.log("!!!!")
+
+    <script>
+        this.on('mount', ()=>{
+            $.get(__app.settings.api.url + '/tenant/sd/catalog/_' + this.opts.id)
+                .then((res)=>{
+                    console.log(res)
+                })
+                .catch(e=>{
+                    console.warn(e)
+                })
+        });
+
+    </script>
 </catalog-index>
