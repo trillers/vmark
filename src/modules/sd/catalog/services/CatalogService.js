@@ -70,7 +70,7 @@ Service.prototype.loadFullInfoById = function(id, callback){
     Catalog.findById(id, null, {lean: true})
         .populate({path: 'tenant'})
         .populate({path: 'media'})
-        .populate({path: 'product'})
+        .populate({path: 'products'})
         .exec(callback);
 };
 

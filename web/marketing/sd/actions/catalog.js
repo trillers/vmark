@@ -1,7 +1,7 @@
-export var loadCatalogById = id => dispatch =>{
+export var loadCatalogById = id => callback =>{
     $.get(__app.settings.api.url + '/tenant/sd/catalog/_' + id)
         .then((res)=>{
-            dispatch({
+            callback({
                 name: 'loadCatalogById',
                 res
             });

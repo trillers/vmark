@@ -1,17 +1,47 @@
 <catalog-index>
     <div>产品目录</div>
-    <ul>
-        <li>11</li>
-    </ul>
+    <div if="{!catalog || !catalog.products || !catalog.products.length}">
+        该机构尚没有上架任何课程
+    </div>
+    <div if="{catalog.products && catalog.products.length}">
+        <ul class="catalog-card">
+            <li each="{catalog.products}">
+                <div>
+                    <img riot-src="{poster &&__app.settings.api.url + '/file?media_id=' + poster}"/>
+                </div>
+                <div>
+                    <span>{name}</span>
+                    <span>{slogan}</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <style>
+        .catalog-card{
+            margin: 0px;
+            padding: 0px;
+        }
+        .catalog-card li{
+            min-height: 48px;
+        }
+        .catalog-card li >div:first-child{
+            width: 40px;
+            float: left;
+        }
+        .catalog-card li >div:first-child >img{
+            width: 40px;
+        }
+    </style>
 
     <script>
         this.mixin('dispatcher');
 
         this.on('mount', ()=>{
-            this.on('loadCatalogById', function(res){
-                console.log(res)
+            this.on('loadCatalogById', (res)=>{
+                this.update({catalog: res.catalog});
+                console.log(res);
             });
-
             this.dispatch(actions.loadCatalogById(this.opts.id));
         });
 
