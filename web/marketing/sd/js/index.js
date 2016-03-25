@@ -3,7 +3,7 @@ import {} from 'wx';
 
 require('../tag/catalog-index.html');
 
-console.log($.post);
+console.log($);
 
 
 let tags = riot.mount('*');
