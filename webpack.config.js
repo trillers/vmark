@@ -15,6 +15,7 @@ module.exports = {
         root: __dirname,
         alias: {
             fetch: '../../../../public/components/fetch/fetch.js',
+            jQuery: '../../../../web/marketing/sd/framework/jQueryLean.js',
             wx: '../../../../web/js/app/jssdk.js'
         }
     },
