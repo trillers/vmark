@@ -21,5 +21,13 @@ module.exports = function(){
         yield this.render('marketing/sd/catalog', {id: catalogId});
     });
 
+    router.get('/product', function *(){
+        let productId = this.request.query.id;
+        if(!productId){
+            return yield this.render('404');
+        }
+        yield this.render('marketing/sd/product', {id: productId});
+    });
+
     return router.routes();
 };
