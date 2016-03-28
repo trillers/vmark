@@ -123,6 +123,11 @@ QrTypeRegistry.prototype.handle = function(sceneId, openid){
             var qr = new Qr(qrDoc);
             qr.setRegistry(me);
             qr.typeObj = me.getQrType(qrType);
+            console.error('********************');
+            console.error(qrDoc);
+            console.warn(qr);
+            console.error(qr.temp && qr.isInvalid());
+
             if(qr.temp && qr.isInvalid()){
                 return qr.typeObj.emit('expire', qr, openid);
             }
