@@ -5,7 +5,7 @@
     </div>
     <div if="{catalog.products && catalog.products.length}">
         <ul class="catalog-card">
-            <li each="{catalog.products}">
+            <li each="{catalog.products}" onclick="{parent.routeTo}">
                 <div>
                     <img riot-src="{poster &&__app.settings.api.url + '/file?media_id=' + poster}"/>
                 </div>
@@ -43,7 +43,12 @@
                 console.log(res);
             });
             this.dispatch(actions.loadCatalogById(this.opts.id));
-        });
+        })
+        this.routeTo = e =>{
+            alert(__app.settings.app.url + "/sd/product?id=" + e.item._id)
+            console.log(e.item);
+            window.location = __app.settings.app.url + "/sd/product?id=" + e.item._id;
+        }
 
     </script>
 </catalog-index>

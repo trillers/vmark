@@ -8,7 +8,7 @@ export var dispatcher = {
         if(isPromise(action)){
             return action.then(done);
         }
-        done();
+        done(action);
         function done(res){
             app.trigger('action', res);
         }

@@ -28,7 +28,7 @@ var Model = function(domainBuilder){
             tenant:                {type: String, ref: 'Org', required: true},
             operator:              {type: String, ref: 'OrgMember'},
             updOn:                 {type: Date},
-            poster:                {type: String}
+            poster:                {type: String, ref: 'Poster', required: true}
         })
         .build();
     return schema.model(true);
