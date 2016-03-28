@@ -1,0 +1,66 @@
+<product>
+    <ul>
+        <li>{product.name}</li>
+        <li>{product.slogan}</li>
+        <li>{product.listPrice}</li>
+        <li>{product.desc}</li>
+        <li>{product.details}</li>
+
+    </ul>
+    <div>
+        <input type="button" value="预约" onclick="{appointment}">
+    </div>
+    <div id="form" if="{formShow}" >
+        <div id="bg" onclick="{cancelAppointment}"></div>
+        <div id="info">
+            <input type="text" placeholder="请输入电话号码">
+            <input type="button" value="提交">
+            <input type="button" value="取消" onclick="{cancelAppointment}">
+        </div>
+    </div>
+    <style scoped>
+        #bg{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 99;
+        }
+        #info{
+            position: fixed;
+            top: 200px;
+            left: 0;
+            width: 100%;
+            height: 200px;
+            text-align: center;
+            z-index: 100;
+        }
+    </style>
+    <script>
+        'use strict'
+        this.mixin('dispatcher');
+
+        let self = this;
+        self.id = this.opts.id;
+
+        self.on('mount', opts => {
+            self.dispatch(actions.productActions.loadProduct(self.id));
+        })
+
+        self.on('loadProduct', data => {
+            self.update({product: data.course});
+        })
+
+        self.appointment = e => {
+            self.update({formShow: true});
+        }
+
+        self.cancelAppointment = e => {
+            self.update({formShow: false});
+        }
+
+    </script>
+</product>
