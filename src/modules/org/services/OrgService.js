@@ -16,7 +16,7 @@ Service.prototype.loadById = function(id, callback){
             'Succeed to load org');
 
         cbUtil.handleSingleValue(function(err, obj){
-            if(err){
+            if(err || !obj){
                 Org.findById(id, function(err, doc){
                     var obj = doc.toObject({virtuals: true});
                     callback(err, obj);
