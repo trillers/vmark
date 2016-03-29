@@ -1,31 +1,28 @@
-var cbUtil = require('../../../framework/callback');
+var keyHelper = require('./keyHelper');
+var helper = require('../../../common/kvs/tenantHelper');
 
-var openidToAtKey = function(openid){ return 'wc:at:oid:' + openid; };
+var wechatIdAndOpenidToAt = function(wechatId, openid){
+    return keyHelper.wechatBaseKey(wechatId) +  ':oauth:' + openid;
+};
 
 var Kv = function(context){ this.context = context; };
 
-Kv.prototype.getAccessToken = function(openid, callback){
-    var redis = this.context.redis.main;
-    var key = openidToAtKey(openid);
-    redis.hgetall(key, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to get user oauth access token by openid ' + openid + ': ' + err,
-            'Succeed to get user oauth access token by openid ' + openid);
-        cbUtil.handleSingleValue(callback, err, result);
-    });
-};
+Kv.prototype.getAccessToken = helper.generateLoader({
+    keyName: 'openid',
+    valueName: 'oauth access token',
+    keyGenerator: wechatIdAndOpenidToAt
+});
 
-Kv.prototype.saveAccessToken = function(openid, accessToken, callback){
-    var redis = this.context.redis.main;
-    var key = openidToAtKey(openid);
-    redis.hmset(key, accessToken, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to save user oauth access token by openid ' + openid + ': ' + err,
-            'Succeed to save user oauth access token by openid ' + openid);
-        cbUtil.handleOk(callback, err, result, accessToken);
-    });
-};
+Kv.prototype.saveAccessToken = helper.generateSaver({
+    keyName: 'openid',
+    valueName: 'oauth access token',
+    keyGenerator: wechatIdAndOpenidToAt
+});
+
+Kv.prototype.deleteAccessToken = helper.generateDeleter({
+    keyName: 'openid',
+    valueName: 'oauth access token',
+    keyGenerator: wechatIdAndOpenidToAt
+});
 
 module.exports = Kv;
