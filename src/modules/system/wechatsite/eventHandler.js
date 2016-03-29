@@ -13,7 +13,8 @@ module.exports = function (emitter) {
         co(function*() {
             var sceneId = context.weixin.SceneId;
             var userOpenid = context.weixin.FromUserName;
-            qrTypeRegistry.handle(sceneId, userOpenid);
+            var wechatId = context.weixin.ToUserName;
+            qrTypeRegistry.handle(sceneId, userOpenid, wechatId);
             //try {
             //    var user = null, reply = '[系统]: 系统繁忙，请稍后重试！';
             //

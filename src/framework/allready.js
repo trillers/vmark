@@ -176,6 +176,9 @@ Ar.prototype._allComplete = function(){
 Ar.prototype.redis = function(client){
     var r = this;
     return new C(null, client, function(service, nameId){
+        if(service.connected){
+            return r.up(nameId, service);
+        }
         service.on('ready', readyHandler);
         function readyHandler(){
             r.up(nameId, service);
@@ -193,6 +196,9 @@ Ar.prototype.redis = function(client){
 Ar.prototype.mongoose = function(client){
     var r = this;
     return new C(null, client, function(service, nameId){
+        if(service.connection.readyState === 1){
+            return r.up(nameId, service);
+        }
         service.connection.on('open', openHandler);
         function openHandler(){
             r.up(nameId, service);
