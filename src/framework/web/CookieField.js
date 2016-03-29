@@ -1,4 +1,4 @@
-var logger = require('../../../app/logging').logger;
+var logger = require('../../app/logging').logger;
 
 var CookieField = function(o){
     this.field = o.field;

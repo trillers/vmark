@@ -1,16 +1,19 @@
+var settings = require('@private/vmark-settings');
 var Router = require('koa-router');
 var oauth = require('../modules/auth/oauth-wechat');
-var bus = require('../modules/wechatsite/oauth/bus-registry');
+var bus = require('../modules/tenant/wechat/oauth-bus-config');
 
 module.exports = function(app){
     var router = new Router();
 
-    router.get('/auth/callback', function*(next){
-        yield oauth.exchange(this, next);
-    });
+    var wechatPlatformChecker = function* (next){
+        this.wechatId = this.params.wechatId;
+        yield next();
+    };
 
-    router.get('/wechat/auth//callback', function*(next){
-        yield oauth.exchange(this, next);
+    router.get('/wechat/:wechatId/oauth//callback', wechatPlatformChecker, function*(next){
+        //var wechatInfo = settings.wechat;
+        yield bus.exchange(this, next);
     });
 
     app.use(router.routes());
