@@ -1,58 +1,28 @@
-var WechatOAuth = require('co-wechat-oauth');
 var logger = require('../../../app/logging').logger;
 var util = require('util');
 var errorUtil = require('../../wechat/common/error');
 var scopes = require('../../wechat/common/oauth').scopes;
 var languages = require('../../wechat/common/oauth').languages;
+var Route = require('./TenantWechatOAuthRoute');
 
 /**
  *
  * @param options
- *  appKey
- *  appSecret
- *  getAccessToken
- *  saveAccessToken
+ *  clientCache
  *  redirectUrl
+ *  wechatIdKey
+ *  returnUrlKey
  *  errorHandler
  * @constructor
  */
-var Bus = function (options, wechatId) {
+var Bus = function (options) {
     this.routes = {};
     this.options = options;
     this.redirectUrl = options.redirectUrl;
     this.clientCache = options.clientCache;
-    //this.wechatAtGetter = options.wechatAtGetter;
-    //this.wechatAtSetter = options.wechatAtSetter;
-    //this.wechatId = wechatId;
-    //this.wechatInfo = null;
-    //this.wechatOAuthClient = null;
+    this.wechatIdKey = options.wechatIdKey || 'wechatId';
+    this.returnUrlKey = options.returnUrlKey || 'returnUrl';
 
-    //if(options.getAccessToken && options.saveAccessToken){
-    //    this.client = new WechatOAuth(options.appKey, options.appSecret, options.getAccessToken, options.saveAccessToken);
-    //}
-    //else{
-    //    throw new Error('Require getAccessToken and saveAccessToken options');
-    //}
-};
-
-Bus.prototype.getWechatOAuthClient = function* () {
-    if(!this.wechatOAuthClient){
-        try{
-            this.wechatInfo = yield this.wechatLoader(this.wechatId);
-            if(this.wechatInfo){
-                this.wechatOAuthClient = new WechatOAuth(
-                    this.wechatInfo.appKey,
-                    this.wechatInfo.appSecret,
-                    this.wechatAtGetter,
-                    this.wechatAtSetter);
-            }
-            else{
-                //logger.error();
-            }
-        }
-
-    }
-    return this.wechatInfo;
 };
 
 Bus.prototype.route = function (name, route) {
@@ -62,19 +32,16 @@ Bus.prototype.route = function (name, route) {
     return this.routes[name];
 };
 
-var RETURN_URL_KEY = 'returnUrl';
-
 Bus.prototype.authorize = function* (ctx){
     var routeName = ctx.query.route;
     var returnUrl = ctx.query.returnUrl;
-
+    var wechatId = this._getWechatId(ctx);
     //save return url
-    ctx.session && (ctx.session[RETURN_URL_KEY] = returnUrl);
+    ctx.session && (ctx.session[this.returnUrlKey] = returnUrl);
 
-    //TODO check routeName correctness and existence
     var route = this.routes[routeName];
     if(route){
-        route.authorize(ctx);
+        yield route.authorize(ctx, wechatId);
     }
     else{
         ctx.response.body = 'no route: ' + routeName;
@@ -87,7 +54,7 @@ Bus.prototype.exchange = function* (ctx, next){
     var parts = rawState && rawState.split('+');
     var state = parts && parts[0] || '';
     var route = this.routes[state];
-    var wechatId = ctx.wechatId; //TODO
+    var wechatId = this._getWechatId(ctx);
     ctx.oauth = {};
 
 
@@ -128,10 +95,10 @@ Bus.prototype.exchange = function* (ctx, next){
     }
 
     if(ctx.oauth.error){
-        yield route.errorHandler(ctx, next);
+        yield route.errorHandler(ctx, next, wechatId);
     }
     else{
-        yield route.handler(ctx, next);
+        yield route.handler(ctx, next, wechatId);
     }
 };
 
@@ -149,6 +116,10 @@ Bus.prototype.getAuthorizeUrl = function*(state, scope, wechatId) {
 
     var redirectUrl = util.format(this.options.redirectUrl, wechatId);
     return client.getAuthorizeURL(redirectUrl, stateWithTimestamp, scope);
+};
+
+Bus.prototype._getWechatId = function*(ctx) {
+    return ctx[this.wechatIdKey];
 };
 
 module.exports = Bus;

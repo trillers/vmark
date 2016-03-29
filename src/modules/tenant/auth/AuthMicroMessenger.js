@@ -1,54 +1,76 @@
-var co = require('co');
-var agentToken = require('./agentToken');
+var util = require('util');
 var context = require('../../context/context');
 var logger = context.logger;
+var agentToken = require('./agentToken');
 var authentication = require('./authentication');
-var oauthHub = require('./oauth-wechat');
-var oauthGetIdentity = oauthHub.route(oauthHub.GET_IDENTITY);
-//var oauthUpdateUser = oauthHub.route(oauthHub.UPDATE_USER);
+var bus = require('../wechat/oauth-bus-config');
+var oauthSignupWithBaseInfo = bus.route(bus.GET_BASE_INFO);
+var oauthSignupWithUserInfo = bus.route(bus.GET_USER_INFO);
 
-var platformUserKv = context.kvs.platformUser;
-var securityService = context.services.securityService;
-var authResults = securityService.authResults;
+var authenticationService = context.services.authenticationService;
+var authResults = authenticationService.authResults;
+var atToOpenidKv = context.kvs.atToOpenid; //TODO
 
-var Authenticator = function(options){};
+var Authenticator = function(options){
+    this.subscriptionUrl = options.subscriptionUrl;
+};
 
 Authenticator.prototype = {
-    auth: function* (ctx, next){
-        var at = agentToken.get(ctx);
-        if(!at){ //signed up
-            oauthGetIdentity.authorize(ctx);
+    auth: function* (ctx, next, level){
+        var wechatId = ctx.wechatId;
+        var at = agentToken.get(ctx, wechatId);
+        if(!at){//signup firstly when user access wechat web page
+            level==1 && oauthSignupWithBaseInfo.authorize(ctx, wechatId);
+            level==2 && oauthSignupWithUserInfo.authorize(ctx, wechatId);
+            level==3 && oauthSignupWithBaseInfo.authorize(ctx, wechatId);
             return;
         }
         else{ //not signed up yet
-            var openid = yield platformUserKv.loadOpenidByAtAsync(at);
+            try{
+                var openid = yield atToOpenidKv.getAsync(wechatId, at);
+                if(!openid){
+                    agentToken.delete(ctx, wechatId);
+                    level==1 && oauthSignupWithBaseInfo.authorize(ctx, wechatId);
+                    level==2 && oauthSignupWithUserInfo.authorize(ctx, wechatId);
+                    level==3 && oauthSignupWithBaseInfo.authorize(ctx, wechatId);
+                    return;
+                }
 
-            if(!openid){
-                agentToken.delete(ctx);
-                oauthGetIdentity.authorize(ctx);
-                return;
-            }
+                var auth = yield authenticationService.signinWithOpenidAsync(openid);
+                if(!auth){
+                    agentToken.delete(ctx, wechatId);
+                    yield this.render('/login-feedback', auth);
+                    return;
+                }
+                else if(auth.result != authResults.ok){
+                    yield this.render('/login-feedback', auth);
+                    return;
+                }
 
-            var auth = yield securityService.authenticateAsync(openid);
-            logger.debug(auth);
-            if(!auth){
-                agentToken.delete(ctx);
-                //this.redirect('/login-feedback?result=' + authResults.NO_USER);
-                yield this.render('login-feedback', {result: authResults.NO_USER});
-                return;
-            }
-            else if(auth.result != authResults.OK && auth.result != authResults.NO_BOUND_BOT){
-                yield this.render('login-feedback', {result: auth.result});
-                return;
-            }
-
-            if(auth.privileges && auth.privileges['recontent']){
-                authentication.setAuthentication(ctx, auth);
-                authentication.deleteReturnUrl(ctx);
-                yield next;
-            }
-            else{
-                yield ctx.render('login-feedback', {result: authResults.NO_PRIVILEGE});
+                var authLevel = authentication.getAuthLevel(auth);
+                if(authLevel>=level){
+                    authentication.setAuthentication(ctx, auth, wechatId);
+                    authentication.deleteReturnUrl(ctx, wechatId);
+                    yield next;
+                }
+                else if(level==3){
+                    //TODO  generate qr and link url and mark open token
+                    authentication.deleteAuthentication(ctx, wechatId);
+                    authentication.saveInterruptUrl(ctx, wechatId, true);
+                    console.error(authentication.getInterruptUrl(ctx, wechatId));
+                    var subUrl = util.format(this.subscriptionUrl, wechatId);
+                    ctx.redirect(subUrl);
+                }
+                else if(level==2){
+                    oauthSignupWithUserInfo.authorize(ctx, wechatId);
+                }
+                else{
+                    oauthSignupWithBaseInfo.authorize(ctx, wechatId);
+                }
+            }catch(err){
+                logger.error('Fail to sign in with openid: ' + err);
+                logger.error(err.stack);
+                yield ctx.render('/error', {error: err}); //TODO
             }
         }
     }

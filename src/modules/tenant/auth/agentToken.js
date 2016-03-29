@@ -1,12 +1,14 @@
 var crypto = require('crypto');
 var settings = require('@private/vmark-settings');
+var CookieField = require('./../../../framework/web/CookieField');
+var logger = require('../../../app/logging').logger;
 var salt = settings.security.salt;
-var CookieField = require('./../../framework/web/CookieField');
-var logger = require('../../app/logging').logger;
 
 var agentToken = new CookieField({
     field: 'wechat agent token'
-    , key: 'wxat'
+    , key: function(wechatId){
+        return 'wxat-' + wechatId;
+    }
     , options: {
         maxAge: 3600000*24*366
     }

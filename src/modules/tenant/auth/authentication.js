@@ -1,30 +1,37 @@
-var logger = require('../../app/logging').logger;
+var logger = require('../../../app/logging').logger;
 var agentToken = require('./agentToken');
-
-var AUTH_KEY = 'auth'; //session key of auth info
-var RETURN_URL_KEY = 'returnUrl'; //session key of return url in session
+var AUTH_KEY = 'auth';                  //session key of auth info
+var RETURN_URL_KEY = 'returnUrl';       //session key of return url in session
 var INTERRUPT_URL_KEY = 'interruptUrl'; //session key of interrupt url in session
 var DEFAULT_RETURN_URL = '/';
+var DEFAULT_INTERRUPT_URL = '/';
 
 var Authentication = function(){};
 
-Authentication.prototype.setAuthentication = function(ctx, auth){
+var statusLevels = {'none': 0, 'a': 1, 'r': 2, 'v': 3};
+
+Authentication.prototype.setAuthentication = function(ctx, auth, wechatId){
     if(auth.wechatSiteUser){
-        agentToken.set(ctx, auth.wechatSiteUser.at);
+        agentToken.set(ctx, wechatId, auth.wechatSiteUser.at);
     }
-    return ctx.session[AUTH_KEY] = auth;
+    return ctx.session[wechatId + '.' + AUTH_KEY] = auth;
 };
 
-Authentication.prototype.getAuthentication = function(ctx){
-    return ctx.session && ctx.session[AUTH_KEY];
+Authentication.prototype.getAuthentication = function(ctx, wechatId){
+    return ctx.session && ctx.session[wechatId + '.' + AUTH_KEY];
 };
 
-Authentication.prototype.deleteAuthentication = function(ctx){
-    ctx.session && (ctx.session[AUTH_KEY] = null);
+Authentication.prototype.deleteAuthentication = function(ctx, wechatId){
+    ctx.session && (ctx.session[wechatId + '.' + AUTH_KEY] = null);
 };
 
-Authentication.prototype.authenticated = function(ctx){
-    var auth = ctx.session && ctx.session[AUTH_KEY] && ctx.session[AUTH_KEY].user.type !== 'c';
+Authentication.prototype.getAuthLevel = function(auth){
+    var status = auth && auth.user ? auth.user.status : 'none';
+    return statusLevels[status];
+};
+
+Authentication.prototype.authenticated = function(ctx, wechatId){
+    var auth = ctx.session && ctx.session[wechatId + '.' + AUTH_KEY];
     //TODO need more check
     return auth;
 };
@@ -33,20 +40,20 @@ Authentication.prototype.clear = function(ctx){
     ctx.session = null;
 };
 
-Authentication.prototype.saveReturnUrl = function(ctx){
+Authentication.prototype.saveReturnUrl = function(ctx, wechatId){
     var returnUrl = ctx.request.href;
     logger.debug('Save return url: ' + returnUrl);
-    ctx.session && (ctx.session[RETURN_URL_KEY] = returnUrl);
+    ctx.session && (ctx.session[wechatId + '.' + RETURN_URL_KEY] = returnUrl);
 }
 
-Authentication.prototype.deleteReturnUrl = function(ctx){
-    ctx.session && (ctx.session[RETURN_URL_KEY] = null);
+Authentication.prototype.deleteReturnUrl = function(ctx, wechatId){
+    ctx.session && (ctx.session[wechatId + '.' + RETURN_URL_KEY] = null);
 }
 
-Authentication.prototype.redirectReturnUrl = function(ctx){
-    var returnUrl = ctx.session[RETURN_URL_KEY];
+Authentication.prototype.redirectReturnUrl = function(ctx, wechatId){
+    var returnUrl = ctx.session[wechatId + '.' + RETURN_URL_KEY];
     if(returnUrl){
-        ctx.session[RETURN_URL_KEY] = null;
+        ctx.session[wechatId + '.' + RETURN_URL_KEY] = null;
     }
     else{
         returnUrl = DEFAULT_RETURN_URL; //TODO
@@ -56,30 +63,30 @@ Authentication.prototype.redirectReturnUrl = function(ctx){
     ctx.redirect(returnUrl);
 };
 
-Authentication.prototype.getInterruptUrl = function(ctx){
-    return ctx.session && ctx.session[INTERRUPT_URL_KEY];
+Authentication.prototype.getInterruptUrl = function(ctx, wechatId){
+    return ctx.session && ctx.session[wechatId + '.' + INTERRUPT_URL_KEY];
 };
 
-Authentication.prototype.saveInterruptUrl = function(ctx, force){
+Authentication.prototype.saveInterruptUrl = function(ctx, wechatId, force){
     var url = ctx.request.href;
-    var storedUrl = ctx.session && ctx.session[INTERRUPT_URL_KEY];
+    var storedUrl = ctx.session && ctx.session[wechatId + '.' + INTERRUPT_URL_KEY];
     if(force || !storedUrl){
-        ctx.session && (ctx.session[INTERRUPT_URL_KEY] = url);
+        ctx.session && (ctx.session[wechatId + '.' + INTERRUPT_URL_KEY] = url);
         logger.debug('Save interrupt url: ' + url);
     }
 };
 
-Authentication.prototype.deleteInterruptUrl = function(ctx){
-    ctx.session && (ctx.session[INTERRUPT_URL_KEY] = null);
+Authentication.prototype.deleteInterruptUrl = function(ctx, wechatId){
+    ctx.session && (ctx.session[wechatId + '.' + INTERRUPT_URL_KEY] = null);
 };
 
-Authentication.prototype.redirectInterruptUrl = function(ctx){
-    var url = ctx.session && ctx.session[INTERRUPT_URL_KEY];
+Authentication.prototype.redirectInterruptUrl = function(ctx, wechatId){
+    var url = ctx.session && ctx.session[wechatId + '.' + INTERRUPT_URL_KEY];
     if(url){
-        ctx.session[INTERRUPT_URL_KEY] = null;
+        ctx.session[wechatId + '.' + INTERRUPT_URL_KEY] = null;
     }
     else{
-        url = DEFAULT_RETURN_URL; //TODO
+        url = DEFAULT_INTERRUPT_URL; //TODO
     }
 
     ctx.redirect(url);

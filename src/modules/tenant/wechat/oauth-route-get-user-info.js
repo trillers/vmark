@@ -1,22 +1,21 @@
-var settings = require('@private/vmark-settings');
-var scopes = require('../wechat/common/oauth').scopes;
-var authentication = require('./authentication');
-var context = require('../../context/context');
-var authenticationService = context.services.authenticationService;
+var scopes = require('../../wechat/common/oauth').scopes;
+var authentication = require('../auth/authentication');
+var context = require('../../../context/context');
+var authenticationService = context.services.tenantAuthenticationService;
 var authResults = authenticationService.authResults;
 
-var handler = function*(ctx, next){
+var handler = function*(ctx, next, wechatId){
     var oauthUserInfo = ctx.oauth.data;
 
     /*
      * sign up with full user info
      */
-    var auth = yield authenticationService.signupWithUserInfoAsync(oauthUserInfo);
-    authentication.setAuthentication(ctx, auth);
-    authentication.redirectReturnUrl(ctx);
+    var auth = yield authenticationService.signupWithUserInfoAsync(oauthUserInfo, wechatId);
+    authentication.setAuthentication(ctx, auth, wechatId);
+    authentication.redirectReturnUrl(ctx, wechatId);
 };
 
-var errorHandler = function*(ctx, next){
+var errorHandler = function*(ctx, next, wechatId){
     var err = ctx.oauth.error;
     context.logger.error('Fail to sign up with user info: ' + err);
     yield ctx.render('error', {error: err});

@@ -2,7 +2,7 @@ var Authenticator = function(options){};
 
 Authenticator.prototype = {
     auth: function*(ctx, next){
-        //ctx.redirect('/login');
+        //ctx.redirect('/login'); //TODO add redirect here for security
         yield next;
     }
 };
