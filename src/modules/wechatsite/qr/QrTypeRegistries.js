@@ -40,11 +40,11 @@ regProto.getQrType = function(type){
     return this.typeHm[type] || null;
 };
 
-regProto.getQr = function(sceneId, callback){
+regProto.getQr = function(sceneId, wechatId, callback){
     var me = this;
     co(function*(){
         try{
-            var qrDoc = yield me.persistence.loadQr(sceneId, me);
+            var qrDoc = yield me.persistence.loadQrAsync(sceneId, wechatId);
             var qr = new Qr(qrDoc);
             qr.setRegistry(me);
             qr.typeObj = me.getQrType(qrDoc.type);

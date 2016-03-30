@@ -87,7 +87,7 @@ typeProto.createQr = function(qrData, cb){
         }
     })
 };
-typeProto.getQrById = function(id){
+typeProto.getQrById = function(id, callback){
     var me = this;
     co(function*(){
         try{

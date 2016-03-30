@@ -4,6 +4,10 @@ var util = require('util');
 var co = require('co');
 var Promise = require('bluebird');
 
+/**
+ * abstract class
+ * @constructor
+ */
 function Persistence(){
 }
 

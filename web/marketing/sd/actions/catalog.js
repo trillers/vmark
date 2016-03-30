@@ -1,12 +1,12 @@
 var baseUrl = __app.settings.api.url;
 
-export var loadCatalogById = id => callback =>{
-    $.get(baseUrl + '/tenant/sd/catalog/_' + id)
+export var loadCatalogById = id =>{
+    return $.get(baseUrl + '/tenant/sd/catalog/_' + id)
         .then((res)=>{
-            callback({
+            return {
                 name: 'loadCatalogById',
                 res
-            });
+            };
         })
         .catch(e=>{
             console.warn(e)

@@ -38,9 +38,8 @@
         this.mixin('dispatcher');
 
         this.on('mount', ()=>{
-            this.on('loadCatalogById', (res)=>{
+            this.on('loadCatalogById', res =>{
                 this.update({catalog: res.catalog});
-                console.log(res);
             });
             this.dispatch(actions.loadCatalogById(this.opts.id));
         })
