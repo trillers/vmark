@@ -13,7 +13,7 @@ var Service = function(context){
 
 util.inherits(Service, WechatMediaUserService);
 
-Service.prototype.loadByOpenidAndWechatId = Kv.prototype.loadByOpenidAndWechatId;
+Service.prototype.loadByWechatIdAndOpenid = Kv.prototype.loadByWechatIdAndOpenid;
 
 Service.prototype.createTenantWechatSiteUser = function(mediaUserJson, callback){
     var kv = this.context.kvs.tenantWechatSiteUser;
@@ -41,7 +41,7 @@ Service.prototype.deleteTenantWechatSiteUserByOpenidAndWechatId = function(wecha
     var teOpenidToIdKv = this.context.kvs.teOpenidToId;
     var wechatMediaUserService = this.context.services.wechatMediaUserService;
     co(function* (){
-        var json = yield kv.loadByOpenidAndWechatIdAsync(wechatId, openid);
+        var json = yield kv.loadByWechatIdAndOpenidAsync(wechatId, openid);
         if(!json){ //user is not found, so skip running further
             if(callback) callback(null, null);
             return;
@@ -54,7 +54,7 @@ Service.prototype.deleteTenantWechatSiteUserByOpenidAndWechatId = function(wecha
                 yield teOpenidToIdKv.deleteAsync(wechatId, at);
             }
 
-            yield kv.deleteByOpenidAndWechatIdAsync(wechatId, openid);
+            yield kv.deleteByWechatIdAndOpenidAsync(wechatId, openid);
             yield wechatMediaUserService.deleteByIdAsync(wechatSiteUserId);
         }
         catch(e){
