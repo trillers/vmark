@@ -35,7 +35,7 @@ Service.prototype.signupWithBaseInfo = function(openid, wechatId, callback){
         var wechatMediaUser = null;
         var user = null;
         var userId = null;
-        var status = UserStatus.Anonymous.value();
+        var status = TenantUserStatus.BaseInfo.value();
         var type = UserType.Customer.value();
         try{
             wechatMediaUser = yield wechatMediaUserKv.loadByOpenidAndWechatIdAsync(openid, wechatId);
@@ -202,7 +202,7 @@ Service.prototype.signupWithUserInfo = function(userInfo, wechatId, callback){
 
 Service.prototype.signupOnSubscription = function(openid, wechatId, callback){
     var logger = this.context.logger;
-    var wechatMediaUserKv = this.context.kvs.wechatMediaUser;
+    var wechatMediaUserKv = this.context.kvs.tenantWechatSiteUser;
     var userKv = this.context.kvs.tenantUser;
     var wechatMediaUserService = this.context.services.tenantWechatSiteUserService;
     var tenantUserService = this.context.services.tenantUserService;
