@@ -19,9 +19,9 @@ helper.generateLoader = function(config){
     var postHandler = config.postHandler;
     var okPrefix = 'Succeed to load ' +config.valueName+ ' by ' +config.keyName;
     var errPrefix = 'Fail to load ' +config.valueName+ ' by ' +config.keyName;
-    return function(id, callback){
+    return function(tenantId, id, callback){
         var redis = this.context.redis.main;
-        redis.hgetall(keyGenerator(id), function(err, result){
+        redis.hgetall(keyGenerator(tenantId, id), function(err, result){
             cbUtil.logCallback(
                 logger,
                 err,
@@ -51,9 +51,9 @@ helper.generateDeleter = function(config){
     var keyGenerator = config.keyGenerator;
     var okPrefix = 'Succeed to delete ' +config.valueName+ ' by ' +config.keyName;
     var errPrefix = 'Fail to delete ' +config.valueName+ ' by ' +config.keyName;
-    return function(id, callback){
+    return function(tenantId, id, callback){
         var redis = this.context.redis.main;
-        redis.del(keyGenerator(id), function(err, result){
+        redis.del(keyGenerator(tenantId, id), function(err, result){
             cbUtil.logCallback(
                 logger,
                 err,
@@ -82,10 +82,10 @@ helper.generateSaver = function(config){
     var preHandler = config.preHandler;
     var okPrefix = 'Succeed to save ' +config.valueName+ ' by ' +config.keyName;
     var errPrefix = 'Fail to save ' +config.valueName+ ' by ' +config.keyName;
-    return function(id, obj, callback){
+    return function(tenantId, id, obj, callback){
         var redis = this.context.redis.main;
         if(preHandler){obj = preHandler(obj);}
-        redis.hmset(keyGenerator(id), obj, function(err, result){
+        redis.hmset(keyGenerator(tenantId, id), obj, function(err, result){
             cbUtil.logCallback(
                 logger,
                 err,
@@ -111,9 +111,9 @@ helper.generateGetter = function(config){
     var keyGenerator = config.keyGenerator;
     var okPrefix = 'Succeed to get ' +config.valueName+ ' by ' +config.keyName;
     var errPrefix = 'Fail to get ' +config.valueName+ ' by ' +config.keyName;
-    return function(key, callback){
+    return function(tenantId, key, callback){
         var redis = this.context.redis.main;
-        redis.get(keyGenerator(key), function(err, result){
+        redis.get(keyGenerator(tenantId, key), function(err, result){
             cbUtil.logCallback(
                 logger,
                 err,
@@ -139,9 +139,9 @@ helper.generateSetter = function(config){
     var keyGenerator = config.keyGenerator;
     var okPrefix = 'Succeed to set ' +config.valueName+ ' by ' +config.keyName;
     var errPrefix = 'Fail to set ' +config.valueName+ ' by ' +config.keyName;
-    return function(key, value, callback){
+    return function(tenantId, key, value, callback){
         var redis = this.context.redis.main;
-        redis.set(keyGenerator(key), value, function(err, result){
+        redis.set(keyGenerator(tenantId, key), value, function(err, result){
             cbUtil.logCallback(
                 logger,
                 err,

@@ -2,16 +2,20 @@ var _exports = {};
 _exports.org = require('./org');
 _exports.media = require('./media');
 _exports.sd = require('./sd');
+
 _exports.platform = {};
 _exports.platform.org = require('./platform/org');
 _exports.platform.media = require('./platform/media');
 _exports.platform.user = require('./platform/user');
 _exports.platform.main = require('./platform/main');
+
 _exports.tenant = {};
+_exports.tenant.wechat = require('./tenant/wechat');
 _exports.tenant.org = require('./tenant/org');
 _exports.tenant.media = require('./tenant/media');
 _exports.tenant.user = require('./tenant/user');
 _exports.tenant.main = require('./tenant/main');
+
 _exports.group = require('./group');
 _exports.tag = require('./tag');
 _exports.recontent = require('./recontent');
