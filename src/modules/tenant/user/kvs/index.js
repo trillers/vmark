@@ -8,8 +8,8 @@ var OpenidToId = require('./OpenidToId');
 var OtToOpenid = require('./OtToOpenid');
 
 module.exports.tenantUser = Promise.promisifyAll(new TenantUser(context));
-module.exports.atToOpenid = Promise.promisifyAll(new AtToOpenid(context));
-module.exports.openidToId = Promise.promisifyAll(new OpenidToId(context));
-module.exports.otToOpenid = Promise.promisifyAll(new OtToOpenid(context));
+module.exports.teAtToOpenid = Promise.promisifyAll(new AtToOpenid(context));
+module.exports.teOpenidToId = Promise.promisifyAll(new OpenidToId(context));
+module.exports.teOtToOpenid = Promise.promisifyAll(new OtToOpenid(context));
 
 u.extend(context.kvs, module.exports);

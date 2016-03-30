@@ -1,47 +1,22 @@
-var cbUtil = require('../../../../framework/callback');
+var keyHelper = require('./keyHelper');
+var helper = require('../../../common/kvs/tenantHelper');
 
-var otToOpenidKey = function(ot){
-    return 'usr:oid:ot:' + ot;
+var otToOpenidKey = function(wechatId, ot){
+    return keyHelper.userBaseKey(wechatId) +  ':oid:ot:' + ot;
 };
 
-var Kv = function(context){
-    this.context = context;
-};
+var Kv = function(context){ this.context = context; };
 
-Kv.prototype.get = function(ot, callback){
-    var redis = this.context.redis.main;
-    var key = otToOpenidKey(ot);
-    redis.get(key, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to get user openid by open token ' + ot + ': ' + err,
-            'Succeed to get user openid ' + result + ' by open token ' + ot);
-        cbUtil.handleSingleValue(callback, err, result);
-    });
-};
+var config = {
+    keyName: 'tenant user open taken',
+    valueName: 'tenant user openid',
+    keyGenerator: otToOpenidKey
+}
+Kv.prototype.get = helper.generateGetter(config);
 
-Kv.prototype.set = function(ot, openid, callback){
-    var redis = this.context.redis.main;
-    var key = otToOpenidKey(ot);
-    redis.set(key, openid, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to link open token ' + ot + ' to openid ' + openid + ': ' + err,
-            'Succeed to link open token ' + ot + ' to openid ' + openid);
-        cbUtil.handleOk(callback, err, result);
-    });
-};
+Kv.prototype.set = helper.generateSetter(config);
 
-Kv.prototype.delete = function(ot, callback){
-    var redis = this.context.redis.main;
-    var key = otToOpenidKey(ot);
-    redis.del(key, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to unlink user openid by open token ' + ot + ': ' + err,
-            'Succeed to unlink user openid by open token ' + ot);
-        cbUtil.handleSingleValue(callback, err, result);
-    });
-};
+Kv.prototype.delete = helper.generateDeleter(config);
+
 
 module.exports = Kv;
