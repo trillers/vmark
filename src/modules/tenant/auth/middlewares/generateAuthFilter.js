@@ -5,7 +5,6 @@ var AuthPc = require('../AuthPc');
 var authMicroMessenger = new AuthMicroMessenger();
 var authPc = new AuthPc();
 var authMobile = authPc;
-var authLevelHelper = require('../authLevelHelper');
 
 var generate = function(level){
     return function* (next) {
