@@ -14,13 +14,13 @@ var Service = function(context){
  * @param openid
  * @param callback
  */
-Service.prototype.loadUserByOpenid = function(wechatId, openid, callback) {
+Service.prototype.loadUserByWechatIdAndOpenid = function(wechatId, openid, callback) {
     var logger = this.context.logger;
     var tenantWechatSiteUserKv = this.context.kvs.tenantWechatSiteUser;
     var me = this;
 
     co(function* (){
-        var wechatSiteUser = yield tenantWechatSiteUserKv.loadByOpenidAsync(wechatId, openid);
+        var wechatSiteUser = yield tenantWechatSiteUserKv.loadByOpenidAndWechatIdAsync(openid, wechatId);
         if(!wechatSiteUser){
             if(callback) callback(null, null);
         }
@@ -48,12 +48,12 @@ Service.prototype.loadUserByOpenid = function(wechatId, openid, callback) {
  * @param openid
  * @param callback
  */
-Service.prototype.deleteUserByOpenid = function(wechatId, openid, callback) {
+Service.prototype.deleteUserByWechatIdAndOpenid = function(wechatId, openid, callback) {
     var logger = this.context.logger;
     var tenantWechatSiteUserService = this.context.services.tenantWechatSiteUserService;
     var me = this;
     co(function* (){
-        var userid = yield tenantWechatSiteUserService.deleteTenantWechatSiteUserByOpenidAsync(wechatId, openid);
+        var userid = yield tenantWechatSiteUserService.deleteTenantWechatSiteUserByOpenidAAsync(wechatId, openid);
         if(!userid){
             logger.warn('No platfrom wechat site user [openid = ' + openid + '] found, skip deleting tenant user');
             if(callback) callback(null);
@@ -74,7 +74,7 @@ Service.prototype.deleteUserByOpenid = function(wechatId, openid, callback) {
  * @param id
  * @param callback
  */
-Service.prototype.loadById = Kv.prototype.loadById;
+Service.prototype.loadByWechatIdAndId = Kv.prototype.loadById;
 
 /**
  * Create user in mongoose and redis.

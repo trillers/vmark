@@ -2491,8 +2491,7 @@ webpackJsonp([0,1],[
 	    if (_jQuery) {
 	        return _jQuery;
 	    }
-	    var jQuery = { version: '0.0.1' };
-	    jQuery = function jQuery(selector) {
+	    var jQuery = function jQuery(selector) {
 	        var nodes = document.querySelectorAll(selector);
 	        !Array.isArray(nodes) && (nodes = [].slice.apply(nodes));
 	        return nodes.length === 1 ? nodes[0] : nodes;
@@ -3495,16 +3494,14 @@ webpackJsonp([0,1],[
 	var baseUrl = __app.settings.api.url;
 
 	var loadCatalogById = exports.loadCatalogById = function loadCatalogById(id) {
-	    return function (callback) {
-	        $.get(baseUrl + '/tenant/sd/catalog/_' + id).then(function (res) {
-	            callback({
-	                name: 'loadCatalogById',
-	                res: res
-	            });
-	        }).catch(function (e) {
-	            console.warn(e);
-	        });
-	    };
+	    return $.get(baseUrl + '/tenant/sd/catalog/_' + id).then(function (res) {
+	        return {
+	            name: 'loadCatalogById',
+	            res: res
+	        };
+	    }).catch(function (e) {
+	        console.warn(e);
+	    });
 	};
 
 /***/ },
@@ -3663,12 +3660,21 @@ webpackJsonp([0,1],[
 
 	var dispatcher = exports.dispatcher = {
 	    dispatch: function dispatch(action) {
-	        if (typeof action === 'function') {
+	        /**
+	         * allow dispatch a thunk function
+	         */
+	        if (isThunk(action)) {
 	            return action(done);
 	        }
+	        /**
+	         * allow a promise
+	         */
 	        if (isPromise(action)) {
 	            return action.then(done);
 	        }
+	        /**
+	         * plain action
+	         */
 	        done(action);
 	        function done(res) {
 	            _app.app.trigger('action', res);
@@ -3676,6 +3682,9 @@ webpackJsonp([0,1],[
 	    }
 	};
 
+	function isThunk(o) {
+	    return typeof o === 'function';
+	}
 	function isPromise(o) {
 	    return (typeof o === 'undefined' ? 'undefined' : _typeof(o)) === 'object' && typeof o.then === 'function';
 	}
@@ -3688,9 +3697,8 @@ webpackJsonp([0,1],[
 	        this.mixin('dispatcher');
 
 	        this.on('mount', ()=>{
-	            this.on('loadCatalogById', (res)=>{
+	            this.on('loadCatalogById', res =>{
 	                this.update({catalog: res.catalog});
-	                console.log(res);
 	            });
 	            this.dispatch(actions.loadCatalogById(this.opts.id));
 	        })

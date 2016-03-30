@@ -1,6 +1,6 @@
-var hub = require('./oauth-wechat-hub');
+var hub = require('./oauth-bus');
 
-require('./oauth-wechat-get-base-info')(hub);
-require('./oauth-wechat-get-user-info')(hub);
+require('./oauth-route-get-base-info')(hub);
+require('./oauth-route-get-user-info')(hub);
 
 module.exports = hub;

@@ -13,13 +13,11 @@ var Service = function(context){
 
 util.inherits(Service, WechatMediaUserService);
 
-Service.prototype.loadByOpenid = Kv.prototype.loadByOpenid;
+Service.prototype.loadByOpenidAndWechatId = Kv.prototype.loadByOpenidAndWechatId;
 
 Service.prototype.createTenantWechatSiteUser = function(mediaUserJson, callback){
-    var logger = this.context.logger;
-    var tenantWechatSiteService = this.context.services.tenantWechatSiteService;
     var kv = this.context.kvs.tenantWechatSiteUser;
-    var tenantUserKv = this.context.kvs.tenantUser;
+    var teOtToOpenidKv = this.context.kvs.teOtToOpenid;
     var me = this;
         mediaUserJson.host = 'xxxxxxx';
         mediaUserJson.type = WechatMediaUserType.WechatSiteUser.value();
@@ -27,7 +25,7 @@ Service.prototype.createTenantWechatSiteUser = function(mediaUserJson, callback)
         var at = agentToken.generate(openid);
         mediaUserJson.at = at;
         me.create(mediaUserJson, function(err, json){
-            tenantUserKv.linkAtToOpenid(at, openid, function(err){
+            teOtToOpenidKv.set(mediaUserJson.wechatId, at, openid, function(err){
                 if(err) {
                     if(callback) callback(err);
                     return;
@@ -37,13 +35,13 @@ Service.prototype.createTenantWechatSiteUser = function(mediaUserJson, callback)
         });
 };
 
-Service.prototype.deleteTenantWechatSiteUserByOpenid = function(openid, callback){
+Service.prototype.deleteTenantWechatSiteUserByOpenidAndWechatId = function(wechatId, openid, callback){
     var logger = this.context.logger;
     var kv = this.context.kvs.tenantWechatSiteUser;
-    var tenantUserKv = this.context.kvs.tenantUser;
+    var teOpenidToIdKv = this.context.kvs.teOpenidToId;
     var wechatMediaUserService = this.context.services.wechatMediaUserService;
     co(function* (){
-        var json = yield kv.loadByOpenidAsync(openid);
+        var json = yield kv.loadByOpenidAndWechatIdAsync(wechatId, openid);
         if(!json){ //user is not found, so skip running further
             if(callback) callback(null, null);
             return;
@@ -53,10 +51,10 @@ Service.prototype.deleteTenantWechatSiteUserByOpenid = function(openid, callback
         var at = json.at;
         try{
             if(at){
-                yield tenantUserKv.unlinkAtToOpenidAsync(at);
+                yield teOpenidToIdKv.deleteAsync(wechatId, at);
             }
 
-            yield kv.deleteByOpenidAsync(openid);
+            yield kv.deleteByOpenidAndWechatIdAsync(wechatId, openid);
             yield wechatMediaUserService.deleteByIdAsync(wechatSiteUserId);
         }
         catch(e){

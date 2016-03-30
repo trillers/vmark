@@ -165,6 +165,23 @@ Service.prototype.loadByOpenid = function(openid, callback){
     kv.loadByOpenid(openid, callback);
 };
 
+Service.prototype.updateByOpenidAndWechatId = function(openid, wechatId, json, callback){
+    var kv = this.context.kvs.wechatMediaUser;
+    var WechatMediaUser = this.context.models.WechatMediaUser;
+    WechatMediaUser.findOneAndUpdate({openid: openid, wechatId: wechatId}, json, {new: true}, function (err, doc) {
+        if(err){
+            return callback(err);
+        }
+        var obj = doc && doc.toObject({virtuals: true});
+        if(obj){
+            kv.saveByOpenidAndWechatId(obj, callback);
+        }
+        else{
+            callback(null, null);
+        }
+    });
+};
+
 Service.prototype.updateByOpenid = function(openid, json, callback){
     var kv = this.context.kvs.wechatMediaUser;
     var WechatMediaUser = this.context.models.WechatMediaUser;

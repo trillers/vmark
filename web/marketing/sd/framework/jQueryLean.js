@@ -7,8 +7,7 @@ import * as fetch from './fetchMonkeyPatch';
     if(_jQuery) {
         return _jQuery;
     }
-    let jQuery = {version: '0.0.1'};
-    jQuery = (selector) => {
+    let jQuery = selector => {
         let nodes = document.querySelectorAll(selector);
         !Array.isArray(nodes) && (nodes = [].slice.apply(nodes));
         return nodes.length ===1 ? nodes[0] : nodes;

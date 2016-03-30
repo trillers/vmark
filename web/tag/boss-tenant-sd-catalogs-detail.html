@@ -220,14 +220,13 @@
         });
 
         self.isChecked = function(id){
-            console.log(self.catalog.products);
-            return self.catalog.products.indexOf(id)>=0;
+            return self.catalog.products.map(function(product){return product._id}).indexOf(id)>=0;
         };
 
         self.populateProducts = function(products){
             return products.map(function(product){
                 return self.courses.filter(function(course){
-                    return course._id === product;
+                    return course._id === product._id;
                 })[0]
             });
         };
@@ -299,7 +298,9 @@
         self.onSubmitCourses = function(){
             var checkedArr = document.querySelectorAll('input[name="CourseCheckBox"]:checked');
             self.catalog.products = [].slice.apply(checkedArr).map(function(input) {
-                return input.value
+                return self.courses.filter(function(course){
+                    return course._id === input.value
+                })[0]
             });
             updateCatalogByIdAction.newInvocation({
                 id: self.catalog._id,

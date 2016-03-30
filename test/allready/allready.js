@@ -13,6 +13,7 @@ describe('all ready', function(){
         done();
     });
 
+
     it('specific util', function(done){
         ar.add('redis', ar.redis(require('../../src/app/redis-client')()));
         ar.add('mongoose', ar.mongoose(mongooseClient));

@@ -2,7 +2,7 @@ var scopes = require('../../wechat/common/oauth').scopes;
 var authentication = require('../auth/authentication');
 var context = require('../../../context/context');
 var authenticationService = context.services.tenantAuthenticationService;
-var authResults = authenticationService.authResults;
+//var authResults = authenticationService.authResults;
 
 var handler = function*(ctx, next, wechatId){
     var oauthUserInfo = ctx.oauth.data;
