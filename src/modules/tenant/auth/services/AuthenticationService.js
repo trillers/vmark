@@ -159,11 +159,13 @@ Service.prototype.signupWithUserInfo = function(userInfo, wechatId, callback){
              * Ensure wechat site user created or updated
              */
             if(wechatMediaUser){
+                let wechatMediaUserId = wechatMediaUser._id;
                 wechatMediaUser.user = userId;
                 statusSubscribed != wechatMediaUser.status && (wechatMediaUser.status = status);
                 helper.copyUserInfo(wechatMediaUser, userInfo);
                 wechatMediaUser._id && (delete wechatMediaUser._id);
-                wechatMediaUser = yield wechatMediaUserService.updateByWechatIdAndOpenidAsync(openid, wechatId, wechatMediaUser);
+
+                wechatMediaUser = yield wechatMediaUserService.updateTenantWechatSiteUserByIdAsync(wechatMediaUserId, wechatMediaUser);
             }
             else{
                 var media = yield wechatMediaService.loadTenantWechatSiteByOriginalIdAsync(wechatId);
@@ -220,10 +222,17 @@ Service.prototype.signupOnSubscription = function(openid, wechatId, callback){
         var type = UserType.Customer.value();
 
         try{
-            wechatMediaUser = yield wechatMediaUserKv.loadByOpenidAndWechatIdAsync(openid, wechatId);
+            wechatMediaUser = yield wechatMediaUserKv.loadByWechatIdAndOpenidAsync(openid, wechatId);
             user = wechatMediaUser && (yield userKv.loadByIdAsync(wechatMediaUser.user));
 
             //get user info from subscription
+
+
+
+
+
+
+
             userInfo = yield helper.getUserInfoAsync(wechatApi, wechatId, openid, languages.zh_CN);
 
             /*
@@ -261,12 +270,13 @@ Service.prototype.signupOnSubscription = function(openid, wechatId, callback){
              * Ensure wechat site user created or updated
              */
             if(wechatMediaUser){
+                let wechatMediaUserId = wechatMediaUser._id;
                 helper.copySubscription(wechatMediaUser, userInfo);
                 wechatMediaUser.user = userId;
                 wechatMediaUser.status = status;
                 wechatMediaUser._id && (delete wechatMediaUser._id);
                 wechatMediaUser.wechatId = wechatId;
-                wechatMediaUser = yield wechatMediaUserService.updateByWechatIdAndOpenidAsync(wechatId, openid, wechatMediaUser);
+                wechatMediaUser = yield wechatMediaUserService.updateTenantWechatSiteUserByIdAsync(wechatMediaUserId, wechatMediaUser);
             }
             else{
                 var createWechatMediaUserJson = {};
@@ -305,13 +315,13 @@ Service.prototype.signupOnSubscription = function(openid, wechatId, callback){
 
 Service.prototype.signinWithWechatIdAndOpenid = function(wechatId, openid, callback){
     var logger = this.context.logger;
-    var wechatMediaUserKv = this.context.kvs.wechatMediaUser;
-    var userKv = this.context.kvs.platformUser;
+    var wechatMediaUserKv = this.context.kvs.tenantWechatSiteUser;
+    var userKv = this.context.kvs.tenantUser;
     co(function*(){
         var wechatMediaUser = null;
-        var user = null
+        var user = null;
         try{
-            wechatMediaUser = yield wechatMediaUserKv.loadByOpenidAsync(openid);
+            wechatMediaUser = yield wechatMediaUserKv.loadByWechatIdAndOpenidAsync(wechatId, openid);
             user = wechatMediaUser && (yield userKv.loadByIdAsync(wechatMediaUser.user));
             if(wechatMediaUser && user){
                 if(callback) callback(null, {
