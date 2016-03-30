@@ -8,7 +8,7 @@ var Kv = function(context){
     this.context = context;
 };
 
-Kv.prototype.loadByOpenidAndWechatId = function(wechatId, openid, callback){
+Kv.prototype.loadByWechatIdAndOpenid = function(wechatId, openid, callback){
     var redis = this.context.redis.main;
     var key = openidAndWechatIdToObjKey(wechatId, openid);
     redis.hgetall(key, function(err, result){
@@ -24,7 +24,7 @@ Kv.prototype.loadByOpenidAndWechatId = function(wechatId, openid, callback){
     });
 };
 
-Kv.prototype.saveByOpenidAndWechatId = function(json, callback){
+Kv.prototype.saveByWechatIdAndOpenid = function(json, callback){
     var redis = this.context.redis.main;
     var openid = json.openid;
     var wechatId = json.wechatId;
@@ -40,7 +40,7 @@ Kv.prototype.saveByOpenidAndWechatId = function(json, callback){
     });
 };
 
-Kv.prototype.deleteByOpenidAndWechatId = function(openid, wechatId, callback){
+Kv.prototype.deleteByWechatIdAndOpenid = function(wechatId, openid, callback){
     var redis = this.context.redis.main;
     var key = openidAndWechatIdToObjKey(wechatId, openid);
     redis.del(key, function(err, result){

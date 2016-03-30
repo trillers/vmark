@@ -76,6 +76,7 @@ Service.prototype.deleteUserByWechatIdAndOpenid = function(wechatId, openid, cal
  */
 Service.prototype.loadByWechatIdAndId = Kv.prototype.loadById;
 
+
 /**
  * Create user in mongoose and redis.
  * @param userJson
