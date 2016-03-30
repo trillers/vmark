@@ -21,5 +21,10 @@ module.exports = function(){
         this.body = 'welcome';
     });
 
+    router.get('/wechat/auth-error', function *(){
+        console.info(this.wechatId);
+        this.body = 'auth error';
+    });
+
     return router.routes();
 };

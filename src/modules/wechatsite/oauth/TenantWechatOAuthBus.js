@@ -57,14 +57,13 @@ Bus.prototype.exchange = function* (ctx, next){
     var wechatId = this._getWechatId(ctx);
     ctx.oauth = {};
 
-
     if(!route){
         ctx.oauth.error = new Error('Fail to exchange access token: echo state is different');
         if(this.errorHandler){
             yield this.errorHandler(ctx, next);
         }
         else{
-            throw new Error('WechatOAuthHub needs error handler');
+            throw new Error('TenantWechatOAuthBus needs error handler');
         }
         return;
     }
@@ -72,7 +71,8 @@ Bus.prototype.exchange = function* (ctx, next){
         var client = yield this.clientCache.get(wechatId);
         if(!client){
             logger.error('Fail to get oauth client for wechat ' + wechatId);
-            next();
+            yield next;
+            return;
         }
         var result = yield client.getAccessToken(code);
         ctx.oauth.data = result.data;

@@ -18,7 +18,12 @@ var Route = function(bus, options) {
 Route.prototype.authorize = function*(ctx, wechatId){
     var url = yield this.bus.getAuthorizeUrl(this.state, this.scope, wechatId);
     ctx.response.status = 303;
-    ctx.response.redirect(url);
+    if(url){
+        ctx.response.redirect(url);
+    }
+    else{
+        ctx.response.redirect('/wechat/auth-error');
+    }
 };
 
 module.exports = Route;

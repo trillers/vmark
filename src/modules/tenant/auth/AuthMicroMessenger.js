@@ -18,11 +18,12 @@ var Authenticator = function(options){
 Authenticator.prototype = {
     auth: function* (ctx, next, level){
         var wechatId = ctx.wechatId;
+        console.log('wechat id: ' + wechatId)
         var at = agentToken.get(ctx, wechatId);
         if(!at){//signup firstly when user access wechat web page
-            level==1 && oauthSignupWithBaseInfo.authorize(ctx, wechatId);
-            level==2 && oauthSignupWithUserInfo.authorize(ctx, wechatId);
-            level==3 && oauthSignupWithBaseInfo.authorize(ctx, wechatId);
+            level==1 && (yield oauthSignupWithBaseInfo.authorize(ctx, wechatId));
+            level==2 && (yield oauthSignupWithUserInfo.authorize(ctx, wechatId));
+            level==3 && (yield oauthSignupWithBaseInfo.authorize(ctx, wechatId));
             return;
         }
         else{ //not signed up yet
@@ -30,9 +31,9 @@ Authenticator.prototype = {
                 var openid = yield atToOpenidKv.getAsync(wechatId, at);
                 if(!openid){
                     agentToken.delete(ctx, wechatId);
-                    level==1 && oauthSignupWithBaseInfo.authorize(ctx, wechatId);
-                    level==2 && oauthSignupWithUserInfo.authorize(ctx, wechatId);
-                    level==3 && oauthSignupWithBaseInfo.authorize(ctx, wechatId);
+                    level==1 && (yield oauthSignupWithBaseInfo.authorize(ctx, wechatId));
+                    level==2 && (yield oauthSignupWithUserInfo.authorize(ctx, wechatId));
+                    level==3 && (yield oauthSignupWithBaseInfo.authorize(ctx, wechatId));
                     return;
                 }
 
@@ -62,10 +63,10 @@ Authenticator.prototype = {
                     ctx.redirect(subUrl);
                 }
                 else if(level==2){
-                    oauthSignupWithUserInfo.authorize(ctx, wechatId);
+                    yield oauthSignupWithUserInfo.authorize(ctx, wechatId);
                 }
                 else{
-                    oauthSignupWithBaseInfo.authorize(ctx, wechatId);
+                    yield oauthSignupWithBaseInfo.authorize(ctx, wechatId);
                 }
             }catch(err){
                 logger.error('Fail to sign in with openid: ' + err);
