@@ -18,7 +18,6 @@ module.exports = function() {
 
     frankon.use(require('../../modules/wechat/middlewares/user-heartbeat'));
     frankon.use(function* (next) {
-        //oldEmitter.relay(this);
         emitter.relay(this);
         this.body = '';
     });

@@ -2,11 +2,13 @@ var logger = require('../../../../app/logging').logger;
 var authentication = require('../authentication');
 var AuthMicroMessenger = require('../AuthMicroMessenger');
 var AuthPc = require('../AuthPc');
-var authMicroMessenger = new AuthMicroMessenger();
-var authPc = new AuthPc();
-var authMobile = authPc;
 
-var generate = function(level){
+var generate = function(level, subscriptionUrl){
+    var authMicroMessenger = new AuthMicroMessenger({
+        subscriptionUrl: subscriptionUrl || '/wechat/:wechatId/welcome'
+    });
+    var authPc = new AuthPc();
+    var authMobile = authPc;
     return function* (next) {
         var wechatId = this.wechatId;
         var auth = authentication.getAuthentication(this, wechatId);
