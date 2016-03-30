@@ -3660,12 +3660,21 @@ webpackJsonp([0,1],[
 
 	var dispatcher = exports.dispatcher = {
 	    dispatch: function dispatch(action) {
-	        if (typeof action === 'function') {
+	        /**
+	         * allow dispatch a thunk function
+	         */
+	        if (isThunk(action)) {
 	            return action(done);
 	        }
+	        /**
+	         * allow a promise
+	         */
 	        if (isPromise(action)) {
 	            return action.then(done);
 	        }
+	        /**
+	         * plain action
+	         */
 	        done(action);
 	        function done(res) {
 	            _app.app.trigger('action', res);
@@ -3673,6 +3682,9 @@ webpackJsonp([0,1],[
 	    }
 	};
 
+	function isThunk(o) {
+	    return typeof o === 'function';
+	}
 	function isPromise(o) {
 	    return (typeof o === 'undefined' ? 'undefined' : _typeof(o)) === 'object' && typeof o.then === 'function';
 	}
