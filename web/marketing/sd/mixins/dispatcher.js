@@ -2,12 +2,21 @@ import {app} from '../js/app';
 
 export var dispatcher = {
     dispatch: function(action){
-        if(typeof action === 'function'){
+        /**
+         * allow dispatch a thunk function
+         */
+        if(isThunk(action)){
             return action(done);
         }
+        /**
+         * allow a promise
+         */
         if(isPromise(action)){
             return action.then(done);
         }
+        /**
+         * plain action
+         */
         done(action);
         function done(res){
             app.trigger('action', res);
@@ -15,6 +24,9 @@ export var dispatcher = {
     }
 };
 
+function isThunk(o){
+    return typeof o === 'function';
+}
 function isPromise(o){
     return typeof o === 'object' && typeof o.then === 'function';
 }
