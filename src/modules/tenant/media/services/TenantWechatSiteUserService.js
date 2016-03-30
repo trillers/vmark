@@ -71,26 +71,6 @@ Service.prototype.deleteTenantWechatSiteUserByOpenid = function(openid, callback
     });
 };
 
-Service.prototype.updateByWechatIdAndOpenid = function(wechatId, openid, update, callback){
-    var logger = this.context.logger;
-    var kv = this.context.kvs.tenantWechatSiteUser;
-    var me = this;
-    co(function* (){
-        var user = yield me.updateByOpenidAndWechatIdAsync(wechatId, openid, update);
-        if(!user){ //user is not found, so skip running further
-            if(callback) callback(null, null);
-            return;
-        }
-
-        yield kv.saveByWechatIdAndOpenidAsync(user);
-        if(callback) callback(null, user);
-    }).catch(Error, function(err){
-        logger.error('Fail to update tenant wechat site user by id ' + id + ': ' + err);
-        logger.error(err.stack);
-        if(callback) callback(err);
-    });
-};
-
 Service.prototype.updateTenantWechatSiteUserById = function(id, update, callback){
     var logger = this.context.logger;
     var kv = this.context.kvs.tenantWechatSiteUser;
@@ -102,7 +82,7 @@ Service.prototype.updateTenantWechatSiteUserById = function(id, update, callback
             return;
         }
 
-        yield kv.saveByOpenidAsync(user);
+        yield kv.saveByWechatIdAndOpenidAsync(user);
         if(callback) callback(null, user);
     }).catch(Error, function(err){
         logger.error('Fail to update tenant wechat site user by id ' + id + ': ' + err);
