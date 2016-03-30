@@ -11,6 +11,7 @@ var Model = function(domainBuilder){
         .withCreatedOn()
         .withProperties({
             status: {type: String, enum: UserStatus.valueList(), default: UserStatus.Anonymous.value(), required: true}
+            , wechatId:       {type: String} //服务号原始id
             , openid:       {type: String} //服务号粉丝openid 或者 助手号联系人buid (bot's contact id)
             , nickname:     {type: String, required: true}
             , headimgurl:   {type: String}

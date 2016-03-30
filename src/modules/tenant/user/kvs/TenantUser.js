@@ -1,148 +1,21 @@
-var cbUtil = require('../../../../framework/callback');
+var keyHelper = require('./keyHelper');
+var helper = require('../../../common/kvs/tenantHelper');
 
-var idToObjKey = function(id){
-    return 'te:usr:o:id:' + id;
+var idToObjKey = function(wechatId, id){
+    return keyHelper.userBaseKey(wechatId) +  ':o:id:' + id;
 };
 
-var openidToIdKey = function(openid){
-    return 'te:usr:id:oid:' + openid;
-};
+var Kv = function(context){ this.context = context; };
 
-var atToOpenidKey = function(at){
-    return 'te:usr:oid:at:' + at;
-};
+var config = {
+    keyName: 'tenant user id',
+    valueName: 'tenant user object',
+    keyGenerator: idToObjKey
+}
+Kv.prototype.loadById = helper.generateLoader(config);
 
-var Kv = function(context){
-    this.context = context;
-};
+Kv.prototype.saveById = helper.generateSaver(config);
 
-Kv.prototype.loadById = function(id, callback){
-    var logger = this.context.logger;
-    var redis = this.context.redis.main;
-    var key = idToObjKey(id);
-    redis.hgetall(key, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to get tenant user by id ' + id + ': ' + err,
-            'Succeed to get tenant user by id ' + id);
+Kv.prototype.deleteById = helper.generateDeleter(config);
 
-        if(result){
-            if(result.posts && typeof result.posts == 'string'){
-                var posts = result.posts;
-                try{
-                    result.posts = JSON.parse(result.posts);
-                }
-                catch(e){
-                    logger.error('Fail to parse posts: ' + posts);
-                    result.posts = [];
-                }
-            }
-            result.crtOn = result.crtOn && result.crtOn !== 'null' ? new Date(result.crtOn) : null;
-        }
-        cbUtil.handleSingleValue(callback, err, result);
-    });
-};
-
-Kv.prototype.saveById = function(json, callback){
-    var redis = this.context.redis.main;
-    var id = json.id;
-    var key = idToObjKey(id);
-
-    if(json.posts && Array.isArray(json.posts)){
-        json.posts = JSON.stringify(json.posts);
-    }
-
-    redis.hmset(key, json, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to save tenant user by id ' + id + ': ' + err,
-            'Succeed to save tenant user by id ' + id);
-        cbUtil.handleOk(callback, err, result, json);
-    });
-};
-
-Kv.prototype.deleteById = function(id, callback){
-    var redis = this.context.redis.main;
-    var key = idToObjKey(id);
-    redis.del(key, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to delete tenant user by id ' + id + ': ' + err,
-            'Succeed to delete tenant user by id ' + id);
-
-        cbUtil.handleSingleValue(callback, err, result);
-    });
-};
-
-Kv.prototype.loadIdByOpenid = function(openid, callback){
-    var redis = this.context.redis.main;
-    var key = openidToIdKey(openid);
-    redis.get(key, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to get tenant user id by openid ' + openid + ': ' + err,
-            'Succeed to get tenant user id ' + result + ' by openid ' + openid);
-        cbUtil.handleSingleValue(callback, err, result);
-    });
-};
-
-Kv.prototype.linkOpenid = function(openid, id, callback){
-    var redis = this.context.redis.main;
-    var key = openidToIdKey(openid);
-    redis.set(key, id, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to link openid ' + openid + ' to id ' + id + ': ' + err,
-            'Succeed to link openid ' + openid + ' to id ' + id);
-        cbUtil.handleOk(callback, err, result);
-    });
-};
-
-Kv.prototype.unlinkOpenid = function(openid, callback){
-    var redis = this.context.redis.main;
-    var key = openidToIdKey(openid);
-    redis.del(key, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to unlink tenant user id by openid ' + openid + ': ' + err,
-            'Succeed to unlink tenant user id by openid ' + openid);
-        cbUtil.handleSingleValue(callback, err, result);
-    });
-};
-
-Kv.prototype.loadOpenidByAt = function(at, callback){
-    var redis = this.context.redis.main;
-    var key = atToOpenidKey(at);
-    redis.get(key, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to get tenant user openid by agent token ' + at + ': ' + err,
-            'Succeed to get tenant user openid ' + result + ' by agent token ' + at);
-        cbUtil.handleSingleValue(callback, err, result);
-    });
-};
-
-Kv.prototype.linkAtToOpenid = function(at, openid, callback){
-    var redis = this.context.redis.main;
-    var key = atToOpenidKey(at);
-    redis.set(key, openid, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to link agent token ' + at + ' to openid ' + openid + ': ' + err,
-            'Succeed to link agent token ' + at + ' to openid ' + openid);
-        cbUtil.handleOk(callback, err, result);
-    });
-};
-
-Kv.prototype.unlinkAtToOpenid = function(at, callback){
-    var redis = this.context.redis.main;
-    var key = atToOpenidKey(at);
-    redis.del(key, function(err, result){
-        cbUtil.logCallback(
-            err,
-            'Fail to unlink tenant user openid by agent token ' + at + ': ' + err,
-            'Succeed to unlink tenant user openid by agent token ' + at);
-        cbUtil.handleSingleValue(callback, err, result);
-    });
-};
 module.exports = Kv;
