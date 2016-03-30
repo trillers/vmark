@@ -25,7 +25,7 @@ var Cache = function(wechatInfoCache, atStore){
 Cache.prototype.get = function* (wechatId, loadedInfo){
     var client = this.cache[wechatId];
     if(!client){
-        var info = loadedInfo || yield this.wechatInfoCache.get(wechatId);
+        var info = loadedInfo || (yield this.wechatInfoCache.get(wechatId));
         if(info){
             client = this.cache[wechatId] = new WechatOAuth(
                 info.appId,
