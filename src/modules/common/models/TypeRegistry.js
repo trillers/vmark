@@ -90,6 +90,11 @@ registry
     .addChild('Registered','r', '已注册')
     .addChild('Verified','v', '已验证')
 
+    .up().item('TenantUserStatus', 'TenantUserStatus', '租户用户状态')
+    .addChild('BaseInfo','b', '基础')
+    .addChild('UserInfo','u', '用户')
+    .addChild('Subscribed','s', '关注')
+
     .up().item('UserType', 'UserType', '用户类型')
     .addChild('Admin','a', '系统管理员')
     .addChild('Tenant','t', '租户')

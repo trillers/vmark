@@ -1,21 +1,21 @@
 var cbUtil = require('../../../../framework/callback');
 
-var openidToObjKey = function(openid){
-    return 'te:md-usr:o:oid:' + openid;
+var openidAndWechatIdToObjKey = function(wechatId, openid){
+    return 'wmu:o:wcid' + wechatId + ':openid:' + openid;
 };
 
 var Kv = function(context){
     this.context = context;
 };
 
-Kv.prototype.loadByOpenid = function(openid, callback){
+Kv.prototype.loadByOpenidAndWechatId = function(wechatId, openid, callback){
     var redis = this.context.redis.main;
-    var key = openidToObjKey(openid);
+    var key = openidAndWechatIdToObjKey(wechatId, openid);
     redis.hgetall(key, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to get wechat site user by openid ' + openid + ': ' + err,
-            'Succeed to get wechat site user by openid ' + openid);
+            'Fail to get wechat user by openid ' + openid + ' and wechatId ' + wechatId + ': ' + err,
+            'Succeed to get wechat user by openid ' + openid + ' and wechatId ' + wechatId);
 
         if(result){
             result.crtOn = result.crtOn && result.crtOn !== 'null' ? new Date(result.crtOn) : null;
@@ -24,27 +24,30 @@ Kv.prototype.loadByOpenid = function(openid, callback){
     });
 };
 
-Kv.prototype.saveByOpenid = function(json, callback){
+Kv.prototype.saveByOpenidAndWechatId = function(json, callback){
     var redis = this.context.redis.main;
     var openid = json.openid;
-    var key = openidToObjKey(openid);
+    var wechatId = json.wechatId;
+    var key = openidAndWechatIdToObjKey(wechatId, openid);
+
     redis.hmset(key, json, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to save wechat site user by openid ' + openid + ': ' + err,
-            'Succeed to save wechat site user by openid ' + openid);
+            'Fail to save wechat user by openid ' + openid + ' and wechatId ' + wechatId + ': ' + err,
+            'Succeed to save wechat user by openid ' + openid + ' and wechatId ' + wechatId);
+
         cbUtil.handleOk(callback, err, result, json);
     });
 };
 
-Kv.prototype.deleteByOpenid = function(openid, callback){
+Kv.prototype.deleteByOpenidAndWechatId = function(openid, wechatId, callback){
     var redis = this.context.redis.main;
-    var key = openidToObjKey(openid);
+    var key = openidAndWechatIdToObjKey(wechatId, openid);
     redis.del(key, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to delete wechat site user by openid ' + openid + ': ' + err,
-            'Succeed to delete wechat site user by openid ' + openid);
+            'Fail to del wechat user by openid ' + openid + ' and wechatId ' + wechatId + ': ' + err,
+            'Succeed to del wechat user by openid ' + openid + ' and wechatId ' + wechatId);
 
         cbUtil.handleSingleValue(callback, err, result);
     });

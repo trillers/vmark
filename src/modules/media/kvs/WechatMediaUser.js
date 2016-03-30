@@ -4,6 +4,7 @@ var openidToObjKey = function(openid){
     return 'wmu:o:openid:' + openid;
 };
 
+
 var Kv = function(context){
     this.context = context;
 };
