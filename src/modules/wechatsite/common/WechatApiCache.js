@@ -28,9 +28,9 @@ WechatApiCache.prototype.get = function*(wechatId, loadedInfo){
 
 WechatApiCache.prototype.refresh = function*(wechatId, loadedInfo){
     this.cache[wechatId] = null;
-    this.cache[wechatId] = yield this.get(wechatId, loadedInfo);
-    this.emit('refresh', wechatId, this.cache[wechatId]);
-    return this.cache[wechatId];
+    var cache = yield this.get(wechatId, loadedInfo);
+    this.emit('refresh', wechatId, cache);
+    return cache;
 };
 
 WechatApiCache.prototype.onRefresh = function(handler){
