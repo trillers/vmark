@@ -70,8 +70,11 @@ Bus.prototype.exchange = function* (ctx, next){
     try{
         var client = yield this.clientCache.get(wechatId);
         if(!client){
-            logger.error('Fail to get oauth client for wechat ' + wechatId);
-            yield next;
+            var errmsg = 'Fail to get oauth client for wechat ' + wechatId;
+            logger.error(errmsg);
+            var err = new Error(errmsg);
+            err.message = errmsg;
+            yield ctx.render('/error', {error: err});
             return;
         }
         var result = yield client.getAccessToken(code);

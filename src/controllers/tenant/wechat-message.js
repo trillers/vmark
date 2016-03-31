@@ -13,5 +13,12 @@ module.exports = function() {
         yield oauthBus.exchange(this, next);
     });
 
+    router.all('/wechat/:wechatId/auth/authorize', tenantFilter, function*(next){
+        yield oauthBus.authorize(this, next);
+    });
+    router.get('/auth/authorize', function*(next){
+        yield oauth.authorize(this);
+    });
+
     return router.routes();
 }
