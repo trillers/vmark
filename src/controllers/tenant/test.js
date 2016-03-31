@@ -4,7 +4,7 @@ var context = require('../../context/context');
 var tenantFilter = require('../../modules/tenant/common/middlewares/tenantFilter');
 var authentication = require('../../modules/tenant/auth/authentication');
 var generateAuthFilter = require('../../modules/tenant/auth/middlewares/generateAuthFilter');
-var authUserInfoFilter = generateAuthFilter(2);
+var authUserInfoFilter = generateAuthFilter(1);
 
 module.exports = function(){
     var router = new Router();

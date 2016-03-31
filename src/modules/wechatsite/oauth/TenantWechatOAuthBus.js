@@ -70,8 +70,11 @@ Bus.prototype.exchange = function* (ctx, next){
     try{
         var client = yield this.clientCache.get(wechatId);
         if(!client){
-            logger.error('Fail to get oauth client for wechat ' + wechatId);
-            yield next;
+            var errmsg = 'Fail to get oauth client for wechat ' + wechatId;
+            logger.error(errmsg);
+            var err = new Error(errmsg);
+            err.message = errmsg;
+            yield ctx.render('/error', {error: err});
             return;
         }
         var result = yield client.getAccessToken(code);
@@ -118,7 +121,7 @@ Bus.prototype.getAuthorizeUrl = function*(state, scope, wechatId) {
     return client.getAuthorizeURL(redirectUrl, stateWithTimestamp, scope);
 };
 
-Bus.prototype._getWechatId = function*(ctx) {
+Bus.prototype._getWechatId = function(ctx) {
     return ctx[this.wechatIdKey];
 };
 

@@ -95,7 +95,7 @@ var errorPairList =  [
 
 var errorPairs = {};
 errorPairList.forEach(function(v){
-    errorPairs[String(v[0])] = v[1];
+    errorPairs['' + v[0]] = v[1];
 });
 
 module.exports = errorPairs;

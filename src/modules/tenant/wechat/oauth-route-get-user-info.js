@@ -18,7 +18,7 @@ var handler = function*(ctx, next, wechatId){
 var errorHandler = function*(ctx, next, wechatId){
     var err = ctx.oauth.error;
     context.logger.error('Fail to sign up with user info: ' + err);
-    yield ctx.render('error', {error: err});
+    yield ctx.render('/error', {error: err});
 };
 
 module.exports = function(hub){
