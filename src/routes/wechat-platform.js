@@ -8,7 +8,7 @@ module.exports = function(app){
 
     var wechatPlatformChecker = function* (next){
         this.wechatId = this.params.wechatId;
-        yield next();
+        yield next;
     };
 
     router.get('/wechat/:wechatId/oauth//callback', wechatPlatformChecker, function*(next){
