@@ -15,22 +15,23 @@ util.inherits(Service, WechatMediaUserService);
 
 Service.prototype.loadByWechatIdAndOpenid = Kv.prototype.loadByWechatIdAndOpenid;
 
-Service.prototype.createTenantWechatSiteUser = function(mediaUserJson, callback){
+Service.prototype.createTenantWechatSiteUser = function(wechatId, mediaUserJson, callback){
     var kv = this.context.kvs.tenantWechatSiteUser;
-    var teOtToOpenidKv = this.context.kvs.teOtToOpenid;
+    var teAtToOpenidKv = this.context.kvs.teAtToOpenid;
     var me = this;
-        mediaUserJson.host = 'xxxxxxx';
+        mediaUserJson.host = mediaUserJson.host;
         mediaUserJson.type = WechatMediaUserType.WechatSiteUser.value();
         var openid = mediaUserJson.openid;
         var at = agentToken.generate(openid);
         mediaUserJson.at = at;
         me.create(mediaUserJson, function(err, json){
-            teOtToOpenidKv.set(mediaUserJson.wechatId, at, openid, function(err){
+            teAtToOpenidKv.set(wechatId, at, openid, function(err){
                 if(err) {
                     if(callback) callback(err);
                     return;
                 }
-                kv.saveByOpenid(json, callback);
+                json.wechatId = wechatId;
+                kv.saveByWechatIdAndOpenid(json, callback);
             });
         });
 };
@@ -38,7 +39,7 @@ Service.prototype.createTenantWechatSiteUser = function(mediaUserJson, callback)
 Service.prototype.deleteTenantWechatSiteUserByWechatIdAndOpenid = function(wechatId, openid, callback){
     var logger = this.context.logger;
     var kv = this.context.kvs.tenantWechatSiteUser;
-    var teOpenidToIdKv = this.context.kvs.teOpenidToId;
+    var teAtToOpenid = this.context.kvs.teAtToOpenid;
     var wechatMediaUserService = this.context.services.wechatMediaUserService;
     co(function* (){
         var json = yield kv.loadByWechatIdAndOpenidAsync(wechatId, openid);
@@ -51,7 +52,7 @@ Service.prototype.deleteTenantWechatSiteUserByWechatIdAndOpenid = function(wecha
         var at = json.at;
         try{
             if(at){
-                yield teOpenidToIdKv.deleteAsync(wechatId, at);
+                yield teAtToOpenid.deleteAsync(wechatId, at);
             }
 
             yield kv.deleteByWechatIdAndOpenidAsync(wechatId, openid);

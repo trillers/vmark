@@ -38,7 +38,7 @@ Service.prototype.signupWithBaseInfo = function(wechatId, openid, callback){
         var status = TenantUserStatus.BaseInfo.value();
         var type = UserType.Customer.value();
         try{
-            wechatMediaUser = yield wechatMediaUserKv.loadByWechatIdAndOpenidAsync(openid, wechatId);
+            wechatMediaUser = yield wechatMediaUserKv.loadByWechatIdAndOpenidAsync(wechatId, openid);
             if(wechatMediaUser){
                 user = yield userKv.loadByIdAsync(wechatMediaUser.user);
                 if(callback) callback(null, {
@@ -119,10 +119,10 @@ Service.prototype.signupWithUserInfo = function(wechatId, userInfo, callback){
         var userId = null;
         var status = TenantUserStatus.UserInfo.value();
         var type = UserType.Customer.value();
-        var statusSubscribed = TenantUserStatus.Identity.value();
+        var statusSubscribed = TenantUserStatus.Subscribed.value();
 
         try{
-            wechatMediaUser = yield wechatMediaUserKv.loadByWechatIdAndOpenidAsync(openid, wechatId);
+            wechatMediaUser = yield wechatMediaUserKv.loadByWechatIdAndOpenidAsync(wechatId, openid);
             user = wechatMediaUser && (yield userKv.loadByIdAsync(wechatMediaUser.user));
 
             /*
@@ -218,11 +218,11 @@ Service.prototype.signupOnSubscription = function(wechatId, openid, callback){
         var wechatMediaUser = null;
         var user = null;
         var userId = null;
-        var status = TenantUserStatus.Identity.value();
+        var status = TenantUserStatus.Subscribed.value();
         var type = UserType.Customer.value();
 
         try{
-            wechatMediaUser = yield wechatMediaUserKv.loadByWechatIdAndOpenidAsync(openid, wechatId);
+            wechatMediaUser = yield wechatMediaUserKv.loadByWechatIdAndOpenidAsync(wechatId, openid);
             user = wechatMediaUser && (yield userKv.loadByIdAsync(wechatMediaUser.user));
 
             //get user info from subscription

@@ -21,7 +21,7 @@ WechatApiCache.prototype.get = function*(wechatId, loadedInfo){
     if(!api){
         var info = loadedInfo || yield (this.infoCache.get(wechatId));
         var store = this.storeCreator.create(wechatId);
-        this.cache[wechatId] = new WechatApi(info.appKey, info.appSecret, store);
+        this.cache[wechatId] = new WechatApi(info.appKey, info.appSecret);
     }
     return this.cache[wechatId];
 };

@@ -93,7 +93,7 @@ registry
     .up().item('TenantUserStatus', 'TenantUserStatus', '租户用户状态')
     .addChild('BaseInfo','b', '基础')
     .addChild('UserInfo','u', '用户')
-    .addChild('Identity','i', '关注')
+    .addChild('Subscribed','i', '关注')
 
     .up().item('UserType', 'UserType', '用户类型')
     .addChild('Admin','a', '系统管理员')
