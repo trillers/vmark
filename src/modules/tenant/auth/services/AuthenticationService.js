@@ -159,7 +159,7 @@ Service.prototype.signupWithUserInfo = function(wechatId, userInfo, callback){
              * Ensure wechat site user created or updated
              */
             if(wechatMediaUser){
-                let wechatMediaUserId = wechatMediaUser._id;
+                var wechatMediaUserId = wechatMediaUser._id;
                 wechatMediaUser.user = userId;
                 statusSubscribed != wechatMediaUser.status && (wechatMediaUser.status = status);
                 helper.copyUserInfo(wechatMediaUser, userInfo);
@@ -265,7 +265,7 @@ Service.prototype.signupOnSubscription = function(wechatId, openid, callback){
              * Ensure wechat site user created or updated
              */
             if(wechatMediaUser){
-                let wechatMediaUserId = wechatMediaUser._id;
+                var wechatMediaUserId = wechatMediaUser._id;
                 helper.copySubscription(wechatMediaUser, userInfo);
                 wechatMediaUser.user = userId;
                 wechatMediaUser.status = status;

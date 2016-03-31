@@ -19,7 +19,7 @@ util.inherits(WechatApiCache, EventEmitter);
 WechatApiCache.prototype.get = function*(wechatId, loadedInfo){
     var api = this.cache[wechatId];
     if(!api){
-        var info = loadedInfo || yield (this.infoCache.get(wechatId));
+        var info = loadedInfo || (yield this.infoCache.get(wechatId));
         var store = this.storeCreator.create(wechatId);
         this.cache[wechatId] = new WechatApi(info.appKey, info.appSecret);
     }
