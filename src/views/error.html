@@ -6,17 +6,7 @@
     <script src="/public/components/seajs/dist/sea.js"></script>
     <script src="/public/components/seajs-wrap/dist/seajs-wrap.js"></script>
     <script type="text/javascript">
-        window.__app = {{ JSON.stringify(__app) }};
-        window.__page = {{ JSON.stringify(__page) }};
-        window.prdOrNot =( __app.settings.env.NODE_ENV === "production" );
-        var scripthook = document.createElement( "script" );
 
-//        if(prdOrNot){
-//            scripthook.src = "spm/build/spm/0.0.1/index.js";
-//        }else {
-            scripthook.src = "/web/index.js";
-        //}
-        document.getElementsByTagName( "head" )[0].appendChild( scripthook );
     </script>
     <!-- Bootstrap core CSS -->
     <link href="/public/components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -42,7 +32,7 @@
     </style>
 </head>
 <body style="overflow: hidden !important;background: #eee">
-    {{error}}
+    {{error.message}}
 
 </body>
 </html>

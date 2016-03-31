@@ -17,11 +17,11 @@ var handler = function*(ctx, next){
         auth = yield securityService.authenticateAsync(openid);
     }
     catch(err){
-        yield ctx.render('error', {error: err});
+        yield ctx.render('/error', {error: err});
     }
 
     if(!auth){
-        yield ctx.render('login-feedback', {result: authResults.NO_USER});
+        yield ctx.render('/login-feedback', {result: authResults.NO_USER});
         return;
     }
 
@@ -30,14 +30,14 @@ var handler = function*(ctx, next){
         authentication.redirectReturnUrl(ctx);
     }
     else{
-        yield ctx.render('login-feedback', {result: authResults.NO_PRIVILEGE});
+        yield ctx.render('/login-feedback', {result: authResults.NO_PRIVILEGE});
     }
 };
 
 var errorHandler = function*(ctx, next){
     var err = ctx.oauth.error;
     context.logger.error('Fail to authenticate: ' + err);
-    yield ctx.render('error', {error: err});
+    yield ctx.render('/error', {error: err});
 };
 
 module.exports = function(hub){

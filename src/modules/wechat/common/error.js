@@ -10,7 +10,7 @@ var getErrorMessage = function(err, apiName){
     var apiNamePart = apiName ? apiName + ': ' : '';
     var errmsg =
         apiNamePart + err + ', code: ' + err.code +
-        ', possible reason: ' + errorRegistry[''+err.code];
+        ', possible reason: ' + errorRegistry.map[''+err.code];
     return errmsg;
 };
 

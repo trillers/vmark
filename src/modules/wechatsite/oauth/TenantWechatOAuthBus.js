@@ -118,7 +118,7 @@ Bus.prototype.getAuthorizeUrl = function*(state, scope, wechatId) {
     return client.getAuthorizeURL(redirectUrl, stateWithTimestamp, scope);
 };
 
-Bus.prototype._getWechatId = function*(ctx) {
+Bus.prototype._getWechatId = function(ctx) {
     return ctx[this.wechatIdKey];
 };
 
