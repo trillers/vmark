@@ -1,7 +1,7 @@
 var cbUtil = require('../../../../framework/callback');
 
 var openidAndWechatIdToObjKey = function(wechatId, openid){
-    return 'wmu:o:wcid' + wechatId + ':openid:' + openid;
+    return 'wmu:o:wcid:' + wechatId + ':openid:' + openid;
 };
 
 var Kv = function(context){
@@ -17,6 +17,7 @@ Kv.prototype.loadByWechatIdAndOpenid = function(wechatId, openid, callback){
             'Fail to get wechat user by openid ' + openid + ' and wechatId ' + wechatId + ': ' + err,
             'Succeed to get wechat user by openid ' + openid + ' and wechatId ' + wechatId);
 
+        console.error(err);
         if(result){
             result.crtOn = result.crtOn && result.crtOn !== 'null' ? new Date(result.crtOn) : null;
         }

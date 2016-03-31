@@ -20,14 +20,14 @@ Service.prototype.loadUserByWechatIdAndOpenid = function(wechatId, openid, callb
     var me = this;
 
     co(function* (){
-        var wechatSiteUser = yield tenantWechatSiteUserKv.loadByOpenidAndWechatIdAsync(openid, wechatId);
+        var wechatSiteUser = yield tenantWechatSiteUserKv.loadByWechatIdAndOpenidAsync(wechatId, openid);
         if(!wechatSiteUser){
             if(callback) callback(null, null);
         }
         var userId = wechatSiteUser.user;
         var user = null;
         if(userId){
-            user = yield me.loadByIdAsync(wechatId, userId);
+            user = yield me.loadByWechatIdAndIdAsync(wechatId, userId);
             user.wechatSiteUser = wechatSiteUser;
         }
         else{
@@ -53,9 +53,9 @@ Service.prototype.deleteUserByWechatIdAndOpenid = function(wechatId, openid, cal
     var tenantWechatSiteUserService = this.context.services.tenantWechatSiteUserService;
     var me = this;
     co(function* (){
-        var userid = yield tenantWechatSiteUserService.deleteTenantWechatSiteUserByOpenidAAsync(wechatId, openid);
+        var userid = yield tenantWechatSiteUserService.deleteTenantWechatSiteUserByWechatIdAndOpenidAsync(wechatId, openid);
         if(!userid){
-            logger.warn('No platfrom wechat site user [openid = ' + openid + '] found, skip deleting tenant user');
+            logger.warn('No tenant wechat site user [openid = ' + openid + '] found, skip deleting tenant user');
             if(callback) callback(null);
             return;
         }
@@ -95,7 +95,7 @@ Service.prototype.create = function(userJson, callback){
 
         cbUtil.handleAffected(function(err, doc){
             var obj = doc.toObject({virtuals: true});
-            kv.saveById(obj, function(err, obj){
+            kv.saveById(obj.wechatId, obj.id, obj, function(err, obj){
                 if(err){
                     logger.error('Fail to create tenant user: ' + err);
                     logger.error(err.stack);
@@ -129,7 +129,7 @@ Service.prototype.update = function(conditions, update, callback){
 
         cbUtil.handleSingleValue(function(err, doc){
             var obj = doc.toObject({virtuals: true});
-            kv.saveById(obj, function(err, obj){
+            kv.saveById(obj.wechatId, obj.id, obj, function(err, obj){
                 if(err){
                     logger.error('Fail to update tenant user: ' + err);
                     logger.error(err.stack);
@@ -157,7 +157,7 @@ Service.prototype.update = function(conditions, update, callback){
  * @param id
  * @param callback
  */
-Service.prototype.deleteById = function(id, callback) {
+Service.prototype.deleteById = function(wechatId, id, callback) {
     var logger = this.context.logger;
     var TenantUser = this.context.models.TenantUser;
     var kv = this.context.kvs.tenantUser;
@@ -167,7 +167,7 @@ Service.prototype.deleteById = function(id, callback) {
             if(callback) callback(err);
             return;
         }
-        kv.deleteById(id, function(err){
+        kv.deleteById(wechatId, id, function(err){
             if (err) {
                 logger.error('Fail to delete tenant user by [id=' + id + ']: ' + err);
                 if(callback) callback(err);
