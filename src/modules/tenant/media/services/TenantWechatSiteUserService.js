@@ -35,7 +35,7 @@ Service.prototype.createTenantWechatSiteUser = function(mediaUserJson, callback)
         });
 };
 
-Service.prototype.deleteTenantWechatSiteUserByOpenidAndWechatId = function(wechatId, openid, callback){
+Service.prototype.deleteTenantWechatSiteUserByWechatIdAndOpenid = function(wechatId, openid, callback){
     var logger = this.context.logger;
     var kv = this.context.kvs.tenantWechatSiteUser;
     var teOpenidToIdKv = this.context.kvs.teOpenidToId;
@@ -79,7 +79,6 @@ Service.prototype.updateTenantWechatSiteUserById = function(id, update, callback
             if(callback) callback(null, null);
             return;
         }
-
         yield kv.saveByWechatIdAndOpenidAsync(user);
         if(callback) callback(null, user);
     }).catch(Error, function(err){

@@ -227,12 +227,6 @@ Service.prototype.signupOnSubscription = function(openid, wechatId, callback){
 
             //get user info from subscription
 
-
-
-
-
-
-
             userInfo = yield helper.getUserInfoAsync(wechatApi, wechatId, openid, languages.zh_CN);
 
             /*
