@@ -20,7 +20,7 @@ var authResults = {
 };
 Service.prototype.authResults = authResults;
 
-Service.prototype.signupWithBaseInfo = function(openid, wechatId, callback){
+Service.prototype.signupWithBaseInfo = function(wechatId, openid, callback){
     var logger = this.context.logger;
     var wechatMediaService = this.context.services.tenantWechatSiteService;
     var wechatMediaUserKv = this.context.kvs.tenantWechatSiteUser;
@@ -101,7 +101,7 @@ Service.prototype.signupWithBaseInfo = function(openid, wechatId, callback){
     });
 };
 
-Service.prototype.signupWithUserInfo = function(userInfo, wechatId, callback){
+Service.prototype.signupWithUserInfo = function(wechatId, userInfo, callback){
     var logger = this.context.logger;
     var wechatMediaUserKv = this.context.kvs.tenantWechatSiteUser;
     var userKv = this.context.kvs.tenantUser;
@@ -119,7 +119,7 @@ Service.prototype.signupWithUserInfo = function(userInfo, wechatId, callback){
         var userId = null;
         var status = TenantUserStatus.UserInfo.value();
         var type = UserType.Customer.value();
-        var statusSubscribed = TenantUserStatus.Subscribed.value();
+        var statusSubscribed = TenantUserStatus.Identity.value();
 
         try{
             wechatMediaUser = yield wechatMediaUserKv.loadByWechatIdAndOpenidAsync(openid, wechatId);
@@ -202,7 +202,7 @@ Service.prototype.signupWithUserInfo = function(userInfo, wechatId, callback){
     });
 };
 
-Service.prototype.signupOnSubscription = function(openid, wechatId, callback){
+Service.prototype.signupOnSubscription = function(wechatId, openid, callback){
     var logger = this.context.logger;
     var wechatMediaUserKv = this.context.kvs.tenantWechatSiteUser;
     var userKv = this.context.kvs.tenantUser;
@@ -218,7 +218,7 @@ Service.prototype.signupOnSubscription = function(openid, wechatId, callback){
         var wechatMediaUser = null;
         var user = null;
         var userId = null;
-        var status = TenantUserStatus.Subscribed.value();
+        var status = TenantUserStatus.Identity.value();
         var type = UserType.Customer.value();
 
         try{

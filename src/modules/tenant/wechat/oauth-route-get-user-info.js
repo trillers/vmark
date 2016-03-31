@@ -10,7 +10,7 @@ var handler = function*(ctx, next, wechatId){
     /*
      * sign up with full user info
      */
-    var auth = yield authenticationService.signupWithUserInfoAsync(oauthUserInfo, wechatId);
+    var auth = yield authenticationService.signupWithUserInfoAsync(wechatId, oauthUserInfo);
     authentication.setAuthentication(ctx, auth, wechatId);
     authentication.redirectReturnUrl(ctx, wechatId);
 };

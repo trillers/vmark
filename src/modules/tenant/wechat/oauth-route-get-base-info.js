@@ -11,7 +11,7 @@ var handler = function*(ctx, next, wechatId){
     /*
      * sign up with base info by openid
      */
-    var auth = yield authenticationService.signupWithBaseInfoAsync(openid, wechatId);
+    var auth = yield authenticationService.signupWithBaseInfoAsync(wechatId, openid);
 
     authentication.setAuthentication(ctx, auth, wechatId);
     authentication.redirectReturnUrl(ctx, wechatId);
