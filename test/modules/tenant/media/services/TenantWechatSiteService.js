@@ -22,6 +22,7 @@ describe('TenantWechatSiteService', function(){
                 , qrcodeurl:  'url'
                 , appId: 'abc'
                 , appSecret: 'abc'
+                , wechatSiteType: 'voa'
             };
             service.createTenantWechatSite(wechatSite, function(err, result){
                 logger.debug(result);

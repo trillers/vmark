@@ -16,8 +16,6 @@ Kv.prototype.loadByWechatIdAndOpenid = function(wechatId, openid, callback){
             err,
             'Fail to get wechat user by openid ' + openid + ' and wechatId ' + wechatId + ': ' + err,
             'Succeed to get wechat user by openid ' + openid + ' and wechatId ' + wechatId);
-
-        console.error(err);
         if(result){
             result.crtOn = result.crtOn && result.crtOn !== 'null' ? new Date(result.crtOn) : null;
         }

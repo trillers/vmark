@@ -6,6 +6,7 @@ var WechatMediaUserType = require('../../../common/models/TypeRegistry').item('W
 var WechatMediaUserService = require('../../../media/services/WechatMediaUserService');
 var Kv = require('../kvs/TenantWechatSiteUser');
 var agentToken = require('../../../auth/agentToken');
+var openToken = require('../../../auth/openToken');
 
 var Service = function(context){
     this.context = context;
@@ -23,7 +24,10 @@ Service.prototype.createTenantWechatSiteUser = function(wechatId, mediaUserJson,
         mediaUserJson.type = WechatMediaUserType.WechatSiteUser.value();
         var openid = mediaUserJson.openid;
         var at = agentToken.generate(openid);
+        var ot = openToken.generate(openid);
+
         mediaUserJson.at = at;
+        mediaUserJson.ot = ot;
         me.create(mediaUserJson, function(err, json){
             teAtToOpenidKv.set(wechatId, at, openid, function(err){
                 if(err) {

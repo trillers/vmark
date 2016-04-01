@@ -1,6 +1,7 @@
 var EventEmitter = require('events').EventEmitter;
-var WechatApi = require('./WechatApi');
+var WechatApi = require('../../wechat/common/WechatApi');
 var co = require('co');
+var util = require('util');
 
 function WechatApiCache(infoCache, storeCreator){
     var me = this;
@@ -17,11 +18,11 @@ function WechatApiCache(infoCache, storeCreator){
 util.inherits(WechatApiCache, EventEmitter);
 
 WechatApiCache.prototype.get = function*(wechatId, loadedInfo){
+    var me = this;
     var api = this.cache[wechatId];
     if(!api){
-        var info = loadedInfo || yield (this.infoCache.get(wechatId));
-        var store = this.storeCreator.create(wechatId);
-        this.cache[wechatId] = new WechatApi(info.appKey, info.appSecret);
+        var info = loadedInfo || (yield me.infoCache.get(wechatId));
+        this.cache[wechatId] = new WechatApi(info.appId, info.appSecret, me.storeCreator(wechatId));
     }
     return this.cache[wechatId];
 };
@@ -36,3 +37,5 @@ WechatApiCache.prototype.refresh = function*(wechatId, loadedInfo){
 WechatApiCache.prototype.onRefresh = function(handler){
     this.on('refresh', handler)
 };
+
+module.exports = WechatApiCache;
