@@ -164,7 +164,6 @@ Service.prototype.signupWithUserInfo = function(wechatId, userInfo, callback){
                 statusSubscribed != wechatSiteUser.status && (wechatSiteUser.status = status);
                 helper.copyUserInfo(wechatSiteUser, userInfo);
                 wechatSiteUser._id && (delete wechatSiteUser._id);
-
                 wechatSiteUser = yield wechatSiteUserService.updateTenantWechatSiteUserByIdAsync(wechatSiteUserId, wechatSiteUser);
             }
             else{
@@ -187,11 +186,13 @@ Service.prototype.signupWithUserInfo = function(wechatId, userInfo, callback){
             yield atToOpenidKv.setAsync(wechatId, wechatSiteUser.at, openid);
             yield otToOpenidKv.setAsync(wechatId, wechatSiteUser.ot, openid);
 
-            if(callback) callback(null, {
+            var res = {
                 user: user,
                 wechatSiteUser: wechatSiteUser,
                 result: authResults.ok
-            });
+            };
+            console.warn(res);
+            if(callback) callback(null, res);
         }catch(err){
             logger.error('Fail to sign up with user info: ' + err);
             if(callback) callback(err);

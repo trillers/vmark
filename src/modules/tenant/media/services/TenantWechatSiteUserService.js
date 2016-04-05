@@ -77,6 +77,7 @@ Service.prototype.deleteTenantWechatSiteUserByWechatIdAndOpenid = function(wecha
 Service.prototype.updateTenantWechatSiteUserById = function(id, update, callback){
     var logger = this.context.logger;
     var kv = this.context.kvs.tenantWechatSiteUser;
+    var mediaKv = this.context.kvs.wechatMedia;
     var me = this;
     co(function* (){
         var user = yield me.updateByIdAsync(id, update);
@@ -84,6 +85,8 @@ Service.prototype.updateTenantWechatSiteUserById = function(id, update, callback
             if(callback) callback(null, null);
             return;
         }
+        var media = yield mediaKv.loadByIdAsync(user.host);
+        user.wechatId = media.originalId;
         yield kv.saveByWechatIdAndOpenidAsync(user);
         if(callback) callback(null, user);
     }).catch(Error, function(err){
