@@ -5,7 +5,7 @@ module.exports = function(app){
     app.keys = ['keys', 'keykeys'];
     app.use(require('../middlewares/session')());
     require('./wechat-platform')(app);
-    //require('./auth-wechat')(app);
+    require('./auth-wechat')(app);
     require('./auth')(app);
     require('../controllers')(app);
 

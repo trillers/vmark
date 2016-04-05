@@ -12,7 +12,7 @@ module.exports = function(){
 
     router.get('/wechat/:wechatId/user-info', tenantFilter, authUserInfoFilter, function *(){
         console.info(this.wechatId);
-        console.info(authentication.getAuthentication(this,this.wechatId));
+        console.info(authentication.getAuthentication(this, this.wechatId));
         this.body = 'a page which needs to signing up and signing in with user info';
     });
 
