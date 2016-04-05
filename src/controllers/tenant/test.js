@@ -4,7 +4,7 @@ var context = require('../../context/context');
 var tenantFilter = require('../../modules/tenant/common/middlewares/tenantFilter');
 var authentication = require('../../modules/tenant/auth/authentication');
 var generateAuthFilter = require('../../modules/tenant/auth/middlewares/generateAuthFilter');
-var authUserInfoFilter = generateAuthFilter(1);
+var authUserInfoFilter = generateAuthFilter(2);
 
 module.exports = function(){
     var router = new Router();
@@ -12,7 +12,7 @@ module.exports = function(){
 
     router.get('/wechat/:wechatId/user-info', tenantFilter, authUserInfoFilter, function *(){
         console.info(this.wechatId);
-        console.info(authentication.getAuthentication(this,this.wechatId));
+        console.info(authentication.getAuthentication(this, this.wechatId));
         this.body = 'a page which needs to signing up and signing in with user info';
     });
 

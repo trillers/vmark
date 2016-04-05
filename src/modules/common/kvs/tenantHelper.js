@@ -23,7 +23,6 @@ helper.generateLoader = function(config){
         var redis = this.context.redis.main;
         redis.hgetall(keyGenerator(tenantId, id), function(err, result){
             cbUtil.logCallback(
-                logger,
                 err,
                 errPrefix + ' ' + id + ': ' + err,
                 okPrefix + ' ' + id);
@@ -55,7 +54,6 @@ helper.generateDeleter = function(config){
         var redis = this.context.redis.main;
         redis.del(keyGenerator(tenantId, id), function(err, result){
             cbUtil.logCallback(
-                logger,
                 err,
                 errPrefix + ' ' + id + ': ' + err,
                 okPrefix + ' ' + id);
@@ -87,7 +85,6 @@ helper.generateSaver = function(config){
         if(preHandler){obj = preHandler(obj);}
         redis.hmset(keyGenerator(tenantId, id), obj, function(err, result){
             cbUtil.logCallback(
-                logger,
                 err,
                 errPrefix + ' ' + id + ': ' + err,
                 okPrefix + ' ' + id);
@@ -115,7 +112,6 @@ helper.generateGetter = function(config){
         var redis = this.context.redis.main;
         redis.get(keyGenerator(tenantId, key), function(err, result){
             cbUtil.logCallback(
-                logger,
                 err,
                 errPrefix + ' ' + key + ': ' + err,
                 okPrefix + ' ' + key);
@@ -143,7 +139,6 @@ helper.generateSetter = function(config){
         var redis = this.context.redis.main;
         redis.set(keyGenerator(tenantId, key), value, function(err, result){
             cbUtil.logCallback(
-                logger,
                 err,
                 errPrefix + ' ' + key + ': ' + err,
                 okPrefix + ' ' + key);

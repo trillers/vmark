@@ -7,9 +7,9 @@ var bus = require('../wechat/oauth-bus-config');
 var oauthSignupWithBaseInfo = bus.route(bus.GET_BASE_INFO);
 var oauthSignupWithUserInfo = bus.route(bus.GET_USER_INFO);
 
-var authenticationService = context.services.authenticationService; //TODO use tenant-version
+var authenticationService = context.services.tenantAuthenticationService;
 var authResults = authenticationService.authResults;
-var atToOpenidKv = context.kvs.atToOpenid; //TODO use tenant-version 
+var atToOpenidKv = context.kvs.teAtToOpenid;
 
 var Authenticator = function(options){
     this.subscriptionUrl = options.subscriptionUrl;
@@ -37,7 +37,7 @@ Authenticator.prototype = {
                     return;
                 }
 
-                var auth = yield authenticationService.signinWithOpenidAsync(openid, wechatId);
+                var auth = yield authenticationService.signinWithWechatIdAndOpenidAsync(wechatId, openid);
                 if(!auth){
                     agentToken.delete(ctx, wechatId);
                     yield this.render('/login-feedback', auth);
