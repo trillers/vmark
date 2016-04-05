@@ -6,5 +6,5 @@ var wechatEmitter = new WechatEmitter();
 
 require('./handlers/messageHandler')(wechatEmitter);
 require('./handlers/eventHandler')(wechatEmitter);
--
+
 module.exports = wechatEmitter;
