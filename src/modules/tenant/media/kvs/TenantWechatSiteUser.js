@@ -32,8 +32,8 @@ Kv.prototype.saveByWechatIdAndOpenid = function(json, callback){
     redis.hmset(key, json, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to save wechat user by openid ' + openid + ' and wechatId ' + wechatId + ': ' + err,
-            'Succeed to save wechat user by openid ' + openid + ' and wechatId ' + wechatId);
+            'Fail to save wechat site user by openid ' + openid + ' and wechatId ' + wechatId + ': ' + err,
+            'Succeed to save wechat site user by openid ' + openid + ' and wechatId ' + wechatId);
 
         cbUtil.handleOk(callback, err, result, json);
     });

@@ -21,6 +21,7 @@ Authenticator.prototype = {
         console.log('wechat id: ' + wechatId)
         var at = agentToken.get(ctx, wechatId);
         if(!at){//signup firstly when user access wechat web page
+            console.log(level)
             level==1 && (yield oauthSignupWithBaseInfo.authorize(ctx, wechatId));
             level==2 && (yield oauthSignupWithUserInfo.authorize(ctx, wechatId));
             level==3 && (yield oauthSignupWithBaseInfo.authorize(ctx, wechatId));
