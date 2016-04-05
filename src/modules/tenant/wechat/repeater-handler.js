@@ -1,4 +1,4 @@
-var emitter = require('../../system/wechatsite/wechatEmitter');
+var emitter = require('./emitter');
 var handler = function(ctx, next) {
     emitter.relay(ctx);
     !ctx.body && (ctx.body = '');

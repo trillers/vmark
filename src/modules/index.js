@@ -8,6 +8,7 @@ _exports.platform.org = require('./platform/org');
 _exports.platform.media = require('./platform/media');
 _exports.platform.user = require('./platform/user');
 _exports.platform.main = require('./platform/main');
+_exports.platform.tenant = require('./platform/tenant');
 
 _exports.tenant = {};
 _exports.tenant.wechat = require('./tenant/wechat');
