@@ -37,7 +37,7 @@ Authenticator.prototype = {
                     return;
                 }
 
-                var auth = yield authenticationService.signinWithOpenidAsync(wechatId, openid);
+                var auth = yield authenticationService.signinWithWechatIdAndOpenidAsync(wechatId, openid);
                 if(!auth){
                     agentToken.delete(ctx, wechatId);
                     yield this.render('/login-feedback', auth);
