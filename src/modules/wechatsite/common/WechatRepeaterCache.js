@@ -32,10 +32,11 @@ Cache.prototype.get = function* (wechatId, loadedInfo){
                 appid: info.appId,
                 encodingAESKey: info.encodingAESKey
             };
-
             var handle = wechat(config).middleware(function*(next){
                 handler(this, next);
             });
+            console.log('**************');
+            console.log(handle);
             repeater = this.cache[wechatId] = function*(ctx, next){
                 yield handle.call(ctx, next);
             };
