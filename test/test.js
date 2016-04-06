@@ -1,3 +1,6 @@
-var url = "http://www.baidu.com/%s/111";
-var test = require('url').format(url, '222');
-console.log(test)
+function* test(){
+    console.log("***")
+    var re = yield test1();
+    return re;
+}
+console.log(test.constructor.name);

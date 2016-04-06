@@ -43,6 +43,8 @@ Cache.prototype.get = function* (wechatId, loadedInfo){
 
             console.log('**************');
             console.log(handle);
+            console.log(handle.constructor.name === 'GeneratorFunction');
+
             repeater = this.cache[wechatId] = function*(ctx, next){
                 console.log("####")
                 yield handle.call(ctx, next);
