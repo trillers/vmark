@@ -101,7 +101,7 @@ QrTypeRegistry.prototype.getQr = function(sceneId, callback){
         }
     })
 };
-QrTypeRegistry.prototype.getQrAsync = Promise.promisify(QrTypeRegistry.prototype.createQr);
+QrTypeRegistry.prototype.getQrAsync = Promise.promisify(QrTypeRegistry.prototype.getQr);
 
 /**
  * handle the qr that own given sceneId, load it from db,

@@ -16,13 +16,13 @@ var Service = function(context){
  */
 Service.prototype.loadUserByWechatIdAndOpenid = function(wechatId, openid, callback) {
     var logger = this.context.logger;
-    var tenantWechatSiteUserKv = this.context.kvs.tenantWechatSiteUser;
+    var platformWechatSiteUserKv = this.context.kvs.platformWechatSiteUser;
     var me = this;
 
     co(function* (){
         var wechatSiteUser = yield tenantWechatSiteUserKv.loadByWechatIdAndOpenidAsync(wechatId, openid);
         if(!wechatSiteUser){
-            if(callback) callback(null, null);
+            if(callback) return callback(null, null);
         }
         var userId = wechatSiteUser.user;
         var user = null;
@@ -35,7 +35,7 @@ Service.prototype.loadUserByWechatIdAndOpenid = function(wechatId, openid, callb
         }
 
         if(callback) callback(null, user);
-    }).catch(Error, function(err){
+    }).catch(function(err){
         logger.error('Fail to load tenant user by wechat site user\'s openid '+openid+' : ' + err);
         logger.error(err.stack);
         if(callback) callback(err);
@@ -50,10 +50,11 @@ Service.prototype.loadUserByWechatIdAndOpenid = function(wechatId, openid, callb
  */
 Service.prototype.deleteUserByWechatIdAndOpenid = function(wechatId, openid, callback) {
     var logger = this.context.logger;
-    var tenantWechatSiteUserService = this.context.services.tenantWechatSiteUserService;
+    var platformWechatSiteUserService = this.context.services.platformWechatSiteUserService;
     var me = this;
     co(function* (){
         var userid = yield tenantWechatSiteUserService.deleteTenantWechatSiteUserByWechatIdAndOpenidAsync(wechatId, openid);
+
         if(!userid){
             logger.warn('No tenant wechat site user [openid = ' + openid + '] found, skip deleting tenant user');
             if(callback) callback(null);
@@ -75,7 +76,6 @@ Service.prototype.deleteUserByWechatIdAndOpenid = function(wechatId, openid, cal
  * @param callback
  */
 Service.prototype.loadByWechatIdAndId = Kv.prototype.loadById;
-
 
 /**
  * Create user in mongoose and redis.
@@ -179,5 +179,25 @@ Service.prototype.deleteById = function(wechatId, id, callback) {
         });
     });
 };
+
+/**
+ * ensure tenant user created
+ * @param openid
+ * @param callback
+ */
+Service.prototype.ensureTenantUser = function(openid, callback){
+    var me = this;
+    co(function*(){
+        var user = yield me.loadTenantUserByOpenidAsync(openid);
+        if(!user){
+            user = yield me.createTenantUserAsync(openid);
+        }
+        callback(null, user);
+    }).catch(function(err){
+        logger.error('Fail to ensure tenant user by wechat site user\'s openid '+openid+' : ' + err);
+        logger.error(err.stack);
+        if(callback) callback(err);
+    })
+}
 
 module.exports = Service;

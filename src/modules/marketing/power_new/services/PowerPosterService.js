@@ -3,6 +3,7 @@ var settings = require('@private/vmark-settings');
 var posterHandler = require('../../poster');
 var wechatApi = require('../../../wechat/common/api').api;
 var PosterType = require('../../../common/models/TypeRegistry').item('PosterType');
+var activityQrType = require('../../../wechatsite/qr').getQrType('ac');
 
 var Service = function(context){
     this.context = context
@@ -26,11 +27,11 @@ Service.prototype.create = function*(jsonData){
     var posterKv = this.context.kvs.poster;
     var user = yield userKv.loadByIdAsync(jsonData.user);
     var posterData = {};
-    jsonData.bgImg = 'http://picm.photophoto.cn/085/056/002/0560020133.jpg';
+    //jsonData.posterBgImg = 'http://b.zol-img.com.cn/sjbizhi/images/5/320x510/1379321712730.jpg';
     if(jsonData.type === PosterType.activity.value()){
-        posterData = yield posterHandler.activityPosterHandler.create(jsonData.bgImg, user);
+        posterData = yield posterHandler.activityPosterHandler.create(jsonData.posterBgImg, user);
     }else if(jsonData.type === PosterType.participant.value()){
-        posterData = yield posterHandler.participantPosterHandler.create(jsonData.bgImg, user);
+        posterData = yield posterHandler.participantPosterHandler.create(jsonData.posterBgImg, user);
     }
     if(posterData.err){
         logger.error('poster handler err: ' + posterData.err);
@@ -94,9 +95,9 @@ Service.prototype.loadBySceneId = function*(sid){
 Service.prototype.getPosterMediaId = function*(poster){
     var expired = this.isInvalid(poster);
     if(expired){
-        var imageData = yield wechatApi.uploadMediaAsync(activity.poster.path, 'image');
+        var imageData = yield wechatApi.uploadMediaAsync(poster.path, 'image');
         var mediaId = imageData[0].media_id;
-        yield this.updateById(activity.poster._id, {mediaId: mediaId});
+        yield this.updateById(poster._id, {mediaId: mediaId});
         return mediaId;
     }else {
         return poster.mediaId;
@@ -112,4 +113,17 @@ Service.prototype.isInvalid = function(poster){
     var nowTimestamp = (new Date()).getTime();
     return nowTimestamp >= oldTimestamp + poster.expire * 1000;
 }
+
+/**
+ * get activity poster qrCode url
+ * @params posterId
+ *
+ * return poster media id
+ **/
+Service.prototype.getPosterQrCodeUrlById = function*(posterId){
+    var poster = yield this.loadById(posterId);
+    var qrCode = yield activityQrType.getQrAsync(poster.sceneId);
+    return activityQrType.getQrCodeUrl(qrCode.ticket);
+}
+
 module.exports = Service;

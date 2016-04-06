@@ -26,38 +26,45 @@ describe('Power poster service', function(){
         type: 'pa'
     }
 
-    describe('create', function(){
-        it('succeed to create activity post', function(done){
-            co(function*(){
-                try{
-                    var service = context.services.powerPosterService;
-                    var data = yield service.create(acJson)
-                    console.info(data);
-                    yield wechatApi.sendImageAsync(openid, data.mediaId);
-                    setTimeout(function(){done()}, 2000);
-                }
-                catch(e){
-                    console.error(e);
-                    done();
-                }
-            })
-        });
+    describe('create poster', function(){
+        describe('create activity post', function(){
+            it('succeed to create activity post', function(done){
+                co(function*(){
+                    try{
+                        var service = context.services.powerPosterService;
+                        var data = yield service.create(acJson)
+                        console.info(data);
+                        yield wechatApi.sendImageAsync(openid, data.mediaId);
+                        setTimeout(function(){done()}, 2000);
+                    }
+                    catch(e){
+                        console.error(e);
+                        done();
+                    }
+                })
+            });
 
-        it('succeed to create participant post', function(done){
-            co(function*(){
-                try{
-                    var service = context.services.powerPosterService;
-                    var data = yield service.create(paJson)
-                    yield wechatApi.sendImageAsync(openid, data.mediaId);
-                    console.info(data);
-                    setTimeout(function(){done()}, 2000);
-                }
-                catch(e){
-                    console.error(e);
-                    done();
-                }
-            })
-        });
+        })
+
+        describe('create participant post', function(){
+            it('succeed to create participant post', function(done){
+                co(function*(){
+                    try{
+                        var service = context.services.powerPosterService;
+                        var data = yield service.create(paJson)
+                        yield wechatApi.sendImageAsync(openid, data.mediaId);
+                        console.info(data);
+                        setTimeout(function(){done()}, 2000);
+                    }
+                    catch(e){
+                        console.error(e);
+                        done();
+                    }
+                })
+            });
+
+        })
+
     });
 
 });

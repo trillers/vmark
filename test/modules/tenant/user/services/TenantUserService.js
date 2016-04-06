@@ -1,6 +1,7 @@
 var contextLoader = require('../../../../../src/context');
 var context = contextLoader.context;
 var assert = require('chai').assert;
+
 before(function(done){
     contextLoader.check(function(){
         done();
@@ -8,6 +9,7 @@ before(function(done){
 });
 
 describe('TenantUserService', function(){
+
     var userObj = {};
     describe('create TenantUserService', function(){
         it('create a tenant user', function(done){
@@ -78,6 +80,7 @@ describe('TenantUserService', function(){
             });
         });
     });
+
     describe('loadUserByWechatIdAndOpenid', function(){
         it('success load tenant user by wechaid and openid', function(done){
             var service = context.services.tenantUserService;
