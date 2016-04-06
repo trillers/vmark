@@ -47,6 +47,8 @@ Cache.prototype.get = function* (wechatId, loadedInfo){
                 console.log("####")
                 yield handle.call(ctx, next);
             };
+        }else{
+            console.error('no info in repeater cache....');
         }
     }
     return repeater;
