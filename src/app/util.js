@@ -108,5 +108,6 @@ module.exports = {
     genOneToOneId: util.genOneToOneId,
     generateToken: util.generateToken,
     random: util.random,
-    generateRandomString: util.generateRandomString
+    generateRandomString: util.generateRandomString,
+    isGenerator: util.isGenerator
 };
