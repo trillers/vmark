@@ -6,6 +6,9 @@ util.extend = function(obj, source) {
     }
     return obj;
 };
+util.isGenerator = function(fn){
+    return typeof fn === 'function' && fn.constructor.name === 'GeneratorFunction';
+};
 util.extendAll = function(target, source){
     for (var prop in source) {
         if(typeof source[prop]=='object'){

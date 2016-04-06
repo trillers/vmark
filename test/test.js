@@ -1,6 +1,10 @@
 function* test(){
     console.log("***")
-    var re = yield test1();
-    return re;
+    yield test1.call(null, '1111');
 }
-console.log(test.constructor.name);
+function* test1(p){
+    console.log(p)
+}
+require('co')(function*(){
+    yield* test();
+})

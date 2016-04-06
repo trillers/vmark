@@ -4,6 +4,7 @@
 var EventEmitter = require('events').EventEmitter;
 var wechat = require('co-wechat');
 var co = require('co');
+var util = require('../../../../src/app/util');
 
 var Cache = function(infoCache, handler){
     this.emitter = new EventEmitter();
@@ -30,11 +31,11 @@ Cache.prototype.get = function* (wechatId, loadedInfo){
             var config = {
                 token: info.token,
                 appid: info.appId,
-                encodingAESKey: info.encodingAESKey
+                //encodingAESKey: info.encodingAESKey
             };
             try{
                 var handle = wechat(config).middleware(function*(next){
-                    console.log("^^^^")
+                    console.log("^^^^");
                     handler(this, next);
                 });
             }catch(e){
@@ -43,10 +44,10 @@ Cache.prototype.get = function* (wechatId, loadedInfo){
 
             console.log('**************');
             console.log(handle);
-            console.log(handle.constructor.name === 'GeneratorFunction');
+            console.log(util.isGenerator(handle));
 
             repeater = this.cache[wechatId] = function*(ctx, next){
-                console.log("####")
+                console.log("####");
                 yield handle.call(ctx, next);
             };
         }else{
