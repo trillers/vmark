@@ -35,20 +35,13 @@ Cache.prototype.get = function* (wechatId, loadedInfo){
             };
             try{
                 var handle = wechat(config).middleware(function*(next){
-                    console.log("^^^^");
                     handler(this, next);
                 });
             }catch(e){
                 console.error(e)
             }
 
-            console.log('**************');
-            console.log(util.isGenerator(handle));
-            console.log('appid*******' + config.appid);
-            console.log('token*******' + config.token);
-
             repeater = this.cache[wechatId] = function*(ctx, next){
-                console.log("####");
                 yield handle.call(ctx, next);
             };
         }else{

@@ -7,8 +7,6 @@ var center = function* (next) {
         logger.error('Fail to get or load wechat ' + this.wechatId + ' repeater');
         return;
     }
-    console.info("************");
-    console.info(repeater);
     yield repeater(this, next);
 };
 
