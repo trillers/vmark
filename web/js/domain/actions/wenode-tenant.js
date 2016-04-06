@@ -26,5 +26,13 @@ domain.action('updateAdlink').onExecute(function(data){
     apiFactory.put('/adlink/_' + data._id).drive(this).send(data);
 });
 
+domain.action('loadPowerActivities').onExecute(function(data){
+    apiFactory.get('/marketing/power/load?wechatId=' + data.wechatId).drive(this).send();
+});
+
+domain.action('loadPowerActivity').onExecute(function(data){
+    apiFactory.get('/marketing/power/loadById?id=' + data.id).drive(this).send();
+});
+
 
 module.exports = null;

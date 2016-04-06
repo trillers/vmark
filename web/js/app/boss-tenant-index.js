@@ -201,6 +201,30 @@ app.routeView('wechatsite/add', nest.viewable({
   }
 }));
 
+app.routeView('power/list', nest.viewable({
+  name: 'power/list',
+  mount: function(ctx){
+    var tags = riot.mount('boss-tenant-power-list', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx.req.query);
+  }
+}));
+
+app.routeView('power/edit/_:id', nest.viewable({
+  name: 'power/edit/_:id',
+  mount: function(ctx){
+    var tags = riot.mount('boss-tenant-power-edit', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', {id: ctx.req.params.id});
+  }
+}));
+
 app.on('init', function(){
   var attentionUrl = util.getCookie('attentionUrl');
   var hash = attentionUrl || window.location.hash;
