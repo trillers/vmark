@@ -31,7 +31,7 @@ Cache.prototype.get = function* (wechatId, loadedInfo){
             var config = {
                 token: info.token,
                 appid: info.appId,
-                encodingAESKey: info.encodingAESKey
+                //encodingAESKey: info.encodingAESKey
             };
             try{
                 var handle = wechat(config).middleware(function*(next){
@@ -43,9 +43,9 @@ Cache.prototype.get = function* (wechatId, loadedInfo){
             }
 
             console.log('**************');
-            console.log(handle);
-            console.log("^^^^^^^^^^^^^")
             console.log(util.isGenerator(handle));
+            console.log('appid*******' + config.appid);
+            console.log('token*******' + config.token);
 
             repeater = this.cache[wechatId] = function*(ctx, next){
                 console.log("####");
