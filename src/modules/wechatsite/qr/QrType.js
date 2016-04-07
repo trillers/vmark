@@ -4,6 +4,7 @@ var service = require('./services/QrCodeService');
 var u = require('util');
 var co = require('co');
 var wechatApiCache = require('../../tenant/wechat/api-cache');
+var wechatApiStandalone = require('../../wechat/common/api').api;
 var Qr = require('./Qr');
 var TenantPersistence = require('./Persistence').TenantPersistence;
 
@@ -63,7 +64,11 @@ typeProto.createQr = function(qrData, cb){
             var createQrArgs = [sceneId];
             qr.temp && createQrArgs.push(defaultExpire);
 
-            var wechatApi = yield wechatApiCache.get(qr.wechatId);
+            var wechatApi = wechatApiStandalone;
+
+            if(qr.wechatId){
+                wechatApi = yield wechatApiCache.get(qr.wechatId);
+            }
 
             var genFn = function (){
                 function wechatApiNodeStyleWrapper(){

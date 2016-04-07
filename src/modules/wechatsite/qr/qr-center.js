@@ -12,15 +12,13 @@ distributorCreateType.onAccess(function(qr, openid, wechatId){
         if(!membership){
             var poster = yield context.services.posterService.loadByQrCodeIdAsync(qr._id);
             var product = yield context.services.courseService.loadByIdAsync(poster.product);
-            var tenantWechatSite = yield
-
-
+            var tenantWechatSite = yield context.services.courseService.loadByIdAsync(wechatId);
 
 
             membership = {
                 upLine:    {type: String, ref: 'TenantUser'},
-                org:       product.tenant,
-                media:     {type: String, ref: 'WechatMedia'},
+                org: tenantWechatSite.host,
+                media: tenantWechatSite._id,
                 type: MembershipType.Distributor.value()
             };
 
