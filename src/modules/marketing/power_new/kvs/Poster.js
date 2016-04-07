@@ -9,8 +9,8 @@ var userIdAndActivityIdToIdKey = function(userId, activityId){
     return 'pw:ps:act:' + activityId +':uid:' + userId;
 }
 
-var sceneIdToIdKey = function(sceneId){
-    return 'pw:ps:sid:' + sceneId;
+var wechatIdAndSceneIdToIdKey = function(wechatId, sceneId){
+    return 'pw:ps:wid:' + wechatId + ':sid:' + sceneId;
 }
 
 var Kv = function(context){
@@ -35,7 +35,7 @@ Kv.prototype.save = function(json, callback){
                     //Todo
                 })
             }
-            self.linkSceneId(id, obj.sceneId, function(err, res){
+            self.linkSceneId(id, obj.wechatId, obj.sceneId, function(err, res){
                 //Todo
             })
         }
@@ -69,9 +69,9 @@ Kv.prototype.linkUserId = function(pid, uid, activityId, callback){
  * @param pid :poster id
  * @param sid :scene id
  * */
-Kv.prototype.linkSceneId = function(pid, sid, callback){
+Kv.prototype.linkSceneId = function(pid, wechatId, sid, callback){
     var redis = this.context.redis.main;
-    var key = sceneIdToIdKey(sid);
+    var key = wechatIdAndSceneIdToIdKey(wechatId, sid);
     redis.set(key, pid, function(err, result){
         cbUtil.logCallback(
             err,
@@ -117,14 +117,14 @@ Kv.prototype.loadIdByUserIdActivityId = function(uid, activityId, callback){
  * load poster id by scene id
  * @param sid: qr code scene id
  * */
-Kv.prototype.loadIdBySceneId = function(sid, callback){
+Kv.prototype.loadIdByWechatIdAndSceneId = function(wechatId, sid, callback){
     var redis = this.context.redis.main;
-    var key = sceneIdToIdKey(sid);
+    var key = wechatIdAndSceneIdToIdKey(wechatId, sid);
     redis.get(key, function(err, result){
         cbUtil.logCallback(
             err,
-            'Fail to get power poster id by scene id ' + sid + ': ' + err,
-            'Succeed to get power poster id by scene id ' + sid);
+            'Fail to get power poster id by scene id ' + sid + ' and wechatId ' + wechatId + ': ' + err,
+            'Succeed to get power poster id by scene id ' + sid + ' and wechatId ' + wechatId );
         cbUtil.handleSingleValue(callback, err, result);
     });
 }

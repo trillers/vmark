@@ -3,7 +3,7 @@ var settings = require('@private/vmark-settings');
 var _ = require('underscore');
 var myUtil = require('../../../../app/util');
 var PowerType = require('../../../common/models/TypeRegistry').item('PowerType');
-var wechatApi = require('../../../wechat/common/api').api;
+var wechatApiCache = require('../../../tenant/wechat/api-cache');
 
 var Service = function(context){
     this.context = context;
@@ -214,9 +214,11 @@ Service.prototype.help = function*(participant, user){
  *    reply: 'xxxxx', reply msg send to user
  * }
  * */
-Service.prototype.scanParticipantPoster = function*(qr, openid){
+Service.prototype.scanParticipantPoster = function*(qr, wechatId, openid){
     var logger = this.context.logger;
     var participant = null;
+    var wechatApi = yield wechatApiCache.get(wechatId);
+
     try {
         var platformUserService = this.context.services.platformUserService;
         var powerPosterService = this.context.services.powerPosterService;

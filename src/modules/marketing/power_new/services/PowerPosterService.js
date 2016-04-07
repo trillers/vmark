@@ -23,11 +23,10 @@ var Service = function(context){
 Service.prototype.create = function*(jsonData){
     var logger = this.context.logger;
     var PowerPoster = this.context.models.PowerPoster;
-    var userKv = this.context.kvs.platformUser;
+    var tenantUserService = this.context.services.tenantUserService;
     var posterKv = this.context.kvs.poster;
-    var user = yield userKv.loadByIdAsync(jsonData.user);
+    var user = yield tenantUserService.loadByWechatIdAndIdAsync(jsonData.wechatId, jsonData.user);
     var posterData = {};
-    //jsonData.posterBgImg = 'http://b.zol-img.com.cn/sjbizhi/images/5/320x510/1379321712730.jpg';
     if(jsonData.type === PosterType.activity.value()){
         posterData = yield posterHandler.activityPosterHandler.create(jsonData.posterBgImg, user);
     }else if(jsonData.type === PosterType.participant.value()){
@@ -76,13 +75,13 @@ Service.prototype.loadById = function*(id){
     return doc;
 }
 
-Service.prototype.loadBySceneId = function*(sid){
+Service.prototype.loadByWechatIdAndSceneId = function*(wechatId, sid){
     var logger = this.context.logger;
     var kv = this.context.kvs.poster;
-    var posterId = yield kv.loadIdBySceneIdAsync(sid);
+    var posterId = yield kv.loadIdBySceneIdAsync(wechatId, sid);
     var doc = yield kv.loadByIdAsync(posterId);
 
-    logger.info('success load poster by sceneId: ' + sid);
+    logger.info('success load poster by sceneId: ' + sid + ' and wechatId ' + wechatId );
     return doc;
 }
 

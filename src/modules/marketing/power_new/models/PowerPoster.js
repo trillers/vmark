@@ -10,6 +10,7 @@ var Model = function(DomainBuilder) {
             user: {type: String, ref: 'TenantUser'}
             , activity: {type: String, ref: 'PowerActivity', require: true}
             , participant: {type: String, ref: 'PowerParticipant'}
+            , wechatId: {type: String}
             , path: {type: String, require: true}
             , mediaId: {type: String, require: true}
             , sceneId: {type: String, require: true}

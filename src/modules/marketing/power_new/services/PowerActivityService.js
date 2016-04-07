@@ -1,8 +1,8 @@
 var util = require('util');
 var settings = require('@private/vmark-settings');
-var qrRegistry = require('../../../wechatsite/qr');
 var PosterType = require('../../../common/models/TypeRegistry').item('PosterType');
-var wechatApi = require('../../../wechat/common/api').api;
+var qrTypeRegistry = require('./QrTypeRegistries').tenantQrTypeRegistry;
+var wechatApiCache = require('../../../tenant/wechat/api-cache');
 
 var Service = function(context){
     this.context = context
@@ -18,8 +18,8 @@ Service.prototype.create = function*(jsonData){
         var obj = doc.toObject();
         if(jsonData.withPic) {
             var powerPosterService = this.context.services.powerPosterService;
-            var qrType = qrRegistry.getQrType('ac');
-            var qr = yield qrType.createQrAsync();
+            var qrType = qrTypeRegistry.getQrType('ac');
+            var qr = yield qrType.createQrAsync({wechatId: jsonData.media});
             obj.qrCode = qr._id;
             var posterJson = {
                 activity: obj._id,
@@ -47,12 +47,22 @@ Service.prototype.updateById = function*(id, update){
     var kv = this.context.kvs.power;
     try{
         var oldDoc = yield PowerActivity.findById(id).lean().exec();
+        var posterQrCodeUrl = '';
         if(!oldDoc.withPic && update.withPic){
-            var qrType = qrRegistry.getQrType('ac');
-            var qr = yield qrType.createQrAsync();
+            var qrType = qrTypeRegistry.getQrType('ac');
+            var qr = yield qrType.createQrAsync({wechatId: update.media});
             update.qrCode = qr._id;
+            var posterJson = {
+                activity: obj._id,
+                posterBgImg: obj.posterBgImg,
+                type: PosterType.activity.value()
+            }
+            var poster = yield powerPosterService.create(posterJson);
+            update.poster = poster._id;
+            posterQrCodeUrl = qrType.getQrCodeUrl(qr.ticket);
         }
         var doc = yield PowerActivity.findByIdAndUpdate(id, update, {new: true}).lean().exec();
+        doc.posterQrCodeUrl = posterQrCodeUrl;
         yield kv.saveActivityAsync(doc);
         logger.info('success update power by id: ' + id);
         return doc;
@@ -95,14 +105,14 @@ Service.prototype.loadById = function*(id){
     return doc;
 }
 
-Service.prototype.loadByQrCodeId = function*(id){
+Service.prototype.loadByQrCodeIdAndWechatId = function*(id, wechatId){
     var logger = this.context.logger;
     var PowerActivity = this.context.models.PowerActivity;
-    var doc = yield PowerActivity.findOne({qrCode: id}, {}, {lean: true}).populate({path: 'poster'}).exec();
+    var doc = yield PowerActivity.findOne({qrCode: id, media: wechatId}, {}, {lean: true}).populate({path: 'poster'}).exec();
     if(doc) {
-        logger.info('success load power by qrCode id: ' + id);
+        logger.info('success load power by qrCode id: ' + id + ' and wechatId: ' + wechatId);
     }else{
-        logger.info('failed load power by qrCode id: ' + id + ' err: no such activity');
+        logger.info('failed load power by qrCode id: ' + id + ' and wechatId: ' + wechatId + ' err: no such activity');
     }
     return doc;
 }
@@ -117,11 +127,16 @@ Service.prototype.deleteById = function*(id){
     return doc;
 }
 
-Service.prototype.loadAll = function*(){
+Service.prototype.loadAll = function*(wechatId){
     var logger = this.context.logger;
     var PowerActivity = this.context.models.PowerActivity;
-    var docs = yield PowerActivity.find({lFlg: 'a'}).populate({path: 'qrCode'}).lean().exec();
-    var qrType = qrRegistry.getQrType('ac');
+    var filter = {lFlg: 'a'};
+    if(wechatId){
+        filter.media = wechatId;
+    }
+
+    var docs = yield PowerActivity.find(filter).populate({path: 'qrCode'}).lean().exec();
+    var qrType = qrTypeRegistry.getQrType('ac');
     docs = docs.map(function(item){
         if(item.withPic && item.qrCode) {
             item.qrCodeUrl = qrType.getQrCodeUrl(item.qrCode.ticket);
@@ -232,15 +247,15 @@ Service.prototype.getParticipantRankingList = function*(id, count){
  *    mediaId: 'abc', poster mediaId, will expired after three days
  * }
  **/
-Service.prototype.getActivityPoster = function*(qr, openid){
+Service.prototype.getActivityPoster = function*(qr, wechatId, openid){
     var logger = this.context.logger;
     try{
         var powerActivityService = this.context.services.powerActivityService;
         var powerPosterService = this.context.services.powerPosterService;
-        var platformUserService = this.context.services.platformUserService;
+        var tenantUserService = this.context.services.tenantUserService;
 
         var activity = yield powerActivityService.loadByQrCodeId(qr._id);
-        var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
+        var user = yield tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, openid);
         var mediaId = '';
         if(!activity.poster){
             var posterJson = {
@@ -282,16 +297,18 @@ Service.prototype.getActivityPoster = function*(qr, openid){
  *    mediaId: 'abc', participant poster mediaId, will expired after three days
  * }
  * */
-Service.prototype.scanActivityPoster = function*(qr, openid){
+Service.prototype.scanActivityPoster = function*(qr, wechatId, openid){
     var logger = this.context.logger;
     var activity = null;
     var participant = null;
+    var wechatApi = yield wechatApiCache.get(wechatId);
+
     try {
-        var platformUserService = this.context.services.platformUserService;
+        var tenantUserService = this.context.services.tenantUserService;
         var powerParticipantService = this.context.services.powerParticipantService;
         var powerPosterService = this.context.services.powerPosterService;
-        var poster = yield powerPosterService.loadBySceneId(qr.sceneId);
-        var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
+        var poster = yield powerPosterService.loadByWechatIdAndSceneId(wechatId, qr.sceneId);
+        var user = yield tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, openid);
         activity = yield this.loadById(poster.activity);
         var status = yield this.getStatus(activity, user);
         var reply = '', sendActivityCard = false, sendParticipantCard = false, posterMediaId = '';
