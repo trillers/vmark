@@ -1,4 +1,4 @@
-<boss-tenant-power-edit>
+<boss-tenant-power-add>
     <div if="{!hidden}" class="container" style="margin-top: 0px">
         <alert validators="{validators}" clear="{clear}"></alert>
         <div class="col-md-10 col-md-offset-1">
@@ -10,7 +10,7 @@
                         <li>
                             <span>活动公众号: </span>
                             <select id="selectMedia" >
-                                <option each="{wechatMedias}" value="{_id}"  selected="{parent.activity.media === _id}">{name}</option>
+                                <option each="{wechatMedias}" value="{_id}" selected="{patent.activity.media = _id}">{name}</option>
                             </select>
                         </li>
                         <li id="type_select"><span>类型: </span>
@@ -69,32 +69,31 @@
         "use strict"
         var self = nest.presentable(this);
         self.validators = [];
-        var loadPowerActivity = domain.action('loadPowerActivity');
-        var updatePowerActivity = domain.action('updatePowerActivity');
+        var addPowerActivity = domain.action('addPowerActivity');
         var loadAllTenantWechatSite = domain.action('loadAllTenantWechatSite');
 
+        self.activity = {
+            org: __page.tenantId,
+            type: 'rp',
+            bgImg: []
+        }
         self.on('open', function(ctx){
-            loadPowerActivity.newInvocation({
-                id: ctx.id
-            }).onDone(function(data){
-                self.activity = data;
-                self.trigger('ready', false);
-                self.trigger('view-route-to');
-                setTimeout(function(){
-                    $('#rule').summernote({
-                        height: 200,
-                        minHeight: null,
-                        maxHeight: null
-                    }).summernote('code', self.activity.rule || '');
-                }, 10);
-                setTimeout(function(){
-                    $('#desc').summernote({
-                        height: 200,
-                        minHeight: null,
-                        maxHeight: null
-                    }).summernote('code', self.activity.desc || '');
-                }, 10);
-            }).execute();
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+            setTimeout(function(){
+                $('#rule').summernote({
+                    height: 200,
+                    minHeight: null,
+                    maxHeight: null
+                }).summernote('code', self.activity.rule || '');
+            }, 10);
+            setTimeout(function(){
+                $('#desc').summernote({
+                    height: 200,
+                    minHeight: null,
+                    maxHeight: null
+                }).summernote('code', self.activity.desc || '');
+            }, 10);
             loadAllTenantWechatSite.newInvocation(__page.tenantId).onDone(function(data){
                 self.wechatMedias = data;
                 self.update();
@@ -325,10 +324,10 @@
             self.activity.desc = $('#desc').summernote('code');
             var allowSubmit = self.verify(self.activity);
             if(allowSubmit){
-                updatePowerActivity.newInvocation(self.activity).onDone(function(data){
+                addPowerActivity.newInvocation(self.activity).onDone(function(data){
                     riot.route('power/list');
                 }).execute();
             }
         }
     </script>
-</boss-tenant-power-edit>
+</boss-tenant-power-add>

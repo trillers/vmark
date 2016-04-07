@@ -225,6 +225,18 @@ app.routeView('power/edit/_:id', nest.viewable({
   }
 }));
 
+app.routeView('power/add', nest.viewable({
+  name: 'power/add',
+  mount: function(ctx){
+    var tags = riot.mount('boss-tenant-power-add', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open');
+  }
+}));
+
 app.on('init', function(){
   var attentionUrl = util.getCookie('attentionUrl');
   var hash = attentionUrl || window.location.hash;

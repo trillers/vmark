@@ -73,7 +73,7 @@
         var findCatalogsAction = domain.action('findCatalogs');
         self.courses = [];
         self.filter = {
-            tenant: __app.tenant
+            tenant: __page.tenantId
         };
         console.log(__app.enums);
         self.on('open', function(){

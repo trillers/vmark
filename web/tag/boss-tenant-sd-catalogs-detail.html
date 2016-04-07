@@ -207,7 +207,7 @@
             }).onDone(function(res){
                 self.catalog = res.catalog;
                 findCoursesAction.newInvocation({
-                    tenant: __app.tenant
+                    tenant: __page.tenantId
                 }).onDone(function(res){
                     self.courses = res.courses;
                     self.trigger('ready', false);

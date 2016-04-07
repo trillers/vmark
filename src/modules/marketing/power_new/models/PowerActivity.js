@@ -7,8 +7,8 @@ var Model = function(DomainBuilder){
         .withLifeFlag()
         .withCreatedOn()
         .withProperties({
-            org: {type: String, ref: 'Org', required: true}
-            ,media: {type: String, ref: 'WechatMedia', require: true}
+            org: {type: String, ref: 'Org'}
+            ,media: {type: String, ref: 'WechatMedia'}
             ,name: {type: String, require: true}
             ,bgImg: [{type: String}]
             ,shareImg: {type: String}

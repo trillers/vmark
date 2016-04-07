@@ -3,7 +3,7 @@
         <div class="col-md-10 col-md-offset-1">
             <div class="jumbotron" style="height: auto; padding: 25px;">
                 <div id="powerList" class="panel" style="margin-top: 1em; padding: 0; min-height: 30em">
-                    <div style="padding-left: 20px; padding-bottom: 10px;"><a id="add" style="font-size: 1.5em; text-decoration: none; cursor: pointer">新增</a>
+                    <div style="padding-left: 20px; padding-top: 10px;"><a id="add" href="#power/add" style="font-size: 15px; text-decoration: none; cursor: pointer">新增</a>
                     </div>
                     <ul class="ul" id="list">
                         <li>
@@ -51,7 +51,7 @@
 
         self.on('open', function(ctx){
             loadPowerActivities.newInvocation({
-                orgId: __app.tenant
+                orgId: __page.tenantId
             }).onDone(function(data){
                 self.activityArr = data;
                 self.trigger('ready', false);

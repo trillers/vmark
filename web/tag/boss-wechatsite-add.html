@@ -159,7 +159,7 @@
         self.submit = function(e){
             self.validators = [];
             var json = {
-                org: __app.tenant,
+                org: __page.tenantId,
                 name: self.name.value.trim(),
                 email: self.email.value.trim(),
                 originalId: self.originalId.value.trim(),
