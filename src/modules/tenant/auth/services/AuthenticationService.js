@@ -23,8 +23,8 @@ Service.prototype.authResults = authResults;
 Service.prototype.signupWithBaseInfo = function(wechatId, openid, callback){
     var logger = this.context.logger;
     var wechatMediaService = this.context.services.tenantWechatSiteService;
-    var wechatMediaUserKv = this.context.kvs.tenantWechatSiteUser;
-    var wechatMediaUserService = this.context.services.tenantWechatSiteUserService;
+    var wechatSiteUserKv = this.context.kvs.tenantWechatSiteUser;
+    var wechatSiteUserService = this.context.services.tenantWechatSiteUserService;
     var userKv = this.context.kvs.tenantUser;
     var tenantUserService = this.context.services.tenantUserService;
     var openidToIdKv = this.context.kvs.teOpenidToId;
@@ -32,23 +32,23 @@ Service.prototype.signupWithBaseInfo = function(wechatId, openid, callback){
     var otToOpenidKv = this.context.kvs.teOtToOpenid;
 
     co(function*(){
-        var wechatMediaUser = null;
+        var wechatSiteUser = null;
         var user = null;
         var userId = null;
         var status = TenantUserStatus.BaseInfo.value();
         var type = UserType.Customer.value();
         try{
-            wechatMediaUser = yield wechatMediaUserKv.loadByWechatIdAndOpenidAsync(wechatId, openid);
-            if(wechatMediaUser){
-                user = yield userKv.loadByIdAsync(wechatId, wechatMediaUser.user);
-                console.error(user);
+            wechatSiteUser = yield wechatSiteUserKv.loadByWechatIdAndOpenidAsync(wechatId, openid);
+            if(wechatSiteUser){
+                user = yield userKv.loadByIdAsync(wechatId, wechatSiteUser.user);
                 if(callback) callback(null, {
                     user: user,
-                    wechatMediaUser: wechatMediaUser,
+                    wechatSiteUser: wechatSiteUser,
                     result: authResults.ok
                 });
                 return;
             }
+
             /*
              * Create user
              */
@@ -66,7 +66,7 @@ Service.prototype.signupWithBaseInfo = function(wechatId, openid, callback){
              * Create wechat site user
              */
             var media = yield wechatMediaService.loadTenantWechatSiteByOriginalIdAsync(wechatId);
-            var createWechatMediaUserJson = {
+            var createWechatSiteUserJson = {
                 user: userId,
                 status: status,
                 host: media._id,
@@ -74,7 +74,7 @@ Service.prototype.signupWithBaseInfo = function(wechatId, openid, callback){
                 nickname: '匿名'
             };
 
-            wechatMediaUser = yield wechatMediaUserService.createTenantWechatSiteUserAsync(wechatId, createWechatMediaUserJson);
+            wechatSiteUser = yield wechatSiteUserService.createTenantWechatSiteUserAsync(wechatId, createWechatSiteUserJson);
 
             /*
              * Link wechat site user openid to user id
@@ -82,13 +82,13 @@ Service.prototype.signupWithBaseInfo = function(wechatId, openid, callback){
              * Link wechat web open token to openid
              */
             yield openidToIdKv.setAsync(wechatId, openid, userId);
-            yield atToOpenidKv.setAsync(wechatId, wechatMediaUser.at, openid);
-            yield otToOpenidKv.setAsync(wechatId, wechatMediaUser.ot, openid);
+            yield atToOpenidKv.setAsync(wechatId, wechatSiteUser.at, openid);
+            yield otToOpenidKv.setAsync(wechatId, wechatSiteUser.ot, openid);
 
-            logger.info('Succeed to sign up with base info: ' + JSON.stringify(wechatMediaUser));
+            logger.info('Succeed to sign up with base info: ' + JSON.stringify(wechatSiteUser));
             if(callback) callback(null, {
                 user: user,
-                wechatMediaUser: wechatMediaUser,
+                wechatSiteUser: wechatSiteUser,
                 result: authResults.ok
             });
         }catch(err){
@@ -103,9 +103,9 @@ Service.prototype.signupWithBaseInfo = function(wechatId, openid, callback){
 
 Service.prototype.signupWithUserInfo = function(wechatId, userInfo, callback){
     var logger = this.context.logger;
-    var wechatMediaUserKv = this.context.kvs.tenantWechatSiteUser;
+    var wechatSiteUserKv = this.context.kvs.tenantWechatSiteUser;
     var userKv = this.context.kvs.tenantUser;
-    var wechatMediaUserService = this.context.services.tenantWechatSiteUserService;
+    var wechatSiteUserService = this.context.services.tenantWechatSiteUserService;
     var wechatMediaService = this.context.services.tenantWechatSiteService;
     var tenantUserService = this.context.services.tenantUserService;
     var openidToIdKv = this.context.kvs.teOpenidToId;
@@ -114,7 +114,7 @@ Service.prototype.signupWithUserInfo = function(wechatId, userInfo, callback){
 
     co(function*(){
         var openid = userInfo.openid;
-        var wechatMediaUser = null;
+        var wechatSiteUser = null;
         var user = null;
         var userId = null;
         var status = TenantUserStatus.UserInfo.value();
@@ -122,8 +122,8 @@ Service.prototype.signupWithUserInfo = function(wechatId, userInfo, callback){
         var statusSubscribed = TenantUserStatus.Subscribed.value();
 
         try{
-            wechatMediaUser = yield wechatMediaUserKv.loadByWechatIdAndOpenidAsync(wechatId, openid);
-            user = wechatMediaUser && (yield userKv.loadByIdAsync(wechatId, wechatMediaUser.user));
+            wechatSiteUser = yield wechatSiteUserKv.loadByWechatIdAndOpenidAsync(wechatId, openid);
+            user = wechatSiteUser && (yield userKv.loadByIdAsync(wechatId, wechatSiteUser.user));
 
             /*
              * Ensure user created or updated
@@ -158,24 +158,23 @@ Service.prototype.signupWithUserInfo = function(wechatId, userInfo, callback){
             /*
              * Ensure wechat site user created or updated
              */
-            if(wechatMediaUser){
-                var wechatMediaUserId = wechatMediaUser._id;
-                wechatMediaUser.user = userId;
-                statusSubscribed != wechatMediaUser.status && (wechatMediaUser.status = status);
-                helper.copyUserInfo(wechatMediaUser, userInfo);
-                wechatMediaUser._id && (delete wechatMediaUser._id);
-
-                wechatMediaUser = yield wechatMediaUserService.updateTenantWechatSiteUserByIdAsync(wechatMediaUserId, wechatMediaUser);
+            if(wechatSiteUser){
+                var wechatSiteUserId = wechatSiteUser._id;
+                wechatSiteUser.user = userId;
+                statusSubscribed != wechatSiteUser.status && (wechatSiteUser.status = status);
+                helper.copyUserInfo(wechatSiteUser, userInfo);
+                wechatSiteUser._id && (delete wechatSiteUser._id);
+                wechatSiteUser = yield wechatSiteUserService.updateTenantWechatSiteUserByIdAsync(wechatSiteUserId, wechatSiteUser);
             }
             else{
                 var media = yield wechatMediaService.loadTenantWechatSiteByOriginalIdAsync(wechatId);
-                var createWechatMediaUserJson = {};
-                createWechatMediaUserJson.user = userId;
-                createWechatMediaUserJson.status = status;
-                createWechatMediaUserJson.host = media._id;
-                //createWechatMediaUserJson.wechatId = wechatId;
-                helper.copyUserInfo(createWechatMediaUserJson, userInfo);
-                wechatMediaUser = yield wechatMediaUserService.createTenantWechatSiteUserAsync(wechatId, createWechatMediaUserJson);
+                var createWechatSiteUserJson = {};
+                createWechatSiteUserJson.user = userId;
+                createWechatSiteUserJson.status = status;
+                createWechatSiteUserJson.host = media._id;
+                //createWechatSiteUserJson.wechatId = wechatId;
+                helper.copyUserInfo(createWechatSiteUserJson, userInfo);
+                wechatSiteUser = yield wechatSiteUserService.createTenantWechatSiteUserAsync(wechatId, createWechatSiteUserJson);
             }
 
             /*
@@ -184,14 +183,16 @@ Service.prototype.signupWithUserInfo = function(wechatId, userInfo, callback){
              * Link wechat web open token to openid
              */
             yield openidToIdKv.setAsync(wechatId, openid, userId);
-            yield atToOpenidKv.setAsync(wechatId, wechatMediaUser.at, openid);
-            yield otToOpenidKv.setAsync(wechatId, wechatMediaUser.ot, openid);
+            yield atToOpenidKv.setAsync(wechatId, wechatSiteUser.at, openid);
+            yield otToOpenidKv.setAsync(wechatId, wechatSiteUser.ot, openid);
 
-            if(callback) callback(null, {
+            var res = {
                 user: user,
-                wechatMediaUser: wechatMediaUser,
+                wechatSiteUser: wechatSiteUser,
                 result: authResults.ok
-            });
+            };
+            console.warn(res);
+            if(callback) callback(null, res);
         }catch(err){
             logger.error('Fail to sign up with user info: ' + err);
             if(callback) callback(err);
@@ -204,9 +205,9 @@ Service.prototype.signupWithUserInfo = function(wechatId, userInfo, callback){
 
 Service.prototype.signupOnSubscription = function(wechatId, openid, callback){
     var logger = this.context.logger;
-    var wechatMediaUserKv = this.context.kvs.tenantWechatSiteUser;
+    var wechatSiteUserKv = this.context.kvs.tenantWechatSiteUser;
     var userKv = this.context.kvs.tenantUser;
-    var wechatMediaUserService = this.context.services.tenantWechatSiteUserService;
+    var wechatSiteUserService = this.context.services.tenantWechatSiteUserService;
     var wechatMediaService = this.context.services.tenantWechatSiteService;
     var tenantUserService = this.context.services.tenantUserService;
     var openidToIdKv = this.context.kvs.teOpenidToId;
@@ -215,15 +216,15 @@ Service.prototype.signupOnSubscription = function(wechatId, openid, callback){
 
     co(function*(){
         var userInfo = null;
-        var wechatMediaUser = null;
+        var wechatSiteUser = null;
         var user = null;
         var userId = null;
         var status = TenantUserStatus.Subscribed.value();
         var type = UserType.Customer.value();
 
         try{
-            wechatMediaUser = yield wechatMediaUserKv.loadByWechatIdAndOpenidAsync(wechatId, openid);
-            user = wechatMediaUser && (yield userKv.loadByIdAsync(wechatId, wechatMediaUser.user));
+            wechatSiteUser = yield wechatSiteUserKv.loadByWechatIdAndOpenidAsync(wechatId, openid);
+            user = wechatSiteUser && (yield userKv.loadByIdAsync(wechatId, wechatSiteUser.user));
 
             //get user info from subscription
 
@@ -264,24 +265,24 @@ Service.prototype.signupOnSubscription = function(wechatId, openid, callback){
             /*
              * Ensure wechat site user created or updated
              */
-            if(wechatMediaUser){
-                var wechatMediaUserId = wechatMediaUser._id;
-                helper.copyUserInfo(wechatMediaUser, userInfo);
-                wechatMediaUser.user = userId;
-                wechatMediaUser.status = status;
-                wechatMediaUser._id && (delete wechatMediaUser._id);
-                wechatMediaUser.wechatId = wechatId;
-                wechatMediaUser = yield wechatMediaUserService.updateTenantWechatSiteUserByIdAsync(wechatMediaUserId, wechatMediaUser);
+            if(wechatSiteUser){
+                wechatSiteUserId = wechatSiteUser._id;
+                helper.copyUserInfo(wechatSiteUser, userInfo);
+                wechatSiteUser.user = userId;
+                wechatSiteUser.status = status;
+                wechatSiteUser._id && (delete wechatSiteUser._id);
+                wechatSiteUser.wechatId = wechatId;
+                wechatSiteUser = yield wechatSiteUserService.updateTenantWechatSiteUserByIdAsync(wechatSiteUserId, wechatSiteUser);
             }
             else{
-                var createWechatMediaUserJson = {};
+                var createWechatSiteUserJson = {};
                 var media = yield wechatMediaService.loadTenantWechatSiteByOriginalIdAsync(wechatId);
-                helper.copyUserInfo(createWechatMediaUserJson, userInfo);
-                createWechatMediaUserJson.user = userId;
-                createWechatMediaUserJson.wechatId = wechatId;
-                createWechatMediaUserJson.host = media._id;
-                createWechatMediaUserJson.status = status;
-                wechatMediaUser = yield wechatMediaUserService.createTenantWechatSiteUserAsync(wechatId, createWechatMediaUserJson);
+                helper.copyUserInfo(createWechatSiteUserJson, userInfo);
+                createWechatSiteUserJson.user = userId;
+                createWechatSiteUserJson.wechatId = wechatId;
+                createWechatSiteUserJson.host = media._id;
+                createWechatSiteUserJson.status = status;
+                wechatSiteUser = yield wechatSiteUserService.createTenantWechatSiteUserAsync(wechatId, createWechatSiteUserJson);
             }
 
             /*
@@ -290,12 +291,12 @@ Service.prototype.signupOnSubscription = function(wechatId, openid, callback){
              * Link wechat web open token to openid
              */
             yield openidToIdKv.setAsync(wechatId, openid, userId);
-            yield atToOpenidKv.setAsync(wechatId, wechatMediaUser.at, openid);
-            yield otToOpenidKv.setAsync(wechatId, wechatMediaUser.ot, openid);
+            yield atToOpenidKv.setAsync(wechatId, wechatSiteUser.at, openid);
+            yield otToOpenidKv.setAsync(wechatId, wechatSiteUser.ot, openid);
 
             if(callback) callback(null, {
                 user: user,
-                wechatMediaUser: wechatMediaUser,
+                wechatSiteUser: wechatSiteUser,
                 result: authResults.ok
             });
         }catch(err){
@@ -310,36 +311,37 @@ Service.prototype.signupOnSubscription = function(wechatId, openid, callback){
 
 Service.prototype.signinWithWechatIdAndOpenid = function(wechatId, openid, callback){
     var logger = this.context.logger;
-    var wechatMediaUserKv = this.context.kvs.tenantWechatSiteUser;
+    var wechatSiteUserKv = this.context.kvs.tenantWechatSiteUser;
     var userKv = this.context.kvs.tenantUser;
     co(function*(){
-        var wechatMediaUser = null;
+        var wechatSiteUser = null;
         var user = null;
         try{
-            wechatMediaUser = yield wechatMediaUserKv.loadByWechatIdAndOpenidAsync(wechatId, openid);
-            user = wechatMediaUser && (yield userKv.loadByIdAsync(wechatId, wechatMediaUser.user));
-            if(wechatMediaUser && user){
+            wechatSiteUser = yield wechatSiteUserKv.loadByWechatIdAndOpenidAsync(wechatId, openid);
+            user = wechatSiteUser && (yield userKv.loadByIdAsync(wechatId, wechatSiteUser.user));
+            if(wechatSiteUser && user){
                 if(callback) callback(null, {
                     user: user,
-                    wechatMediaUser: wechatMediaUser,
+                    wechatSiteUser: wechatSiteUser,
                     result: authResults.ok
                 });
             }
-            else if(!wechatMediaUser && !user){
+            else if(!wechatSiteUser && !user){
                 if(callback) callback(null, {
                     user: null,
-                    wechatMediaUser: null,
+                    wechatSiteUser: null,
                     result: authResults.none
                 });
             }
             else{
                 if(callback) callback(null, {
                     user: user,
-                    wechatMediaUser: wechatMediaUser,
+                    wechatSiteUser: wechatSiteUser,
                     result: authResults.stateError
                 });
             }
         }catch(err){
+            logger.error(err.stack);
             logger.error('Fail to sign in with openid : ' + err);
             if(callback) callback(err);
         }

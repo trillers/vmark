@@ -8,7 +8,7 @@ var DEFAULT_INTERRUPT_URL = '/';
 
 var Authentication = function(){};
 
-var statusLevels = {'none': 0, 'a': 1, 'r': 2, 'v': 3};
+var statusLevels = {'none': 0, 'b': 1, 'u': 2, 's': 3};
 
 Authentication.prototype.setAuthentication = function(ctx, auth, wechatId){
     if(auth.wechatSiteUser){

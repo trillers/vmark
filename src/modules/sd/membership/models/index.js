@@ -1,8 +1,8 @@
 var u = require('../../../../app/util');
 var context = require('../../../../context/context');
 
-var Distributor = require('./Distributor');
+var Membership = require('./Membership');
 
-module.exports.Distributor = Distributor(context.domainBuilder.main);
+module.exports.Membership = Membership(context.domainBuilder.main);
 
 u.extend(context.models, module.exports);

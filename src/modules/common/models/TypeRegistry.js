@@ -93,7 +93,12 @@ registry
     .up().item('TenantUserStatus', 'TenantUserStatus', '租户用户状态')
     .addChild('BaseInfo','b', '基础')
     .addChild('UserInfo','u', '用户')
-    .addChild('Subscribed','i', '关注')
+    .addChild('Subscribed','s', '关注')
+
+    .up().item('MembershipType', 'MembershipType', '分销会员类型')
+    .addChild('Distributor','d', '分销商')
+    .addChild('Customer','c', '客户')
+    .addChild('Both','s', '分销商/客户')
 
     .up().item('UserType', 'UserType', '用户类型')
     .addChild('Admin','a', '系统管理员')

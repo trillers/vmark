@@ -1,3 +1,5 @@
-var url = "http://www.baidu.com/%s/111";
-var test = require('url').format(url, '222');
-console.log(test)
+function* test(){
+    console.log("***")
+    yield test1.call(null, '1111');
+}
+require('../src/app/util').isGenerator(test);
