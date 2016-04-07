@@ -10,8 +10,9 @@ distributorCreateType.onAccess(function(qr, openid, wechatId){
         var membership = yield context.services.membershipSerivce.findAsync({wechatId: wechatId, openid: openid});
 
         if(!membership){
-            var poster = yield context.services.posterService.loadByQrCodeId(qr._id);
-            context.services.courseService.loadById(poster.product);
+            var poster = yield context.services.posterService.loadByQrCodeIdAsync(qr._id);
+            var product = yield context.services.courseService.loadByIdAsync(poster.product);
+
 
             membership = {
                 upLine:    {type: String, ref: 'TenantUser'},
