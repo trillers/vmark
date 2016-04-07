@@ -1,7 +1,8 @@
 var PosterType = require('../../common/models/TypeRegistry').item('PosterType');
-var qrRegistry = require('../../wechatsite/qr');
 var wechatApiCache = require('../../tenant/wechat/api-cache');
 var qrTypeRegistry = require('../../wechatsite/qr/QrTypeRegistries').tenantQrTypeRegistry;
+require('../../wechatsite/qr/qr-center');
+
 var request = require('request');
 var Promise = require('bluebird');
 var co = require('co');

@@ -2,6 +2,8 @@ var util = require('util');
 var settings = require('@private/vmark-settings');
 var PosterType = require('../../../common/models/TypeRegistry').item('PosterType');
 var qrTypeRegistry = require('../../../wechatsite/qr/QrTypeRegistries').tenantQrTypeRegistry;
+require('../../../wechatsite/qr/qr-center');
+
 var wechatApiCache = require('../../../tenant/wechat/api-cache');
 
 var Service = function(context){
