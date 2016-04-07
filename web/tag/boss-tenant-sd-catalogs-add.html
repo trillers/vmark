@@ -71,11 +71,11 @@
         var createCatalogAction = domain.action('createCatalog');
         self.on('open', function(){
             self.catalog = {};
-            self.catalog.tenant = __app.tenant;
+            self.catalog.tenant = __page.tenantId;
             self.validators = [];
             self.catalogNameInput.value = "";
             self.catalogDescInput.value = "";
-            loadAllTenantWechatSiteAction.newInvocation(__app.tenant)
+            loadAllTenantWechatSiteAction.newInvocation(__page.tenantId)
                 .onDone(function(res){
                     self.wechatsites = res;
                     self.trigger('ready', false);

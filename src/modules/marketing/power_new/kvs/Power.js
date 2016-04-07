@@ -98,6 +98,7 @@ Kv.prototype.linkUserToParticipantId = function(activityId, userId, participantI
 Kv.prototype.getParticipantIdByUserIdAndActivityId = function(activityId, userId, callback){
     var redis = this.context.redis.main;
     var key = activityIdToUserIdParticipantIdHashKey(activityId);
+
     redis.hget(key, userId, function(err, result){
         cbUtil.logCallback(
             err,

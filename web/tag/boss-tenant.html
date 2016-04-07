@@ -33,7 +33,7 @@
             self.update({tenant: res.tenant});
         };
         self.on('open', function(){
-            loadTenantById.execute({id: __app.tenant});
+            loadTenantById.execute({id: __page.tenantId});
             self.trigger('ready', false);
             self.trigger('view-route-to');
         });

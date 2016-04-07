@@ -10,9 +10,7 @@ module.exports = function(){
     });
 
     router.get('/boss/tenant/_:id', function *(){
-        var id = this.params.id;
-        console.log(this.session.auth);
-        yield this.render('boss/tenant-index', {tenant: id});
+        yield this.render('boss/tenant-index');
     });
     return router.routes();
 };

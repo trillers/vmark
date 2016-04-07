@@ -7,7 +7,9 @@ var Model = function(DomainBuilder){
         .withLifeFlag()
         .withCreatedOn()
         .withProperties({
-            name: {type: String, require: true}
+            org: {type: String, ref: 'Org'}
+            ,media: {type: String, ref: 'WechatMedia'}
+            ,name: {type: String, require: true}
             ,bgImg: [{type: String}]
             ,shareImg: {type: String}
             ,shareTitle: {type: String}
@@ -23,6 +25,7 @@ var Model = function(DomainBuilder){
             ,rule: {type: String}
             ,desc: {type: String}
             ,withPic: {type: Boolean} //是否启动图片助力功能
+            ,posterBgImg: {type: String} //海报背景图片
             ,qrCode: {type: String, ref: 'QrCode'} //scan get activity post
             ,poster: {type: String, ref: 'PowerPoster'} //activity poster
             ,type: {type: String, enum: PowerType.valueList(), default: PowerType.RedPacket.value(), required: true}
