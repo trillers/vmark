@@ -95,6 +95,11 @@ registry
     .addChild('UserInfo','u', '用户')
     .addChild('Subscribed','s', '关注')
 
+    .up().item('MembershipType', 'MembershipType', '分销会员类型')
+    .addChild('Distributor','d', '分销商')
+    .addChild('Customer','c', '客户')
+    .addChild('Both','s', '分销商/客户')
+
     .up().item('UserType', 'UserType', '用户类型')
     .addChild('Admin','a', '系统管理员')
     .addChild('Tenant','t', '租户')
