@@ -14,9 +14,10 @@ distributorCreateType.onAccess(function(qr, openid, wechatId){
             var product = yield context.services.courseService.loadByIdAsync(poster.product);
 
 
+
             membership = {
                 upLine:    {type: String, ref: 'TenantUser'},
-                org:       {type: String, ref: 'Org'},
+                org:       product.tenant,
                 media:     {type: String, ref: 'WechatMedia'},
                 type: MembershipType.Distributor.value()
             };
