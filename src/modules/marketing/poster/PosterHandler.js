@@ -1,6 +1,7 @@
 var PosterType = require('../../common/models/TypeRegistry').item('PosterType');
-var wechatApi = require('../../wechat/common/api').api;
 var qrRegistry = require('../../wechatsite/qr');
+var wechatApiCache = require('../../tenant/wechat/api-cache');
+var qrTypeRegistry = require('../../wechatsite/qr/QrTypeRegistries').tenantQrTypeRegistry;
 var request = require('request');
 var Promise = require('bluebird');
 var co = require('co');
@@ -16,7 +17,7 @@ var Handler = function (type) {
     this.type = type;
 }
 
-Handler.prototype.create = function*(bgImg, user) {
+Handler.prototype.create = function*(wechatId, bgImg, user) {
     if (bgImg) {
         if(!user){
             user = {
@@ -24,6 +25,7 @@ Handler.prototype.create = function*(bgImg, user) {
             }
         }
         try {
+            var wechatApi = yield wechatApiCache.get(wechatId);
             var qrType = null;
             var qr = null;
             var qrCodeUrl = '';
@@ -37,16 +39,16 @@ Handler.prototype.create = function*(bgImg, user) {
                 if(!user || !user.headimgurl){
                     return {err: 'headImg is required'}
                 }
-                qrType = qrRegistry.getQrType('pap');
-                qr = yield qrType.createQrAsync();
+                qrType = qrTypeRegistry.getQrType('pap');
+                qr = yield qrType.createQrAsync({wechatId: wechatId});
                 qrCodeUrl = wechatApi.showQRCodeURL(qr.ticket);
                 yield drawImg(qrCodeUrl, qrPath, 150, 500, 300, 300);
                 yield drawImg(user.headimgurl, headImgPath, 200, 100, 200, 200, 'headImg');
                 yield drawText(user.nickname, 300, 350, 600);
                 yield drawText('长按图片识别二维码', 300, 850, 600);
             } else if(this.type === PosterType.activity.value()){
-                qrType = qrRegistry.getQrType('acp');
-                qr = yield qrType.createQrAsync();
+                qrType = qrTypeRegistry.getQrType('acp');
+                qr = yield qrType.createQrAsync({wechatId: wechatId});
                 qrCodeUrl = wechatApi.showQRCodeURL(qr.ticket);
                 yield drawImg(qrCodeUrl, qrPath, 150, 300, 300, 300);
                 yield drawText('长按图片识别二维码', 300, 650, 600);

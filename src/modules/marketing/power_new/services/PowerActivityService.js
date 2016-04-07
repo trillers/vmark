@@ -28,7 +28,8 @@ Service.prototype.create = function*(jsonData){
             }
             var poster = yield powerPosterService.create(posterJson);
             obj.poster = poster._id;
-            obj.posterQrCodeUrl = qrType.getQrCodeUrl(qr.ticket);
+            var wechatApi = yield wechatApiCache.get(jsonData.media);
+            obj.posterQrCodeUrl = wechatApi.showQRCodeURL(qr.ticket);
             yield this.updateById(obj._id, {poster: poster._id, qrCode: qr._id});
         }
         yield kv.saveActivityAsync(obj);
@@ -59,7 +60,8 @@ Service.prototype.updateById = function*(id, update){
             }
             var poster = yield powerPosterService.create(posterJson);
             update.poster = poster._id;
-            posterQrCodeUrl = qrType.getQrCodeUrl(qr.ticket);
+            var wechatApi = yield wechatApiCache.get(update.media);
+            posterQrCodeUrl = wechatApi.showQRCodeURL(qr.ticket);
         }
         var doc = yield PowerActivity.findByIdAndUpdate(id, update, {new: true}).lean().exec();
         doc.posterQrCodeUrl = posterQrCodeUrl;
