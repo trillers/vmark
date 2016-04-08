@@ -85,7 +85,7 @@
                 id: courseId
             }).onDone(function(res){
                 self.catalog = res.catalog;
-                loadAllTenantWechatSiteAction.newInvocation(__app.tenant)
+                loadAllTenantWechatSiteAction.newInvocation(__page.tenantId)
                     .onDone(function(res){
                         self.wechatsites = res;
                         self.trigger('ready', false);

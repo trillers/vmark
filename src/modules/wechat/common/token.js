@@ -90,7 +90,7 @@ module.exports.getJc = function(params, callback){
             return jc;
         })
         .catch(Error, function(e){
-            logger.error('Fail to get js config: ' + e);
+            console.error('Fail to get js config: ' + e);
             if(callback) callback(e);
         });
 };

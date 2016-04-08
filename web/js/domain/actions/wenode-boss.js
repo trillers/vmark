@@ -67,7 +67,21 @@ domain.action('findCatalogs').onExecute(function(data){
     apiFactory.get('/tenant/sd/catalog?' + querystring).drive(this).send();
 });
 
+domain.action('loadPowerActivities').onExecute(function(data){
+    apiFactory.get('/marketing/tenant/power/load?wechatId=' + data.wechatId).drive(this).send();
+});
 
+domain.action('loadPowerActivity').onExecute(function(data){
+    apiFactory.get('/marketing/tenant/power/loadById?id=' + data.id).drive(this).send();
+});
+
+domain.action('updatePowerActivity').onExecute(function(data){
+    apiFactory.post('/marketing/tenant/power/update').drive(this).send(data);
+});
+
+domain.action('addPowerActivity').onExecute(function(data){
+    apiFactory.post('/marketing/tenant/power/add').drive(this).send(data);
+});
 
 
 module.exports = null;

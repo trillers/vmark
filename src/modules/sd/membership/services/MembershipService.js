@@ -26,7 +26,7 @@ Service.prototype.create = function(distributorJson, callback){
 
         cbUtil.handleAffected(function(err, doc){
             var obj = doc.toObject({virtuals: true});
-            membershipKv.saveById(obj, function(err, obj){
+            membershipKv.saveById(obj._id, obj, function(err, obj){
                 if(callback) callback(err, obj);
             });
         }, err, result, affected);
@@ -79,14 +79,16 @@ Service.prototype.loadDistributorsChainById = function(id, level, callback){
         }
         level = 3;
     }
-    var populateStr = _.range(level).map(function(){return 'upLine'}).join('.');
     Membership
         .findOne({
             lFlg: LifeFlag.Active.value(),
             type: MembershipType.Distributor.value(),
             _id: id
         })
-        .populate(populateStr)
+        .populate({
+            path: 'upLine user',
+            select: 'nickname openid wechatId'
+        })
         .exec(function(err, doc){
             if(err){
                 return callback(err);
@@ -94,8 +96,26 @@ Service.prototype.loadDistributorsChainById = function(id, level, callback){
             if(!doc){
                 return callback(new Error('loadDistributorsChainById expect a distributor'));
             }
-            callback(null, doc.toObject());
+            recurPopulate(doc, level, function(err, result){
+                if(err){
+                    return callback(err);
+                }
+                callback(null, result.toObject());
+            });
         });
+
+    function recurPopulate(doc, len, callback){
+        if(typeof doc.upLine != 'object' || !doc.upLine.upLine || len <= 0){
+            return callback(null, doc);
+        }
+        Membership.populate({path: 'upLine'}, function(err, doc){
+            if(err){
+                return callback(err);
+            }
+            len--;
+            recurPopulate(doc, callback);
+        });
+    }
 };
 
 Service.prototype.loadById = function(id, callback){
@@ -131,12 +151,11 @@ Service.prototype.addDownLine = function(id, downLineId, callback){
     callback = callback || function noop(){};
 
     Membership.findByIdAndUpdate(id, {$addToSet: {downLine: downLineId}}, {lean: true, new: true}).exec(function(err, doc){
-        var json = doc.toObject();
-        membershipKv.saveById(json, function(err, result){
+        membershipKv.saveById(doc._id, doc, function(err, result){
             if(err){
                 return callback(err);
             }
-            callback(null, json);
+            callback(null, result);
         })
     });
 };

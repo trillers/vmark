@@ -76,7 +76,7 @@
         console.log(__app.enums);
         self.on('open', function(){
             findDistributorsByTenantIdAction.newInvocation({
-                tenant: __app.tenant,
+                tenant: __page.tenantId,
                 filter: self.filter
             }).onDone(function(res){
                 console.warn(res)
@@ -90,7 +90,7 @@
         });
         self.onSearch = function(e){
             findDistributorsByTenantIdAction.newInvocation({
-                tenant: __app.tenant,
+                tenant: __page.tenantId,
                 filter: self.filter
             }).onDone(function(res){
                 if(res.error){

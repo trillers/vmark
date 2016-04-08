@@ -9,9 +9,9 @@ var Model = function(domainBuilder){
         .withCreatedOn()
         .withRank()
         .withProperties({
-            upLine:    {type: String, ref: 'TenantUser'},
-            downLine:  [{type: String, ref: 'TennatUser'}],
-            user:      {type: String, ref: 'TenantUser'},
+            upLine:    {type: String, ref: 'Membership'},
+            downLine:  [{type: String, ref: 'Membership'}],
+            user:      {type: String, ref: 'TenantUser', required: true},
             org:       {type: String, ref: 'Org'},
             media:     {type: String, ref: 'WechatMedia'},
             type:      {type: String, enum: MembershipType.valueList(), default: MembershipType.Customer.value()},

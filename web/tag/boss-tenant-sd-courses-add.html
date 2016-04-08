@@ -74,7 +74,7 @@
         var createCourseAction = domain.action('createCourse');
         self.on('open', function(){
             self.course = {};
-            self.course.tenant = __app.tenant;
+            self.course.tenant = __page.tenantId;
             self.validators = [];
             self.courseMediaPriceInput.value = "";
             self.courseNameInput.value = "";

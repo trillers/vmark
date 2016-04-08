@@ -15,7 +15,7 @@ var _ = require('underscore');
 
 module.exports = function(){
     var router = new Router();
-    router.prefix('/marketing/power');
+    router.prefix('/marketing/tenant/power');
     require('../../app/routes-spa')(router);
     
     router.get('/clear', function *(){

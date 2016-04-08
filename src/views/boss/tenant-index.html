@@ -9,7 +9,6 @@
 
     <script type="text/javascript">
         window.__app = {{ JSON.stringify(__app) }};
-        window.__app.tenant = {{JSON.stringify(tenant)}};
         window.__page = {{ JSON.stringify(__page) }};
         window.prdOrNot =( __app.settings.env.NODE_ENV === "production" );
         var scripthook = document.createElement( "script" );
@@ -56,6 +55,9 @@
         <boss-tenant-sd-courses-edit-detail></boss-tenant-sd-courses-edit-detail>
         <boss-tenant-sd-courses-detail></boss-tenant-sd-courses-detail>
         <boss-tenant-sd-catalogs-detail></boss-tenant-sd-catalogs-detail>
+        <boss-tenant-power-list></boss-tenant-power-list>
+        <boss-tenant-power-edit></boss-tenant-power-edit>
+        <boss-tenant-power-add></boss-tenant-power-add>
         <script src="/web/tag/boss-tenant-topbar.html" type="riot/tag"></script>
         <script src="/web/tag/boss-tenant-sd.html" type="riot/tag"></script>
         <script src="/web/tag/boss-tenant-sd-left.html" type="riot/tag"></script>
@@ -71,14 +73,16 @@
         <script src="/web/tag/boss-tenant-sd-courses-edit-detail.html" type="riot/tag"></script>
         <script src="/web/tag/accordion.html" type="riot/tag"></script>
         <script src="/web/tag/boss-tenant.html" type="riot/tag"></script>
-        <script src="/web/tag/boss-tenant-wechatSite.html" type="riot/tag"></script>
+        <script src="/web/tag/boss-tenant-wechatSite.html"type="riot/tag"></script>
         <script src="/web/tag/boss-wechatsite-edit.html" type="riot/tag"></script>
         <script src="/web/tag/boss-wechatsite-add.html" type="riot/tag"></script>
         <script src="/web/tag/alert.html" type="riot/tag"></script>
         <script src="/web/tag/boss-wechatsite.html" type="riot/tag"></script>
         <script src="/web/tag/confirm.html" type="riot/tag"></script>
         <script src="/web/tag/raw.html" type="riot/tag"></script>
-
+        <script src="/web/tag/boss-tenant-power-list.html"type="riot/tag"></script>
+        <script src="/web/tag/boss-tenant-power-edit.html"type="riot/tag"></script>
+        <script src="/web/tag/boss-tenant-power-add.html" type="riot/tag"></script>
     </div>
 
     <!-- Bootstrap import -->

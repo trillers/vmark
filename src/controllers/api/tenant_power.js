@@ -8,26 +8,32 @@ var util = require('../../app/util');
 
 module.exports = function(router){
     router.post('/add', function *(){
-        var json = {
-            type:  this.request.body.type
-            ,name: this.request.body.name
-            ,shareTitle: this.request.body.shareTitle
-            ,shareDesc: this.request.body.shareDesc
-            ,shareImg: this.request.body.shareImg
-            ,bgImg: this.request.body.bgImg
-            ,base_power: this.request.body.base_power
-            ,friend_help_count_limit: this.request.body.friend_help_count_limit
-            ,startTime: new Date(this.request.body.startTime)
-            ,endTime: new Date(this.request.body.endTime)
-            ,friend_help_min_power: this.request.body.friend_help_min_power
-            ,friend_help_max_power: this.request.body.friend_help_max_power
-            ,rule: this.request.body.rule
-            ,desc: this.request.body.desc
-            //,withPic: this.request.body.withPic
-            //,posterBgImg: this.request.body.posterBgImg
-    }
-        var data = yield powerActivityService.create(json);
-        this.body = data;
+        try {
+            var json = {
+                org: this.request.body.org
+                ,media: this.request.body.media
+                ,type: this.request.body.type
+                , name: this.request.body.name
+                , shareTitle: this.request.body.shareTitle
+                , shareDesc: this.request.body.shareDesc
+                , shareImg: this.request.body.shareImg
+                , bgImg: this.request.body.bgImg
+                , base_power: this.request.body.base_power
+                , friend_help_count_limit: this.request.body.friend_help_count_limit
+                , startTime: new Date(this.request.body.startTime + ' 00:00:00')
+                , endTime: new Date(this.request.body.endTime + ' 23:59:59')
+                , friend_help_min_power: this.request.body.friend_help_min_power
+                , friend_help_max_power: this.request.body.friend_help_max_power
+                , rule: this.request.body.rule
+                , desc: this.request.body.desc
+                , withPic: this.request.body.withPic
+                , posterBgImg: this.request.body.posterBgImg
+            }
+            var data = yield powerActivityService.create(json);
+            this.body = {success: true, data: data};
+        }catch(e){
+            this.body = {success: false, data: null}
+        }
     });
 
     router.get('/load', function *(){
@@ -42,27 +48,33 @@ module.exports = function(router){
     });
 
     router.post('/update', function *(){
-        var id = this.request.body.id;
-        var json = {
-            type:  this.request.body.type
-            //,withPic: this.request.body.withPic
-            ,name: this.request.body.name
-            ,shareTitle: this.request.body.shareTitle
-            ,shareDesc: this.request.body.shareDesc
-            ,shareImg: this.request.body.shareImg
-            ,bgImg: this.request.body.bgImg
-            ,base_power: this.request.body.base_power
-            ,friend_help_count_limit: this.request.body.friend_help_count_limit
-            ,startTime: new Date(this.request.body.startTime)
-            ,endTime: new Date(this.request.body.endTime)
-            ,friend_help_min_power: this.request.body.friend_help_min_power
-            ,friend_help_max_power: this.request.body.friend_help_max_power
-            ,rule: this.request.body.rule
-            ,desc: this.request.body.desc
-            //,posterBgImg: this.request.body.posterBgImg
+        try{
+            var id = this.request.body.id;
+            var json = {
+                org: this.request.body.org
+                ,media: this.request.body.media
+                ,type: this.request.body.type
+                ,withPic: this.request.body.withPic
+                ,name: this.request.body.name
+                ,shareTitle: this.request.body.shareTitle
+                ,shareDesc: this.request.body.shareDesc
+                ,shareImg: this.request.body.shareImg
+                ,bgImg: this.request.body.bgImg
+                ,base_power: this.request.body.base_power
+                ,friend_help_count_limit: this.request.body.friend_help_count_limit
+                ,startTime: new Date(this.request.body.startTime + ' 00:00:00')
+                ,endTime: new Date(this.request.body.endTime + ' 23:59:59')
+                ,friend_help_min_power: this.request.body.friend_help_min_power
+                ,friend_help_max_power: this.request.body.friend_help_max_power
+                ,rule: this.request.body.rule
+                ,desc: this.request.body.desc
+                ,posterBgImg: this.request.body.posterBgImg
+            }
+            var data = yield powerActivityService.updateById(id, json);
+            this.body = {success: true, data: data};
+        }catch(e){
+            this.body = {success: false, data: null}
         }
-        var data = yield powerActivityService.updateById(id, json);
-        this.body = data;
     });
 
     router.get('/exportParticipants', function*(){

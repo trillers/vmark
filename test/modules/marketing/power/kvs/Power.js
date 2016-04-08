@@ -257,7 +257,7 @@ describe('Power Kvs', function(){
             co(function*(){
                 try{
                     var kv = context.kvs.power;
-                    var res = yield kv.incParticipantMoneyByIdAsync(participant.id, 4);
+                    var res = yield kv.incParticipantPowerByIdAsync(participant.id, 4);
                     console.info(res);
                     done();
                 }

@@ -46,7 +46,7 @@
         }
 
         self.on('open', function(){
-            loadAllWechatSite.execute(__app.tenant);
+            loadAllWechatSite.execute(__page.tenantId);
             self.trigger('ready', false);
             self.trigger('view-route-to');
         });
