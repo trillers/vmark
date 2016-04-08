@@ -125,6 +125,22 @@ Service.prototype.updateById = function(id, json, callback){
     })
 };
 
+Service.prototype.addDownLine = function(id, downLineId, callback){
+    var membershipKv = this.context.kvs.membership;
+    var Membership = this.context.models.Membership;
+    callback = callback || function noop(){};
+
+    Membership.findByIdAndUpdate(id, {$addToSet: {downLine: downLineId}}, {lean: true, new: true}).exec(function(err, doc){
+        var json = doc.toObject();
+        membershipKv.saveById(json, function(err, result){
+            if(err){
+                return callback(err);
+            }
+            callback(null, json);
+        })
+    });
+};
+
 Service.prototype.removeById = function(id, callback){
     var Membership = this.context.models.Membership;
     var membershipKv = this.context.kvs.membership;
