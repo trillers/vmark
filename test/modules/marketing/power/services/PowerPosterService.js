@@ -55,7 +55,7 @@ describe('Power poster service', function(){
                         var acJson = {
                             activity: 'ddd',
                             user: user.id,
-                            type: 'ac',
+                            type: 'acp',
                             wechatId: originalId,
                             posterBgImg: 'http://up.qqjia.com/z/19/tu22346_2.jpg'
                         }
@@ -84,7 +84,7 @@ describe('Power poster service', function(){
                             participant: 'ppp',
                             user: user.id,
                             wechatId: originalId,
-                            type: 'pa',
+                            type: 'pap',
                             posterBgImg: 'http://up.qqjia.com/z/19/tu22346_2.jpg'
                         }
                         var data = yield service.create(paJson);
