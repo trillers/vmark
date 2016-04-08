@@ -18,7 +18,7 @@ var Service = function(context){
  */
 Service.prototype.loadUserByWechatIdAndOpenid = function(wechatId, openid, callback) {
     var logger = this.context.logger;
-    var tenantWechatSiteUserService = this.context.kvs.tenantWechatSiteUserService;
+    var tenantWechatSiteUserService = this.context.services.tenantWechatSiteUserService;
     var me = this;
 
     co(function* (){
@@ -92,7 +92,7 @@ Service.prototype.createTenantUserByWechatIdAndOpenid = function(wechatId, openi
 
     co(function* (){
         var wechatApi = yield wechatApiCache.get(wechatId);
-        var wechatSiteUser = yield tenantWechatSiteUserService.loadUserByWechatIdAndOpenidAsync(openid);
+        var wechatSiteUser = yield tenantWechatSiteUserService.loadByWechatIdAndOpenidAsync(wechatId, openid);
         var userId = null;
         var user = null;
         if(wechatSiteUser){
@@ -133,7 +133,7 @@ Service.prototype.createTenantUserByWechatIdAndOpenid = function(wechatId, openi
         }
         if(callback) callback(null, user);
     }).catch(function(err){
-        logger.error('Fail to create platform user linked to wechat site user: ' + err);
+        logger.error('Fail to create tenant user linked to wechat site user: ' + err);
         logger.error(err.stack);
         if(callback) callback(err);
     });

@@ -21,15 +21,14 @@ var Service = function(context){
 Service.prototype.create = function*(jsonData){
     var logger = this.context.logger;
     var PowerPoster = this.context.models.PowerPoster;
-    var userKv = this.context.kvs.platformUser;
+    var tenantUserService = this.context.services.tenantUserService;
     var posterKv = this.context.kvs.poster;
-    var user = yield userKv.loadByIdAsync(jsonData.user);
+    var user = yield tenantUserService.loadByWechatIdAndIdAsync(jsonData.wechatId, jsonData.user);
     var posterData = {};
-    jsonData.bgImg = 'http://picm.photophoto.cn/085/056/002/0560020133.jpg';
     if(jsonData.type === PosterType.activity.value()){
-        posterData = yield posterHandler.activityPosterHandler.create(jsonData.bgImg);
+        posterData = yield posterHandler.activityPosterHandler.create(jsonData.wechatId, jsonData.bgImg);
     }else if(jsonData.type === PosterType.participant.value()){
-        posterData = yield posterHandler.participantPosterHandler.create(jsonData.bgImg, user.headimgurl);
+        posterData = yield posterHandler.participantPosterHandler.create(jsonData.wechatId, jsonData.bgImg, user);
     }
     if(posterData.err){
         logger.info('poster handler err: ' + posterData.err);
