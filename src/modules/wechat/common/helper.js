@@ -60,6 +60,7 @@ helper.copyUserInfo = function(dest, src){
 
 helper.getUserInfo = function (api, openid, language, callback) {
     var input = {openid: openid, lang: language};
+    console.log(api);
     api.getUser(input, function (err, userInfo) {
         if (err) {
             if (callback) callback(err);

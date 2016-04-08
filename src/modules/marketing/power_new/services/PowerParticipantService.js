@@ -217,7 +217,7 @@ Service.prototype.help = function*(participant, user){
 Service.prototype.scanParticipantPoster = function*(qr, wechatId, openid){
     var logger = this.context.logger;
     var participant = null;
-    var wechatApi = yield wechatApiCache.get(wechatId);
+    var wechatApi = (yield wechatApiCache.get(wechatId)).api;
 
     try {
         var platformUserService = this.context.services.platformUserService;

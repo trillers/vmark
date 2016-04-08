@@ -78,7 +78,7 @@ activityType.onAccess(function(qr, openid, wechatId){
     var powerActivityService = context.services.powerActivityService;
     co(function*(){
         try{
-            var wechatApi = yield wechatApiCache.get(wechatId);
+            var wechatApi = (yield wechatApiCache.get(wechatId)).api;
             yield tenantUserService.ensureTenantUserAsync(wechatId, openid);
             var res = yield powerActivityService.getActivityPoster(qr, openid);
             wechatApi.sendText(openid, res.reply, function (err) {

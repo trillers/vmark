@@ -11,7 +11,7 @@ before(function(done){
 });
 
 describe('PowerActivityService', function(){
-    describe.only('create power activity', function(){
+    describe('create power activity', function(){
         it('success create power activity', function(done){
             var activity = {
                 org: 'org1',
@@ -30,7 +30,27 @@ describe('PowerActivityService', function(){
                 console.error(e);
             })
         })
+    })
 
+    describe('create power activity', function(){
+        it('success create power activity', function(done){
+            var activity = {
+                org: 'org1',
+                media: 'media1',
+                name: '测试活动',
+                startTime: '2016-04-23',
+                endTime: '2016-05-23',
+                type: PowerType.Points.value()
+            }
+            var service = context.services.powerActivityService;
+            co(function*(){
+                var doc = yield service.create(activity);
+                console.info(doc);
+                done();
+            }).catch(function(e){
+                console.error(e);
+            })
+        })
     })
 
     describe('putParticipantToMapString', function(){
