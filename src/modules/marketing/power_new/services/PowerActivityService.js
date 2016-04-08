@@ -115,7 +115,7 @@ Service.prototype.loadById = function*(id){
 Service.prototype.loadByQrCodeIdAndWechatId = function*(id, wechatId){
     var logger = this.context.logger;
     var PowerActivity = this.context.models.PowerActivity;
-    var doc = yield PowerActivity.findOne({qrCode: id, media: wechatId}, {}, {lean: true}).populate({path: 'poster'}).exec();
+    var doc = yield PowerActivity.findOne({qrCode: id, wechatId: wechatId}, {}, {lean: true}).populate({path: 'poster'}).exec();
     if(doc) {
         logger.info('success load power by qrCode id: ' + id + ' and wechatId: ' + wechatId);
     }else{
@@ -266,7 +266,7 @@ Service.prototype.getActivityPoster = function*(qr, wechatId, openid){
         var powerPosterService = this.context.services.powerPosterService;
         var tenantUserService = this.context.services.tenantUserService;
 
-        var activity = yield powerActivityService.loadByQrCodeId(qr._id);
+        var activity = yield powerActivityService.loadByQrCodeIdAndWechatId(qr._id, wechatId);
         var user = yield tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, openid);
         var mediaId = '';
         if(!activity.poster){
