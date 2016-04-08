@@ -59,13 +59,13 @@ distributorCreateType.onAccess(function(qr, openid, wechatId){
             context.logger.error(e);
         }
 
-        function* fetchPoster(rawPoster){
-            var poster = yield context.services.posterService.loadByProductId(rawPoster.product);
+        function* fetchPoster(posterMeta){
+            var poster = yield context.services.posterService.loadByProductId(posterMeta.product);
             if(poster){
                 return poster;
             }
             //poster.url = drawImg();
-            return yield context.services.posterService.createAsync(rawPoster);
+            return yield context.services.posterService.createAsync(posterMeta);
         }
     })
 
