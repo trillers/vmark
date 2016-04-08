@@ -56,10 +56,12 @@ describe('Power poster service', function(){
                             activity: 'ddd',
                             user: user.id,
                             type: 'ac',
-                            bgImg: 'http://up.qqjia.com/z/19/tu22346_2.jpg'
+                            wechatId: originalId,
+                            posterBgImg: 'http://up.qqjia.com/z/19/tu22346_2.jpg'
                         }
                         var data = yield service.create(acJson)
                         console.info(data);
+                        var wechatApi = (yield wechatApiCache.get(originalId)).api;
                         yield wechatApi.sendImageAsync(openid, data.mediaId);
                         setTimeout(function(){done()}, 2000);
                     }
@@ -81,10 +83,12 @@ describe('Power poster service', function(){
                             activity: 'ddd',
                             participant: 'ppp',
                             user: user.id,
+                            wechatId: originalId,
                             type: 'pa',
-                            bgImg: 'http://up.qqjia.com/z/19/tu22346_2.jpg'
+                            posterBgImg: 'http://up.qqjia.com/z/19/tu22346_2.jpg'
                         }
-                        var data = yield service.create(paJson)
+                        var data = yield service.create(paJson);
+                        var wechatApi = (yield wechatApiCache.get(originalId)).api;
                         yield wechatApi.sendImageAsync(openid, data.mediaId);
                         console.info(data);
                         setTimeout(function(){done()}, 2000);

@@ -59,6 +59,7 @@ Handler.prototype.create = function*(wechatId, bgImg, user) {
             var mediaId = imageData[0].media_id;
             return {err: null, mediaId: mediaId, sceneId: qr.sceneId, path: posterPath}
         } catch (err) {
+            console.error(err.stack)
             return {err: err};
         }
     } else {

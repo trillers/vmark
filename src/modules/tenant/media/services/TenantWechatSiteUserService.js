@@ -24,7 +24,6 @@ Service.prototype.createTenantWechatSiteUser = function(wechatId, mediaUserJson,
     var openid = mediaUserJson.openid;
     var at = agentToken.generate(openid);
     var ot = openToken.generate(openid);
-
     mediaUserJson.at = at;
     mediaUserJson.ot = ot;
     me.create(mediaUserJson, function(err, json){
