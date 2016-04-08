@@ -54,11 +54,15 @@ Service.prototype.loadById = function*(id){
     //var doc = yield PowerParticipant.findById(id, {}, {lean: true}).populate({path: 'power'}).populate({path: 'user'}).exec();
     var kv = this.context.kvs.power;
     var userKv = this.context.kvs.platformUser;
+    var tenantUserService = this.context.services.tenantUserService;
     var powerActivityService = this.context.services.powerActivityService;
     var participant = yield kv.loadParticipantByIdAsync(id);
     if(participant){
         var activity = yield powerActivityService.loadById(participant.activity);
         var user = yield userKv.loadByIdAsync(participant.user);
+        if(!user){
+            user = yield tenantUserService.loadByWechatIdAndIdAsync(activity.wechatId, participant.user);
+        }
         var rank = yield kv.getParticipantRankAsync(participant.activity, participant.user);
         var helpArr = yield kv.getHelpFriendsSetAsync(id);
         participant.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + activity._id;
@@ -222,7 +226,7 @@ Service.prototype.scanParticipantPoster = function*(qr, wechatId, openid){
     try {
         var tenantUserService = this.context.services.tenantUserService;
         var powerPosterService = this.context.services.powerPosterService;
-        var poster = yield powerPosterService.loadByWechatIdAndSceneId(wechatId, qr.sceneId);
+        var poster = yield powerPosterService.lo(qr.sceneId);
         var user = yield tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, openid);
         participant = yield this.loadById(poster.participant);
         var res = yield this.help(participant, user);
