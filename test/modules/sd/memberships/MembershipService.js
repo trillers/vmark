@@ -4,6 +4,9 @@ var assert = require('chai').assert;
 var typeRegistry = require('../../../../src/modules/common/models/TypeRegistry');
 var MembershipType = typeRegistry.item('MembershipType');
 
+var membershipId = null;
+var downLineId = null;
+
 before(function(done){
     contextLoader.check(function(){
         setTimeout(function(){
@@ -13,8 +16,6 @@ before(function(done){
 });
 
 describe('MembershipService', function(){
-    var membershipId = null;
-    var downLineId = null;
 
     it('#create', function(done){
         var service = context.services.membershipService;
@@ -25,7 +26,7 @@ describe('MembershipService', function(){
             type:      MembershipType.Distributor.value()
         };
         service.create(distributor, function(err, doc){
-            console.log(err)
+            console.log(err);
             console.log(doc);
             assert.ok(!err);
             assert.ok(doc._id);
@@ -34,17 +35,17 @@ describe('MembershipService', function(){
         });
     });
 
-    //it('#loadById', function(done){
-    //    var service = context.services.membershipService;
-    //    service.loadById(membershipId, function(err, doc){
-    //        console.log(membershipId);
-    //        console.log(doc);
-    //        assert.ok(!err);
-    //        assert.ok(doc._id === membershipId);
-    //        done();
-    //    })
-    //});
-    //
+    it('#loadById', function(done){
+        var service = context.services.membershipService;
+        service.loadById(membershipId, function(err, doc){
+            console.log(membershipId);
+            console.log(doc);
+            assert.ok(!err);
+            assert.ok(doc._id === membershipId);
+            done();
+        })
+    });
+
     it('#addDownLine', function(done){
         var service = context.services.membershipService;
         var downLine = {
@@ -73,4 +74,15 @@ describe('MembershipService', function(){
             done();
         });
     });
+});
+
+after(function(done){
+    var service = context.services.membershipService;
+    service.delById(membershipId, function(err){
+        assert.ok(!err);
+        service.delById(downLineId, function(err){
+            assert.ok(!err);
+            done();
+        })
+    })
 });

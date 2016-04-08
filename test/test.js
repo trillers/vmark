@@ -1,5 +1,10 @@
-function* test(){
-    console.log("***")
-    yield test1.call(null, '1111');
-}
-require('../src/app/util').isGenerator(test);
+var _ =require('underscore');
+var doc={
+    t: {
+        t: '111'
+    }
+};
+var test = _.range(2).reduce((acc, curr)=>{
+    return acc.t;
+}, doc);
+console.log(test)

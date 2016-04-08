@@ -49,13 +49,8 @@ Handler.prototype.create = function*(wechatId, bgImg, user) {
                 yield drawText('长按图片识别二维码', 300, 850, 600);
             } else if(this.type === PosterType.activity.value()){
                 qrType = qrTypeRegistry.getQrType('acp');
-                console.log(qrType.createQr)
                 qr = yield qrType.createQrAsync({wechatId: wechatId});
-                console.error('*******')
-                console.error(wechatApi)
-                console.error(wechatApi.showQRCodeURL);
                 qrCodeUrl = wechatApi.showQRCodeURL(qr.ticket);
-                console.error('**********' + qrCodeUrl);
                 yield drawImg(qrCodeUrl, qrPath, 150, 300, 300, 300);
                 yield drawText('长按图片识别二维码', 300, 650, 600);
             }

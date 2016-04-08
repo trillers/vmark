@@ -70,6 +70,12 @@ Service.prototype.find = function (params, callback) {
 Service.prototype.loadDistributorsChainById = function(id, level, callback){
     var membershipKv = this.context.kvs.membership;
     var Membership = this.context.models.Membership;
+    var fields = {
+        nickname: 'nickname',
+        openid: 'openid',
+        wechatId: 'wechatId'
+    };
+    var selectUserStr = Object.keys(fields).join(' ');
 
     if(typeof callback === 'undefined'){
         if(typeof level === 'function'){
@@ -86,8 +92,8 @@ Service.prototype.loadDistributorsChainById = function(id, level, callback){
             _id: id
         })
         .populate({
-            path: 'upLine user',
-            select: 'nickname openid wechatId'
+            path: 'user',
+            select: selectUserStr
         })
         .exec(function(err, doc){
             if(err){
@@ -96,7 +102,7 @@ Service.prototype.loadDistributorsChainById = function(id, level, callback){
             if(!doc){
                 return callback(new Error('loadDistributorsChainById expect a distributor'));
             }
-            recurPopulate(doc, level, function(err, result){
+            recurPopulate(doc, 1, level, function(err, result){
                 if(err){
                     return callback(err);
                 }
@@ -104,16 +110,21 @@ Service.prototype.loadDistributorsChainById = function(id, level, callback){
             });
         });
 
-    function recurPopulate(doc, len, callback){
-        if(typeof doc.upLine != 'object' || !doc.upLine.upLine || len <= 0){
+    function recurPopulate(doc, index, len, callback){
+        let curr = _.range(index).reduce(function(acc, curr){ return acc.upLine}, doc);
+        if(!curr || index >= len){
             return callback(null, doc);
         }
-        Membership.populate({path: 'upLine'}, function(err, doc){
+        let populateStr = _.range(index).map(function(){return 'upLine'}).join('.');
+        Membership.populate(doc,
+            {
+                path: populateStr,
+                populate: {path: 'user', model: 'TenantUser', select: selectUserStr}
+            }, function(err, doc){
             if(err){
                 return callback(err);
             }
-            len--;
-            recurPopulate(doc, callback);
+            recurPopulate(doc, ++index, len, callback);
         });
     }
 };
@@ -166,13 +177,25 @@ Service.prototype.removeById = function(id, callback){
     Membership.findByIdAndUpdate(id, {lFlg: 'd'}, {lean: true})
         .exec(function(err){
             if(err){
-                console.error(err);
-            }else{
-                membershipKv.delById(id, function(err, obj){
-                    if(callback) callback(err, obj);
-                });
+               return callback(err);
             }
+            membershipKv.delById(id, function(err, obj){
+                if(callback) callback(err, obj);
+            });
         });
+};
+
+Service.prototype.delById = function(id, callback){
+    var Membership = this.context.models.Membership;
+    var membershipKv = this.context.kvs.membership;
+    Membership.findByIdAndRemove(id, function(err){
+        if(err){
+            return callback(err)
+        }
+        membershipKv.delById(id, function(err, obj){
+            if(callback) callback(err, obj);
+        });
+    });
 };
 
 module.exports = Service;

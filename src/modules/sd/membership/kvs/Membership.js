@@ -14,7 +14,7 @@ var config = {
     keyGenerator: idToObjKey
 };
 
-Kv.prototype.loadById = helper.generateGetter(config);
+Kv.prototype.loadById = helper.generateLoader(config);
 
 Kv.prototype.saveById = helper.generateSaver(config);
 
