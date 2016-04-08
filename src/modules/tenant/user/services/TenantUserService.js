@@ -52,7 +52,7 @@ Service.prototype.loadUserByWechatIdAndOpenid = function(wechatId, openid, callb
  */
 Service.prototype.deleteUserByWechatIdAndOpenid = function(wechatId, openid, callback) {
     var logger = this.context.logger;
-    var platformWechatSiteUserService = this.context.services.platformWechatSiteUserService;
+    var tenantWechatSiteUserService = this.context.services.tenantWechatSiteUserService;
     var me = this;
     co(function* (){
         var userid = yield tenantWechatSiteUserService.deleteTenantWechatSiteUserByWechatIdAndOpenidAsync(wechatId, openid);
@@ -88,6 +88,7 @@ Service.prototype.loadByWechatIdAndId = Kv.prototype.loadById;
 Service.prototype.createTenantUserByWechatIdAndOpenid = function(wechatId, openid, callback) {
     var logger = this.context.logger;
     var tenantWechatSiteUserService = this.context.services.tenantWechatSiteUserService;
+    var tenantWechatSiteService = this.context.services.tenantWechatSiteService;
     var me = this;
 
     co(function* (){
@@ -112,7 +113,9 @@ Service.prototype.createTenantUserByWechatIdAndOpenid = function(wechatId, openi
             /*
              *  Create user and link to wechat site user
              */
-            var userJson = {};
+            var userJson = {
+                wechatId: wechatId
+            };
             helper.copyUserInfo(userJson, wechatSiteUser);
             user = yield me.createAsync(userJson);
             yield tenantWechatSiteUserService.updateTenantWechatSiteUserByIdAsync(wechatSiteUser.id, {user: user.id});
@@ -121,12 +124,17 @@ Service.prototype.createTenantUserByWechatIdAndOpenid = function(wechatId, openi
         }
 
         var wechatSiteUserInfo = yield helper.getUserInfoAsync(wechatApi, openid, 'zh_CN');
-        var userJson = {};
+        var userJson = {
+            wechatId: wechatId
+        };
         helper.copyUserInfo(userJson, wechatSiteUserInfo);
         user = yield me.createAsync(userJson);
         var wechatSiteUserJson = {};
         wechatSiteUserJson.user = user.id;
+        var wechatSite = yield tenantWechatSiteService.loadTenantWechatSiteByOriginalIdAsync(wechatId);
+        wechatSiteUserJson.host = wechatSite._id;
         helper.copyUserInfo(wechatSiteUserJson, wechatSiteUserInfo);
+
         wechatSiteUser = yield tenantWechatSiteUserService.createTenantWechatSiteUserAsync(wechatId, wechatSiteUserJson);
         if(wechatSiteUser){
             user.wechatSiteUser = wechatSiteUser;
