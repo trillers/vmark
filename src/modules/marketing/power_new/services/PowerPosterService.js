@@ -78,7 +78,7 @@ Service.prototype.loadById = function*(id){
 Service.prototype.loadByWechatIdAndSceneId = function*(wechatId, sid){
     var logger = this.context.logger;
     var kv = this.context.kvs.poster;
-    var posterId = yield kv.loadIdBySceneIdAsync(wechatId, sid);
+    var posterId = yield kv.loadIdByWechatIdAndSceneIdAsnyc(wechatId, sid);
     var doc = yield kv.loadByIdAsync(posterId);
 
     logger.info('success load poster by sceneId: ' + sid + ' and wechatId ' + wechatId );
