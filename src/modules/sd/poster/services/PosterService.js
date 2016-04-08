@@ -9,6 +9,12 @@ Service.prototype.loadByQrCodeId = function(qrCodeId, callback){
     Poster.findOne({qr: qrCodeId}, callback);
 };
 
+Service.prototype.loadByProductId = function(productId, callback){
+    var Poster = this.context.models.Poster;
+
+    Poster.findOne({product: productId}, callback);
+};
+
 Service.prototype.create = function(json, callback){
     var posterKv = this.context.kvs.poster;
     var Poster = this.context.models.Poster;

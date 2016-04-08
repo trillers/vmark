@@ -1,3 +1,4 @@
+"use strict";
 var util = require('util');
 var settings = require('@private/vmark-settings');
 var PosterType = require('../../../common/models/TypeRegistry').item('PosterType');

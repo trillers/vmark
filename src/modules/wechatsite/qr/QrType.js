@@ -95,6 +95,8 @@ typeProto.createQr = function(qrData, cb){
         }
     })
 };
+typeProto.createQrAsync = Promise.promisify(typeProto.createQr);
+
 typeProto.getQrById = function(id, callback){
     var me = this;
     co(function*(){
