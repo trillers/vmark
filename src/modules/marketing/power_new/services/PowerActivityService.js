@@ -22,16 +22,17 @@ Service.prototype.create = function*(jsonData){
         if(jsonData.withPic) {
             var powerPosterService = this.context.services.powerPosterService;
             var qrType = qrTypeRegistry.getQrType('ac');
-            var qr = yield qrType.createQrAsync({wechatId: jsonData.media});
+            var qr = yield qrType.createQrAsync({wechatId: jsonData.wechatId});
             obj.qrCode = qr._id;
             var posterJson = {
                 activity: obj._id,
                 posterBgImg: obj.posterBgImg,
-                type: PosterType.activity.value()
+                type: PosterType.activity.value(),
+                wechatId: jsonData.wechatId
             }
             var poster = yield powerPosterService.create(posterJson);
             obj.poster = poster._id;
-            var wechatApi = (yield wechatApiCache.get(jsonData.media)).api;
+            var wechatApi = (yield wechatApiCache.get(jsonData.wechatId)).api;
             obj.posterQrCodeUrl = wechatApi.showQRCodeURL(qr.ticket);
             yield this.updateById(obj._id, {poster: poster._id, qrCode: qr._id});
         }
@@ -54,16 +55,17 @@ Service.prototype.updateById = function*(id, update){
         var posterQrCodeUrl = '';
         if(!oldDoc.withPic && update.withPic){
             var qrType = qrTypeRegistry.getQrType('ac');
-            var qr = yield qrType.createQrAsync({wechatId: update.media});
+            var qr = yield qrType.createQrAsync({wechatId: update.wechatId});
             update.qrCode = qr._id;
             var posterJson = {
                 activity: obj._id,
                 posterBgImg: obj.posterBgImg,
-                type: PosterType.activity.value()
+                type: PosterType.activity.value(),
+                wechatId: update.wechatId
             }
             var poster = yield powerPosterService.create(posterJson);
             update.poster = poster._id;
-            var wechatApi = (yield wechatApiCache.get(update.media)).api;
+            var wechatApi = (yield wechatApiCache.get(update.wechatId)).api;
             posterQrCodeUrl = wechatApi.showQRCodeURL(qr.ticket);
         }
         var doc = yield PowerActivity.findByIdAndUpdate(id, update, {new: true}).lean().exec();
@@ -132,24 +134,29 @@ Service.prototype.deleteById = function*(id){
     return doc;
 }
 
-Service.prototype.loadAll = function*(wechatId){
-    var logger = this.context.logger;
-    var PowerActivity = this.context.models.PowerActivity;
-    var filter = {lFlg: 'a'};
-    if(wechatId){
-        filter.media = wechatId;
-    }
-
-    var docs = yield PowerActivity.find(filter).populate({path: 'qrCode'}).lean().exec();
-    var qrType = qrTypeRegistry.getQrType('ac');
-    docs = docs.map(function(item){
-        if(item.withPic && item.qrCode) {
-            item.qrCodeUrl = qrType.getQrCodeUrl(item.qrCode.ticket);
+Service.prototype.loadAll = function*(tenantId){
+    try {
+        var logger = this.context.logger;
+        var PowerActivity = this.context.models.PowerActivity;
+        var filter = {lFlg: 'a'};
+        if (tenantId) {
+            filter.org = tenantId;
         }
-        return item;
-    })
-    logger.info('success load all power ');
-    return docs;
+
+        var docs = yield PowerActivity.find(filter).populate({path: 'qrCode'}).lean().exec();
+        var wechatApi = null
+        for (var i = 0; i < docs.length; i++) {
+            if (docs[i].withPic && docs[i].qrCode) {
+                wechatApi = (yield wechatApiCache.get(docs[i].wechatId)).api;
+                docs[i].qrCodeUrl = wechatApi.showQRCodeURL(docs[i].qrCode.ticket);
+            }
+        }
+        logger.info('success load all power ');
+        return docs;
+    }catch(e){
+        console.error(e);
+        return [];
+    }
 }
 
 Service.prototype.getStatus = function*(activity, user){
@@ -266,6 +273,7 @@ Service.prototype.getActivityPoster = function*(qr, wechatId, openid){
             var posterJson = {
                 user: user._id,
                 activity: activity._id,
+                wechatId: wechatId,
                 posterBgImg: activity.posterBgImg,
                 type: PosterType.activity.value()
             }
@@ -342,6 +350,7 @@ Service.prototype.scanActivityPoster = function*(qr, wechatId, openid){
                 user: user._id,
                 activity: activity._id,
                 participant: data._id,
+                wechatId: wechatId,
                 posterBgImg: activity.posterBgImg,
                 type: PosterType.participant.value()
             }

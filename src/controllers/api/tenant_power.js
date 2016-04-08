@@ -11,7 +11,7 @@ module.exports = function(router){
         try {
             var json = {
                 org: this.request.body.org
-                ,media: this.request.body.media
+                ,wechatId: this.request.body.wechatId
                 ,type: this.request.body.type
                 , name: this.request.body.name
                 , shareTitle: this.request.body.shareTitle
@@ -37,7 +37,8 @@ module.exports = function(router){
     });
 
     router.get('/load', function *(){
-        var data = yield powerActivityService.loadAll();
+        var tenantId = this.query.tenantId;
+        var data = yield powerActivityService.loadAll(tenantId);
         this.body = data;
     });
 
@@ -52,7 +53,7 @@ module.exports = function(router){
             var id = this.request.body.id;
             var json = {
                 org: this.request.body.org
-                ,media: this.request.body.media
+                ,wechatId: this.request.body.wechatId
                 ,type: this.request.body.type
                 ,withPic: this.request.body.withPic
                 ,name: this.request.body.name

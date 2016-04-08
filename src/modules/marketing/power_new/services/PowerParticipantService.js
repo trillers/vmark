@@ -220,10 +220,10 @@ Service.prototype.scanParticipantPoster = function*(qr, wechatId, openid){
     var wechatApi = (yield wechatApiCache.get(wechatId)).api;
 
     try {
-        var platformUserService = this.context.services.platformUserService;
+        var tenantUserService = this.context.services.tenantUserService;
         var powerPosterService = this.context.services.powerPosterService;
-        var poster = yield powerPosterService.loadBySceneId(qr.sceneId);
-        var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
+        var poster = yield powerPosterService.loadByWechatIdAndSceneId(wechatId, qr.sceneId);
+        var user = yield tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, openid);
         participant = yield this.loadById(poster.participant);
         var res = yield this.help(participant, user);
         var reply = '';

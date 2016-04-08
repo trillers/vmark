@@ -51,7 +51,7 @@
 
         self.on('open', function(ctx){
             loadPowerActivities.newInvocation({
-                orgId: __page.tenantId
+                tenantId: __page.tenantId
             }).onDone(function(data){
                 self.activityArr = data;
                 self.trigger('ready', false);

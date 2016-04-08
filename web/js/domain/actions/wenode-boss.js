@@ -68,7 +68,7 @@ domain.action('findCatalogs').onExecute(function(data){
 });
 
 domain.action('loadPowerActivities').onExecute(function(data){
-    apiFactory.get('/marketing/tenant/power/load?wechatId=' + data.wechatId).drive(this).send();
+    apiFactory.get('/marketing/tenant/power/load?tenantId=' + data.tenantId).drive(this).send();
 });
 
 domain.action('loadPowerActivity').onExecute(function(data){
