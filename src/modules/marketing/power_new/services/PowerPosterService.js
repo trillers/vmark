@@ -28,9 +28,9 @@ Service.prototype.create = function*(jsonData){
     var user = yield tenantUserService.loadByWechatIdAndIdAsync(jsonData.wechatId, jsonData.user);
     var posterData = {};
     if(jsonData.type === PosterType.activity.value()){
-        posterData = yield posterHandler.activityPosterHandler.create(jsonData.wechatId, jsonData.posterBgImg, user);
+        posterData = yield posterHandler.createActivityPoster(jsonData.wechatId, jsonData.posterBgImg, user);
     }else if(jsonData.type === PosterType.participant.value()){
-        posterData = yield posterHandler.participantPosterHandler.create(jsonData.wechatId, jsonData.posterBgImg, user);
+        posterData = yield posterHandler.createParticipantPoster(jsonData.wechatId, jsonData.posterBgImg, user);
     }
     if(posterData.err){
         logger.error('poster handler err: ' + posterData.err);
