@@ -16,7 +16,7 @@ var Canvas = require('canvas')
 
 var Handler = function (type) {
     this.type = type;
-}
+};
 
 Handler.prototype.create = function*(wechatId, bgImg, user) {
     if (bgImg) {
