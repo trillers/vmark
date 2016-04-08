@@ -6,7 +6,8 @@ var Model = function(domainBuilder){
         .withProperties({
             user: {type: String, ref: 'TenantUser'},
             product: {type: String},
-            qr: {type: String, ref: 'QrCode'}
+            qr: {type: String, ref: 'QrCode'},
+            url: {type: String, required: true}
         }).build();
     return schema.model(true);
 };

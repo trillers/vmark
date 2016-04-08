@@ -67,7 +67,7 @@ typeProto.createQr = function(qrData, cb){
             var wechatApi = wechatApiStandalone;
 
             if(qr.wechatId){
-                wechatApi = yield wechatApiCache.get(qr.wechatId);
+                wechatApi = (yield wechatApiCache.get(qr.wechatId)).api;
             }
 
             var genFn = function (){

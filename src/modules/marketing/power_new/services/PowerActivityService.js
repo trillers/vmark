@@ -30,7 +30,7 @@ Service.prototype.create = function*(jsonData){
             }
             var poster = yield powerPosterService.create(posterJson);
             obj.poster = poster._id;
-            var wechatApi = yield wechatApiCache.get(jsonData.media).api;
+            var wechatApi = (yield wechatApiCache.get(jsonData.media)).api;
             obj.posterQrCodeUrl = wechatApi.showQRCodeURL(qr.ticket);
             yield this.updateById(obj._id, {poster: poster._id, qrCode: qr._id});
         }
@@ -62,7 +62,7 @@ Service.prototype.updateById = function*(id, update){
             }
             var poster = yield powerPosterService.create(posterJson);
             update.poster = poster._id;
-            var wechatApi = yield wechatApiCache.get(update.media).api;
+            var wechatApi = (yield wechatApiCache.get(update.media)).api;
             posterQrCodeUrl = wechatApi.showQRCodeURL(qr.ticket);
         }
         var doc = yield PowerActivity.findByIdAndUpdate(id, update, {new: true}).lean().exec();
@@ -305,7 +305,7 @@ Service.prototype.scanActivityPoster = function*(qr, wechatId, openid){
     var logger = this.context.logger;
     var activity = null;
     var participant = null;
-    var wechatApi = yield wechatApiCache.get(wechatId).api;
+    var wechatApi = (yield wechatApiCache.get(wechatId)).api;
 
     try {
         var tenantUserService = this.context.services.tenantUserService;

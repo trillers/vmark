@@ -26,7 +26,7 @@ Handler.prototype.create = function*(wechatId, bgImg, user) {
             }
         }
         try {
-            var wechatApi = yield wechatApiCache.get(wechatId);
+            var wechatApi = (yield wechatApiCache.get(wechatId)).api;
             var qrType = null;
             var qr = null;
             var qrCodeUrl = '';

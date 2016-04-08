@@ -37,7 +37,7 @@ describe('Power poster service', function(){
                 }
                 wechatSite = yield tenantWechatSiteService.createTenantWechatSiteAsync(wechatSiteData);
             }
-            wechatApi = yield wechatApiCache.get(originalId);
+            wechatApi = (yield wechatApiCache.get(originalId)).api;
             user = yield tenantUserService.ensureTenantUserAsync(wechatSite.originalId, openid);
             console.info(user);
             done();

@@ -91,7 +91,7 @@ Service.prototype.createTenantUserByWechatIdAndOpenid = function(wechatId, openi
     var me = this;
 
     co(function* (){
-        var wechatApi = yield wechatApiCache.get(wechatId);
+        var wechatApi = (yield wechatApiCache.get(wechatId)).api;
         var wechatSiteUser = yield tenantWechatSiteUserService.loadByWechatIdAndOpenidAsync(wechatId, openid);
         var userId = null;
         var user = null;
