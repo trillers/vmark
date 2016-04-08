@@ -1,4 +1,5 @@
 "use strict";
+var co = require('co');
 var qrTypeRegistry = require('./QrTypeRegistries').tenantQrTypeRegistry;
 var context = require('../../../context/context');
 var typeRegistry = require('../../common/models/TypeRegistry');
