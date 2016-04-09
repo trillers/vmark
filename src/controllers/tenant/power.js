@@ -25,7 +25,8 @@ module.exports = function(){
         var activity = yield powerActivityService.loadById(id);
         if (activity && activity.lFlg === 'a')  {
             var status = yield powerActivityService.getStatus(activity, user);
-
+            console.error('adfasdfasdfadsf');
+            console.error(status.participant);
             if (status.participant) {
                 this.redirect('/marketing/tenant/power/participant?id=' + status.participant);
             } else {
@@ -52,7 +53,6 @@ module.exports = function(){
     router.get('/:wechatId/participant', tenantFilter, needBaseInfoFilter, function *(){
         var id = this.query.id;
         var auth = authentication.getAuthentication(this, this.wechatId)
-        console.error(auth);
         var user = auth && auth.user;
         if(user) {
             var participant = yield powerParticipantService.loadById(id);

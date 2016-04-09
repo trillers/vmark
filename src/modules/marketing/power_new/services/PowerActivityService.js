@@ -162,9 +162,6 @@ Service.prototype.loadAll = function*(tenantId){
 }
 
 Service.prototype.getStatus = function*(activity, user){
-    console.error('&&&&&&&&&&&&&&&&')
-    console.warn(activity);
-    console.warn(user);
     var status = {
         participant: '',
         join: '',
@@ -174,7 +171,8 @@ Service.prototype.getStatus = function*(activity, user){
     }
     var kv = this.context.kvs.power;
     status.participant = yield kv.getParticipantIdByUserIdAndActivityIdAsync(activity._id, user._id);
-    console.error(status.participant);
+    console.error('*******')
+    console.error(status.participant );
     if(status.participant){
         status.join = 'none';
         status.joined = '';
