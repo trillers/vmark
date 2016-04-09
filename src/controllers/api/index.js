@@ -57,11 +57,6 @@ module.exports = function(app){
     require('./power')(router);
     app.use(router.routes());
 
-    //marketing tenant power activity
-    router = new Router();
-    router.prefix('/api/marketing/tenant/power');
-    require('./tenant_power')(router);
-    app.use(router.routes());
 
     //marketing points
     router = new Router();

@@ -100,11 +100,13 @@ Service.prototype.loadById = function*(id){
     var doc = yield kv.loadActivityByIdAsync(id);
     if(doc) {
         doc.bgImg = doc.bgImg ? doc.bgImg.split(',') : [];
-        doc.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + doc._id;
-        doc.url = 'http://' + settings.app.domain + '/marketing/power/activity?id=' + doc._id;
-        //if(doc.withPic === 'true') {
-        //    doc.posterQrCodeUrl = yield this.context.services.powerPosterService.getPosterQrCodeUrlById(doc.poster);
-        //}
+        if(doc.wechatId){
+            doc.participateLink = 'http://' + settings.app.domain + '/marketing/tenant/power/' + doc.wechatId + '/join?id=' + doc._id;
+            doc.url = 'http://' + settings.app.domain + '/marketing/power/' + doc.wechatId + '/activity?id=' + doc._id;
+        }else {
+            doc.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + doc._id;
+            doc.url = 'http://' + settings.app.domain + '/marketing/power/activity?id=' + doc._id;
+        }
         logger.info('success load power activity by id: ' + id);
     }else{
         logger.info('failed load power activity by id: ' + id + ' err: no such activity');
@@ -326,7 +328,12 @@ Service.prototype.scanActivityPoster = function*(qr, wechatId, openid){
         var status = yield this.getStatus(activity, user);
         var reply = '', sendActivityCard = false, sendParticipantCard = false, posterMediaId = '';
         if(status.participant){
-            var homePage = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + status.participant;
+            var homePage = '';
+            if(activity.wechatId){
+                homePage = 'http://' + settings.app.domain + '/marketing/tenant/power/' + activity.wechatId + '/participant?id=' + status.participant;
+            }else {
+                homePage = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + status.participant;
+            }
             participant = {
                 homePage: homePage
             }
@@ -362,7 +369,12 @@ Service.prototype.scanActivityPoster = function*(qr, wechatId, openid){
                 headimgurl: user.headimgurl
             }
             yield this.putParticipantToMapString(activity._id, userBrief);
-            data.homePage = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + data._id;
+            if(activity.wechatId){
+                data.homePage = 'http://' + settings.app.domain + '/marketing/tenant/power/' + activity.wechatId + '/participant?id=' + data._id;
+            }else{
+                data.homePage = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + data._id;
+            }
+
             reply = '您已成功参与活动: ' + activity.name;
             participant = data;
             posterMediaId = poster.mediaId;

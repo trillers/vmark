@@ -175,7 +175,7 @@ module.exports = function(router){
         }
     });
 
-    router.post('/fullInfo', function *() {
+    router.post('/full-info', function *() {
         var id = this.request.body.id;
         var phone = this.request.body.phone;
         var user = this.session.auth && this.session.auth.user;

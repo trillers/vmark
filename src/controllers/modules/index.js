@@ -14,8 +14,6 @@ module.exports = function(app){
 
     app.use(require('./power')());
 
-    app.use(require('./tenant_power')());
-
     app.use(require('./points')());
 
     app.use(require('./sd')());

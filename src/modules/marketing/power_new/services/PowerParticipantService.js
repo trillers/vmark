@@ -65,8 +65,13 @@ Service.prototype.loadById = function*(id){
         }
         var rank = yield kv.getParticipantRankAsync(participant.activity, participant.user);
         var helpArr = yield kv.getHelpFriendsSetAsync(id);
-        participant.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + activity._id;
-        participant.homePage = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participant._id;
+        if(activity.wechatId){
+            participant.participateLink = 'http://' + settings.app.domain + '/marketing/tenant/power/' + activity.wechatId + '/join?id=' + activity._id;
+            participant.homePage = 'http://' + settings.app.domain + '/marketing/tenant/power/' + activity.wechatId + '/participant?id=' + participant._id;
+        }else {
+            participant.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + activity._id;
+            participant.homePage = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participant._id;
+        }
         participant.activity = activity;
         participant.user = user;
         participant.rank = rank;
@@ -166,7 +171,11 @@ Service.prototype.getStatus = function*(participant, user){
             if (participantId) {
                 status.join = 'none';
                 status.joined = '';
-                status.homeLink = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participantId;
+                if(participant.activity.wechatId) {
+                    status.homeLink = 'http://' + settings.app.domain + '/marketing/tenant/power/' + participant.activity.wechatId + '/participant?id=' + participantId;
+                }else{
+                    status.homeLink = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participantId;
+                }
             }
             var helpArr = yield kv.getHelpFriendsSetAsync(participant.id);
             if (_.indexOf(helpArr, user.openid) !== -1) {
