@@ -38,7 +38,7 @@
                         phone: $('#phone').val()
                     }
                     $('#mask').show();
-                    $.post('/api/marketing/power/join', data, function (data) {
+                    $.post('/api/marketing/tenant/power/join', data, function (data) {
                         $('#mask').hide();
                         if (!data.error) {
                             window.location.href = window.__app.settings.app.url + '/marketing/tenant/power/{{wechatId}}/participant?id=' + data._id;

@@ -128,11 +128,11 @@ module.exports = function(router){
     router.post('/join', function *() {
         var id = this.request.body.id;
         var phone = this.request.body.phone;
-        var auth = authentication.getAuthentication(this, participant.activity.wechatId);
+        var activity = yield powerActivityService.loadById(id);
+        var auth = authentication.getAuthentication(this, activity.wechatId);
         var user = auth && auth.user;
         if(user) {
             //if (phone) {
-                var activity = yield powerActivityService.loadById(id);
                 if (activity) {
                     var status = yield powerActivityService.getStatus(activity, user);
                     if (status.join === 'none') {
