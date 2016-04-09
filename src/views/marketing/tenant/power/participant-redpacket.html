@@ -6,10 +6,10 @@
 {% parent %}
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="format-detection" content="telephone=no">
-<link rel="stylesheet" href="../../../../web/marketing/power/css/base.css">
-<link rel="stylesheet" href="../../../../web/marketing/power/css/swiper.min.css">
-<link rel="stylesheet" href="../../../../web/marketing/power/css/style.css">
-<script src="../../../../web/marketing/power/js/swiper.jquery.min.js"></script>
+<link rel="stylesheet" href="../../../../../web/marketing/power/css/base.css">
+<link rel="stylesheet" href="../../../../../web/marketing/power/css/swiper.min.css">
+<link rel="stylesheet" href="../../../../../web/marketing/power/css/style.css">
+<script src="../../../../../web/marketing/power/js/swiper.jquery.min.js"></script>
 <script>
     var timer = 0;
     $(function () {
@@ -174,9 +174,9 @@
 {% endblock %}
 
 {% block content %}
-<link rel="stylesheet" type="text/css" href="../../../../web/marketing/power/css/fans.css">
-<script src="../../../../web/marketing/power/js/jquery.leanModal.min.js"></script>
-<link rel="stylesheet" type="text/css" href="../../../../web/marketing/power/css/leanModal.css">
+<link rel="stylesheet" type="text/css" href="../../../../../web/marketing/power/css/fans.css">
+<script src="../../../../../web/marketing/power/js/jquery.leanModal.min.js"></script>
+<link rel="stylesheet" type="text/css" href="../../../../../web/marketing/power/css/leanModal.css">
 <div id="lean_overlay" style="display: none; opacity: 0.45;"></div>
 <script type="text/javascript">
     $(function () {
@@ -325,7 +325,7 @@
         $('#helpTa').click(function(){
             if(helping) return;
             helping = true;
-            $.post('/api/marketing/power/help', {id: $('#participantId').val()}, function(data){
+            $.post('/api/marketing/tenant/power/help', {id: $('#participantId').val()}, function(data){
                 if(data){
                     if(data.helped){
                         alert('已助力');
@@ -426,12 +426,12 @@
         "moduleName": "Helping",
         "moduleID": "0",
         "imgUrl": "{{participant.activity.shareImg || 'http://s.404.cn/tpl/static/helping/images/default.jpg'}}",
-        "timeLineLink": window.__app.settings.app.url + '/marketing/power/participant?id=' + '{{participant._id}}',
-        "sendFriendLink": window.__app.settings.app.url + '/marketing/power/participant?id=' + '{{participant._id}}',
-        "weiboLink": window.__app.settings.app.url + '/marketing/power/participant?id=' + '{{participant._id}}',
-        "tContent": "{{participant.activity.shareDesc || '我正在参加红包助力活动，小伙伴们快来帮忙呀！'}}",
-        "tTitle": "{{participant.activity.shareTitle || '红包助力，祝我成功！'}}",
-        "fTitle": "{{participant.activity.shareTitle || '我正在参加红包助力活动，小伙伴们快来帮忙呀！'}}"
+        "timeLineLink": window.__app.settings.app.url + '/marketing/tenant/power/{{participant.activity.wechatId}}/participant?id={{participant._id}}',
+        "sendFriendLink": window.__app.settings.app.url + '/marketing/tenant/power/{{participant.activity.wechatId}}/participant?id={{participant._id}}',
+        "weiboLink": window.__app.settings.app.url + '/marketing/tenant/power/{{participant.activity.wechatId}}/participant?id={{participant._id}}',
+        "tContent": "{{participant.activity.shareDesc || '我正在参加积分助力活动，小伙伴们快来帮忙呀！'}}",
+        "tTitle": "{{participant.activity.shareTitle || '积分助力，祝我成功！'}}",
+        "fTitle": "{{participant.activity.shareTitle || '我正在参加积分助力活动，小伙伴们快来帮忙呀！'}}"
     };
 </script>
 <script type="text/javascript">

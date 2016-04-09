@@ -325,7 +325,7 @@
         $('#helpTa').click(function(){
             if(helping) return;
             helping = true;
-            $.post('/api/marketing/power/help', {id: $('#participantId').val()}, function(data){
+            $.post('/api/marketing/tenant/power/help', {id: $('#participantId').val()}, function(data){
                 if(data){
                     if(data.helped){
                         alert('已助力');
