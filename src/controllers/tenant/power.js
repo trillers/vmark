@@ -56,7 +56,7 @@ module.exports = function(){
             var participant = yield powerParticipantService.loadById(id);
             if(participant) {
                 if(!participant.phone){
-                    this.redirect('/marketing/tenant/power/fullInfo?id=' + participant._id);
+                    this.redirect('/marketing/tenant/power/' + this.wechatId + '/full-info?id=' + participant._id);
                 }else {
                     if (participant.activity.lFlg === 'a') {
                         var status = yield powerParticipantService.getStatus(participant, user);
