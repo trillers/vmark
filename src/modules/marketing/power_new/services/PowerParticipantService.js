@@ -235,7 +235,7 @@ Service.prototype.scanParticipantPoster = function*(qr, wechatId, openid){
     try {
         var tenantUserService = this.context.services.tenantUserService;
         var powerPosterService = this.context.services.powerPosterService;
-        var poster = yield powerPosterService.lo(qr.sceneId);
+        var poster = yield powerPosterService.loadByWechatIdAndSceneId(wechatId, qr.sceneId);
         var user = yield tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, openid);
         participant = yield this.loadById(poster.participant);
         var res = yield this.help(participant, user);
