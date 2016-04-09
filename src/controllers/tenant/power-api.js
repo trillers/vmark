@@ -5,6 +5,7 @@ var nodeExcel = require('excel-export');
 var typeRegistry = require('../../modules/common/models/TypeRegistry');
 var UserType = typeRegistry.item('UserType');
 var util = require('../../app/util');
+var authentication = require('../../modules/tenant/auth/authentication');
 
 module.exports = function(router){
     router.post('/add', function *(){
@@ -127,7 +128,8 @@ module.exports = function(router){
     router.post('/join', function *() {
         var id = this.request.body.id;
         var phone = this.request.body.phone;
-        var user = this.session.auth && this.session.auth.user;
+        var auth = authentication.getAuthentication(this, participant.activity.wechatId);
+        var user = auth && auth.user;
         if(user) {
             //if (phone) {
                 var activity = yield powerActivityService.loadById(id);
@@ -165,9 +167,10 @@ module.exports = function(router){
 
     router.post('/help', function *() {
         var id = this.request.body.id;
-        var user = this.session.auth && this.session.auth.user;
+        var participant = yield powerParticipantService.loadById(id);
+        var auth = authentication.getAuthentication(this, participant.activity.wechatId);
+        var user = auth && auth.user;
         if(user && user.openid){
-            var participant = yield powerParticipantService.loadById(id);
             var res = yield powerParticipantService.help(participant, user);
             this.body = res;
         }else {
@@ -178,7 +181,9 @@ module.exports = function(router){
     router.post('/full-info', function *() {
         var id = this.request.body.id;
         var phone = this.request.body.phone;
-        var user = this.session.auth && this.session.auth.user;
+        var participant = yield powerParticipantService.loadById(id);
+        var auth = authentication.getAuthentication(this, participant.activity.wechatId);
+        var user = auth && auth.user;
         if(user && user.openid){
             var res = yield powerParticipantService.updateById(id, {phone: phone});
             if(res.phone === phone){
