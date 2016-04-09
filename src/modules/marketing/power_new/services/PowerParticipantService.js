@@ -266,6 +266,7 @@ Service.prototype.scanParticipantPoster = function*(qr, wechatId, openid){
 
     }catch(e){
         logger.error('scan paticipant poster err: ' + e + ', qr: ' + qr._id + ', user openid: ' + openid);
+        logger.error(e.stack);
         return wechatApi.sendText(openid, '抱歉,助力好友失败', function (err) {
             if(err) logger.error(err);
         });
