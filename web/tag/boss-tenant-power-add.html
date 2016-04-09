@@ -325,6 +325,11 @@
             var allowSubmit = self.verify(self.activity);
             if(allowSubmit){
                 addPowerActivity.newInvocation(self.activity).onDone(function(data){
+                    self.activity = {
+                        org: __page.tenantId,
+                        type: 'rp',
+                        bgImg: []
+                    }
                     riot.route('power/list');
                 }).execute();
             }
