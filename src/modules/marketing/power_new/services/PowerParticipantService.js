@@ -59,9 +59,11 @@ Service.prototype.loadById = function*(id){
     var participant = yield kv.loadParticipantByIdAsync(id);
     if(participant){
         var activity = yield powerActivityService.loadById(participant.activity);
-        var user = yield userKv.loadByIdAsync(participant.user);
-        if(!user){
+        var user = {};
+        if(activity.wechatId){
             user = yield tenantUserService.loadByWechatIdAndIdAsync(activity.wechatId, participant.user);
+        }else{
+            user = yield userKv.loadByIdAsync(participant.user);
         }
         var rank = yield kv.getParticipantRankAsync(participant.activity, participant.user);
         var helpArr = yield kv.getHelpFriendsSetAsync(id);

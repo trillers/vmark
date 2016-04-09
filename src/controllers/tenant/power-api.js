@@ -105,7 +105,8 @@ module.exports = function(router){
                 activity: activityId
             },
             populate:[{
-                path: 'user'
+                path: 'user',
+                model: 'TenantUser'
             },{
                 path: 'activity'
             }]
