@@ -96,7 +96,8 @@ module.exports = function(){
                 yield this.render('/marketing/tenant/power/join', {
                     headimgurl: user.headimgurl,
                     nickname: user.nickname,
-                    activityId: activity._id
+                    activityId: activity._id,
+                    wechatId: this.wechatId
                 });
             } else {
                 yield this.render('/marketing/tenant/power/error', {error: '页面不存在'});
@@ -111,7 +112,7 @@ module.exports = function(){
         var auth = authentication.getAuthentication(this, this.wechatId)
         var user = auth && auth.user;
         if(user && user.openid) {
-            yield this.render('/marketing/tenant/power/fullInfo', {participantId: id, headimgurl: user.headimgurl});
+            yield this.render('/marketing/tenant/power/fullInfo', {participantId: id, headimgurl: user.headimgurl, wechatId: this.wechatId});
         }else{
             yield this.render('/marketing/tenant/power/error', {error: '请用微信浏览器打开该页面'});
         }
