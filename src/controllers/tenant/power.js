@@ -25,10 +25,8 @@ module.exports = function(){
         var activity = yield powerActivityService.loadById(id);
         if (activity && activity.lFlg === 'a')  {
             var status = yield powerActivityService.getStatus(activity, user);
-            console.error('adfasdfasdfadsf');
-            console.error(status.participant);
             if (status.participant) {
-                this.redirect('/marketing/tenant/power/participant?id=' + status.participant);
+                this.redirect('/marketing/tenant/power/' + this.wechatId + '/participant?id=' + status.participant);
             } else {
                 util.extend(activity, status);
                 var participants = yield powerActivityService.getParticipantRankingList(activity._id, 200);
