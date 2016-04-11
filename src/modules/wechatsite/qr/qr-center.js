@@ -19,8 +19,10 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
             var wechatApi = (yield wechatApiCache.get(wechatId)).api;
             var auth = yield context.services.tenantAuthenticationService.signupOnSubscriptionAsync(wechatId, openid);
             var user = auth.user;
+            console.log("user is .......");
+            console.log(user);
             var media = yield context.services.tenantWechatSiteService.loadTenantWechatSiteByOriginalIdAsync(wechatId);
-            var tenantUser = yield context.services.tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, openid);
+            var tenantUser = yield context.services.tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, user.openid);
             var memberships = yield context.services.membershipService.findAsync({media: media._id, user: tenantUser._id});
             var membership = memberships && memberships[0] || null;
             var poster = yield context.services.posterService.loadByQrCodeIdAsync(qr._id);
