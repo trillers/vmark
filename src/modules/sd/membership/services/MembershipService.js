@@ -162,12 +162,15 @@ Service.prototype.addDownLine = function(id, downLineId, callback){
     callback = callback || function noop(){};
 
     Membership.findByIdAndUpdate(id, {$addToSet: {downLine: downLineId}}, {lean: true, new: true}).exec(function(err, doc){
-        membershipKv.saveById(doc._id, doc, function(err, result){
-            if(err){
-                return callback(err);
-            }
-            callback(null, result);
-        })
+        if(doc){
+            return membershipKv.saveById(doc._id, doc, function(err, result){
+                if(err){
+                    return callback(err);
+                }
+                callback(null, result);
+            })
+        }
+        callback(err, doc);
     });
 };
 
