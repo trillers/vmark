@@ -245,6 +245,7 @@ app.on('init', function(){
 
   riot.mount('boss-tenant-topbar');
   riot.mount('confirm');
+  riot.mount('showimg');
   riot.route(hash);
   if(attentionUrl){
     util.setCookie('attentionUrl', "", -1);

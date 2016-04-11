@@ -223,6 +223,9 @@ var util = {
                     app.off('confirmCancel');
                 });
         },
+        showImg: function(opts){
+            window.app.trigger('showImg', {title: opts.title, imgUrl: opts.imgUrl, width: opts.width, height: opts.height});
+        },
         alert: function(opts){
             window.app.trigger('alert', opts);
         },

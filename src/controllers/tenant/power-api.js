@@ -5,13 +5,14 @@ var nodeExcel = require('excel-export');
 var typeRegistry = require('../../modules/common/models/TypeRegistry');
 var UserType = typeRegistry.item('UserType');
 var util = require('../../app/util');
+var authentication = require('../../modules/tenant/auth/authentication');
 
 module.exports = function(router){
     router.post('/add', function *(){
         try {
             var json = {
                 org: this.request.body.org
-                ,media: this.request.body.media
+                ,wechatId: this.request.body.wechatId
                 ,type: this.request.body.type
                 , name: this.request.body.name
                 , shareTitle: this.request.body.shareTitle
@@ -37,7 +38,8 @@ module.exports = function(router){
     });
 
     router.get('/load', function *(){
-        var data = yield powerActivityService.loadAll();
+        var tenantId = this.query.tenantId;
+        var data = yield powerActivityService.loadAll(tenantId);
         this.body = data;
     });
 
@@ -52,7 +54,7 @@ module.exports = function(router){
             var id = this.request.body.id;
             var json = {
                 org: this.request.body.org
-                ,media: this.request.body.media
+                ,wechatId: this.request.body.wechatId
                 ,type: this.request.body.type
                 ,withPic: this.request.body.withPic
                 ,name: this.request.body.name
@@ -103,7 +105,8 @@ module.exports = function(router){
                 activity: activityId
             },
             populate:[{
-                path: 'user'
+                path: 'user',
+                model: 'TenantUser'
             },{
                 path: 'activity'
             }]
@@ -126,10 +129,11 @@ module.exports = function(router){
     router.post('/join', function *() {
         var id = this.request.body.id;
         var phone = this.request.body.phone;
-        var user = this.session.auth && this.session.auth.user;
+        var activity = yield powerActivityService.loadById(id);
+        var auth = authentication.getAuthentication(this, activity.wechatId);
+        var user = auth && auth.user;
         if(user) {
             //if (phone) {
-                var activity = yield powerActivityService.loadById(id);
                 if (activity) {
                     var status = yield powerActivityService.getStatus(activity, user);
                     if (status.join === 'none') {
@@ -164,9 +168,10 @@ module.exports = function(router){
 
     router.post('/help', function *() {
         var id = this.request.body.id;
-        var user = this.session.auth && this.session.auth.user;
+        var participant = yield powerParticipantService.loadById(id);
+        var auth = authentication.getAuthentication(this, participant.activity.wechatId);
+        var user = auth && auth.user;
         if(user && user.openid){
-            var participant = yield powerParticipantService.loadById(id);
             var res = yield powerParticipantService.help(participant, user);
             this.body = res;
         }else {
@@ -174,10 +179,12 @@ module.exports = function(router){
         }
     });
 
-    router.post('/fullInfo', function *() {
+    router.post('/full-info', function *() {
         var id = this.request.body.id;
         var phone = this.request.body.phone;
-        var user = this.session.auth && this.session.auth.user;
+        var participant = yield powerParticipantService.loadById(id);
+        var auth = authentication.getAuthentication(this, participant.activity.wechatId);
+        var user = auth && auth.user;
         if(user && user.openid){
             var res = yield powerParticipantService.updateById(id, {phone: phone});
             if(res.phone === phone){

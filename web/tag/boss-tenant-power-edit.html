@@ -10,7 +10,7 @@
                         <li>
                             <span>活动公众号: </span>
                             <select id="selectMedia" >
-                                <option each="{wechatMedias}" value="{_id}"  selected="{parent.activity.media === _id}">{name}</option>
+                                <option each="{wechatMedias}" value="{originalId}"  selected="{parent.activity.wechatId === originalId}">{name}</option>
                             </select>
                         </li>
                         <li id="type_select"><span>类型: </span>
@@ -320,7 +320,7 @@
             self.activity.endTime = self.endTime.value;
             self.activity.friend_help_min_power = self.friend_help_min_power.value;
             self.activity.friend_help_max_power = self.friend_help_max_power.value;
-            self.activity.media = self.selectMedia.value;
+            self.activity.wechatId = self.selectMedia.value;
             self.activity.rule = $('#rule').summernote('code');
             self.activity.desc = $('#desc').summernote('code');
             var allowSubmit = self.verify(self.activity);

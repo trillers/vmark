@@ -54,15 +54,26 @@ Service.prototype.loadById = function*(id){
     //var doc = yield PowerParticipant.findById(id, {}, {lean: true}).populate({path: 'power'}).populate({path: 'user'}).exec();
     var kv = this.context.kvs.power;
     var userKv = this.context.kvs.platformUser;
+    var tenantUserService = this.context.services.tenantUserService;
     var powerActivityService = this.context.services.powerActivityService;
     var participant = yield kv.loadParticipantByIdAsync(id);
     if(participant){
         var activity = yield powerActivityService.loadById(participant.activity);
-        var user = yield userKv.loadByIdAsync(participant.user);
+        var user = {};
+        if(activity.wechatId){
+            user = yield tenantUserService.loadByWechatIdAndIdAsync(activity.wechatId, participant.user);
+        }else{
+            user = yield userKv.loadByIdAsync(participant.user);
+        }
         var rank = yield kv.getParticipantRankAsync(participant.activity, participant.user);
         var helpArr = yield kv.getHelpFriendsSetAsync(id);
-        participant.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + activity._id;
-        participant.homePage = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participant._id;
+        if(activity.wechatId){
+            participant.participateLink = 'http://' + settings.app.domain + '/marketing/tenant/power/' + activity.wechatId + '/join?id=' + activity._id;
+            participant.homePage = 'http://' + settings.app.domain + '/marketing/tenant/power/' + activity.wechatId + '/participant?id=' + participant._id;
+        }else {
+            participant.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + activity._id;
+            participant.homePage = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participant._id;
+        }
         participant.activity = activity;
         participant.user = user;
         participant.rank = rank;
@@ -162,7 +173,11 @@ Service.prototype.getStatus = function*(participant, user){
             if (participantId) {
                 status.join = 'none';
                 status.joined = '';
-                status.homeLink = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participantId;
+                if(participant.activity.wechatId) {
+                    status.homeLink = 'http://' + settings.app.domain + '/marketing/tenant/power/' + participant.activity.wechatId + '/participant?id=' + participantId;
+                }else{
+                    status.homeLink = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participantId;
+                }
             }
             var helpArr = yield kv.getHelpFriendsSetAsync(participant.id);
             if (_.indexOf(helpArr, user.openid) !== -1) {
@@ -220,10 +235,10 @@ Service.prototype.scanParticipantPoster = function*(qr, wechatId, openid){
     var wechatApi = (yield wechatApiCache.get(wechatId)).api;
 
     try {
-        var platformUserService = this.context.services.platformUserService;
+        var tenantUserService = this.context.services.tenantUserService;
         var powerPosterService = this.context.services.powerPosterService;
-        var poster = yield powerPosterService.loadBySceneId(qr.sceneId);
-        var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
+        var poster = yield powerPosterService.loadByWechatIdAndSceneId(wechatId, qr.sceneId);
+        var user = yield tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, openid);
         participant = yield this.loadById(poster.participant);
         var res = yield this.help(participant, user);
         var reply = '';
@@ -253,6 +268,7 @@ Service.prototype.scanParticipantPoster = function*(qr, wechatId, openid){
 
     }catch(e){
         logger.error('scan paticipant poster err: ' + e + ', qr: ' + qr._id + ', user openid: ' + openid);
+        logger.error(e.stack);
         return wechatApi.sendText(openid, '抱歉,助力好友失败', function (err) {
             if(err) logger.error(err);
         });

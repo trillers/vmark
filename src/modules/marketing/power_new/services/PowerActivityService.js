@@ -22,16 +22,17 @@ Service.prototype.create = function*(jsonData){
         if(jsonData.withPic) {
             var powerPosterService = this.context.services.powerPosterService;
             var qrType = qrTypeRegistry.getQrType('ac');
-            var qr = yield qrType.createQrAsync({wechatId: jsonData.media});
+            var qr = yield qrType.createQrAsync({wechatId: jsonData.wechatId});
             obj.qrCode = qr._id;
             var posterJson = {
                 activity: obj._id,
                 posterBgImg: obj.posterBgImg,
-                type: PosterType.activity.value()
+                type: PosterType.activity.value(),
+                wechatId: jsonData.wechatId
             }
             var poster = yield powerPosterService.create(posterJson);
             obj.poster = poster._id;
-            var wechatApi = (yield wechatApiCache.get(jsonData.media)).api;
+            var wechatApi = (yield wechatApiCache.get(jsonData.wechatId)).api;
             obj.posterQrCodeUrl = wechatApi.showQRCodeURL(qr.ticket);
             yield this.updateById(obj._id, {poster: poster._id, qrCode: qr._id});
         }
@@ -54,16 +55,17 @@ Service.prototype.updateById = function*(id, update){
         var posterQrCodeUrl = '';
         if(!oldDoc.withPic && update.withPic){
             var qrType = qrTypeRegistry.getQrType('ac');
-            var qr = yield qrType.createQrAsync({wechatId: update.media});
+            var qr = yield qrType.createQrAsync({wechatId: update.wechatId});
             update.qrCode = qr._id;
             var posterJson = {
                 activity: obj._id,
                 posterBgImg: obj.posterBgImg,
-                type: PosterType.activity.value()
+                type: PosterType.activity.value(),
+                wechatId: update.wechatId
             }
             var poster = yield powerPosterService.create(posterJson);
             update.poster = poster._id;
-            var wechatApi = (yield wechatApiCache.get(update.media)).api;
+            var wechatApi = (yield wechatApiCache.get(update.wechatId)).api;
             posterQrCodeUrl = wechatApi.showQRCodeURL(qr.ticket);
         }
         var doc = yield PowerActivity.findByIdAndUpdate(id, update, {new: true}).lean().exec();
@@ -98,11 +100,13 @@ Service.prototype.loadById = function*(id){
     var doc = yield kv.loadActivityByIdAsync(id);
     if(doc) {
         doc.bgImg = doc.bgImg ? doc.bgImg.split(',') : [];
-        doc.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + doc._id;
-        doc.url = 'http://' + settings.app.domain + '/marketing/power/activity?id=' + doc._id;
-        //if(doc.withPic === 'true') {
-        //    doc.posterQrCodeUrl = yield this.context.services.powerPosterService.getPosterQrCodeUrlById(doc.poster);
-        //}
+        if(doc.wechatId){
+            doc.participateLink = 'http://' + settings.app.domain + '/marketing/tenant/power/' + doc.wechatId + '/join?id=' + doc._id;
+            doc.url = 'http://' + settings.app.domain + '/marketing/power/' + doc.wechatId + '/activity?id=' + doc._id;
+        }else {
+            doc.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + doc._id;
+            doc.url = 'http://' + settings.app.domain + '/marketing/power/activity?id=' + doc._id;
+        }
         logger.info('success load power activity by id: ' + id);
     }else{
         logger.info('failed load power activity by id: ' + id + ' err: no such activity');
@@ -113,7 +117,7 @@ Service.prototype.loadById = function*(id){
 Service.prototype.loadByQrCodeIdAndWechatId = function*(id, wechatId){
     var logger = this.context.logger;
     var PowerActivity = this.context.models.PowerActivity;
-    var doc = yield PowerActivity.findOne({qrCode: id, media: wechatId}, {}, {lean: true}).populate({path: 'poster'}).exec();
+    var doc = yield PowerActivity.findOne({qrCode: id, wechatId: wechatId}, {}, {lean: true}).populate({path: 'poster'}).exec();
     if(doc) {
         logger.info('success load power by qrCode id: ' + id + ' and wechatId: ' + wechatId);
     }else{
@@ -132,24 +136,29 @@ Service.prototype.deleteById = function*(id){
     return doc;
 }
 
-Service.prototype.loadAll = function*(wechatId){
-    var logger = this.context.logger;
-    var PowerActivity = this.context.models.PowerActivity;
-    var filter = {lFlg: 'a'};
-    if(wechatId){
-        filter.media = wechatId;
-    }
-
-    var docs = yield PowerActivity.find(filter).populate({path: 'qrCode'}).lean().exec();
-    var qrType = qrTypeRegistry.getQrType('ac');
-    docs = docs.map(function(item){
-        if(item.withPic && item.qrCode) {
-            item.qrCodeUrl = qrType.getQrCodeUrl(item.qrCode.ticket);
+Service.prototype.loadAll = function*(tenantId){
+    try {
+        var logger = this.context.logger;
+        var PowerActivity = this.context.models.PowerActivity;
+        var filter = {lFlg: 'a'};
+        if (tenantId) {
+            filter.org = tenantId;
         }
-        return item;
-    })
-    logger.info('success load all power ');
-    return docs;
+
+        var docs = yield PowerActivity.find(filter).populate({path: 'qrCode'}).lean().exec();
+        var wechatApi = null
+        for (var i = 0; i < docs.length; i++) {
+            if (docs[i].withPic && docs[i].qrCode) {
+                wechatApi = (yield wechatApiCache.get(docs[i].wechatId)).api;
+                docs[i].qrCodeUrl = wechatApi.showQRCodeURL(docs[i].qrCode.ticket);
+            }
+        }
+        logger.info('success load all power ');
+        return docs;
+    }catch(e){
+        console.error(e);
+        return [];
+    }
 }
 
 Service.prototype.getStatus = function*(activity, user){
@@ -259,13 +268,14 @@ Service.prototype.getActivityPoster = function*(qr, wechatId, openid){
         var powerPosterService = this.context.services.powerPosterService;
         var tenantUserService = this.context.services.tenantUserService;
 
-        var activity = yield powerActivityService.loadByQrCodeId(qr._id);
+        var activity = yield powerActivityService.loadByQrCodeIdAndWechatId(qr._id, wechatId);
         var user = yield tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, openid);
         var mediaId = '';
         if(!activity.poster){
             var posterJson = {
                 user: user._id,
                 activity: activity._id,
+                wechatId: wechatId,
                 posterBgImg: activity.posterBgImg,
                 type: PosterType.activity.value()
             }
@@ -318,7 +328,12 @@ Service.prototype.scanActivityPoster = function*(qr, wechatId, openid){
         var status = yield this.getStatus(activity, user);
         var reply = '', sendActivityCard = false, sendParticipantCard = false, posterMediaId = '';
         if(status.participant){
-            var homePage = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + status.participant;
+            var homePage = '';
+            if(activity.wechatId){
+                homePage = 'http://' + settings.app.domain + '/marketing/tenant/power/' + activity.wechatId + '/participant?id=' + status.participant;
+            }else {
+                homePage = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + status.participant;
+            }
             participant = {
                 homePage: homePage
             }
@@ -342,6 +357,7 @@ Service.prototype.scanActivityPoster = function*(qr, wechatId, openid){
                 user: user._id,
                 activity: activity._id,
                 participant: data._id,
+                wechatId: wechatId,
                 posterBgImg: activity.posterBgImg,
                 type: PosterType.participant.value()
             }
@@ -353,7 +369,12 @@ Service.prototype.scanActivityPoster = function*(qr, wechatId, openid){
                 headimgurl: user.headimgurl
             }
             yield this.putParticipantToMapString(activity._id, userBrief);
-            data.homePage = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + data._id;
+            if(activity.wechatId){
+                data.homePage = 'http://' + settings.app.domain + '/marketing/tenant/power/' + activity.wechatId + '/participant?id=' + data._id;
+            }else{
+                data.homePage = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + data._id;
+            }
+
             reply = '您已成功参与活动: ' + activity.name;
             participant = data;
             posterMediaId = poster.mediaId;
@@ -389,6 +410,7 @@ Service.prototype.scanActivityPoster = function*(qr, wechatId, openid){
 
     }catch(e){
         logger.error('scan activity poster err: ' + e + ', qr: ' + qr._id + ', user openid: ' + openid);
+        logger.error(e.stack);
         wechatApi.sendText(openid, '抱歉,参与活动失败', function (err) {
             if(err) logger.error(err);
         });

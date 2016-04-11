@@ -1,4 +1,5 @@
 "use strict";
+var co = require('co');
 var qrTypeRegistry = require('./QrTypeRegistries').tenantQrTypeRegistry;
 var context = require('../../../context/context');
 var typeRegistry = require('../../common/models/TypeRegistry');
@@ -80,7 +81,7 @@ activityType.onAccess(function(qr, openid, wechatId){
         try{
             var wechatApi = (yield wechatApiCache.get(wechatId)).api;
             yield tenantUserService.ensureTenantUserAsync(wechatId, openid);
-            var res = yield powerActivityService.getActivityPoster(qr, openid);
+            var res = yield powerActivityService.getActivityPoster(qr, wechatId, openid);
             wechatApi.sendText(openid, res.reply, function (err) {
                 if(err) logger.error(err);
             });
@@ -104,7 +105,7 @@ activityPosterType.onAccess(function(qr, openid, wechatId){
         try{
             yield tenantUserService.ensureTenantUserAsync(wechatId, openid);
             var powerActivityService = context.services.powerActivityService;
-            yield powerActivityService.scanActivityPoster(qr, openid);
+            yield powerActivityService.scanActivityPoster(qr, wechatId, openid);
         }
         catch(e){
             logger.error(e);
@@ -120,7 +121,7 @@ participantPosterType.onAccess(function(qr, openid, wechatId){
         try{
             yield tenantUserService.ensureTenantUserAsync(wechatId, openid);
             var powerParticipantService = context.services.powerParticipantService;
-            yield powerParticipantService.scanParticipantPoster(qr, openid);
+            yield powerParticipantService.scanParticipantPoster(qr, wechatId, openid);
         }
         catch(e){
             logger.error(e);
