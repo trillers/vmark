@@ -62,6 +62,8 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
             let myPoster = {
                 product: product
             };
+            console.warn("*********************");
+            console.warn(auth.user);
             let fetchedPoster = yield context.services.posterService.fetchAsync(myPoster, wechatId, user);
             yield wechatApi.sendImageAsync(user.openid, fetchedPoster.mediaId);
             yield wechatApi.sendTextAsync(user.openid, responseText);
