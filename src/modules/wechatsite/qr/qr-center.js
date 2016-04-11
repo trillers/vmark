@@ -23,7 +23,9 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
             console.log(user);
             var media = yield context.services.tenantWechatSiteService.loadTenantWechatSiteByOriginalIdAsync(wechatId);
             var tenantUser = yield context.services.tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, user.openid);
-            var memberships = yield context.services.membershipService.findAsync({media: media._id, user: tenantUser._id});
+            console.log("tenant user is ........");
+            console.log(tenantUser);
+            var memberships = yield context.services.membershipService.findAsync({conditions:{media: media._id, user: tenantUser._id}});
             var membership = memberships && memberships[0] || null;
             var poster = yield context.services.posterService.loadByQrCodeIdAsync(qr._id);
             var product = yield context.services.courseService.loadByIdAsync(poster.product);
