@@ -281,7 +281,7 @@
                         }
                         return;
                     }
-                    var qrTicket = res.poster.ticket;
+                    var qrTicket = res.poster.ticket || res.poster.qr.ticket;
                     window.location.href = 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=' + qrTicket;
                 }).execute();
             }
