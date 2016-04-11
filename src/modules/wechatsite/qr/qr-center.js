@@ -25,6 +25,7 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
             var membership = memberships && memberships[0] || null;
             var poster = yield context.services.posterService.loadByQrCodeIdAsync(qr._id);
             var product = yield context.services.courseService.loadByIdAsync(poster.product);
+            var responseText = null;
 
             if(!membership){
                 membership = {
@@ -38,6 +39,7 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
                 if(membership['upLine']){
                     yield context.services.membershipService.addDownLineAsync(poster.user, user._id);
                 }
+                responseText = '恭喜您成为经纪人,分享图片到朋友圈,获取丰厚回报';
             }
 
             else if(membership.type !== MembershipType.Distributor.value()){
@@ -50,6 +52,11 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
                 if(distributor['upLine']){
                     yield context.services.membershipService.addDownLineAsync(poster.user, user._id);
                 }
+                responseText = '恭喜您成为经纪人,分享图片到朋友圈,获取丰厚回报';
+            }
+
+            else{
+                responseText = '您已经成为分销商';
             }
 
             let myPoster = {
@@ -57,6 +64,7 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
             };
             let fetchedPoster = yield context.services.posterService.fetchAsync(myPoster, wechatId, user);
             yield wechatApi.sendImageAsync(user.openid, fetchedPoster.mediaId);
+            yield wechatApi.sendTextAsync(user.openid, responseText);
             let articles = [{
                 picurl: fetchedPoster.mediaId,
                 description: product.slogan,
