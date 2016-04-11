@@ -13,11 +13,11 @@
         window.prdOrNot =( __app.settings.env.NODE_ENV === "production" );
         var scripthook = document.createElement( "script" );
 
-//        if(prdOrNot){
-//            scripthook.src = "spm/build/spm/0.0.1/index.js";
-//        }else {
+        if(prdOrNot){
+            scripthook.src = "spm/build/spm/0.0.1/index.js";
+        }else {
             scripthook.src = "/web/boss-index.js";
-        //}
+        }
         document.getElementsByTagName( "head" )[0].appendChild( scripthook );
     </script>
     <!-- Bootstrap core CSS -->

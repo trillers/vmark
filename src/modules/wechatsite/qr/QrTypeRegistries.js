@@ -4,6 +4,7 @@ var Qr = require('./Qr');
 var Persistence = require('./Persistence');
 var tenantPersistence = new Persistence.TenantPersistence();
 var platformPersistence = new Persistence.PlatformPersistence();
+var Promise = require('bluebird');
 var _ = require('underscore');
 
 function QrTypeRegistry(persistence){
@@ -55,6 +56,8 @@ regProto.getQr = function(sceneId, wechatId, callback){
         }
     })
 };
+
+regProto.getQrAsync = Promise.promisify(regProto.getQr);
 
 regProto.handle = function(sceneId, openid, wechatId){
     var me = this;
