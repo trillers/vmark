@@ -16,27 +16,30 @@ var participantPosterType =    qrTypeRegistry.newType('pap', {temp: true});
 sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
     co(function*(){
         try{
-            var wechatApi = yield wechatApiCache.get(wechatId).api;
+            var wechatApi = (yield wechatApiCache.get(wechatId)).api;
             var auth = yield context.services.tenantAuthenticationService.signupOnSubscriptionAsync(wechatId, openid);
             var user = auth.user;
             var media = yield context.services.tenantWechatSiteService.loadTenantWechatSiteByOriginalIdAsync(wechatId);
-            var tenantUser = yield context.services.tenantUserService.loadByWechatIdAndOpenidAsync(wechatId, openid);
+            var tenantUser = yield context.services.tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, openid);
             var memberships = yield context.services.membershipService.findAsync({media: media._id, user: tenantUser._id});
             var membership = memberships && memberships[0] || null;
             var poster = yield context.services.posterService.loadByQrCodeIdAsync(qr._id);
             var product = yield context.services.courseService.loadByIdAsync(poster.product);
+            var responseText = null;
 
             if(!membership){
                 membership = {
                     org: media.org,
                     media: media._id,
-                    type: MembershipType.Distributor.value()
+                    type: MembershipType.Distributor.value(),
+                    user: user._id
                 };
                 poster && poster.user && (membership['upLine'] = poster.user);
                 yield context.services.membershipService.createAsync(membership);
                 if(membership['upLine']){
                     yield context.services.membershipService.addDownLineAsync(poster.user, user._id);
                 }
+                responseText = '恭喜您成为经纪人,分享图片到朋友圈,获取丰厚回报';
             }
 
             else if(membership.type !== MembershipType.Distributor.value()){
@@ -49,6 +52,11 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
                 if(distributor['upLine']){
                     yield context.services.membershipService.addDownLineAsync(poster.user, user._id);
                 }
+                responseText = '恭喜您成为经纪人,分享图片到朋友圈,获取丰厚回报';
+            }
+
+            else{
+                responseText = '您已经成为分销商';
             }
 
             let myPoster = {
@@ -56,6 +64,7 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
             };
             let fetchedPoster = yield context.services.posterService.fetchAsync(myPoster, wechatId, user);
             yield wechatApi.sendImageAsync(user.openid, fetchedPoster.mediaId);
+            yield wechatApi.sendTextAsync(user.openid, responseText);
             let articles = [{
                 picurl: fetchedPoster.mediaId,
                 description: product.slogan,

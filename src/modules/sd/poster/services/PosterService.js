@@ -17,13 +17,16 @@ Service.prototype.loadByQrCodeId = function(qrCodeId, callback){
     var posterKv = this.context.kvs.poster;
     var Poster = this.context.models.Poster;
 
-    Poster.findOne({qr: qrCodeId}, callback);
+    Poster.findOne({qr: qrCodeId})
+    .populate({
+        path: 'qr'
+    }).exec(callback);
 };
 
-Service.prototype.loadByProductIdAndWechatId = function(productId, wechatId, callback){
+Service.prototype.loadByProductIdAndWechatIdAndUserId = function(productId, wechatId, userId, callback){
     var Poster = this.context.models.Poster;
 
-    var query = Poster.find({product: productId});
+    var query = Poster.find({product: productId, user: userId});
     query.populate({
         path: 'qr',
         match: {
@@ -49,7 +52,7 @@ Service.prototype.fetch = function(posterRaw, wechatId, user, callback){
                 error.code = 801;
                 throw error;
             }
-            var posters = yield context.services.posterService.loadByProductIdAndWechatIdAsync(posterRaw.product._id, wechatId);
+            var posters = yield context.services.posterService.loadByProductIdAndWechatIdAndUserIdAsync(posterRaw.product._id, wechatId, user._id || user);
             if(posters && posters.length){
                 return callback && callback(null, posters[0]) || posters[0];
             }
