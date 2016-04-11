@@ -33,7 +33,9 @@ Service.prototype.create = function*(jsonData){
             var poster = yield powerPosterService.create(posterJson);
             obj.poster = poster._id;
             var wechatApi = (yield wechatApiCache.get(jsonData.wechatId)).api;
-            obj.posterQrCodeUrl = wechatApi.showQRCodeURL(qr.ticket);
+            var posterQrType = qrTypeRegistry.getQrType('acp');
+            var poserQr = yield posterQrType.getQr(poster.sceneId, poster.wechatId);
+            obj.posterQrCodeUrl = wechatApi.showQRCodeURL(poserQr.ticket);
             yield this.updateById(obj._id, {poster: poster._id, qrCode: qr._id});
         }
         yield kv.saveActivityAsync(obj);
