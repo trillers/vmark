@@ -34,7 +34,7 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
                     type: MembershipType.Distributor.value(),
                     user: user._id
                 };
-                poster && poster.user && poster.user === user._id && (membership['upLine'] = poster.user);
+                poster && poster.user && poster.user != user._id && (membership['upLine'] = poster.user);
                 yield context.services.membershipService.createAsync(membership);
                 if(membership['upLine']){
                     yield context.services.membershipService.addDownLineAsync(poster.user, user._id);
@@ -46,7 +46,7 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
                 let distributor = {
                     type: MembershipType.Distributor.value()
                 };
-                poster && poster.user && poster.user === user._id && (distributor['upLine'] = poster.user);
+                poster && poster.user && poster.user != user._id && (distributor['upLine'] = poster.user);
 
                 yield context.services.membershipService.updateByIdAsync(membership._id, distributor);
                 if(distributor['upLine']){
