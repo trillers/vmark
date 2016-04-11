@@ -16,5 +16,6 @@ module.exports = function(app){
         yield bus.exchange(this, next);
     });
 
+    router.get('')
     app.use(router.routes());
 };

@@ -62,5 +62,10 @@
             self.update({formShow: false});
         }
 
+        self.authorize = e => {
+            var getUserInfoUrl = '/auth/authorize?';
+            getUserInfoUrl += 'route=get_user_info&returnUrl='+location.href;
+            location.href = getUserInfoUrl;
+        }
     </script>
 </product>
