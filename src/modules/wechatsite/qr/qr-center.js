@@ -27,6 +27,9 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
             var product = yield context.services.courseService.loadByIdAsync(poster.product);
             var responseText = null;
 
+            console.log("memberships is ......");
+            console.log(memberships);
+            console.log(membership);
             if(!membership){
                 membership = {
                     org: media.org,
