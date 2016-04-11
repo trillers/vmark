@@ -1,5 +1,7 @@
 "use strict";
 var context = require('../../context/context');
+var qrTypeRegistry = require('../../modules/wechatsite/qr/QrTypeRegistries').tenantQrTypeRegistry;
+var qrType = qrTypeRegistry.getQrType('sdpp');
 var tenantOrgService = context.services.tenantOrgService;
 var courseService = context.services.courseService;
 var logger = context.logger;
@@ -154,6 +156,23 @@ module.exports = function (router) {
             let catalog = this.request.body.o;
             let catalogUpdated = yield context.services.catalogService.updateByIdAsync(catalogId, catalog);
             this.body = {catalog: catalogUpdated, error: null};
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.post('/sd/catalog/poster', function*(){
+        try{
+            let product = this.request.body.product;
+            let media = this.request.body.media;
+            var poster = yield context.services.posterService.fetchAsync({product: product}, media.originalId, this.session.auth.user);
+            if(poster){
+                return this.body = {error: null, poster: poster}
+            }
+            else{
+                return this.body = {error: 'failed to get poster'};
+            }
         }catch(e){
             logger.error(e);
             this.body = {error: e};

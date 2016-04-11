@@ -106,6 +106,8 @@ registry
     .addChild('Customer','c', '终端用户') /*参与活动用户等*/
 
     .up().item('PosterType', 'PosterType', '海报类型')
+    .addChild('sdActivity','sdap', '分销活动海报')
+    .addChild('sdParticipant','sdpp', '分销参与海报')
     .addChild('activity','acp', '活动')
     .addChild('participant','pap', '参与者')
 

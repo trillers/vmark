@@ -81,7 +81,7 @@
             }).onDone(function(res){
                 console.warn(res)
                 if(res.error){
-                    return alert("failed to search courses");
+                    return alert("failed to search distributors");
                 }
                 self.distributors= res.distributors;
                 self.trigger('ready', false);

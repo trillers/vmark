@@ -14,10 +14,10 @@ var Canvas = require('canvas')
 
 var getImgPaths = function(type, openid){
     return {
-            bgImgPath: path.join(__dirname, '../../../../public/uploads/posters/' + type + '_bgImg_' + openid + '.png'),
-            qrPath: path.join(__dirname, '../../../../public/uploads/posters/' + type + '_qr_' + openid + '.png'),
-            posterPath: path.join(__dirname, '../../../../public/uploads/posters/' + type + '_poster_' + openid + '.png'),
-            headImgPath: path.join(__dirname, '../../../../public/uploads/posters/' + type + '_headImg_' + openid + '.png')
+        bgImgPath: path.join(__dirname, '../../../../public/uploads/posters/' + type + '_bgImg_' + openid + '.png'),
+        qrPath: path.join(__dirname, '../../../../public/uploads/posters/' + type + '_qr_' + openid + '.png'),
+        posterPath: path.join(__dirname, '../../../../public/uploads/posters/' + type + '_poster_' + openid + '.png'),
+        headImgPath: path.join(__dirname, '../../../../public/uploads/posters/' + type + '_headImg_' + openid + '.png')
     }
 }
 
@@ -73,6 +73,44 @@ var drawText = function*(ctx, text, offsetX, offsetY, maxWidth){
     ctx.restore();
 }
 
+
+var drawSdActivityPoster = function*(posterMeta, wechatId, bgImg){
+    var qr = posterMeta.qr;
+    var canvas = new Canvas(600, 900);
+    var ctx = canvas.getContext('2d');
+    var wechatApi = (yield wechatApiCache.get(wechatId)).api;
+    var imgPaths = getImgPaths(PosterType.activity.value(), (new Date()).getTime());
+    yield drawImg(ctx, bgImg, imgPaths.bgImgPath, 0, 0, 600, 900);
+    yield drawImg(ctx, qr.url, imgPaths.qrPath, 150, 300, 300, 300);
+    yield drawText(ctx, '长按图片识别二维码', 300, 650, 600);
+    var mediaId = yield getPosterMediaId(wechatApi, imgPaths.posterPath, canvas);
+    return  {err: null, mediaId: mediaId, sceneId: qr.sceneId, path: imgPaths.posterPath}
+};
+
+var drawSdParticipantPoster = function*(meta){
+    try{
+        var qr = meta.qr;
+        var user = meta.user;
+        var bgImg = meta.bgImg;
+        var wechatId = meta.wechatId;
+        var canvas = new Canvas(600, 900);
+        var ctx = canvas.getContext('2d');
+        var wechatApi = (yield wechatApiCache.get(wechatId)).api;
+        var qrUrl = wechatApi.showQRCodeURL(qr.ticket);
+        var imgPaths = getImgPaths(PosterType.sdParticipant.value(), user.openid);
+        yield drawImg(ctx, bgImg, imgPaths.bgImgPath, 0, 0, 600, 900);
+        yield drawImg(ctx, user.headimgurl, imgPaths.headImgPath, 200, 100, 200, 200, 'headImg');
+        yield drawImg(ctx, qrUrl, imgPaths.qrPath, 150, 500, 300, 300);
+        yield drawText(ctx, user.nickname, 300, 350, 600);
+        yield drawText(ctx, '长按图片识别二维码', 300, 850, 600);
+        var mediaId = yield getPosterMediaId(wechatApi, imgPaths.posterPath, canvas);
+        return  {mediaId: mediaId, fsPath: imgPaths.posterPath}
+    }catch(e){
+        console.log('Failed to draw sd poster');
+        throw e;
+    }
+};
+
 var createActivityPoster = function*(wechatId, bgImg){
     var canvas = new Canvas(600, 900);
     var ctx = canvas.getContext('2d');
@@ -101,7 +139,14 @@ var createParticipantPoster = function*(wechatId, bgImg, user){
 }
 
 module.exports = {
+    getImgPaths: getImgPaths,
+    getQrCode: getQrCode,
+    drawText: drawText,
+    drawImg: drawImg,
+    getPosterMediaId: getPosterMediaId,
     createActivityPoster: createActivityPoster,
+    drawSdActivityPoster: drawSdActivityPoster,
+    drawSdParticipantPoster: drawSdParticipantPoster,
     createParticipantPoster: createParticipantPoster
 }
 

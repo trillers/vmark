@@ -1,3 +1,3 @@
-var Poster = require('./Poster');
-
-//module.exports = new Poster();
+module.exports.kvs = require('./kvs');
+module.exports.models = require('./models');
+module.exports.services = require('./services');

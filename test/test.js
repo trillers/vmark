@@ -1,10 +1,8 @@
-var _ =require('underscore');
-var doc={
-    t: {
-        t: '111'
-    }
-};
-var test = _.range(2).reduce((acc, curr)=>{
-    return acc.t;
-}, doc);
-console.log(test)
+"use strict";
+let xx = '111';
+if(true){
+    let uu = 21321;
+    xx = '222';
+}
+console.log(xx)
+console.log(uu)
