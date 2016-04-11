@@ -17,7 +17,17 @@ Service.prototype.loadByQrCodeId = function(qrCodeId, callback){
     var posterKv = this.context.kvs.poster;
     var Poster = this.context.models.Poster;
 
-    Poster.findOne({qr: qrCodeId}, callback);
+    Poster.findOne({qr: qrCodeId})
+    .populate({
+        path: 'qr'
+    }).exec(function(err, doc){
+        if(err){
+            return callback(err)
+        }
+        var obj = doc.toObject();
+        obj.ticket = obj.qr.ticket;
+        callback(null, obj);
+    });
 };
 
 Service.prototype.loadByProductIdAndWechatId = function(productId, wechatId, callback){
