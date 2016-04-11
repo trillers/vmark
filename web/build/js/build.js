@@ -2461,14 +2461,22 @@ webpackJsonp([0,1],[
 /* 2 */
 /***/ function(module, exports) {
 
+<<<<<<< HEAD
 	module.exports = function() { throw new Error("define cannot be used indirect"); };
+=======
+	module.exports = function() { throw new Error("define cannot be used indirect"); };
+>>>>>>> 8951cbdb0afbb49f1e77e33f70b4a657aaad1745
 
 
 /***/ },
 /* 3 */
 /***/ function(module, exports) {
 
+<<<<<<< HEAD
 	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;
+=======
+	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;
+>>>>>>> 8951cbdb0afbb49f1e77e33f70b4a657aaad1745
 
 	/* WEBPACK VAR INJECTION */}.call(exports, {}))
 

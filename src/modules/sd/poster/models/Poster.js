@@ -7,7 +7,8 @@ var Model = function(domainBuilder){
             user: {type: String, ref: 'TenantUser'},
             product: {type: String},
             qr: {type: String, ref: 'QrCode'},
-            mediaId: {type: String, required: true}
+            mediaId: {type: String, required: true},
+            fsPatch : {type: String}
         }).build();
     return schema.model(true);
 };

@@ -249,7 +249,6 @@ var util = {
                 if(!(o && o.key)){
                     throw new Error('expected a key')
                 }
-                console.log(this.meta)
                 if(this.meta[o.key]){
                     return;
                 }

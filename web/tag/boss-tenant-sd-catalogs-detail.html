@@ -66,6 +66,7 @@
                                                         <th>上/下架时间</th>
                                                         <th>创建时间</th>
                                                         <th>备注</th>
+                                                        <th>二维码</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
@@ -85,6 +86,9 @@
                                                         </td>
                                                         <td>
                                                             { desc }
+                                                        </td>
+                                                        <td>
+                                                            <input onclick="{parent.obtainQr(this)}" class="btn btn-default" value="获取"/>
                                                         </td>
                                                     </tr>
 
@@ -199,6 +203,7 @@
         var loadCatalogByIdAction = domain.action('loadCatalogById');
         var findCoursesAction = domain.action('findCourses');
         var updateCatalogByIdAction = domain.action('updateCatalogById');
+        var fetchSdQrByProductAndWechatSiteAction = domain.action('fetchSdQrByProductAndWechatSite');
 
         self.on('open', function(ctx){
             var catalogId = ctx.req.paramList[0];
@@ -261,6 +266,27 @@
             });
         };
 
+        self.obtainQr = function(product){
+            return function(e){
+                if(typeof self.catalog.media != 'object' || !product){
+                    return;
+                }
+                fetchSdQrByProductAndWechatSiteAction.newInvocation({
+                    product: _.toObjectFromRiot(product),
+                    media: self.catalog.media
+                }).onDone(function(res){
+                    if(res.error){
+                        if(res.error.code === 801){
+                            alert('该课程尚没有背景图片');
+                        }
+                        return;
+                    }
+                    var qrTicket = res.poster.ticket;
+                    window.location.href = 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=' + qrTicket;
+                }).execute();
+            }
+        };
+
         self.onActive = function(){
             _.widget.confirm({
                 title: '操作确认',
@@ -276,6 +302,8 @@
                 }
             });
         };
+
+
 
         self.onDelete = function(){
             _.widget.confirm({
@@ -302,6 +330,7 @@
                     return course._id === input.value
                 })[0]
             });
+            console.log(self.catalog.media);
             updateCatalogByIdAction.newInvocation({
                 id: self.catalog._id,
                 o: self.catalog

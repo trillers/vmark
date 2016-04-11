@@ -5,17 +5,18 @@ var context = require('../../../context/context');
 var typeRegistry = require('../../common/models/TypeRegistry');
 var MembershipType = typeRegistry.item('MembershipType');
 var tenantUserService = context.services.tenantUserService;
+var settings = require('@private/vmark-settings');
 var wechatApiCache = require('../../tenant/wechat/api-cache');
+var path = require('path');
 
-var distributorCreateType = qrTypeRegistry.newType('distributorCreate');
+var sdParticipantPosterType = qrTypeRegistry.newType('sdpp');
 var activityType =    qrTypeRegistry.newType('ac', {temp: true});
 var activityPosterType =    qrTypeRegistry.newType('acp', {temp: true});
 var participantPosterType =    qrTypeRegistry.newType('pap', {temp: true});
 
-distributorCreateType.onAccess(function(qr, openid, wechatId){
+sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
     co(function*(){
         try{
-            var poster = null;
             var wechatApi = yield wechatApiCache.get(wechatId).api;
             var auth = yield context.services.tenantAuthenticationService.signupOnSubscriptionAsync(wechatId, openid);
             var user = auth.user;
@@ -23,56 +24,55 @@ distributorCreateType.onAccess(function(qr, openid, wechatId){
             var tenantUser = yield context.services.tenantUserService.loadByWechatIdAndOpenidAsync(wechatId, openid);
             var memberships = yield context.services.membershipService.findAsync({media: media._id, user: tenantUser._id});
             var membership = memberships && memberships[0] || null;
+            var poster = yield context.services.posterService.loadByQrCodeIdAsync(qr._id);
             var product = yield context.services.courseService.loadByIdAsync(poster.product);
 
             if(!membership){
-                poster = yield context.services.posterService.loadByQrCodeIdAsync(qr._id);
-
                 membership = {
-                    upLine: poster.user,
                     org: media.org,
                     media: media._id,
                     type: MembershipType.Distributor.value()
                 };
+                poster && poster.user && (membership['upLine'] = poster.user);
                 yield context.services.membershipService.createAsync(membership);
-                yield context.services.membershipService.addDownLineAsync(poster.user, user._id);
+                if(membership['upLine']){
+                    yield context.services.membershipService.addDownLineAsync(poster.user, user._id);
+                }
             }
 
             else if(membership.type !== MembershipType.Distributor.value()){
                 let distributor = {
-                    upLine: poster.user,
                     type: MembershipType.Distributor.value()
                 };
+                poster && poster.user && (distributor['upLine'] = poster.user);
+
                 yield context.services.membershipService.updateByIdAsync(membership._id, distributor);
-                yield context.services.membershipService.addDownLineAsync(poster.user, user._id);
+                if(distributor['upLine']){
+                    yield context.services.membershipService.addDownLineAsync(poster.user, user._id);
+                }
             }
 
             let myPoster = {
-                user: user._id,
-                product: product._id
+                product: product
             };
-            let fetchedPoster = yield fetchPoster(myPoster);
-            yield wechatApi.sendImageAsync(fetchedPoster.url);
-            console.log('has been distributor already');
+            let fetchedPoster = yield context.services.posterService.fetchAsync(myPoster, wechatId, user);
+            yield wechatApi.sendImageAsync(user.openid, fetchedPoster.mediaId);
+            let articles = [{
+                picurl: fetchedPoster.mediaId,
+                description: product.slogan,
+                title: product.name,
+                url: 'http://' + path.join(settings.app.domain, '/sd/product?id=' + product._id)
+            }];
+            yield wechatApi.sendNewsAsync(user.openid, articles);
 
         }catch (e){
             context.logger.error('Failed to');
             context.logger.error(e);
         }
-
-        function* fetchPoster(posterMeta){
-            var poster = yield context.services.posterService.loadByProductId(posterMeta.product);
-            if(poster){
-                return poster;
-            }
-            //poster.url = drawImg();
-            return yield context.services.posterService.createAsync(posterMeta);
-        }
     })
-
 });
 
-distributorCreateType.onExpire(function(qr, openid, wechatId){});
+sdParticipantPosterType.onExpire(function(qr, openid, wechatId){});
 
 activityType.onAccess(function(qr, openid, wechatId){
     var logger = context.logger;

@@ -60,6 +60,10 @@ domain.action('updateCatalogById').onExecute(function(data){
     apiFactory.put('/tenant/sd/catalog/_' + data.id).drive(this).send(data);
 });
 
+domain.action('fetchSdQrByProductAndWechatSite').onExecute(function(data) {
+    apiFactory.post('/tenant/sd/catalog/poster').drive(this).send(data);
+});
+
 domain.action('findCatalogs').onExecute(function(data){
     var querystring = Object.keys(data.filter).map(function(k){
         return k + "=" + data.filter[k]
