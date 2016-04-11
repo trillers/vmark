@@ -36,10 +36,6 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
                 };
                 poster && poster.user && poster.user != user._id && (membership['upLine'] = poster.user);
                 yield context.services.membershipService.createAsync(membership);
-                console.warn("*****************");
-                console.warn(poster);
-                console.warn(user._id);
-                console.warn(membership['upLine']);
                 if(membership['upLine']){
                     let upLineMembership = yield context.services.membershipService.loadByUserIdAndWechatIdAsync(poster.user, wechatId);
                     yield context.services.membershipService.addDownLineAsync(upLineMembership._id, user._id);

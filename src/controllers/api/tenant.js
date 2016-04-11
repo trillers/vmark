@@ -1,4 +1,6 @@
 "use strict";
+var typeRegistry = require('../../modules/common/models/TypeRegistry');
+var MembershipType = typeRegistry.item('MembershipType');
 var context = require('../../context/context');
 var qrTypeRegistry = require('../../modules/wechatsite/qr/QrTypeRegistries').tenantQrTypeRegistry;
 var qrType = qrTypeRegistry.getQrType('sdpp');
@@ -194,12 +196,15 @@ module.exports = function (router) {
         try{
             let tenantId = this.request.query.tenant;
             let options = {
+                conditions: {
+                    type: MembershipType.Distributor.value()
+                },
                 populate: [
                     {path:'user', model: 'TenantUser'},
                     {path: 'upLine', model: 'TenantUser'}
                 ]
             };
-            let distributors = yield context.services.distributorService.findAllByTenantIdAsync(tenantId, options);
+            let distributors = yield context.services.membershipService.findAsync(tenantId, options);
             this.body = {distributors: distributors, error: null};
         } catch (e){
             logger.error(e);

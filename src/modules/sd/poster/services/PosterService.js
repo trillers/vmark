@@ -140,13 +140,6 @@ Service.prototype.create = function(json, callback){
                     posterKv.saveById(obj._id, obj, function(err, obj){
                         obj.ticket = json.qr.ticket;
                         callback(err, obj);
-                        //callback(err, {
-                        //    user: json.user,
-                        //    product: json.product,
-                        //    qr: {_id: json.qr._id, ticket: json.qr.ticket},
-                        //    mediaId: poster.mediaId,
-                        //    fsPath: poster.fsPath
-                        //});
                     });
                 }, err, result, affected);
             });
