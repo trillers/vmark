@@ -4,7 +4,6 @@ var qrTypeRegistry = require('./QrTypeRegistries').tenantQrTypeRegistry;
 var context = require('../../../context/context');
 var typeRegistry = require('../../common/models/TypeRegistry');
 var MembershipType = typeRegistry.item('MembershipType');
-var tenantUserService = context.services.tenantUserService;
 var settings = require('@private/vmark-settings');
 var wechatApiCache = require('../../tenant/wechat/api-cache');
 var path = require('path');
@@ -76,6 +75,7 @@ sdParticipantPosterType.onExpire(function(qr, openid, wechatId){});
 
 activityType.onAccess(function(qr, openid, wechatId){
     var logger = context.logger;
+    var tenantUserService = context.services.tenantUserService;
     var powerActivityService = context.services.powerActivityService;
     co(function*(){
         try{
@@ -103,6 +103,7 @@ activityPosterType.onAccess(function(qr, openid, wechatId){
     var logger = context.logger;
     co(function*(){
         try{
+            var tenantUserService = context.services.tenantUserService;
             yield tenantUserService.ensureTenantUserAsync(wechatId, openid);
             var powerActivityService = context.services.powerActivityService;
             yield powerActivityService.scanActivityPoster(qr, wechatId, openid);
@@ -119,6 +120,7 @@ participantPosterType.onAccess(function(qr, openid, wechatId){
     var logger = context.logger;
     co(function*(){
         try{
+            var tenantUserService = context.services.tenantUserService;
             yield tenantUserService.ensureTenantUserAsync(wechatId, openid);
             var powerParticipantService = context.services.powerParticipantService;
             yield powerParticipantService.scanParticipantPoster(qr, wechatId, openid);
