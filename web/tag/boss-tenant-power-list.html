@@ -23,7 +23,7 @@
                             <strong class="col-md-2">{_.date.format(new Date(startTime), 'yyyy-MM-dd')}</strong>
                             <strong class="col-md-2">{_.date.format(new Date(endTime), 'yyyy-MM-dd')}</strong>
                             <strong class="col-md-2">{__app.enums.PowerType.values[type]}</strong>
-                            <strong class="col-md-4 actionCon"><a href="{ __app.settings.app.url + '/marketing/tenant/power/' + wechatId + '/activity?id=' + _id }" target="_blank">查看</a><a href="{__app.settings.api.url + '/marketing/tenant/power/exportParticipants?id=' + _id }" target="_blank" >导出</a><a href="{ qrCodeUrl || 'javascript:void(0);' }" target="_blank" >二维码</a></strong>
+                            <strong class="col-md-4 actionCon"><a href="{ __app.settings.app.url + '/marketing/tenant/power/' + wechatId + '/activity?id=' + _id }" target="_blank">查看</a><a href="{__app.settings.api.url + '/marketing/tenant/power/exportParticipants?id=' + _id }" target="_blank" >导出</a><a data-toggle="modal" data-target="#showImg" onclick="{parent.showImg}">二维码</a></strong>
                         </li>
 
                     </ul>
@@ -42,13 +42,21 @@
         }
         .actionCon a{
             margin-left: 10px;
+            cursor: pointer;
         }
     </style>
     <script>
         "use strict"
         var self = nest.presentable(this);
         var loadPowerActivities = domain.action('loadPowerActivities');
-
+        self.showImg = function(e){
+            _.widget.showImg({
+                title: '用微信扫描下方二维码获取活动海报',
+                imgUrl: e.item.qrCodeUrl,
+                width: '300px',
+                height: '300px'
+            });
+        }
         self.on('open', function(ctx){
             loadPowerActivities.newInvocation({
                 tenantId: __page.tenantId
