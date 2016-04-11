@@ -30,7 +30,8 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
                 membership = {
                     org: media.org,
                     media: media._id,
-                    type: MembershipType.Distributor.value()
+                    type: MembershipType.Distributor.value(),
+                    user: user._id
                 };
                 poster && poster.user && (membership['upLine'] = poster.user);
                 yield context.services.membershipService.createAsync(membership);
