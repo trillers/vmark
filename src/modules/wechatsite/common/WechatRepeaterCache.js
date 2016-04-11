@@ -33,6 +33,9 @@ Cache.prototype.get = function* (wechatId, loadedInfo){
                 appid: info.appId,
                 //encodingAESKey: info.encodingAESKey
             };
+            if(info.encodingAESKey){
+                config['encodingAESKey'] = info.encodingAESKey
+            }
             try{
                 var handle = wechat(config).middleware(function*(next){
                     handler(this, next);
