@@ -67,6 +67,27 @@ Service.prototype.find = function (params, callback) {
     });
 };
 
+Service.prototype.loadByUserIdAndWechatId = function(userId, wechatId, callback){
+    var membershipKv = this.context.kvs.membership;
+    var Membership = this.context.models.Membership;
+    Membership.find({user: userId})
+    .populate({
+        path: 'media',
+        match: {
+            originalId: wechatId
+        }
+    })
+    .exec(function(err, docs){
+        if(err){
+            return callback(err)
+        }
+        if(!docs.length){
+            return callback(null, null)
+        }
+        callback(null, docs[0]);
+    })
+};
+
 Service.prototype.loadDistributorsChainById = function(id, level, callback){
     var membershipKv = this.context.kvs.membership;
     var Membership = this.context.models.Membership;

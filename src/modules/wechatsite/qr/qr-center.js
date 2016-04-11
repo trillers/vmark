@@ -41,8 +41,8 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
                 console.warn(user._id);
                 console.warn(membership['upLine']);
                 if(membership['upLine']){
-                    console.warn("(%%%%%%%%%%%%%%")
-                    yield context.services.membershipService.addDownLineAsync(poster.user, user._id);
+                    let upLineMembership = yield context.services.membershipService.loadByUserIdAndWechatIdAsync(poster.user, wechatId);
+                    yield context.services.membershipService.addDownLineAsync(upLineMembership._id, user._id);
                 }
                 responseText = '恭喜您成为经纪人,分享图片到朋友圈,获取丰厚回报';
             }
