@@ -196,6 +196,7 @@ module.exports = function (router) {
         try{
             let tenantId = this.request.query.tenant;
             let options = {
+                tenantId: tenantId,
                 conditions: {
                     type: MembershipType.Distributor.value()
                 },
@@ -204,7 +205,7 @@ module.exports = function (router) {
                     {path: 'upLine', model: 'TenantUser'}
                 ]
             };
-            let distributors = yield context.services.membershipService.findAsync(tenantId, options);
+            let distributors = yield context.services.membershipService.findAsync(options);
             this.body = {distributors: distributors, error: null};
         } catch (e){
             logger.error(e);
