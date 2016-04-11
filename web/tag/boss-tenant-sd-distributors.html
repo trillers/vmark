@@ -42,15 +42,13 @@
 
                         <tr each="{distributors}">
                             <td>
-                                <a href="#sd/distributors/_{_id}">
-                                    { user.nickname }
-                                </a>
+                                { user.nickname }
                             </td>
                             <td>
-                                { host.name }
+                                { media.name }
                             </td>
                             <td>
-                                { upLine && upLine.nickname || '顶级' }
+                                { upLine && upLine.user.nickname || '顶级' }
                             </td>
                             <td>
                                 {_.date.format(new Date(crtOn), 'yyyy-MM-dd hh点mm分')}

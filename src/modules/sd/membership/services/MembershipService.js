@@ -52,6 +52,13 @@ Service.prototype.find = function (params, callback) {
         if (limit) query.limit(limit);
     }
 
+    if(params.populates){
+        params.populates.forEach(function(populate){
+            query.populate(populate);
+        })
+
+    }
+
     if (params.conditions) {
         query.find(params.conditions);
     }

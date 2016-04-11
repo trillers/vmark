@@ -200,9 +200,20 @@ module.exports = function (router) {
                 conditions: {
                     type: MembershipType.Distributor.value()
                 },
-                populate: [
+                populates: [
                     {path:'user', model: 'TenantUser'},
-                    {path: 'upLine', model: 'TenantUser'}
+                    {
+                        path: 'upLine',
+                        model: 'Membership',
+                        populate: [{
+                            path: 'user',
+                            model: 'TenantUser'
+                        },{
+                            path: 'media',
+                            model: 'WechatMedia'
+                        }]
+                    },
+                    {path: 'media'}
                 ]
             };
             let distributors = yield context.services.membershipService.findAsync(options);

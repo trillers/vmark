@@ -14,7 +14,7 @@
         <div id="bg" onclick="{cancelAppointment}"></div>
         <div id="info">
             <input type="text" placeholder="请输入电话号码">
-            <input type="button" value="提交">
+            <input type="button" value="提交" onclick="{onSubmit}">
             <input type="button" value="取消" onclick="{cancelAppointment}">
         </div>
     </div>
@@ -62,5 +62,8 @@
             self.update({formShow: false});
         }
 
+        self.onSubmit = e => {
+            self.dispatch(actions.productActions.loadProduct(self.id));
+        }
     </script>
 </product>
