@@ -19,21 +19,14 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
             var wechatApi = (yield wechatApiCache.get(wechatId)).api;
             var auth = yield context.services.tenantAuthenticationService.signupOnSubscriptionAsync(wechatId, openid);
             var user = auth.user;
-            console.log("user is .......");
-            console.log(user);
             var media = yield context.services.tenantWechatSiteService.loadTenantWechatSiteByOriginalIdAsync(wechatId);
             var tenantUser = yield context.services.tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, user.openid);
-            console.log("tenant user is ........");
-            console.log(tenantUser);
             var memberships = yield context.services.membershipService.findAsync({conditions:{media: media._id, user: tenantUser._id}});
             var membership = memberships && memberships[0] || null;
             var poster = yield context.services.posterService.loadByQrCodeIdAsync(qr._id);
             var product = yield context.services.courseService.loadByIdAsync(poster.product);
             var responseText = null;
 
-            console.log("memberships is ......");
-            console.log(memberships);
-            console.log(membership);
             if(!membership){
                 membership = {
                     org: media.org,
@@ -41,7 +34,7 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
                     type: MembershipType.Distributor.value(),
                     user: user._id
                 };
-                poster && poster.user && (membership['upLine'] = poster.user);
+                poster && poster.user && poster.user === user._id && (membership['upLine'] = poster.user);
                 yield context.services.membershipService.createAsync(membership);
                 if(membership['upLine']){
                     yield context.services.membershipService.addDownLineAsync(poster.user, user._id);
@@ -53,7 +46,7 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
                 let distributor = {
                     type: MembershipType.Distributor.value()
                 };
-                poster && poster.user && (distributor['upLine'] = poster.user);
+                poster && poster.user && poster.user === user._id && (distributor['upLine'] = poster.user);
 
                 yield context.services.membershipService.updateByIdAsync(membership._id, distributor);
                 if(distributor['upLine']){
