@@ -38,6 +38,7 @@
 
     <script>
         this.mixin('dispatcher');
+
         this.on('mount', ()=>{
             this.on('loadCatalogById', res =>{
                 this.update({catalog: res.catalog});

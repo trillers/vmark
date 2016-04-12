@@ -58,6 +58,10 @@ domain.action('findDistributorsCountWithPendingPaymentByTenantId').onExecute(fun
     apiFactory.get('/tenant/sd/distributors/payment/count?tenant=' + data.tenant).drive(this).send();
 });
 
+domain.action('findOrderRelatedDistributor').onExecute(function(data){
+    apiFactory.get('/tenant/sd/orders/distributor?distributor=' + data.distributor + '&status=' + data.status).drive(this).send();
+});
+
 domain.action('findDistributorsByTenantId').onExecute(function(data){
     var querystring = Object.keys(data.filter).map(function(k){
         return k + "=" + data.filter[k]

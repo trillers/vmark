@@ -54,6 +54,29 @@ Service.prototype.findByTenantId = function(tenantId, params, callback){
 
 };
 
+Service.prototype.findByRelatedDistributor = function(distributorId, status, callback){
+    var Order = this.context.models.Order;
+    var done = callback || function noop(){};
+
+    console.log(distributorId);
+    console.log(status);
+    Order.find({status: status, distributors: {$all: [distributorId]}}, null, {lean: true})
+    .populate({
+        path: 'bespeak',
+        model: 'Bespeak',
+        populate: [
+            {
+                path: 'product',
+                model: 'Course'
+            },
+            {
+                path: 'user',
+                model: 'TenantUser'
+            }
+        ]
+    }).exec(done)
+};
+
 Service.prototype.finishByDistributorIdAndTenantIdAndMediaId = function(distributorId, tenantId, mediaId, callback){
     var me = this;
     var Order = this.context.models.Order;

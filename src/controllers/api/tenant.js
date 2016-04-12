@@ -1,6 +1,7 @@
 "use strict";
 var typeRegistry = require('../../modules/common/models/TypeRegistry');
 var MembershipType = typeRegistry.item('MembershipType');
+var OrderStatus = typeRegistry.item('OrderStatus');
 var context = require('../../context/context');
 var qrTypeRegistry = require('../../modules/wechatsite/qr/QrTypeRegistries').tenantQrTypeRegistry;
 var qrType = qrTypeRegistry.getQrType('sdpp');
@@ -256,6 +257,19 @@ module.exports = function (router) {
             let data = yield context.services.orderService.findAsync(options);
             this.body = {orders: data.docs, count: data.count, error: null};
         } catch (e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.get('/sd/orders/distributor', function*(){
+        try{
+            let distributorId = this.request.query.distributor;
+            let status = this.request.query.status;
+
+            let orders = yield context.services.orderService.findByRelatedDistributorAsync(distributorId, status);
+            this.body = {orders: orders, error: null};
+        }catch(e){
             logger.error(e);
             this.body = {error: e};
         }
