@@ -34,9 +34,36 @@ Service.prototype.create = function(distributorJson, callback){
     });
 };
 
-Service.prototype.findCountByTenantId = function (tenantId, callback) {
+Service.prototype.findCountByTenantId = function (tenantId, options, callback) {
     var Membership = this.context.models.Membership;
-    Membership.count({}, callback);
+    var params = {org: tenantId};
+    _.extend(params, options);
+    Membership.count(params, callback);
+};
+
+Service.prototype.ensureSignUp = function(wechatId, userId, callback){
+    var me = this;
+    var done = callback || function noop(){};
+    co(function*(){
+        try{
+            let membership = yield me.loadByUserIdAndWechatIdAsync(userId, wechatId);
+            if(membership){
+                return callback(null, membership);
+            }
+            let media = yield me.context.services.tenantWechatSiteService.loadTenantWechatSiteByOriginalIdAsync(wechatId);
+            let org = yield me.context.services.tenantOrgService.loadByWechatIdAsync(wechatId);
+            let customer = {
+                user: userId,
+                media: media._id,
+                org: org._id
+            };
+            yield me.createAsync(customer);
+            done(null, customer);
+        } catch (e){
+            me.context.logger.error('Failed to ensure membership sign up' + util.inspect(e))
+            done(e);
+        }
+    });
 };
 
 Service.prototype.find = function (params, callback) {

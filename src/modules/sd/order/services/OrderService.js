@@ -77,8 +77,8 @@ Service.prototype.find = function (params, callback) {
             query.find(params.conditions);
         }
 
-        if(params.populate) {
-            params.populate.forEach(i=>{
+        if(params.populates) {
+            params.populates.forEach(i=>{
                 query.populate(i)
             })
         }

@@ -1,6 +1,7 @@
 var typeRegistry = require('../../../common/models/TypeRegistry');
 var LiveStatus = typeRegistry.item('LiveStatus');
 var CommissionType = typeRegistry.item('CommissionType');
+var OrderStatus = typeRegistry.item('OrderStatus');
 
 var Model = function(domainBuilder){
     var schema = domainBuilder
@@ -11,7 +12,8 @@ var Model = function(domainBuilder){
         .withProperties({
             org: {type: String, ref: 'Org'},
             bespeak:      {type: String, ref: 'Bespeak'},
-            finalPrice:   {type: Number, required: true}
+            finalPrice:   {type: Number, required: true},
+            status: {type: String, enum: OrderStatus.valueList(), default: OrderStatus.unFinish.value(), required: true}
         })
         .build();
     return schema.model(true);

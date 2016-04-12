@@ -105,6 +105,18 @@ app.routeView('sd/catalogs/_:id', nest.viewable({
   }
 }));
 
+app.routeView('sd/customers', nest.viewable({
+    name: 'boss-tenant-sd-customers',
+    mount: function(ctx){
+        var tags = riot.mount('boss-tenant-sd-customers', {filter: ctx.req.query, app: this.parent});
+        this.tag = tags[0];
+    },
+    route: function(ctx){
+        this.context = ctx;
+        this.tag.trigger('open', ctx.req.query);
+    }
+}));
+
 app.routeView('sd/distributors', nest.viewable({
   name: 'boss-tenant-sd-distributors',
   mount: function(ctx){

@@ -19,6 +19,24 @@ Service.prototype.createOrganizationalTenant = function(orgJson, callback){
     this.createTenant(orgJson, callback);
 };
 
+Service.prototype.loadByWechatId = function(wechatId, callback){
+    var me = this;
+    me.context.services.tenantWechatSiteService.loadTenantWechatSiteByOriginalId(wechatId, function(err, media){
+        if(err){
+            return callback(err);
+        }
+        if(typeof media.org === 'object'){
+            return callback(null, media.org)
+        }
+        else if(typeof media.org === 'string'){
+            me.loadById(media.org, callback);
+        }
+        else{
+            callback(new Error('Failed to load tenant by wechat id, media has no org field'));
+        }
+    })
+};
+
 Service.prototype.createTenant = function(orgJson, callback){
     orgJson.administrative = false;
     this.create(orgJson, callback);

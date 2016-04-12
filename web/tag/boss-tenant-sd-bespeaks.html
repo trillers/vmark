@@ -143,7 +143,14 @@
                 bespeak: self.currBespeak,
                 finalPrice : self.finalPrice.value.trim()
             }).onDone(function(res){
-                console.warn(res)
+                if(res.error){
+                    alert('成单失败');
+                    return
+                }
+                self.currBespeak = null;
+                self.bespeaks = self.bespeaks.filter(function(bespeak){
+                    return bespeak._id != res.order.bespeak;
+                })
             }).execute();
         };
         self.onSelect = function(e){

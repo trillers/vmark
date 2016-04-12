@@ -158,6 +158,8 @@ module.exports = function (router) {
         try{
             let catalogId = this.params.id;
             let catalog = this.request.body.o;
+            console.log("**************")
+            console.log(catalog);
             let catalogUpdated = yield context.services.catalogService.updateByIdAsync(catalogId, catalog);
             this.body = {catalog: catalogUpdated, error: null};
         }catch(e){
@@ -197,6 +199,8 @@ module.exports = function (router) {
     router.post('/sd/bespeak', function*(){
         try{
             let bespeak = this.request.body;
+            let wechatsite = yield context.services.tenantWechatSiteService.loadByIdAsync(bespeak.media);
+            yield context.services.membershipService.ensureSignUpAsync(wechatsite.originalId, bespeak.user._id);
             yield context.services.bespeakService.createAsync({
                 product: bespeak.product._id,
                 media: bespeak.media,
@@ -258,8 +262,7 @@ module.exports = function (router) {
 
             yield context.services.bespeakService.removeByIdAsync(wechatId, order.bespeak._id);
 
-            console.log(order);
-            let userId = order.bespeak.user._id || order.bespeak.user;
+            let userId = order.bespeak.user._id;
             let membership = yield context.services.membershipService.loadByUserIdAndWechatIdAsync(userId, wechatId);
             let isDistributor = membership.type && (membership.type === 'd');
             if(isDistributor){
@@ -291,12 +294,62 @@ module.exports = function (router) {
         }
     });
 
+    router.get('/sd/customers/count', function*() {
+        try {
+            let tenantId = this.request.query.tenant;
+            let count = yield context.services.membershipService.findCountByTenantIdAsync(tenantId, {type: MembershipType.Customer.value()});
+            this.body = {error: null, count: count};
+        }catch (e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
     router.get('/sd/distributors/count', function*() {
         try {
             let tenantId = this.request.query.tenant;
-            let count = yield context.services.membershipService.findCountByTenantIdAsync(tenantId);
+            let count = yield context.services.membershipService.findCountByTenantIdAsync(tenantId, {type: MembershipType.Distributor.value()});
             this.body = {error: null, count: count};
         }catch (e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.get('/sd/customers', function*(){
+        try{
+            let tenantId = this.request.query.tenant;
+            let options = {
+                page: {
+                    no: this.request.query.no,
+                    size: this.request.query.size
+                },
+                conditions: {
+                    org: tenantId,
+                    $or : [
+                        {type: MembershipType.Customer.value()},
+                        {type: MembershipType.Both.value()}
+                    ]
+                },
+                populates: [
+                    {path:'user', model: 'TenantUser'},
+                    {
+                        path: 'upLine',
+                        model: 'Membership',
+                        populate: [{
+                            path: 'user',
+                            model: 'TenantUser'
+                        },{
+                            path: 'media',
+                            model: 'WechatMedia'
+                        }]
+                    },
+                    {path: 'media'}
+                ]
+            };
+            let customers = yield context.services.membershipService.findAsync(options);
+            this.body = {customers: customers, error: null};
+        } catch (e){
             logger.error(e);
             this.body = {error: e};
         }
