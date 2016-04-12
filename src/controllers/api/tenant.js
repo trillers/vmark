@@ -243,8 +243,8 @@ module.exports = function (router) {
                         ]
                     }]
             };
-            let orders = yield context.services.orderService.findAsync(options);
-            this.body = {orders: orders, error: null};
+            let data = yield context.services.orderService.findAsync(options);
+            this.body = {orders: data.docs, count: data.count, error: null};
         } catch (e){
             logger.error(e);
             this.body = {error: e};

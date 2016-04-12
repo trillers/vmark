@@ -86,12 +86,16 @@ Service.prototype.find = function (params, callback) {
         query.lean(true);
         var docs = yield query.exec();
         var count = yield Order.count(params.conditions).exec();
-        if(callback) callback(null, docs, count);
+        var data = {
+            docs: docs,
+            count: count
+        }
+        if(callback) callback(null, data);
 
     }).catch(function(e){
         logger.error('find orders error: ' + e);
         logger.error(e.stack);
-        if(callback) callback(e, null, 0);
+        if(callback) callback(e, null);
     })
 };
 

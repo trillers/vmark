@@ -86,7 +86,7 @@ registry
     .addChild('Light','light', '浅色')
 
     .up().item('OrderStatus', 'OrderStatus', '订单状态')
-    .addChild('finish','f', '匿名')
+    .addChild('finish','f', '已结算')
     .addChild('unFinish','uf', '未结算')
 
     .up().item('UserStatus', 'UserStatus', '用户状态')
