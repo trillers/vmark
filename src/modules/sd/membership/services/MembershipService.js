@@ -33,6 +33,11 @@ Service.prototype.create = function(distributorJson, callback){
     });
 };
 
+Service.prototype.findCountByTenantId = function (tenantId, callback) {
+    var Membership = this.context.models.Membership;
+    Membership.count({}, callback);
+};
+
 Service.prototype.find = function (params, callback) {
     var Membership = this.context.models.Membership;
     var query = Membership.find();

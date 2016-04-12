@@ -7,27 +7,60 @@ var Service = function(context){
 };
 
 Service.prototype.create = function(json, callback){
-    var catalogKv = this.context.kvs.catalog;
-    var Catalog = this.context.models.Catalog;
-    var catalog = new Catalog(json);
-    catalog.save(function (err, result, affected) {
-        cbUtil.logCallback(
-            err,
-            'Fail to save catalog: ' + err,
-            'Succeed to save catalog');
+    var bespeakKv = this.context.kvs.bespeak;
+    var Bespeak = this.context.models.Bespeak;
+    var tenantWechatSiteService = this.context.services.tenantWechatSiteService;
+    var bespeak = new Bespeak(json);
+    tenantWechatSiteService.loadById(json.media, function(err, doc){
+        if(err){
+            return callback(err);
+        }
+        bespeak.save(function (err, result, affected) {
+            cbUtil.logCallback(
+                err,
+                'Fail to save bespeak: ' + err,
+                'Succeed to save bespeak');
 
-        cbUtil.handleAffected(function(err, doc){
-            var obj = doc.toObject({virtuals: true});
-            catalogKv.saveById(obj, function(err, obj){
-                if(callback) callback(err, obj);
-            });
-        }, err, result, affected);
-    });
+            cbUtil.handleAffected(function(err, doc){
+                var obj = doc.toObject({virtuals: true});
+                bespeakKv.saveById(doc.originalId, obj._id, obj, function(err, obj){
+                    if(callback) callback(err, obj);
+                });
+            }, err, result, affected);
+        });
+    })
+
+};
+
+Service.prototype.findByTenantId = function(tenantId, params, callback){
+    var me = this;
+    var Bespeak = this.context.models.Bespeak;
+
+    var query = Bespeak.find();
+    query
+        .populate({
+            path: 'product',
+            match:{
+                tenant: tenantId
+            }
+        })
+        .populate({
+            path: 'user',
+            model: 'TenantUser'
+        })
+        .exec(function(err, docs){
+        if(err){
+            me.context.logger.error(err);
+            return callback(err);
+        }
+        callback(null, docs);
+    })
+
 };
 
 Service.prototype.find = function (params, callback) {
-    var Catalog = this.context.models.Catalog;
-    var query = Catalog.find();
+    var Bespeak = this.context.models.Bespeak;
+    var query = Bespeak.find();
 
     if (params.options) {
         query.setOptions(params.options);
@@ -69,22 +102,22 @@ Service.prototype.loadFullInfoById = function(id, callback){
     var Catalog = this.context.models.Catalog;
     Catalog.findById(id, null, {lean: true})
         .populate({path: 'tenant'})
-        .populate({path: 'media', model:'WechatMedia'})
+        .populate({path: 'media'})
         .populate({path: 'products'})
         .exec(callback);
 };
 
 Service.prototype.loadById = function(id, callback){
-    var catalogKv = this.context.kvs.catalog;
-    var Catalog = this.context.models.Catalog;
-    catalogKv.loadById(id, function(e, o){
+    var bespeakKv = this.context.kvs.bespeak;
+    var Bespeak = this.context.models.Bespeak;
+    bespeakKv.loadById(id, function(e, o){
         if(e){
             return callback(e);
         }
         if(o){
             return callback(null, o);
         }
-        Catalog.findById(id, null, {lean: true}).exec(callback);
+        Bespeak.findById(id, null, {lean: true}).exec(callback);
     });
 };
 

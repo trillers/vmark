@@ -70,7 +70,7 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
                 picurl: fetchedPoster.mediaId,
                 description: product.slogan,
                 title: product.name,
-                url: 'http://' + path.join(settings.app.domain, '/sd/product?id=' + product._id)
+                url: 'http://' + path.join(settings.app.domain, '/sd/product?id=' + product._id + '&media=' + media._id)
             }];
             yield wechatApi.sendNewsAsync(user.openid, articles);
 

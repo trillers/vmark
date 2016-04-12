@@ -23,10 +23,11 @@ module.exports = function(){
 
     router.get('/product', function *(){
         let productId = this.request.query.id;
+        let mediaId = this.request.query.media;
         if(!productId){
             return yield this.render('404');
         }
-        yield this.render('marketing/sd/product', {id: productId});
+        yield this.render('marketing/sd/product', {id: productId, media: mediaId});
     });
 
     return router.routes();

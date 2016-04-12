@@ -60,6 +60,15 @@
 
                         </tbody>
                     </table>
+                    <div>
+                        <input onclick="{prevPage}" type="button" class="btn btn-default" value="上一页"/>
+                        <span>当前页: </span>
+                        <span>{filter.no}</span>,
+                        <span>共( {totalPage} )页: </span>
+                        <input onclick="{nextPage}" type="button" class="btn btn-default" value="下一页"/>
+                        <input name="pageTo" type="number" value=""/>
+                        <input onclick="{jumpToPage}" type="button" class="btn btn-default" value="跳转"/>
+                    </div>
                 </div>
             </div>
         </div>
@@ -69,15 +78,34 @@
         "use strict"
         var self = nest.presentable(this);
         var findDistributorsByTenantIdAction = domain.action('findDistributorsByTenantId');
+        var findDistributorsCountByTenantIdAction = domain.action('findDistributorsCountByTenantId');
         self.distributors = [];
-        self.filter = {};
-        console.log(__app.enums);
+        self.totalPage = 1;
+        self.filter = {
+            tenant: __page.tenantId,
+            no: 1,
+            size: 10
+        };
+        self.on('mount', function(){
+            findDistributorsByTenantIdAction.onDone(function(res){
+                self.distributors= res.distributors;
+                self.update();
+            })
+        });
         self.on('open', function(){
+            findDistributorsCountByTenantIdAction.newInvocation({
+                tenant: __page.tenantId
+            })
+            .onDone(function(res){
+                if(res.error){
+                    return alert("failed to search distributors");
+                }
+                self.totalPage = Math.ceil(res.count/self.filter.size);
+                self.update();
+            }).execute();
             findDistributorsByTenantIdAction.newInvocation({
-                tenant: __page.tenantId,
                 filter: self.filter
             }).onDone(function(res){
-                console.warn(res)
                 if(res.error){
                     return alert("failed to search distributors");
                 }
@@ -87,15 +115,9 @@
             }).execute();
         });
         self.onSearch = function(e){
-            findDistributorsByTenantIdAction.newInvocation({
-                tenant: __page.tenantId,
+            findDistributorsByTenantIdAction.execute({
                 filter: self.filter
-            }).onDone(function(res){
-                if(res.error){
-                    return alert("failed to search courses");
-                }
-                self.update({distributors: res.distributors});
-            }).execute();
+            });
         };
         self.onSelect = function(e){
             var liveStatus = self.coursesStatus.value;
@@ -106,6 +128,41 @@
                 return;
             }
             self.filter.liveStatus = liveStatus;
+        };
+        self.prevPage = function(e){
+            var currPage = self.filter.no;
+            if(currPage <= 1){
+                return;
+            }
+            self.filter.no = --currPage;
+            findDistributorsByTenantIdAction.execute({
+                filter: self.filter
+            });
+        };
+        self.nextPage = function(e){
+            var currPage = self.filter.no;
+            if(currPage >= self.totalPage){
+                return;
+            }
+            self.filter.no = ++currPage;
+            findDistributorsByTenantIdAction.execute({
+                filter: self.filter
+            });
+        };
+        self.jumpToPage = function(e){
+            console.log(typeof self.pageTo.value)
+            if(self.pageTo.value.trim() === ''){
+                alert('请输入页码');
+                return;
+            }
+            if(self.pageTo.value <= 0 || self.pageTo.value > self.totalPage){
+                alert('页码非法');
+                return;
+            }
+            self.filter.no = parseInt(self.pageTo.value, 10);
+            findDistributorsByTenantIdAction.execute({
+                filter: self.filter
+            });
         }
     </script>
 </boss-tenant-sd-distributors>

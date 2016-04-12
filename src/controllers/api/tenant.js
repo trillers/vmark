@@ -192,11 +192,58 @@ module.exports = function (router) {
         }
     });
 
+    router.post('/sd/bespeak', function*(){
+        try{
+            let bespeak = this.request.body;
+            yield context.services.bespeakService.createAsync({
+                product: bespeak.product._id,
+                media: bespeak.media,
+                user: bespeak.user._id,
+                telephone: bespeak.telephone
+            });
+            this.body = {error: null}
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e}
+        }
+    });
+
+    router.get('/sd/bespeak', function*(){
+        try{
+            let query = this.request.query;
+            let tenantId = query.tenant;
+            delete query['tenant'];
+            let params = {
+                conditions: query
+            };
+            let bespeaks = yield context.services.bespeakService.findByTenantIdAsync(tenantId, params);
+            this.body = {bespeaks: bespeaks, error: null};
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.get('/sd/distributors/count', function*() {
+        try {
+            let tenantId = this.request.query.tenant;
+            let count = yield context.services.membershipService.findCountByTenantIdAsync(tenantId);
+            this.body = {error: null, count: count};
+        }catch (e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
     router.get('/sd/distributors', function*(){
         try{
             let tenantId = this.request.query.tenant;
             let options = {
                 tenantId: tenantId,
+                page: {
+                    no: this.request.query.no,
+                    size: this.request.query.size
+                },
                 conditions: {
                     type: MembershipType.Distributor.value()
                 },
