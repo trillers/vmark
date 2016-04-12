@@ -10,6 +10,7 @@ var Model = function(domainBuilder){
         .withCreatedOn()
         .withRank()
         .withProperties({
+            distributors: {type: String, ref: 'Membership'},
             bespeak:      {type: String, ref: 'Bespeak'},
             finalPrice:   {type: Number, required: true}
         })
