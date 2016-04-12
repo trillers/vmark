@@ -217,6 +217,7 @@ module.exports = function (router) {
     router.get('/sd/orders', function*(){
         try{
             let tenantId = this.request.query.tenant;
+            let status = this.request.query.status;
             let options = {
                 page: {
                     no: this.request.query.no,
@@ -243,6 +244,9 @@ module.exports = function (router) {
                         ]
                     }]
             };
+            if(status){
+                options.conditions.status = status;
+            }
             let data = yield context.services.orderService.findAsync(options);
             this.body = {orders: data.docs, count: data.count, error: null};
         } catch (e){
@@ -256,19 +260,40 @@ module.exports = function (router) {
             let order = this.request.body;
             let tenantWechatSite = yield context.services.tenantWechatSiteService.loadByIdAsync(order.bespeak.media);
             let wechatId = tenantWechatSite.originalId;
+            let distributor = null;
             order.org = tenantWechatSite.org;
-
-            let orderPersisted = yield context.services.orderService.createAsync(wechatId, order);
-
-            yield context.services.bespeakService.removeByIdAsync(wechatId, order.bespeak._id);
 
             let userId = order.bespeak.user._id;
             let membership = yield context.services.membershipService.loadByUserIdAndWechatIdAsync(userId, wechatId);
+
             let isDistributor = membership.type && (membership.type === 'd');
             if(isDistributor){
-                let distributor = yield context.services.membershipService.loadDistributorsChainByIdAsync(membership._id);
+                distributor = yield context.services.membershipService.loadDistributorsChainByIdAsync(membership._id);
                 yield context.services.membershipService.splitBillAsync(distributor, order.bespeak.product, order.finalPrice, 3);
             }
+            let orderMeta = {
+                bespeak: order.bespeak._id,
+                org: order.org,
+                finalPrice: order.finalPrice
+            };
+            if(distributor){
+                let distributors = [];
+                let recurPushDistributors = function(distributor){
+                    if(!distributor.upLine){
+                        return;
+                    }
+                    if(typeof distributor.upLine === 'string'){
+                        distributors.push(distributor.upLine);
+                    }else{
+                        distributors.push(distributor.upLine._id);
+                    }
+                    recurPushDistributors(distributor.upLine);
+                };
+                recurPushDistributors(distributor);
+                orderMeta['distributors'] = distributors;
+            }
+            let orderPersisted = yield context.services.orderService.createAsync(wechatId, order);
+            yield context.services.bespeakService.removeByIdAsync(wechatId, order.bespeak._id);
 
             this.body = {order: orderPersisted, error: null};
         }catch(e){

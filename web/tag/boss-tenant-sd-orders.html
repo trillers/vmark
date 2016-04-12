@@ -12,12 +12,11 @@
                     <form class="form-inline">
                         <div class="col-md-6 col-lg-6">
                             <div class="form-group">
-                                <label for="catalogStatus">状态</label>
-                                <select id="catalogStatus" class="form-control" onchange="{onSelect}">
+                                <label for="orderStatus">状态</label>
+                                <select id="orderStatus" class="form-control" onchange="{onSelect}">
                                     <option value="">全部状态</option>
-                                    <option value="{__app.enums.LifeFlag.names.Active}">已激活</option>
-                                    <option value="{__app.enums.LifeFlag.names.Inactive}">已锁定</option>
-                                    <option value="{__app.enums.LifeFlag.names.Deleted}">已删除</option>
+                                    <option value="{__app.enums.OrderStatus.names.finish}">已结算</option>
+                                    <option value="{__app.enums.OrderStatus.names.unFinish}">未结算</option>
                                 </select>
                             </div>
                             <input onclick="{onSearch}" class="btn btn-primary" type="button" value="查询"/>
@@ -43,10 +42,10 @@
                                 {bespeak.user.nickname}
                             </td>
                             <td>
-                                { __app.enums.OrderStatus.values[status] }
+                                {bespeak.product.name}
                             </td>
                             <td>
-                                {bespeak.product.name}
+                                { __app.enums.OrderStatus.values[status] }
                             </td>
                             <td>
                                 { finalPrice }
@@ -54,9 +53,15 @@
                             <td>
                                 {_.date.format(new Date(crtOn), 'yyyy-MM-dd hh点mm分')}
                             </td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
+                            <td>
+                                {parent.getDistributorMoney(distributors[0], bespeak.product, 1)}
+                            </td>
+                            <td>
+                                {parent.getDistributorMoney(distributors[1], bespeak.product, 2)}
+                            </td>
+                            <td>
+                                {parent.getDistributorMoney(distributors[2], bespeak.product, 2)}
+                            </td>
 
                         </tr>
 
@@ -75,7 +80,6 @@
         self.filter = {
             tenant: __page.tenantId
         };
-        console.log(__app.enums)
         self.on('open', function(){
             findOrdersAction.newInvocation({
                 filter: self.filter
@@ -88,26 +92,34 @@
                 self.trigger('view-route-to');
             }).execute();
         });
+
         self.onSearch = function(e){
-            findCatalogsAction.newInvocation({
+            findOrdersAction.newInvocation({
                 filter: self.filter
             }).onDone(function(res){
-                console.warn(res);
                 if(res.error){
-                    return alert("failed to search courses");
+                    return alert("failed to search orders");
                 }
-                self.update({catalogs: res.catalogs});
+                self.update({orders: res.orders});
             }).execute();
         };
+
         self.onSelect = function(e){
-            var lFlg = self.catalogStatus.value;
-            if(!lFlg){
-                if(self.filter.hasOwnProperty('lFlg')){
-                    delete self.filter['lFlg'];
+            var status = self.orderStatus.value;
+            if(!status){
+                if(self.filter.hasOwnProperty('status')){
+                    delete self.filter['status'];
                 }
                 return;
             }
-            self.filter.lFlg = lFlg;
+            self.filter.status = status;
+        }
+
+        self.getDistributorMoney = function(user, course, level){
+            console.error(user);
+            console.log(course)
+            console.log(level);
+            return 4
         }
     </script>
 </boss-tenant-sd-orders>
