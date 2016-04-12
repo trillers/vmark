@@ -43,6 +43,21 @@ domain.action('findCustomersByTenantId').onExecute(function(data){
     apiFactory.get('/tenant/sd/customers?' + querystring).drive(this).send();
 });
 
+domain.action('checkout').onExecute(function(data){
+    apiFactory.post('/tenant/sd/distributors/checkout').drive(this).send(data);
+});
+
+domain.action('findDistributorsWithPendingPaymentByTenantId').onExecute(function(data){
+    var querystring = Object.keys(data.filter).map(function(k){
+        return k + "=" + data.filter[k]
+    }).join("&");
+    apiFactory.get('/tenant/sd/distributors/payment?' + querystring).drive(this).send();
+});
+
+domain.action('findDistributorsCountWithPendingPaymentByTenantId').onExecute(function(data){
+    apiFactory.get('/tenant/sd/distributors/payment/count?tenant=' + data.tenant).drive(this).send();
+});
+
 domain.action('findDistributorsByTenantId').onExecute(function(data){
     var querystring = Object.keys(data.filter).map(function(k){
         return k + "=" + data.filter[k]

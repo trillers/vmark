@@ -26,35 +26,35 @@
                 </div>
                 <div class="row" style="margin-top: 10px">
                     <span if="{!distributors.length}">
-                        <strong>该机构尚没有任何分销商.</strong>
+                        <strong>尚没有未结款项.</strong>
                     </span>
                     <table if="{distributors.length}" class="table table-striped">
                         <thead>
                         <tr>
-                            <th>名称</th>
+                            <th>分销商</th>
                             <th>所属公众号</th>
-                            <th>上线分销商</th>
-                            <th>创建时间</th>
-                            <th>备注</th>
+                            <th>手机号</th>
+                            <th>待结款</th>
+                            <th>结款</th>
                         </tr>
                         </thead>
                         <tbody>
 
                         <tr each="{distributors}">
                             <td>
-                                { user.nickname }
+                                <a data-toggle="modal" data-target="#ordersInDistributors" onclick="{parent.onClickDistributor}">{ user.nickname }</a>
                             </td>
                             <td>
                                 { media.name }
                             </td>
                             <td>
-                                { upLine && upLine.user.nickname || '顶级' }
+                                { telephone }
                             </td>
                             <td>
-                                {_.date.format(new Date(crtOn), 'yyyy-MM-dd hh点mm分')}
+                                { accountBalance || '顶级' }
                             </td>
                             <td>
-                                { desc }
+                                <input onclick="{parent.onCheckout}" data-toggle="modal" data-target="#modal" type="button" class="btn btn-default" value="结款"/>
                             </td>
                         </tr>
 
@@ -70,15 +70,63 @@
                         <input onclick="{jumpToPage}" type="button" class="btn btn-default" value="跳转"/>
                     </div>
                 </div>
+
+
+                <div id="ordersInDistributors" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title">相关订单</h4>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>名称</th>
+                                        <th>状态</th>
+                                        <th>上/下架时间</th>
+                                        <th>创建时间</th>
+                                        <th>备注</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    <tr each="{courses}">
+                                        <td>
+                                            {name}
+                                        </td>
+                                        <td>
+                                            { __app.enums.LiveStatus.values[liveStatus] }
+                                        </td>
+                                        <td>
+                                            { actionTime && _.date.format(new Date(actionTime), 'yyyy-MM-dd hh点mm分') || '空'}
+                                        </td>
+                                        <td>
+                                            {_.date.format(new Date(crtOn), 'yyyy-MM-dd hh点mm分')}
+                                        </td>
+                                        <td>
+                                            { desc }
+                                        </td>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal-dialog -->
+                </div>
             </div>
         </div>
     </div>
     <style></style>
     <script>
-        "use strict"
+        "use strict";
         var self = nest.presentable(this);
-        var findDistributorsByTenantIdAction = domain.action('findDistributorsByTenantId');
-        var findDistributorsCountByTenantIdAction = domain.action('findDistributorsCountByTenantId');
+        var findDistributorsWithPendingPaymentByTenantIdAction = domain.action('findDistributorsWithPendingPaymentByTenantId');
+        var findDistributorsCountWithPendingPaymentByTenantIdAction = domain.action('findDistributorsCountWithPendingPaymentByTenantId');
+        var findOrdersAction = domain.action('findOrders');
+        var checkoutAction = domain.action('checkout');
         self.distributors = [];
         self.totalPage = 1;
         self.filter = {
@@ -86,14 +134,20 @@
             no: 1,
             size: 10
         };
+        self.ordersFilter = {
+            tenant: __page.tenantId,
+            conditions: {
+
+            }
+        };
         self.on('mount', function(){
-            findDistributorsByTenantIdAction.onDone(function(res){
+            findDistributorsWithPendingPaymentByTenantIdAction.onDone(function(res){
                 self.distributors= res.distributors;
                 self.update();
             })
         });
         self.on('open', function(){
-            findDistributorsCountByTenantIdAction.newInvocation({
+            findDistributorsCountWithPendingPaymentByTenantIdAction.newInvocation({
                 tenant: __page.tenantId
             })
             .onDone(function(res){
@@ -103,7 +157,7 @@
                 self.totalPage = Math.ceil(res.count/self.filter.size);
                 self.update();
             }).execute();
-            findDistributorsByTenantIdAction.newInvocation({
+            findDistributorsWithPendingPaymentByTenantIdAction.newInvocation({
                 filter: self.filter
             }).onDone(function(res){
                 if(res.error){
@@ -115,8 +169,35 @@
             }).execute();
         });
         self.onSearch = function(e){
-            findDistributorsByTenantIdAction.execute({
+            findDistributorsWithPendingPaymentByTenantIdAction.execute({
                 filter: self.filter
+            });
+        };
+        self.onClickDistributor = function(e){
+            console.log(e.item);
+        };
+        self.onCheckout = function(e){
+            _.widget.confirm({
+                title: '操作确认',
+                content: '你已经为 [ ' + e.item.user.nickname + ' ] 结清款项了吗？',
+                callback: function(){
+                    checkoutAction
+                        .newInvocation({
+                            media: e.item.media,
+                            distributor: e.item._id,
+                            tenant: __page.tenantId
+                        })
+                        .onDone(function(res){
+                            if(res.error){
+                                alert('借款失败,请联系管理员');
+                                return;
+                            }
+                            findDistributorsWithPendingPaymentByTenantIdAction.execute({
+                                filter: self.filter
+                            });
+                        })
+                        .execute();
+                }
             });
         };
         self.onSelect = function(e){
@@ -135,7 +216,7 @@
                 return;
             }
             self.filter.no = --currPage;
-            findDistributorsByTenantIdAction.execute({
+            findDistributorsWithPendingPaymentByTenantIdAction.execute({
                 filter: self.filter
             });
         };
@@ -145,7 +226,7 @@
                 return;
             }
             self.filter.no = ++currPage;
-            findDistributorsByTenantIdAction.execute({
+            findDistributorsWithPendingPaymentByTenantIdAction.execute({
                 filter: self.filter
             });
         };
@@ -160,7 +241,7 @@
                 return;
             }
             self.filter.no = parseInt(self.pageTo.value, 10);
-            findDistributorsByTenantIdAction.execute({
+            findDistributorsWithPendingPaymentByTenantIdAction.execute({
                 filter: self.filter
             });
         }
