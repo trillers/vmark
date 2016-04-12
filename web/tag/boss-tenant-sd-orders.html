@@ -131,9 +131,9 @@
             var commissionType = 'upLine' + level + 'CommissionType';
             var commissionValue = 'upLine' + level + 'CommissionValue';
             if(course[commissionType] === __app.enums.CommissionType.names.Percent){
-                money = (parseInt(finalPrice)*parseFloat(course[commissionValue])).toFixed(2);
+                money = (parseFloat(finalPrice)*parseFloat(course[commissionValue])).toFixed(2);
             }else if(course[commissionType] === __app.enums.CommissionType.names.Cash){
-                money = parseInt(course[commissionValue]);
+                money = parseFloat(course[commissionValue]);
             }
             return user.nickname + ': ' + money;
         }
