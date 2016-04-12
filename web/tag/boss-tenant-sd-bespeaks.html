@@ -35,6 +35,7 @@
                             <th>预约产品</th>
                             <th>日期</th>
                             <th>电话</th>
+                            <th>成单</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -54,6 +55,9 @@
                             <td>
                                 { telephone }
                             </td>
+                            <td>
+                                <input onclick="{parent.onOrderCreate}" data-toggle="modal" data-target="#orderModal" type="button" class="btn btn-default" value="成单"/>
+                            </td>
                         </tr>
 
                         </tbody>
@@ -61,13 +65,47 @@
                 </div>
             </div>
         </div>
+
+
+        <div id="orderModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">生成订单</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">媒体价</label>
+                                <div class="col-sm-10">
+                                    <span>{currBespeak.product.listPrice}</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="finalPrice" class="col-sm-2 control-label">成交价</label>
+                                <div class="col-sm-10">
+                                    <input class="form-control" oninput="{onInput}" id="finalPrice" type="number" name="finalPrice"/>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button disabled="{finalPrice.value.trim() === '' || parseInt(finalPrice.value.trim(), 10)<0 || parseInt(finalPrice.value.trim(), 10) > currBespeak.product.listPrice}" onclick="{onSubmitOrder}" data-dismiss="modal" type="button" class="btn btn-primary">确认</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div>
     </div>
     <style></style>
     <script>
-        "use strict"
+        "use strict";
         var self = nest.presentable(this);
         var findBespeaksAction = domain.action('findBespeaks');
+        var createOrderAction = domain.action('createOrder');
         self.bespeaks = [];
+        self.currBespeak = {};
         self.filter = {
             tenant: __page.tenantId
         };
@@ -83,6 +121,10 @@
                 self.trigger('view-route-to');
             }).execute();
         });
+        self.onOrderCreate = function(e){
+            self.finalPrice.value = "";
+            self.currBespeak = e.item;
+        };
         self.onSearch = function(e){
             findBespeaksAction.newInvocation({
                 filter: self.filter
@@ -91,6 +133,17 @@
                     return alert("failed to search bespeaks");
                 }
                 self.update({bespeaks: res.bespeaks});
+            }).execute();
+        };
+
+        self.onInput = function noop(){};
+
+        self.onSubmitOrder = function(e){
+            createOrderAction.newInvocation({
+                bespeak: self.currBespeak,
+                finalPrice : self.finalPrice.value.trim()
+            }).onDone(function(res){
+                console.warn(res)
             }).execute();
         };
         self.onSelect = function(e){

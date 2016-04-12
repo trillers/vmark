@@ -4,4 +4,5 @@ module.exports = {
     catalog:     require('./catalog'),
     poster:     require('./poster'),
     bespeak:     require('./bespeak'),
+    order:     require('./order'),
 };
