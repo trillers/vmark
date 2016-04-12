@@ -215,6 +215,7 @@ module.exports = function (router) {
     router.get('/sd/orders', function*(){
         try{
             let tenantId = this.request.query.tenant;
+            let status = this.request.query.status;
             let options = {
                 page: {
                     no: this.request.query.no,
@@ -239,10 +240,21 @@ module.exports = function (router) {
                                 model: 'TenantUser',
                             }
                         ]
-                    }]
+                    }
+                    ,{
+                        "path": "distributors",
+                        populate: {
+                            path: 'user',
+                            model: 'TenantUser'
+                        }
+                    }
+                ]
             };
-            let orders = yield context.services.orderService.findAsync(options);
-            this.body = {orders: orders, error: null};
+            if(status){
+                options.conditions.status = status;
+            }
+            let data = yield context.services.orderService.findAsync(options);
+            this.body = {orders: data.docs, count: data.count, error: null};
         } catch (e){
             logger.error(e);
             this.body = {error: e};

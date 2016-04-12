@@ -12,12 +12,11 @@
                     <form class="form-inline">
                         <div class="col-md-6 col-lg-6">
                             <div class="form-group">
-                                <label for="catalogStatus">状态</label>
-                                <select id="catalogStatus" class="form-control" onchange="{onSelect}">
+                                <label for="orderStatus">状态</label>
+                                <select id="orderStatus" class="form-control" onchange="{onSelect}">
                                     <option value="">全部状态</option>
-                                    <option value="{__app.enums.LifeFlag.names.Active}">已激活</option>
-                                    <option value="{__app.enums.LifeFlag.names.Inactive}">已锁定</option>
-                                    <option value="{__app.enums.LifeFlag.names.Deleted}">已删除</option>
+                                    <option value="{__app.enums.OrderStatus.names.finish}">已结算</option>
+                                    <option value="{__app.enums.OrderStatus.names.unFinish}">未结算</option>
                                 </select>
                             </div>
                             <input onclick="{onSearch}" class="btn btn-primary" type="button" value="查询"/>
@@ -28,37 +27,53 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
-                            <th>名称</th>
+                            <th>客户昵称</th>
+                            <th>课程</th>
                             <th>状态</th>
-                            <th>公众号</th>
+                            <th>成交价</th>
                             <th>创建时间</th>
-                            <th>备注</th>
+                            <th colspan="3">受益分销商</th>
                         </tr>
                         </thead>
                         <tbody>
 
-                        <tr each="{catalogs}">
+                        <tr each="{orders}">
                             <td>
-                                <a href="#sd/catalogs/_{_id}">
-                                    {name}
-                                </a>
+                                {bespeak.user.nickname}
                             </td>
                             <td>
-                                { __app.enums.LifeFlag.values[lFlg] }
+                                {bespeak.product.name}
                             </td>
                             <td>
-                                { media.name }
+                                { __app.enums.OrderStatus.values[status] }
+                            </td>
+                            <td>
+                                { finalPrice }
                             </td>
                             <td>
                                 {_.date.format(new Date(crtOn), 'yyyy-MM-dd hh点mm分')}
                             </td>
                             <td>
-                                { desc }
+                                {distributors && distributors[0] && parent.getDistributorMoney(distributors[0].user, bespeak.product, 1, finalPrice) || '无'}                            </td>
+                            <td>
+                                {distributors && distributors[0] && parent.getDistributorMoney(distributors[1].user, bespeak.product, 2, finalPrice) || '无'}
                             </td>
+                            <td>
+                                {distributors && distributors[1] && parent.getDistributorMoney(distributors[2].user, bespeak.product, 3, finalPrice) || '无'}                            </td>
+
                         </tr>
 
                         </tbody>
                     </table>
+                    <div>
+                        <input onclick="{prevPage}" type="button" class="btn btn-default" value="上一页"/>
+                        <span>当前页: </span>
+                        <span>{filter.no}</span>,
+                        <span>共( {totalPage} )页: </span>
+                        <input onclick="{nextPage}" type="button" class="btn btn-default" value="下一页"/>
+                        <input name="pageTo" type="number" value=""/>
+                        <input onclick="{jumpToPage}" type="button" class="btn btn-default" value="跳转"/>
+                    </div>
                 </div>
             </div>
         </div>
@@ -68,43 +83,95 @@
         "use strict"
         var self = nest.presentable(this);
         var findOrdersAction = domain.action('findOrders');
-        self.courses = [];
+        self.orders = [];
+        self.totalPage = 1;
         self.filter = {
-            tenant: __page.tenantId
+            tenant: __page.tenantId,
+            no: 1,
+            size: 10
         };
-        self.on('open', function(){
-            findOrdersAction.newInvocation({
-                filter: self.filter
-            }).onDone(function(res){
-                if(res.error){
-                    return alert("failed to search orders");
+        self.on('mount', function(){
+            findOrdersAction.onDone(function(res){
+                if(!res.error) {
+                    self.orders = res.orders;
+                    self.totalPage = Math.ceil(res.count / self.filter.size);
+                    self.update();
+                }else{
+                    console.error('failed find orders err:' + res.error);
                 }
-                self.orders = res.orders;
-                console.log(self.orders)
-                self.trigger('ready', false);
-                self.trigger('view-route-to');
-            }).execute();
+            })
         });
-        self.onSearch = function(e){
-            findCatalogsAction.newInvocation({
+        self.on('open', function(){
+            findOrdersAction.execute({
                 filter: self.filter
-            }).onDone(function(res){
-                console.warn(res);
-                if(res.error){
-                    return alert("failed to search courses");
-                }
-                self.update({catalogs: res.catalogs});
-            }).execute();
+            });
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+        });
+
+        self.onSearch = function(e){
+            findOrdersAction.execute({
+                filter: self.filter
+            });
         };
+
         self.onSelect = function(e){
-            var lFlg = self.catalogStatus.value;
-            if(!lFlg){
-                if(self.filter.hasOwnProperty('lFlg')){
-                    delete self.filter['lFlg'];
+            var status = self.orderStatus.value;
+            if(!status){
+                if(self.filter.hasOwnProperty('status')){
+                    delete self.filter['status'];
                 }
                 return;
             }
-            self.filter.lFlg = lFlg;
+            self.filter.status = status;
+        }
+
+        self.getDistributorMoney = function(user, course, level, finalPrice){
+            var money = 0;
+            var commissionType = 'upLine' + level + 'CommissionType';
+            var commissionValue = 'upLine' + level + 'CommissionValue';
+            if(course[commissionType] === __app.enums.CommissionType.names.Percent){
+                money = (parseInt(finalPrice)*parseFloat(course[commissionValue])).toFixed(2);
+            }else if(course[commissionType] === __app.enums.CommissionType.names.Cash){
+                money = parseInt(course[commissionValue]);
+            }
+            return user.nickname + ': ' + money;
+        }
+
+        self.prevPage = function(e){
+            var currPage = self.filter.no;
+            if(currPage <= 1){
+                return;
+            }
+            self.filter.no = --currPage;
+            findOrdersAction.execute({
+                filter: self.filter
+            });
+        };
+        self.nextPage = function(e){
+            var currPage = self.filter.no;
+            if(currPage >= self.totalPage){
+                return;
+            }
+            self.filter.no = ++currPage;
+            findOrdersAction.execute({
+                filter: self.filter
+            });
+        };
+        self.jumpToPage = function(e){
+            console.log(typeof self.pageTo.value)
+            if(self.pageTo.value.trim() === ''){
+                alert('请输入页码');
+                return;
+            }
+            if(self.pageTo.value <= 0 || self.pageTo.value > self.totalPage){
+                alert('页码非法');
+                return;
+            }
+            self.filter.no = parseInt(self.pageTo.value, 10);
+            findOrdersAction.execute({
+                filter: self.filter
+            });
         }
     </script>
 </boss-tenant-sd-orders>
