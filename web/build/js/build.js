@@ -12,16 +12,16 @@ webpackJsonp([0,1],[
 
 	var _index = __webpack_require__(9);
 
-	var _AppStore = __webpack_require__(12);
+	var _AppStore = __webpack_require__(13);
 
 	var AppStore = _interopRequireWildcard(_AppStore);
 
-	var _index2 = __webpack_require__(15);
+	var _index2 = __webpack_require__(16);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-	__webpack_require__(17);
 	__webpack_require__(18);
+	__webpack_require__(19);
 
 	window.app = _app.app;
 	window.actions = _index.actions;
@@ -3475,11 +3475,14 @@ webpackJsonp([0,1],[
 
 	var _catalog = __webpack_require__(10);
 
-	var _product = __webpack_require__(11);
+	var _bespeak = __webpack_require__(11);
+
+	var _product = __webpack_require__(12);
 
 	var actions = exports.actions = {
 	    loadCatalogById: _catalog.loadCatalogById,
-	    productActions: _product.productActions
+	    productActions: _product.productActions,
+	    addBespeak: _bespeak.addBespeak
 	};
 
 /***/ },
@@ -3494,9 +3497,33 @@ webpackJsonp([0,1],[
 	var baseUrl = __app.settings.api.url;
 
 	var loadCatalogById = exports.loadCatalogById = function loadCatalogById(id) {
+	    console.error(id);
+	    console.log(baseUrl + '/tenant/sd/catalog/_' + id);
 	    return $.get(baseUrl + '/tenant/sd/catalog/_' + id).then(function (res) {
 	        return {
 	            name: 'loadCatalogById',
+	            res: res
+	        };
+	    }).catch(function (e) {
+	        console.warn(e.stack);
+	    });
+	};
+
+/***/ },
+/* 11 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var baseUrl = __app.settings.api.url;
+
+	var addBespeak = exports.addBespeak = function addBespeak(data) {
+	    return $.post(baseUrl + '/tenant/sd/bespeak', data).then(function (res) {
+	        return {
+	            name: 'addBespeak',
 	            res: res
 	        };
 	    }).catch(function (e) {
@@ -3505,7 +3532,7 @@ webpackJsonp([0,1],[
 	};
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -3531,12 +3558,12 @@ webpackJsonp([0,1],[
 	exports.productActions = productActions;
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _dispatcher = __webpack_require__(13);
+	var _dispatcher = __webpack_require__(14);
 
 	var appStore = {};
 
@@ -3563,7 +3590,7 @@ webpackJsonp([0,1],[
 	});
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3573,14 +3600,14 @@ webpackJsonp([0,1],[
 	});
 	exports.appDispatcher = undefined;
 
-	var _AppDispatcher = __webpack_require__(14);
+	var _AppDispatcher = __webpack_require__(15);
 
 	var appDispatcher = new _AppDispatcher.AppDispatcher();
 
 	exports.appDispatcher = appDispatcher;
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -3627,7 +3654,7 @@ webpackJsonp([0,1],[
 	exports.AppDispatcher = AppDispatcher;
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3637,14 +3664,14 @@ webpackJsonp([0,1],[
 	});
 	exports.mixins = undefined;
 
-	var _dispatcher = __webpack_require__(16);
+	var _dispatcher = __webpack_require__(17);
 
 	var mixins = exports.mixins = {
 	    dispatcher: _dispatcher.dispatcher
 	};
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3690,7 +3717,7 @@ webpackJsonp([0,1],[
 	}
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('catalog-index', '<div> <div>产品目录</div> <div if="{!catalog || !catalog.products || !catalog.products.length}"> 该机构尚没有上架任何课程 </div> <div if="{catalog.products && catalog.products.length}"> <ul class="catalog-card"> <li each="{catalog.products}" onclick="{parent.routeTo}"> <div> <img riot-src="{poster &&__app.settings.api.url + \'/file?media_id=\' + poster}"> </div> <div> <span>{name}</span> <span>{slogan}</span> </div> </li> </ul> </div> </div>', '.catalog-card{ margin: 0px; padding: 0px; } .catalog-card li{ min-height: 48px; } .catalog-card li >div:first-child{ width: 40px; float: left; } .catalog-card li >div:first-child >img{ width: 40px; }', '', function(opts) {
@@ -3703,24 +3730,25 @@ webpackJsonp([0,1],[
 	            this.dispatch(actions.loadCatalogById(this.opts.id));
 	        })
 	        this.routeTo = e =>{
-	            window.location = __app.settings.app.url + "/sd/product?id=" + e.item._id;
+	            window.location = __app.settings.app.url + "/sd/product?id=" + e.item._id + '&media=' + this.catalog.media._id;
 	        }
 
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('product', '<ul> <li>{product.name}</li> <li>{product.slogan}</li> <li>{product.listPrice}</li> <li>{product.desc}</li> <li>{product.details}</li> </ul> <div> <input type="button" value="预约" onclick="{appointment}"> </div> <div id="form" if="{formShow}"> <div id="bg" onclick="{cancelAppointment}"></div> <div id="info"> <input type="text" placeholder="请输入电话号码"> <input type="button" value="提交"> <input type="button" value="取消" onclick="{cancelAppointment}"> </div> </div>', 'product #bg,[riot-tag="product"] #bg,[data-is="product"] #bg{ position: fixed; top: 0; left: 0; width: 100%; height: 100%; text-align: center; background: rgba(0, 0, 0, 0.7); z-index: 99; } product #info,[riot-tag="product"] #info,[data-is="product"] #info{ position: fixed; top: 200px; left: 0; width: 100%; height: 200px; text-align: center; z-index: 100; }', '', function(opts) {
+	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('product', '<ul> <li>{product.name}</li> <li>{product.slogan}</li> <li>{product.listPrice}</li> <li>{product.desc}</li> <li>{product.details}</li> </ul> <div> <input type="button" value="预约" onclick="{appointment}"> </div> <div id="form" if="{formShow}"> <div id="bg" onclick="{cancelAppointment}"></div> <div id="info"> <input name="telephone" type="text" placeholder="请输入电话号码"> <input type="button" value="提交" onclick="{onSubmit}"> <input type="button" value="取消" onclick="{cancelAppointment}"> </div> </div>', 'product #bg,[riot-tag="product"] #bg,[data-is="product"] #bg{ position: fixed; top: 0; left: 0; width: 100%; height: 100%; text-align: center; background: rgba(0, 0, 0, 0.7); z-index: 99; } product #info,[riot-tag="product"] #info,[data-is="product"] #info{ position: fixed; top: 200px; left: 0; width: 100%; height: 200px; text-align: center; z-index: 100; }', '', function(opts) {
 	        'use strict'
 	        this.mixin('dispatcher');
 
 	        let self = this;
 	        self.id = this.opts.id;
-
+	        self.media = this.opts.media;
 	        self.on('mount', opts => {
+	            console.error(__page.user);
 	            self.dispatch(actions.productActions.loadProduct(self.id));
 	        })
 
@@ -3728,7 +3756,19 @@ webpackJsonp([0,1],[
 	            self.update({product: data.course});
 	        })
 
+	        self.on('addBespeak', res => {
+	            if(!res.error){
+	                alert('预约成功');
+	                self.update({formShow: false});
+	                return;
+	            }
+	            console.error(res.error);
+	        })
+
 	        self.appointment = e => {
+	//            if(self.isAnonymous()){
+	//                return self.goToAuthorize();
+	//            }
 	            self.update({formShow: true});
 	        }
 
@@ -3736,10 +3776,26 @@ webpackJsonp([0,1],[
 	            self.update({formShow: false});
 	        }
 
-	        self.authorize = e => {
+	        self.isAnonymous = () => {
+	            return !__page.user || !__page.user.status || __page.user.status === __app.enums.UserStatus.names.Anonymous;
+	        }
+
+	        self.goToAuthorize = e => {
 	            var getUserInfoUrl = '/auth/authorize?';
 	            getUserInfoUrl += 'route=get_user_info&returnUrl='+location.href;
 	            location.href = getUserInfoUrl;
+	        }
+
+	        self.onSubmit = e => {
+	            if(self.telephone.value.trim() === ""){
+	                return;
+	            }
+	            self.dispatch(actions.addBespeak({
+	                user: __page.user,
+	                product: self.product,
+	                media: self.media,
+	                telephone: self.telephone.value.trim()
+	            }));
 	        }
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))

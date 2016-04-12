@@ -33,6 +33,11 @@ Service.prototype.create = function(distributorJson, callback){
     });
 };
 
+Service.prototype.findCountByTenantId = function (tenantId, callback) {
+    var Membership = this.context.models.Membership;
+    Membership.count({}, callback);
+};
+
 Service.prototype.find = function (params, callback) {
     var Membership = this.context.models.Membership;
     var query = Membership.find();
@@ -52,6 +57,13 @@ Service.prototype.find = function (params, callback) {
         if (limit) query.limit(limit);
     }
 
+    if(params.populates){
+        params.populates.forEach(function(populate){
+            query.populate(populate);
+        })
+
+    }
+
     if (params.conditions) {
         query.find(params.conditions);
     }
@@ -65,6 +77,27 @@ Service.prototype.find = function (params, callback) {
 
         if (callback) callback(null, docs);
     });
+};
+
+Service.prototype.loadByUserIdAndWechatId = function(userId, wechatId, callback){
+    var membershipKv = this.context.kvs.membership;
+    var Membership = this.context.models.Membership;
+    Membership.find({user: userId})
+    .populate({
+        path: 'media',
+        match: {
+            originalId: wechatId
+        }
+    })
+    .exec(function(err, docs){
+        if(err){
+            return callback(err)
+        }
+        if(!docs.length){
+            return callback(null, null)
+        }
+        callback(null, docs[0]);
+    })
 };
 
 Service.prototype.loadDistributorsChainById = function(id, level, callback){

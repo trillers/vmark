@@ -28,8 +28,15 @@ domain.action('updateTenantWechatSiteById').onExecute(function(data){
     apiFactory.put('/tenant/wechatsite/_' + data.id).drive(this).send(data);
 });
 
+domain.action('findDistributorsCountByTenantId').onExecute(function(data){
+    apiFactory.get('/tenant/sd/distributors/count?tenant=' + data.tenant).drive(this).send();
+});
+
 domain.action('findDistributorsByTenantId').onExecute(function(data){
-    apiFactory.get('/tenant/sd/distributors?tenant=' + data.tenant).drive(this).send();
+    var querystring = Object.keys(data.filter).map(function(k){
+        return k + "=" + data.filter[k]
+    }).join("&");
+    apiFactory.get('/tenant/sd/distributors?' + querystring).drive(this).send();
 });
 
 domain.action('createCourse').onExecute(function(data){
@@ -62,6 +69,13 @@ domain.action('updateCatalogById').onExecute(function(data){
 
 domain.action('fetchSdQrByProductAndWechatSite').onExecute(function(data) {
     apiFactory.post('/tenant/sd/catalog/poster').drive(this).send(data);
+});
+
+domain.action('findBespeaks').onExecute(function(data){
+    var querystring = Object.keys(data.filter).map(function(k){
+        return k + "=" + data.filter[k]
+    }).join("&");
+    apiFactory.get('/tenant/sd/bespeak?' + querystring).drive(this).send();
 });
 
 domain.action('findCatalogs').onExecute(function(data){

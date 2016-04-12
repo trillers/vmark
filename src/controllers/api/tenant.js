@@ -1,13 +1,17 @@
 "use strict";
+var typeRegistry = require('../../modules/common/models/TypeRegistry');
+var MembershipType = typeRegistry.item('MembershipType');
 var context = require('../../context/context');
 var qrTypeRegistry = require('../../modules/wechatsite/qr/QrTypeRegistries').tenantQrTypeRegistry;
 var qrType = qrTypeRegistry.getQrType('sdpp');
+//var checkauth = require('../../middlewares/checkauth');
+
 var tenantOrgService = context.services.tenantOrgService;
 var courseService = context.services.courseService;
 var logger = context.logger;
 
 module.exports = function (router) {
-
+    //router.use(checkauth);
     router.get('/_:id', function*(){
         try{
             let tenant = yield tenantOrgService.loadByIdAsync(this.params.id);
@@ -190,16 +194,78 @@ module.exports = function (router) {
         }
     });
 
+    router.post('/sd/bespeak', function*(){
+        try{
+            let bespeak = this.request.body;
+            yield context.services.bespeakService.createAsync({
+                product: bespeak.product._id,
+                media: bespeak.media,
+                user: bespeak.user._id,
+                telephone: bespeak.telephone
+            });
+            this.body = {error: null}
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e}
+        }
+    });
+
+    router.get('/sd/bespeak', function*(){
+        try{
+            let query = this.request.query;
+            let tenantId = query.tenant;
+            delete query['tenant'];
+            let params = {
+                conditions: query
+            };
+            let bespeaks = yield context.services.bespeakService.findByTenantIdAsync(tenantId, params);
+            this.body = {bespeaks: bespeaks, error: null};
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.get('/sd/distributors/count', function*() {
+        try {
+            let tenantId = this.request.query.tenant;
+            let count = yield context.services.membershipService.findCountByTenantIdAsync(tenantId);
+            this.body = {error: null, count: count};
+        }catch (e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
     router.get('/sd/distributors', function*(){
         try{
             let tenantId = this.request.query.tenant;
             let options = {
-                populate: [
+                tenantId: tenantId,
+                page: {
+                    no: this.request.query.no,
+                    size: this.request.query.size
+                },
+                conditions: {
+                    type: MembershipType.Distributor.value()
+                },
+                populates: [
                     {path:'user', model: 'TenantUser'},
-                    {path: 'upLine', model: 'TenantUser'}
+                    {
+                        path: 'upLine',
+                        model: 'Membership',
+                        populate: [{
+                            path: 'user',
+                            model: 'TenantUser'
+                        },{
+                            path: 'media',
+                            model: 'WechatMedia'
+                        }]
+                    },
+                    {path: 'media'}
                 ]
             };
-            let distributors = yield context.services.distributorService.findAllByTenantIdAsync(tenantId, options);
+            let distributors = yield context.services.membershipService.findAsync(options);
             this.body = {distributors: distributors, error: null};
         } catch (e){
             logger.error(e);

@@ -20,8 +20,8 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
             var auth = yield context.services.tenantAuthenticationService.signupOnSubscriptionAsync(wechatId, openid);
             var user = auth.user;
             var media = yield context.services.tenantWechatSiteService.loadTenantWechatSiteByOriginalIdAsync(wechatId);
-            var tenantUser = yield context.services.tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, openid);
-            var memberships = yield context.services.membershipService.findAsync({media: media._id, user: tenantUser._id});
+            var tenantUser = yield context.services.tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, user.openid);
+            var memberships = yield context.services.membershipService.findAsync({conditions:{media: media._id, user: tenantUser._id}});
             var membership = memberships && memberships[0] || null;
             var poster = yield context.services.posterService.loadByQrCodeIdAsync(qr._id);
             var product = yield context.services.courseService.loadByIdAsync(poster.product);
@@ -34,10 +34,11 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
                     type: MembershipType.Distributor.value(),
                     user: user._id
                 };
-                poster && poster.user && (membership['upLine'] = poster.user);
+                poster && poster.user && poster.user != user._id && (membership['upLine'] = poster.user);
                 yield context.services.membershipService.createAsync(membership);
                 if(membership['upLine']){
-                    yield context.services.membershipService.addDownLineAsync(poster.user, user._id);
+                    let upLineMembership = yield context.services.membershipService.loadByUserIdAndWechatIdAsync(poster.user, wechatId);
+                    yield context.services.membershipService.addDownLineAsync(upLineMembership._id, user._id);
                 }
                 responseText = '恭喜您成为经纪人,分享图片到朋友圈,获取丰厚回报';
             }
@@ -46,7 +47,7 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
                 let distributor = {
                     type: MembershipType.Distributor.value()
                 };
-                poster && poster.user && (distributor['upLine'] = poster.user);
+                poster && poster.user && poster.user != user._id && (distributor['upLine'] = poster.user);
 
                 yield context.services.membershipService.updateByIdAsync(membership._id, distributor);
                 if(distributor['upLine']){
@@ -69,7 +70,7 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
                 picurl: fetchedPoster.mediaId,
                 description: product.slogan,
                 title: product.name,
-                url: 'http://' + path.join(settings.app.domain, '/sd/product?id=' + product._id)
+                url: 'http://' + path.join(settings.app.domain, '/sd/product?id=' + product._id + '&media=' + media._id)
             }];
             yield wechatApi.sendNewsAsync(user.openid, articles);
 
