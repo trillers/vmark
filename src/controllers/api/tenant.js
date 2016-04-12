@@ -210,11 +210,49 @@ module.exports = function (router) {
         }
     });
 
+    router.get('/sd/orders', function*(){
+        try{
+            let tenantId = this.request.query.tenant;
+            let options = {
+                page: {
+                    no: this.request.query.no,
+                    size: this.request.query.size
+                },
+                conditions: {
+                    org: tenantId
+                },
+                populates: [
+                    {
+                        path:'bespeak',
+                        populate: [{
+                            path: 'product',
+                            model: 'Course',
+                        },
+                            {
+                                path: 'media',
+                                model: 'WechatMedia',
+                            },
+                            {
+                                path: 'user',
+                                model: 'TenantUser',
+                            }
+                        ]
+                    }]
+            };
+            let orders = yield context.services.orderService.findAsync(options);
+            this.body = {orders: orders, error: null};
+        } catch (e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
     router.post('/sd/order', function*(){
         try{
             let order = this.request.body;
             let tenantWechatSite = yield context.services.tenantWechatSiteService.loadByIdAsync(order.bespeak.media);
             let wechatId = tenantWechatSite.originalId;
+            order.org = tenantWechatSite.org;
 
             let orderPersisted = yield context.services.orderService.createAsync(wechatId, order);
 

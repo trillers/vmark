@@ -8,8 +8,8 @@ var Model = function(domainBuilder){
         .withBasis()
         .withLifeFlag()
         .withCreatedOn()
-        .withRank()
         .withProperties({
+            org: {type: String, ref: 'Org'},
             bespeak:      {type: String, ref: 'Bespeak'},
             finalPrice:   {type: Number, required: true}
         })
