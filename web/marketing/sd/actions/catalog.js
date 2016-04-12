@@ -9,7 +9,7 @@ export var loadCatalogById = id =>{
             };
         })
         .catch(e=>{
-            console.warn(e)
+            console.warn(e.stack)
         })
 };
 

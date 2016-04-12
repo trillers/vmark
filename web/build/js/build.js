@@ -3503,7 +3503,7 @@ webpackJsonp([0,1],[
 	            res: res
 	        };
 	    }).catch(function (e) {
-	        console.warn(e);
+	        console.warn(e.stack);
 	    });
 	};
 
@@ -3720,7 +3720,6 @@ webpackJsonp([0,1],[
 
 	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('catalog-index', '<div> <div>产品目录</div> <div if="{!catalog || !catalog.products || !catalog.products.length}"> 该机构尚没有上架任何课程 </div> <div if="{catalog.products && catalog.products.length}"> <ul class="catalog-card"> <li each="{catalog.products}" onclick="{parent.routeTo}"> <div> <img riot-src="{poster &&__app.settings.api.url + \'/file?media_id=\' + poster}"> </div> <div> <span>{name}</span> <span>{slogan}</span> </div> </li> </ul> </div> </div>', '.catalog-card{ margin: 0px; padding: 0px; } .catalog-card li{ min-height: 48px; } .catalog-card li >div:first-child{ width: 40px; float: left; } .catalog-card li >div:first-child >img{ width: 40px; }', '', function(opts) {
 	        this.mixin('dispatcher');
-
 	        this.on('mount', ()=>{
 	            this.on('loadCatalogById', res =>{
 	                this.update({catalog: res.catalog});
@@ -3728,7 +3727,7 @@ webpackJsonp([0,1],[
 	            this.dispatch(actions.loadCatalogById(this.opts.id));
 	        })
 	        this.routeTo = e =>{
-	            window.location = __app.settings.app.url + "/sd/product?id=" + e.item._id + '&media=' + this.catalog.media._id;
+	            window.location = __app.settings.app.url + "/sd/" + __page.user.wechatId + "/product?id=" + e.item._id + '&media=' + this.catalog.media._id;
 	        }
 
 	});
@@ -3745,13 +3744,12 @@ webpackJsonp([0,1],[
 	        let self = this;
 	        self.id = this.opts.id;
 	        self.media = this.opts.media;
-	        console.log(self);
+
 	        self.on('mount', opts => {
 	            self.dispatch(actions.productActions.loadProduct(self.id));
 	        })
 
 	        self.on('loadProduct', data => {
-	            console.log(data);
 	            self.update({product: data.course});
 	        })
 
@@ -3765,22 +3763,21 @@ webpackJsonp([0,1],[
 	        })
 
 	        self.appointment = e => {
-	//            if(self.isAnonymous()){
-	//                return self.goToAuthorize();
-	//            }
+	            if(self.isAnonymous()){
+	                return self.goToAuthorize();
+	            }
 	            self.update({formShow: true});
 	        }
 
 	        self.cancelAppointment = e => {
 	            self.update({formShow: false});
 	        }
-
 	        self.isAnonymous = () => {
-	            return !__page.user || !__page.user.status || __page.user.status === __app.enums.UserStatus.names.Anonymous;
+	            return !__page.user || !__page.user.status || __page.user.status === __app.enums.TenantUserStatus.names.BaseInfo;
 	        }
 
 	        self.goToAuthorize = e => {
-	            var getUserInfoUrl = '/auth/authorize?';
+	            var getUserInfoUrl = '/auth/' + __page.user.wechatId + '/authorize?';
 	            getUserInfoUrl += 'route=get_user_info&returnUrl='+location.href;
 	            location.href = getUserInfoUrl;
 	        }

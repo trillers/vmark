@@ -11,9 +11,13 @@ module.exports = function(app){
         yield next;
     };
 
-    router.get('/wechat/:wechatId/oauth//callback', wechatPlatformChecker, function*(next){
+    router.get('/wechat/:wechatId/oauth/callback', wechatPlatformChecker, function*(next){
         //var wechatInfo = settings.wechat;
         yield bus.exchange(this, next);
+    });
+
+    router.get('/auth/:wechatId/authorize', wechatPlatformChecker, function*(next){
+        yield bus.authorize(this);
     });
 
     app.use(router.routes());

@@ -4,12 +4,14 @@ var MembershipType = typeRegistry.item('MembershipType');
 var context = require('../../context/context');
 var qrTypeRegistry = require('../../modules/wechatsite/qr/QrTypeRegistries').tenantQrTypeRegistry;
 var qrType = qrTypeRegistry.getQrType('sdpp');
+//var checkauth = require('../../middlewares/checkauth');
+
 var tenantOrgService = context.services.tenantOrgService;
 var courseService = context.services.courseService;
 var logger = context.logger;
 
 module.exports = function (router) {
-
+    //router.use(checkauth);
     router.get('/_:id', function*(){
         try{
             let tenant = yield tenantOrgService.loadByIdAsync(this.params.id);

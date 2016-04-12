@@ -5,8 +5,10 @@ var nodeExcel = require('excel-export');
 var typeRegistry = require('../../modules/common/models/TypeRegistry');
 var UserType = typeRegistry.item('UserType');
 var util = require('../../app/util');
+//var checkauth = require('../../middlewares/checkauth');
 
 module.exports = function(router){
+    //router.use(checkauth);
     router.post('/add', function *(){
         var json = {
             type:  this.request.body.type
