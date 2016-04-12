@@ -32,6 +32,17 @@ domain.action('findDistributorsCountByTenantId').onExecute(function(data){
     apiFactory.get('/tenant/sd/distributors/count?tenant=' + data.tenant).drive(this).send();
 });
 
+domain.action('findCustomersCountByTenantId').onExecute(function(data){
+    apiFactory.get('/tenant/sd/customers/count?tenant=' + data.tenant).drive(this).send();
+});
+
+domain.action('findCustomersByTenantId').onExecute(function(data){
+    var querystring = Object.keys(data.filter).map(function(k){
+        return k + "=" + data.filter[k]
+    }).join("&");
+    apiFactory.get('/tenant/sd/customers?' + querystring).drive(this).send();
+});
+
 domain.action('findDistributorsByTenantId').onExecute(function(data){
     var querystring = Object.keys(data.filter).map(function(k){
         return k + "=" + data.filter[k]

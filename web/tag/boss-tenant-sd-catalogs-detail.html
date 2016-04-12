@@ -330,7 +330,7 @@
                     return course._id === input.value
                 })[0]
             });
-            console.log(self.catalog.media);
+            console.log(Array.isArray(self.catalog.products));
             updateCatalogByIdAction.newInvocation({
                 id: self.catalog._id,
                 o: self.catalog

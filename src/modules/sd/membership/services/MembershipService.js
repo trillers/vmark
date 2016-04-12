@@ -34,9 +34,11 @@ Service.prototype.create = function(distributorJson, callback){
     });
 };
 
-Service.prototype.findCountByTenantId = function (tenantId, callback) {
+Service.prototype.findCountByTenantId = function (tenantId, options, callback) {
     var Membership = this.context.models.Membership;
-    Membership.count({}, callback);
+    var params = {org: tenantId};
+    _.extend(params, options);
+    Membership.count(params, callback);
 };
 
 Service.prototype.ensureSignUp = function(wechatId, userId, callback){
