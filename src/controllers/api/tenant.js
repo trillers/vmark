@@ -197,6 +197,8 @@ module.exports = function (router) {
     router.post('/sd/bespeak', function*(){
         try{
             let bespeak = this.request.body;
+            let wechatsite = yield context.services.tenantWechatSiteService.loadByIdAsync(bespeak.media);
+            yield context.services.membershipService.ensureSignUpAsync(wechatsite.originalId, bespeak.user._id);
             yield context.services.bespeakService.createAsync({
                 product: bespeak.product._id,
                 media: bespeak.media,
@@ -220,7 +222,7 @@ module.exports = function (router) {
 
             yield context.services.bespeakService.removeByIdAsync(wechatId, order.bespeak._id);
 
-            let userId = order.bespeak.user._id || order.bespeak.user;
+            let userId = order.bespeak.user._id;
             let membership = yield context.services.membershipService.loadByUserIdAndWechatIdAsync(userId, wechatId);
             let isDistributor = membership.type && (membership.type === 'd');
             if(isDistributor){
