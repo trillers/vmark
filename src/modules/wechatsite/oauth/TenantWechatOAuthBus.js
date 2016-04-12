@@ -3,6 +3,8 @@ var util = require('util');
 var errorUtil = require('../../wechat/common/error');
 var scopes = require('../../wechat/common/oauth').scopes;
 var languages = require('../../wechat/common/oauth').languages;
+var authentication = require('../../tenant/auth/authentication');
+
 var Route = require('./TenantWechatOAuthRoute');
 
 /**
@@ -37,8 +39,8 @@ Bus.prototype.authorize = function* (ctx){
     var returnUrl = ctx.query.returnUrl;
     var wechatId = this._getWechatId(ctx);
     //save return url
-    ctx.session && (ctx.session[this.returnUrlKey] = returnUrl);
-
+    //ctx.session && (ctx.session[this.returnUrlKey] = returnUrl);
+    authentication.saveReturnUrl(ctx, wechatId, returnUrl);
     var route = this.routes[routeName];
     if(route){
         yield route.authorize(ctx, wechatId);

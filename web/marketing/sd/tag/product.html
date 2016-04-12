@@ -46,8 +46,8 @@
         let self = this;
         self.id = this.opts.id;
         self.media = this.opts.media;
+
         self.on('mount', opts => {
-            console.error(__page.user);
             self.dispatch(actions.productActions.loadProduct(self.id));
         })
 
@@ -65,22 +65,21 @@
         })
 
         self.appointment = e => {
-//            if(self.isAnonymous()){
-//                return self.goToAuthorize();
-//            }
+            if(self.isAnonymous()){
+                return self.goToAuthorize();
+            }
             self.update({formShow: true});
         }
 
         self.cancelAppointment = e => {
             self.update({formShow: false});
         }
-
         self.isAnonymous = () => {
-            return !__page.user || !__page.user.status || __page.user.status === __app.enums.UserStatus.names.Anonymous;
+            return !__page.user || !__page.user.status || __page.user.status === __app.enums.TenantUserStatus.names.BaseInfo;
         }
 
         self.goToAuthorize = e => {
-            var getUserInfoUrl = '/auth/authorize?';
+            var getUserInfoUrl = '/auth/' + __page.user.wechatId + '/authorize?';
             getUserInfoUrl += 'route=get_user_info&returnUrl='+location.href;
             location.href = getUserInfoUrl;
         }

@@ -38,7 +38,6 @@
 
     <script>
         this.mixin('dispatcher');
-
         this.on('mount', ()=>{
             this.on('loadCatalogById', res =>{
                 this.update({catalog: res.catalog});
@@ -46,7 +45,7 @@
             this.dispatch(actions.loadCatalogById(this.opts.id));
         })
         this.routeTo = e =>{
-            window.location = __app.settings.app.url + "/sd/product?id=" + e.item._id + '&media=' + this.catalog.media._id;
+            window.location = __app.settings.app.url + "/sd/" + __page.user.wechatId + "/product?id=" + e.item._id + '&media=' + this.catalog.media._id;
         }
 
     </script>
