@@ -125,7 +125,7 @@ Service.prototype.splitBill = function(distributor, product, finalPrice, level, 
                 let commissionType = eval('upLine' + index + 'CommissionType');
                 let commissionValue = eval('upLine' + index + 'CommissionValue');
                 if(commissionType === CommissionType.Percent.value()){
-                    IncomeAmount = parseInt(finalPrice, 10) * parseInt(commissionValue, 10);
+                    IncomeAmount = parseInt(finalPrice, 10) * parseFloat(commissionValue, 10);
 
                 }else if(commissionType === CommissionType.Cash.value()){
                     IncomeAmount = parseInt(commissionValue, 10);
