@@ -5,6 +5,7 @@ var TenantUserService = require('../../../tenant/user/services/TenantUserService
 var cbUtil = require('../../../../framework/callback');
 var typeRegistry = require('../../../common/models/TypeRegistry');
 var MembershipType = typeRegistry.item('MembershipType');
+var CommissionType = typeRegistry.item('CommissionType');
 var LifeFlag = typeRegistry.item('LifeFlag');
 var _ = require('underscore');
 
@@ -76,6 +77,64 @@ Service.prototype.find = function (params, callback) {
         }
 
         if (callback) callback(null, docs);
+    });
+};
+
+Service.prototype.splitBill = function(distributor, product, finalPrice, level, callback){
+    var me = this;
+    co(function*(){
+        try{
+            let index = 1;
+            if(typeof level === 'function'){
+                callback = level;
+                level = 3;
+            }
+            let recurSplitBill = function* (distributor, index){
+                if(!distributor.upLine || index > level){
+                    return callback(null);
+                }
+                let currentDistributor = distributor.upLine;
+                let IncomeAmount = null;
+                let commissionType = eval('upLine' + index + 'CommissionType');
+                let commissionValue = eval('upLine' + index + 'CommissionValue');
+                if(commissionType === CommissionType.Percent.value()){
+                    IncomeAmount = parseInt(finalPrice, 10) * parseInt(commissionValue, 10);
+
+                }else if(commissionType === CommissionType.Cash.value()){
+                    IncomeAmount = parseInt(commissionValue, 10);
+                }else{
+                    throw new Error('unknown distributor strategy');
+                }
+                yield me.addAccountBalanceAsync(currentDistributor._id, IncomeAmount);
+                recurSplitBill(distributor.upLine, ++index);
+            };
+            yield recurSplitBill(distributor, index);
+        }
+        catch(e){
+            me.context.logger.error('Failed to split bill ' + util.inspect(e));
+            callback(e);
+        }
+    });
+};
+
+Service.prototype.addAccountBalance = function(distributorId, income, callback){
+    var me = this;
+    var membershipKv = this.context.kvs.membership;
+    var Membership = this.context.models.Membership;
+    Membership.findById(distributorId, function(err, doc){
+        if(err){
+            me.context.logger.error('Failed to add account balance' + util.inspect(err));
+            return callback(err)
+        }
+        doc.accountBalance += income;
+        doc.save(function(err, result){
+            if(err){
+                me.context.logger.error('Failed to add account balance' + util.inspect(err));
+                return callback(err)
+            }
+            var obj = result.toObject();
+            return membershipKv.saveById(obj._id, obj, callback);
+        })
     });
 };
 
@@ -181,7 +240,7 @@ Service.prototype.updateById = function(id, json, callback){
     var membershipKv = this.context.kvs.membership;
     var Membership = this.context.models.Membership;
     !json['_id'] && (json['_id'] = id);
-    membershipKv.saveById(json, function(err, result){
+    membershipKv.saveById(id, json, function(err, result){
         if(err){
             return callback(err);
         }

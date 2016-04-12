@@ -37,6 +37,11 @@ Service.prototype.findByTenantId = function(tenantId, params, callback){
     var Bespeak = this.context.models.Bespeak;
 
     var query = Bespeak.find();
+
+    if (params.conditions) {
+        query.find(params.conditions);
+    }
+
     query
         .populate({
             path: 'product',
@@ -99,8 +104,8 @@ Service.prototype.find = function (params, callback) {
 };
 
 Service.prototype.loadFullInfoById = function(id, callback){
-    var Catalog = this.context.models.Catalog;
-    Catalog.findById(id, null, {lean: true})
+    var Bespeak = this.context.models.Bespeak;
+    Bespeak.findById(id, null, {lean: true})
         .populate({path: 'tenant'})
         .populate({path: 'media'})
         .populate({path: 'products'})
@@ -122,26 +127,26 @@ Service.prototype.loadById = function(id, callback){
 };
 
 Service.prototype.updateById = function(id, json, callback){
-    var Catalog = this.context.models.Catalog;
-    var catalogKv = this.context.kvs.catalog;
+    var Bespeak = this.context.models.Bespeak;
+    var bespeakKv = this.context.kvs.bespeak;
     !json['_id'] && (json['_id'] = id);
-    catalogKv.saveById(json, function(err, result){
+    bespeakKv.saveById(json, function(err, result){
         if(err){
             return callback(err);
         }
-        Catalog.findByIdAndUpdate(id, json, {lean: true, new: true}).exec(callback);
+        Bespeak.findByIdAndUpdate(id, json, {lean: true, new: true}).exec(callback);
     })
 };
 
-Service.prototype.removeCatalogById = function(id, callback){
-    var Catalog = this.context.models.Catalog;
-    var catalogKv = this.context.kvs.catalog;
-    Catalog.findByIdAndUpdate(id, {lFlg: 'd'}, {lean: true})
+Service.prototype.removeById = function(wechatId, id, callback){
+    var Bespeak = this.context.models.Bespeak;
+    var bespeakKv = this.context.kvs.bespeak;
+    Bespeak.findByIdAndUpdate(id, {lFlg: 'd'}, {lean: true})
         .exec(function(err){
             if(err){
                 console.error(err);
             }else{
-                catalogKv.delById(id, function(err, obj){
+                bespeakKv.delById(wechatId, id, function(err, obj){
                     if(callback) callback(err, obj);
                 });
             }

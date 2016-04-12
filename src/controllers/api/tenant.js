@@ -210,10 +210,37 @@ module.exports = function (router) {
         }
     });
 
+    router.post('/sd/order', function*(){
+        try{
+            let order = this.request.body;
+            let tenantWechatSite = yield context.services.tenantWechatSiteService.loadByIdAsync(order.bespeak.media);
+            let wechatId = tenantWechatSite.originalId;
+
+            let orderPersisted = yield context.services.orderService.createAsync(wechatId, order);
+
+            yield context.services.bespeakService.removeByIdAsync(wechatId, order.bespeak._id);
+
+            console.log(order);
+            let userId = order.bespeak.user._id || order.bespeak.user;
+            let membership = yield context.services.membershipService.loadByUserIdAndWechatIdAsync(userId, wechatId);
+            let isDistributor = membership.type && (membership.type === 'd');
+            if(isDistributor){
+                let distributor = yield context.services.membershipService.loadDistributorsChainByIdAsync(membership._id);
+                yield context.services.membershipService.splitBillAsync(distributor, order.bespeak.product, order.finalPrice, 3);
+            }
+
+            this.body = {order: orderPersisted, error: null};
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
     router.get('/sd/bespeak', function*(){
         try{
             let query = this.request.query;
             let tenantId = query.tenant;
+            query.lFlg = 'a';
             delete query['tenant'];
             let params = {
                 conditions: query

@@ -15,6 +15,7 @@ var Model = function(domainBuilder){
             org:       {type: String, ref: 'Org'},
             media:     {type: String, ref: 'WechatMedia'},
             type:      {type: String, enum: MembershipType.valueList(), default: MembershipType.Customer.value()},
+            accountBalance: {type: Number, default: 0},
             desc:      {type: String}
         })
         .build();

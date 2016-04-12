@@ -39,6 +39,10 @@ domain.action('findDistributorsByTenantId').onExecute(function(data){
     apiFactory.get('/tenant/sd/distributors?' + querystring).drive(this).send();
 });
 
+domain.action('createOrder').onExecute(function(data){
+    apiFactory.post('/tenant/sd/order').drive(this).send(data);
+});
+
 domain.action('createCourse').onExecute(function(data){
     apiFactory.post('/tenant/sd/course').drive(this).send(data);
 });
