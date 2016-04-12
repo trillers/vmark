@@ -242,7 +242,15 @@ module.exports = function (router) {
                                 model: 'TenantUser',
                             }
                         ]
-                    }]
+                    }
+                    ,{
+                        "path": "distributors",
+                        populate: {
+                            path: 'user',
+                            model: 'TenantUser'
+                        }
+                    }
+                ]
             };
             if(status){
                 options.conditions.status = status;

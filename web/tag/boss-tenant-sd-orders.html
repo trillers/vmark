@@ -54,19 +54,26 @@
                                 {_.date.format(new Date(crtOn), 'yyyy-MM-dd hh点mm分')}
                             </td>
                             <td>
-                                {parent.getDistributorMoney(distributors[0], bespeak.product, 1)}
+                                {distributors && distributors[0] && parent.getDistributorMoney(distributors[0].user, bespeak.product, 1, finalPrice) || '无'}                            </td>
+                            <td>
+                                {distributors && distributors[0] && parent.getDistributorMoney(distributors[1].user, bespeak.product, 2, finalPrice) || '无'}
                             </td>
                             <td>
-                                {parent.getDistributorMoney(distributors[1], bespeak.product, 2)}
-                            </td>
-                            <td>
-                                {parent.getDistributorMoney(distributors[2], bespeak.product, 2)}
-                            </td>
+                                {distributors && distributors[1] && parent.getDistributorMoney(distributors[2].user, bespeak.product, 3, finalPrice) || '无'}                            </td>
 
                         </tr>
 
                         </tbody>
                     </table>
+                    <div>
+                        <input onclick="{prevPage}" type="button" class="btn btn-default" value="上一页"/>
+                        <span>当前页: </span>
+                        <span>{filter.no}</span>,
+                        <span>共( {totalPage} )页: </span>
+                        <input onclick="{nextPage}" type="button" class="btn btn-default" value="下一页"/>
+                        <input name="pageTo" type="number" value=""/>
+                        <input onclick="{jumpToPage}" type="button" class="btn btn-default" value="跳转"/>
+                    </div>
                 </div>
             </div>
         </div>
@@ -76,32 +83,36 @@
         "use strict"
         var self = nest.presentable(this);
         var findOrdersAction = domain.action('findOrders');
-        self.courses = [];
+        self.orders = [];
+        self.totalPage = 1;
         self.filter = {
-            tenant: __page.tenantId
+            tenant: __page.tenantId,
+            no: 1,
+            size: 10
         };
-        self.on('open', function(){
-            findOrdersAction.newInvocation({
-                filter: self.filter
-            }).onDone(function(res){
-                if(res.error){
-                    return alert("failed to search orders");
+        self.on('mount', function(){
+            findOrdersAction.onDone(function(res){
+                if(!res.error) {
+                    self.orders = res.orders;
+                    self.totalPage = Math.ceil(res.count / self.filter.size);
+                    self.update();
+                }else{
+                    console.error('failed find orders err:' + res.error);
                 }
-                self.orders = res.orders;
-                self.trigger('ready', false);
-                self.trigger('view-route-to');
-            }).execute();
+            })
+        });
+        self.on('open', function(){
+            findOrdersAction.execute({
+                filter: self.filter
+            });
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
         });
 
         self.onSearch = function(e){
-            findOrdersAction.newInvocation({
+            findOrdersAction.execute({
                 filter: self.filter
-            }).onDone(function(res){
-                if(res.error){
-                    return alert("failed to search orders");
-                }
-                self.update({orders: res.orders});
-            }).execute();
+            });
         };
 
         self.onSelect = function(e){
@@ -115,11 +126,53 @@
             self.filter.status = status;
         }
 
-        self.getDistributorMoney = function(user, course, level){
-            console.error(user);
-            console.log(course)
-            console.log(level);
-            return 4
+        self.getDistributorMoney = function(user, course, level, finalPrice){
+            var money = 0;
+            var commissionType = 'upLine' + level + 'CommissionType';
+            var commissionValue = 'upLine' + level + 'CommissionValue';
+
+            if(course[commissionType] === __app.enums.CommissionType.names.Percent){
+                money = parseInt(finalPrice)*parseInt(course[commissionValue]);
+            }else if(course[commissionType] === __app.enums.CommissionType.names.Cash){
+                money = parseInt(course[commissionValue]);
+            }
+            return user.nickname + ': ' + money;
+        }
+
+        self.prevPage = function(e){
+            var currPage = self.filter.no;
+            if(currPage <= 1){
+                return;
+            }
+            self.filter.no = --currPage;
+            findOrdersAction.execute({
+                filter: self.filter
+            });
+        };
+        self.nextPage = function(e){
+            var currPage = self.filter.no;
+            if(currPage >= self.totalPage){
+                return;
+            }
+            self.filter.no = ++currPage;
+            findOrdersAction.execute({
+                filter: self.filter
+            });
+        };
+        self.jumpToPage = function(e){
+            console.log(typeof self.pageTo.value)
+            if(self.pageTo.value.trim() === ''){
+                alert('请输入页码');
+                return;
+            }
+            if(self.pageTo.value <= 0 || self.pageTo.value > self.totalPage){
+                alert('页码非法');
+                return;
+            }
+            self.filter.no = parseInt(self.pageTo.value, 10);
+            findOrdersAction.execute({
+                filter: self.filter
+            });
         }
     </script>
 </boss-tenant-sd-orders>
