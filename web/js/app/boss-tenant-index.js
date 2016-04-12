@@ -117,6 +117,18 @@ app.routeView('sd/customers', nest.viewable({
     }
 }));
 
+app.routeView('sd/splitbill', nest.viewable({
+    name: 'boss-tenant-sd-splitbill',
+    mount: function(ctx){
+        var tags = riot.mount('boss-tenant-sd-splitbill', {filter: ctx.req.query, app: this.parent});
+        this.tag = tags[0];
+    },
+    route: function(ctx){
+        this.context = ctx;
+        this.tag.trigger('open', ctx.req.query);
+    }
+}));
+
 app.routeView('sd/distributors', nest.viewable({
   name: 'boss-tenant-sd-distributors',
   mount: function(ctx){

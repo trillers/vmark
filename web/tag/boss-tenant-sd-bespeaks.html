@@ -150,7 +150,8 @@
                 self.currBespeak = null;
                 self.bespeaks = self.bespeaks.filter(function(bespeak){
                     return bespeak._id != res.order.bespeak;
-                })
+                });
+                self.update();
             }).execute();
         };
         self.onSelect = function(e){
