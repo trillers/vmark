@@ -261,6 +261,18 @@ app.routeView('power/add', nest.viewable({
   }
 }));
 
+app.routeView('sd/orders', nest.viewable({
+  name: 'boss-tenant-sd-orders',
+  mount: function(ctx){
+    var tags = riot.mount('boss-tenant-sd-orders', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx.req.query);
+  }
+}));
+
 app.on('init', function(){
   var attentionUrl = util.getCookie('attentionUrl');
   var hash = attentionUrl || window.location.hash;

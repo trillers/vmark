@@ -54,42 +54,45 @@ Service.prototype.findByTenantId = function(tenantId, params, callback){
 
 Service.prototype.find = function (params, callback) {
     var Order = this.context.models.Order;
-    var query = Order.find();
+    var logger = this.context.logger;
+    co(function*(){
+        var query = Order.find();
 
-    if (params.options) {
-        query.setOptions(params.options);
-    }
-
-    if (params.sort) {
-        query.sort(params.sort);
-    }
-
-    if (params.page) {
-        var skip = (params.page.no - 1) * params.page.size;
-        var limit = params.page.size;
-        if (skip) query.skip(skip);
-        if (limit) query.limit(limit);
-    }
-
-    if (params.conditions) {
-        query.find(params.conditions);
-    }
-
-    if(params.populate) {
-        params.populate.forEach(i=>{
-            query.populate(i)
-        })
-    }
-
-    query.lean(true);
-    query.exec(function (err, docs) {
-        if (err) {
-            callback(err);
-            return;
+        if (params.options) {
+            query.setOptions(params.options);
         }
 
-        if (callback) callback(null, docs);
-    });
+        if (params.sort) {
+            query.sort(params.sort);
+        }
+
+        if (params.page) {
+            var skip = (params.page.no - 1) * params.page.size;
+            var limit = params.page.size;
+            if (skip) query.skip(skip);
+            if (limit) query.limit(limit);
+        }
+
+        if (params.conditions) {
+            query.find(params.conditions);
+        }
+
+        if(params.populates) {
+            params.populates.forEach(i=>{
+                query.populate(i)
+            })
+        }
+
+        query.lean(true);
+        var docs = yield query.exec();
+        var count = yield Order.count(params.conditions).exec();
+        if(callback) callback(null, docs, count);
+
+    }).catch(function(e){
+        logger.error('find orders error: ' + e);
+        logger.error(e.stack);
+        if(callback) callback(e, null, 0);
+    })
 };
 
 Service.prototype.loadById = function(id, callback){

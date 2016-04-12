@@ -116,5 +116,10 @@ domain.action('addPowerActivity').onExecute(function(data){
     apiFactory.post('/marketing/tenant/power/add').drive(this).send(data);
 });
 
-
+domain.action('findOrders').onExecute(function(data){
+    var querystring = Object.keys(data.filter).map(function(k){
+        return k + "=" + data.filter[k]
+    }).join("&");
+    apiFactory.get('/tenant/sd/orders?' + querystring).drive(this).send();
+});
 module.exports = null;

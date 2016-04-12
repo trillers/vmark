@@ -214,21 +214,80 @@ module.exports = function (router) {
         }
     });
 
+    router.get('/sd/orders', function*(){
+        try{
+            let tenantId = this.request.query.tenant;
+            let options = {
+                page: {
+                    no: this.request.query.no,
+                    size: this.request.query.size
+                },
+                conditions: {
+                    org: tenantId
+                },
+                populates: [
+                    {
+                        path:'bespeak',
+                        populate: [{
+                            path: 'product',
+                            model: 'Course',
+                        },
+                            {
+                                path: 'media',
+                                model: 'WechatMedia',
+                            },
+                            {
+                                path: 'user',
+                                model: 'TenantUser',
+                            }
+                        ]
+                    }]
+            };
+            let orders = yield context.services.orderService.findAsync(options);
+            this.body = {orders: orders, error: null};
+        } catch (e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
     router.post('/sd/order', function*(){
         try{
             let order = this.request.body;
             let tenantWechatSite = yield context.services.tenantWechatSiteService.loadByIdAsync(order.bespeak.media);
             let wechatId = tenantWechatSite.originalId;
+            let distributor = null;
+            order.org = tenantWechatSite.org;
 
             let userId = order.bespeak.user._id;
             let membership = yield context.services.membershipService.loadByUserIdAndWechatIdAsync(userId, wechatId);
 
             let isDistributor = membership.type && (membership.type === 'd');
             if(isDistributor){
-                let distributor = yield context.services.membershipService.loadDistributorsChainByIdAsync(membership._id);
+                distributor = yield context.services.membershipService.loadDistributorsChainByIdAsync(membership._id);
                 yield context.services.membershipService.splitBillAsync(distributor, order.bespeak.product, order.finalPrice, 3);
             }
-            
+            let orderMeta = {
+                bespeak: order.bespeak._id,
+                org: order.org,
+                finalPrice: order.finalPrice
+            };
+            if(distributor){
+                let distributors = [];
+                let recurPushDistributors = function(distributor){
+                    if(!distributor.upLine){
+                        return;
+                    }
+                    if(typeof distributor.upLine === 'string'){
+                        distributors.push(distributor.upLine);
+                    }else{
+                        distributors.push(distributor.upLine._id);
+                    }
+                    recurPushDistributors(distributor.upLine);
+                };
+                recurPushDistributors(distributor);
+                orderMeta['distributors'] = distributors;
+            }
             let orderPersisted = yield context.services.orderService.createAsync(wechatId, order);
             yield context.services.bespeakService.removeByIdAsync(wechatId, order.bespeak._id);
 
