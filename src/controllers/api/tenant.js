@@ -218,7 +218,6 @@ module.exports = function (router) {
 
             yield context.services.bespeakService.removeByIdAsync(wechatId, order.bespeak._id);
 
-            console.log(order);
             let userId = order.bespeak.user._id || order.bespeak.user;
             let membership = yield context.services.membershipService.loadByUserIdAndWechatIdAsync(userId, wechatId);
             let isDistributor = membership.type && (membership.type === 'd');
