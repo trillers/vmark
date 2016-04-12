@@ -8,6 +8,7 @@ var MembershipType = typeRegistry.item('MembershipType');
 var CommissionType = typeRegistry.item('CommissionType');
 var LifeFlag = typeRegistry.item('LifeFlag');
 var _ = require('underscore');
+var wechatApiCache = require('../../../tenant/wechat/api-cache');
 
 var Service = function(context){
     this.context = context;
@@ -122,13 +123,13 @@ Service.prototype.splitBill = function(distributor, product, finalPrice, level, 
                 }
                 let currentDistributor = distributor.upLine;
                 let IncomeAmount = null;
-                let commissionType = eval('upLine' + index + 'CommissionType');
-                let commissionValue = eval('upLine' + index + 'CommissionValue');
+                let commissionType = product['upLine' + index + 'CommissionType'];
+                let commissionValue = product['upLine' + index + 'CommissionValue'];
                 if(commissionType === CommissionType.Percent.value()){
-                    IncomeAmount = parseInt(finalPrice, 10) * parseInt(commissionValue, 10);
+                    IncomeAmount = parseFloat(finalPrice, 10) * parseFloat(commissionValue, 10);
 
                 }else if(commissionType === CommissionType.Cash.value()){
-                    IncomeAmount = parseInt(commissionValue, 10);
+                    IncomeAmount = parseFloat(commissionValue, 10);
                 }else{
                     throw new Error('unknown distributor strategy');
                 }
@@ -162,6 +163,31 @@ Service.prototype.addAccountBalance = function(distributorId, income, callback){
             var obj = result.toObject();
             return membershipKv.saveById(obj._id, obj, callback);
         })
+    });
+};
+
+Service.prototype.checkoutByDistributorId = function(distributorId, tenantId, media, callback){
+    var me = this;
+    var done = callback || function noop(){};
+    co(function*(){
+        try{
+            let distributor = yield me.loadUserInfoByIdAsync(distributorId);
+            let orders = yield me.context.services.orderService.finishByDistributorIdAndTenantIdAndMediaIdAsync(distributorId, tenantId, media._id);
+            yield me.updateByIdAsync(distributorId, {accountBalance: 0});
+            let wechatApi = (yield wechatApiCache.get(media.originalId)).api;
+            for(let i=0, len=orders.length; i<len; i++){
+                let order = yield me.context.services.orderService.loadFullInfoByIdAsync(orders[i]._id);
+                let payment = null;
+                let responseText = "尊贵的经纪人 " + distributor.user.nickname + " : </br>" +
+                    "客户 [ " + order.bespeak.user.nickname + " ] 购买了您分享的 " + order.bespeak.product.name + '</br>' +
+                    "您此单收入 " + payment;
+                wechatApi.sendTextAsync(distributor.user.nickname, responseText);
+            }
+            done(null);
+        }catch (e){
+            me.context.logger.error('Failed to checkout by distributorId ' + util.inspect(e));
+            done(e);
+        }
     });
 };
 
@@ -246,6 +272,18 @@ Service.prototype.loadDistributorsChainById = function(id, level, callback){
             recurPopulate(doc, ++index, len, callback);
         });
     }
+};
+
+Service.prototype.loadUserInfoById = function(id, callback){
+    var membershipKv = this.context.kvs.membership;
+    var Membership = this.context.models.Membership;
+
+    Membership.findById(id, null, {lean: true})
+        .populate({
+            path: 'user',
+            model: 'TenantUser'
+        })
+        .exec(callback);
 };
 
 Service.prototype.loadById = function(id, callback){

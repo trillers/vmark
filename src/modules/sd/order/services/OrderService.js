@@ -52,6 +52,53 @@ Service.prototype.findByTenantId = function(tenantId, params, callback){
 
 };
 
+Service.prototype.finishByDistributorIdAndTenantIdAndMediaId = function(distributorId, tenantId, mediaId){
+    var me = this;
+    var Order = this.context.models.Order;
+    var query = Order.find({org: tenantId, distributors: { $all: [distributorId]}});
+    query
+        .populate({
+            path: 'bespeak',
+            match: {
+                media: mediaId
+            }
+        })
+        .update({}, {$set: {status: 'xx'}}, null, true, function(err, docs){
+            if(err){
+                me.context.logger.error(err);
+                return callback(err);
+            }
+            callback(null, docs);
+        })
+};
+
+Service.prototype.loadFullInfoById = function(id, callback){
+    var me = this;
+    var Order = this.context.models.Order;
+    var query = Order.findById(id);
+    query
+        .populate({
+            path: 'bespeak',
+            populate: [
+                {
+                    path: 'user',
+                    model: 'TenantUser'
+                },
+                {
+                    path: 'product',
+                    model: 'Course'
+                }
+            ]
+        })
+        .exec(function(err, doc){
+            if(err){
+                me.context.logger.error(err);
+                return callback(err);
+            }
+            callback(null, doc);
+        })
+};
+
 Service.prototype.find = function (params, callback) {
     var Order = this.context.models.Order;
     var logger = this.context.logger;

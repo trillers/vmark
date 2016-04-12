@@ -158,8 +158,6 @@ module.exports = function (router) {
         try{
             let catalogId = this.params.id;
             let catalog = this.request.body.o;
-            console.log("**************")
-            console.log(catalog);
             let catalogUpdated = yield context.services.catalogService.updateByIdAsync(catalogId, catalog);
             this.body = {catalog: catalogUpdated, error: null};
         }catch(e){
@@ -326,6 +324,42 @@ module.exports = function (router) {
         }
     });
 
+    router.get('/sd/distributors/payment/count', function*() {
+        try {
+            let tenantId = this.request.query.tenant;
+            let conditions = {
+                $or: [
+                    {
+                        type: MembershipType.Distributor.value()
+                    },
+                    {
+                        type: MembershipType.Both.value()
+                    }
+                ],
+                accountBalance: {$gt: 0}
+            };
+            let count = yield context.services.membershipService.findCountByTenantIdAsync(tenantId, conditions);
+            this.body = {error: null, count: count};
+        }catch (e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.post('/sd/distributors/checkout', function*() {
+        try {
+            let distributorId = this.request.body.distributor;
+            let tenantId = this.request.body.tenant;
+            let media = this.request.body.media;
+
+            yield context.services.membershipService.checkoutByDistributorIdAsync(distributorId, tenantId, media);
+            this.body = {error: null};
+        }catch (e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
     router.get('/sd/distributors/count', function*() {
         try {
             let tenantId = this.request.query.tenant;
@@ -376,17 +410,68 @@ module.exports = function (router) {
         }
     });
 
-    router.get('/sd/distributors', function*(){
+    router.get('/sd/distributors/payment', function*(){
         try{
             let tenantId = this.request.query.tenant;
             let options = {
-                tenantId: tenantId,
                 page: {
                     no: this.request.query.no,
                     size: this.request.query.size
                 },
                 conditions: {
-                    type: MembershipType.Distributor.value()
+                    $or: [
+                        {
+                            type: MembershipType.Distributor.value()
+                        },
+                        {
+                            type: MembershipType.Both.value()
+                        }
+                    ],
+                    accountBalance: {$gt: 0},
+                    org: tenantId
+                },
+                populates: [
+                    {path:'user', model: 'TenantUser'},
+                    {
+                        path: 'upLine',
+                        model: 'Membership',
+                        populate: [{
+                            path: 'user',
+                            model: 'TenantUser'
+                        },{
+                            path: 'media',
+                            model: 'WechatMedia'
+                        }]
+                    },
+                    {path: 'media'}
+                ]
+            };
+            let distributors = yield context.services.membershipService.findAsync(options);
+            this.body = {distributors: distributors, error: null};
+        } catch (e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.get('/sd/distributors', function*(){
+        try{
+            let tenantId = this.request.query.tenant;
+            let options = {
+                page: {
+                    no: this.request.query.no,
+                    size: this.request.query.size
+                },
+                conditions: {
+                    $or: [
+                        {
+                            type: MembershipType.Distributor.value()
+                        },
+                        {
+                            type: MembershipType.Both.value()
+                        }
+                    ],
+                    org: tenantId
                 },
                 populates: [
                     {path:'user', model: 'TenantUser'},
