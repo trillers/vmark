@@ -1,4 +1,4 @@
-import * as fetch from './ajax';
+import * as fetch from './fetchMonkeyPatch';
 
 ;(function(window, undefined){
     'use strict';
@@ -12,7 +12,10 @@ import * as fetch from './ajax';
         !Array.isArray(nodes) && (nodes = [].slice.apply(nodes));
         return nodes.length ===1 ? nodes[0] : nodes;
     };
-    jQuery = Object.assign(jQuery, fetch.default);
+    //jQuery = Object.assign(jQuery, fetch);
+    for( var p in fetch){
+        jQuery[p] = fetch[p];
+    }
     window.$ = jQuery;
 
 })(window);
