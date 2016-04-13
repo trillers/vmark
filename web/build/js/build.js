@@ -30,7 +30,9 @@ webpackJsonp([0,1],[
 	    riot.mixin(key, _index2.mixins[key]);
 	});
 
+	console.error(riot);
 	var tags = riot.mount('*');
+	console.log(tags);
 	tags.forEach(function (tag) {
 	    _app.app.views[tag.name] = tag;
 	});
