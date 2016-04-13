@@ -7,11 +7,11 @@ webpackJsonp([0,1],[
 	__webpack_require__(4);
 
 	__webpack_require__(6);
-
+	alert('_app')
 	var _app = __webpack_require__(7);
-
+	alert('_index')
 	var _index = __webpack_require__(8);
-
+	alert('appstore')
 	var _AppStore = __webpack_require__(12);
 	alert(2)
 	var AppStore = _interopRequireWildcard(_AppStore);
