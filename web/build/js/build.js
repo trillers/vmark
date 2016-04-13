@@ -3093,9 +3093,9 @@ webpackJsonp([0,1],[
 	alert(8)
 	/* WEBPACK VAR INJECTION */(function(riot) {'use strict';
 		alert('lll')
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
+	//Object.defineProperty(exports, "__esModule", {
+	//    value: true
+	//});
 		alert(riot.toString());
 	var app = exports.app = riot.observable();
 
