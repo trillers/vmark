@@ -3249,5 +3249,115 @@ webpackJsonp([0,1],[
 
 	exports.appDispatcher = appDispatcher;
 
+/***/ },
+/* 14 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	/**
+	 * Action dispatcher
+	 */
+
+	var AppDispatcher = function () {
+	    function AppDispatcher() {
+	        _classCallCheck(this, AppDispatcher);
+
+	        this.actionFuns = [];
+	    }
+
+	    _createClass(AppDispatcher, [{
+	        key: 'dispatch',
+	        value: function dispatch(action) {
+	            this.actionFuns.map(function (func) {
+	                func(action);
+	            });
+	        }
+	    }, {
+	        key: 'registry',
+	        value: function registry(func) {
+	            if (typeof func !== 'function') {
+	                throw new Error('argument require a function');
+	            }
+	            this.actionFuns.push(func);
+	        }
+	    }]);
+
+	    return AppDispatcher;
+	}();
+
+	exports.AppDispatcher = AppDispatcher;
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.mixins = undefined;
+
+	var _dispatcher = __webpack_require__(16);
+
+	var mixins = exports.mixins = {
+	    dispatcher: _dispatcher.dispatcher
+	};
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.dispatcher = undefined;
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	var _app = __webpack_require__(7);
+
+	var dispatcher = exports.dispatcher = {
+	    dispatch: function dispatch(action) {
+	        /**
+	         * allow dispatch a thunk function
+	         */
+	        if (isThunk(action)) {
+	            return action(done);
+	        }
+	        /**
+	         * allow a promise
+	         */
+	        if (isPromise(action)) {
+	            return action.then(done);
+	        }
+	        /**
+	         * plain action
+	         */
+	        done(action);
+	        function done(res) {
+	            _app.app.trigger('action', res);
+	        }
+	    }
+	};
+
+	function isThunk(o) {
+	    return typeof o === 'function';
+	}
+	function isPromise(o) {
+	    return (typeof o === 'undefined' ? 'undefined' : _typeof(o)) === 'object' && typeof o.then === 'function';
+	}
+
 /***/ }
 ]);
