@@ -50,14 +50,16 @@
         this.mixin('dispatcher');
 
         this.on('mount', function(){
+            alert('mount');
             this.on('loadCatalogById', function(res){
                 this.update({catalog: res.catalog});
             });
             this.dispatch(actions.loadCatalogById(this.opts.id));
         })
-        console.error(this.opts.id);
+        alert(this.opts.id);
         $.get(__app.settings.api.url + '/tenant/sd/catalog/_' + this.opts.id)
                 .success(res=>{
+            alert('success');
             console.error(res);
 
         })
