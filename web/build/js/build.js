@@ -3359,5 +3359,37 @@ webpackJsonp([0,1],[
 	    return (typeof o === 'undefined' ? 'undefined' : _typeof(o)) === 'object' && typeof o.then === 'function';
 	}
 
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('catalog-index', '<div> <div>产品目录</div> <div if="{!catalog || !catalog.products || !catalog.products.length}"> 该机构尚没有上架任何课程 </div> <div if="{catalog.products && catalog.products.length}"> <ul class="catalog-card"> <li each="{catalog.products}" onclick="{parent.routeTo}"> <div riot-style="background-image:url(\'{__app.settings.api.url + \'/file?media_id=\' + poster}\')"> </div> <div> <div>{name}</div> <div>{slogan}</div> </div> </li> </ul> </div> </div>', '.catalog-card{ margin: 0px; padding: 0px; } .catalog-card li{ list-style-type:none; min-height: 60px; border-bottom: 1px solid #ddd; } .catalog-card li >div{ float: left; margin-left: 10px; margin-top: 10px; } .catalog-card li >div:first-child{ width: 40px; height: 40px; background-size: 100% 100%; margin-top: 10px; float: left; } .catalog-card li >div:first-child >img{ width: 40px; }', '', function(opts) {
+	        this.mixin('dispatcher');
+
+	        this.on('mount', function(){
+	            alert('mount');
+	            this.on('loadCatalogById', res => {
+	                this.update({catalog: res.catalog});
+	            });
+	            this.dispatch(actions.loadCatalogById(this.opts.id));
+	        })
+	        alert(this.opts.id);
+	        $.get(__app.settings.api.url + '/tenant/sd/catalog/_' + this.opts.id)
+	                .success(res=>{
+	            alert('success');
+	            console.error(res);
+
+	        })
+	        .error(e=>{
+	            console.warn(e.stack)
+	        })
+
+	        this.routeTo = e => {
+	            window.location = __app.settings.app.url + "/sd/" + __page.user.wechatId + "/product?id=" + e.item._id + '&media=' + this.catalog.media._id;
+	        }
+
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
 /***/ }
 ]);
