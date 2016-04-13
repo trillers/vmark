@@ -15,7 +15,7 @@ _exports.tenant.wechat = require('./tenant/wechat');
 _exports.tenant.org = require('./tenant/org');
 _exports.tenant.media = require('./tenant/media');
 _exports.tenant.user = require('./tenant/user');
-_exports.tenant.main = require('./tenant/main');
+//_exports.tenant.main = require('./tenant/main');
 _exports.tenant.auth = require('./tenant/auth');
 
 _exports.group = require('./group');

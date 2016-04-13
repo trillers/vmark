@@ -4,15 +4,16 @@ var CommissionType = typeRegistry.item('CommissionType');
 
 var Model = function(domainBuilder){
     var schema = domainBuilder
-        .i('Distributor')
+        .i('Bespeak')
         .withBasis()
         .withLifeFlag()
         .withCreatedOn()
         .withRank()
         .withProperties({
-            user:                  {type: String, ref: 'TenantUser', required: true},
-            upLine:                {type: String, ref: 'TenantUser'},
-            desc:                  {type: String}
+            product:               {type: String, ref: 'Course'},
+            media:                 {type: String, ref: 'WechatMedia', required: true},
+            telephone:             {type: String, required: true},
+            user:                  {type: String, ref: 'TenantUser', required: true}
         })
         .build();
     return schema.model(true);

@@ -57,6 +57,7 @@ module.exports = function(app){
     require('./power')(router);
     app.use(router.routes());
 
+
     //marketing points
     router = new Router();
     router.prefix('/api/marketing/points');

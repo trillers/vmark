@@ -39,12 +39,14 @@ Service.prototype.signupWithBaseInfo = function(openid, callback){
             wechatMediaUser = yield wechatMediaUserKv.loadByOpenidAsync(openid);
             if(wechatMediaUser){
                 user = yield userKv.loadByIdAsync(wechatMediaUser.user);
-                if(callback) callback(null, {
-                    user: user,
-                    wechatMediaUser: wechatMediaUser,
-                    result: authResults.ok
-                });
-                return;
+                if(user) {
+                    if (callback) callback(null, {
+                        user: user,
+                        wechatMediaUser: wechatMediaUser,
+                        result: authResults.ok
+                    });
+                    return;
+                }
             }
 
             /*
@@ -62,15 +64,17 @@ Service.prototype.signupWithBaseInfo = function(openid, callback){
             /*
              * Create wechat site user
              */
-            var createWechatMediaUserJson = {
-                user: userId,
-                status: status,
-                host: 'unknown',
-                openid: openid,
-                nickname: '匿名'
-            };
+            if(!wechatMediaUser) {
+                var createWechatMediaUserJson = {
+                    user: userId,
+                    status: status,
+                    host: 'unknown',
+                    openid: openid,
+                    nickname: '匿名'
+                };
 
-            wechatMediaUser = yield wechatMediaUserService.createAsync(createWechatMediaUserJson);
+                wechatMediaUser = yield wechatMediaUserService.createAsync(createWechatMediaUserJson);
+            }
 
             /*
              * Link wechat site user openid to user id

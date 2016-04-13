@@ -20,24 +20,22 @@ Service.prototype.createTenantWechatSiteUser = function(wechatId, mediaUserJson,
     var kv = this.context.kvs.tenantWechatSiteUser;
     var teAtToOpenidKv = this.context.kvs.teAtToOpenid;
     var me = this;
-        mediaUserJson.host = mediaUserJson.host;
-        mediaUserJson.type = WechatMediaUserType.WechatSiteUser.value();
-        var openid = mediaUserJson.openid;
-        var at = agentToken.generate(openid);
-        var ot = openToken.generate(openid);
-
-        mediaUserJson.at = at;
-        mediaUserJson.ot = ot;
-        me.create(mediaUserJson, function(err, json){
-            teAtToOpenidKv.set(wechatId, at, openid, function(err){
-                if(err) {
-                    if(callback) callback(err);
-                    return;
-                }
-                json.wechatId = wechatId;
-                kv.saveByWechatIdAndOpenid(json, callback);
-            });
+    mediaUserJson.type = WechatMediaUserType.WechatSiteUser.value();
+    var openid = mediaUserJson.openid;
+    var at = agentToken.generate(openid);
+    var ot = openToken.generate(openid);
+    mediaUserJson.at = at;
+    mediaUserJson.ot = ot;
+    me.create(mediaUserJson, function(err, json){
+        teAtToOpenidKv.set(wechatId, at, openid, function(err){
+            if(err) {
+                if(callback) callback(err);
+                return;
+            }
+            json.wechatId = wechatId;
+            kv.saveByWechatIdAndOpenid(json, callback);
         });
+    });
 };
 
 Service.prototype.deleteTenantWechatSiteUserByWechatIdAndOpenid = function(wechatId, openid, callback){

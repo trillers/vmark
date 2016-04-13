@@ -40,8 +40,11 @@ Authentication.prototype.clear = function(ctx){
     ctx.session = null;
 };
 
-Authentication.prototype.saveReturnUrl = function(ctx, wechatId){
-    var returnUrl = ctx.request.href;
+Authentication.prototype.saveReturnUrl = function(ctx, wechatId, url){
+    var returnUrl = url;
+    if(!returnUrl){
+        returnUrl = ctx.request.href;
+    }
     logger.debug('Save return url: ' + returnUrl);
     ctx.session && (ctx.session[wechatId + '.' + RETURN_URL_KEY] = returnUrl);
 }

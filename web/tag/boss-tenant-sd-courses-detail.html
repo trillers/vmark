@@ -190,6 +190,7 @@
                         o: self.course
                     }).onDone(function(res){
                         self.course.actionTime = res.course.actionTime;
+                        self.course.qr = res.course.qr;
                         self.update();
                     }).execute();
                 }

@@ -7,4 +7,11 @@ module.exports = function(app){
 
     app.use(require('./test')());
 
+    app.use(require('./power')());
+
+    //marketing tenant power activity
+    router = new router();
+    router.prefix('/api/marketing/tenant/power');
+    require('./power-api')(router);
+    app.use(router.routes());
 }

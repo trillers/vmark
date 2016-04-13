@@ -3,7 +3,8 @@ var Promise = require('bluebird');
 var service = require('./services/QrCodeService');
 var u = require('util');
 var co = require('co');
-var wechatApi = require('../../wechat/common/api').api;
+var wechatApiCache = require('../../tenant/wechat/api-cache');
+var wechatApiStandalone = require('../../wechat/common/api').api;
 var Qr = require('./Qr');
 var TenantPersistence = require('./Persistence').TenantPersistence;
 
@@ -62,6 +63,13 @@ typeProto.createQr = function(qrData, cb){
             }
             var createQrArgs = [sceneId];
             qr.temp && createQrArgs.push(defaultExpire);
+
+            var wechatApi = wechatApiStandalone;
+
+            if(qr.wechatId){
+                wechatApi = (yield wechatApiCache.get(qr.wechatId)).api;
+            }
+
             var genFn = function (){
                 function wechatApiNodeStyleWrapper(){
                     var args = [].slice.apply(arguments);
@@ -87,6 +95,8 @@ typeProto.createQr = function(qrData, cb){
         }
     })
 };
+typeProto.createQrAsync = Promise.promisify(typeProto.createQr);
+
 typeProto.getQrById = function(id, callback){
     var me = this;
     co(function*(){

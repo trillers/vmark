@@ -93,9 +93,9 @@ PlatformPersistence.prototype.update = function(me){
 PlatformPersistence.prototype.updateAsync = Promise.promisify(PlatformPersistence.prototype.update);
 
 module.exports = {
-    Persistence,
-    TenantPersistence,
-    PlatformPersistence
+    Persistence:Persistence,
+    TenantPersistence:TenantPersistence,
+    PlatformPersistence:PlatformPersistence
 };
 
 

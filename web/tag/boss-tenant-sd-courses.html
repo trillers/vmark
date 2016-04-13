@@ -76,7 +76,7 @@
         console.log(__app.enums)
         self.on('open', function(){
             findCoursesAction.newInvocation({
-                tenant: __app.tenant,
+                tenant: __page.tenantId,
                 filter: self.filter
             }).onDone(function(res){
                 if(res.error){
@@ -89,7 +89,7 @@
         });
         self.onSearch = function(e){
             findCoursesAction.newInvocation({
-                tenant: __app.tenant,
+                tenant: __page.tenantId,
                 filter: self.filter
             }).onDone(function(res){
                 if(res.error){

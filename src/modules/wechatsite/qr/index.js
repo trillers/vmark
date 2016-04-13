@@ -4,6 +4,7 @@ var qrRegistry = new QrTypeRegistry();
 var context = require('../../../context/context');
 var wsConns = require('../../../app/wsConns');
 var tenantService = context.services.tenantService;
+var platformUserService = context.services.platformUserService;
 var bindBotResults = tenantService.bindBotResults;
 var securityService = context.services.securityService;
 var authResults = securityService.authResults;
@@ -161,6 +162,7 @@ activityType.onAccess(function(qr, openid){
     var powerActivityService = context.services.powerActivityService;
     co(function*(){
         try{
+            yield platformUserService.ensurePlatformUserAsync(openid);
             var res = yield powerActivityService.getActivityPoster(qr, openid);
             wechatApi.sendText(openid, res.reply, function (err) {
                 if(err) logger.error(err);
@@ -183,16 +185,9 @@ activityPosterType.onAccess(function(qr, openid){
     var logger = context.logger;
     co(function*(){
         try{
+            yield platformUserService.ensurePlatformUserAsync(openid);
             var powerActivityService = context.services.powerActivityService;
-            var res = yield powerActivityService.scanActivityPoster(qr, openid);
-            wechatApi.sendText(openid, res.reply, function (err) {
-                if(err) logger.error(err);
-            });
-            if(res.success) {
-                wechatApi.sendImage(openid, res.mediaId, function (err) {
-                    if (err) logger.error(err);
-                });
-            }
+            yield powerActivityService.scanActivityPoster(qr, openid);
         }
         catch(e){
             logger.error(e);
@@ -206,11 +201,9 @@ participantPosterType.onAccess(function(qr, openid){
     var logger = context.logger;
     co(function*(){
         try{
+            yield platformUserService.ensurePlatformUserAsync(openid);
             var powerParticipantService = context.services.powerParticipantService;
-            var reply = yield powerParticipantService.scanParticipantPoster(qr, openid);
-            wechatApi.sendText(openid, reply, function (err) {
-                if(err) logger.error(err);
-            });
+            yield powerParticipantService.scanParticipantPoster(qr, openid);
         }
         catch(e){
             logger.error(e);

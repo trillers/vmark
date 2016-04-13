@@ -1,8 +1,8 @@
 var u = require('../../../../app/util');
 var context = require('../../../../context/context');
 
-var Distributor = require('./Distributor');
+var Bespeak = require('./Bespeak');
 
-module.exports.Distributor = Distributor(context.domainBuilder.main);
+module.exports.Bespeak = Bespeak(context.domainBuilder.main);
 
 u.extend(context.models, module.exports);

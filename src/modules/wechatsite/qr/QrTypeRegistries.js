@@ -4,6 +4,8 @@ var Qr = require('./Qr');
 var Persistence = require('./Persistence');
 var tenantPersistence = new Persistence.TenantPersistence();
 var platformPersistence = new Persistence.PlatformPersistence();
+var Promise = require('bluebird');
+var _ = require('underscore');
 
 function QrTypeRegistry(persistence){
     this.persistence = persistence;
@@ -23,7 +25,7 @@ regProto.newType = function(type, options, listeners){
         throw new Error('Failed to register qr to qr manager input error, first argument must be string or Qr')
     }
     json.registry = this;
-    Object.assign(json, options);
+    _.extend(json, options);
     if(listeners && typeof listeners != 'object'){
         throw new Error('Failed to register qr to qr manager input error, second arguments must be object')
     }
@@ -54,6 +56,8 @@ regProto.getQr = function(sceneId, wechatId, callback){
         }
     })
 };
+
+regProto.getQrAsync = Promise.promisify(regProto.getQr);
 
 regProto.handle = function(sceneId, openid, wechatId){
     var me = this;

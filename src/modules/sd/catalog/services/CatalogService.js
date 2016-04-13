@@ -69,7 +69,7 @@ Service.prototype.loadFullInfoById = function(id, callback){
     var Catalog = this.context.models.Catalog;
     Catalog.findById(id, null, {lean: true})
         .populate({path: 'tenant'})
-        .populate({path: 'media'})
+        .populate({path: 'media', model:'WechatMedia'})
         .populate({path: 'products'})
         .exec(callback);
 };

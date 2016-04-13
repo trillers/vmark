@@ -223,6 +223,9 @@ var util = {
                     app.off('confirmCancel');
                 });
         },
+        showImg: function(opts){
+            window.app.trigger('showImg', {title: opts.title, imgUrl: opts.imgUrl, width: opts.width, height: opts.height});
+        },
         alert: function(opts){
             window.app.trigger('alert', opts);
         },
@@ -246,7 +249,6 @@ var util = {
                 if(!(o && o.key)){
                     throw new Error('expected a key')
                 }
-                console.log(this.meta)
                 if(this.meta[o.key]){
                     return;
                 }

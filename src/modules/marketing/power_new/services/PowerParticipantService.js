@@ -3,6 +3,7 @@ var settings = require('@private/vmark-settings');
 var _ = require('underscore');
 var myUtil = require('../../../../app/util');
 var PowerType = require('../../../common/models/TypeRegistry').item('PowerType');
+var wechatApiCache = require('../../../tenant/wechat/api-cache');
 
 var Service = function(context){
     this.context = context;
@@ -53,15 +54,26 @@ Service.prototype.loadById = function*(id){
     //var doc = yield PowerParticipant.findById(id, {}, {lean: true}).populate({path: 'power'}).populate({path: 'user'}).exec();
     var kv = this.context.kvs.power;
     var userKv = this.context.kvs.platformUser;
+    var tenantUserService = this.context.services.tenantUserService;
+    var powerActivityService = this.context.services.powerActivityService;
     var participant = yield kv.loadParticipantByIdAsync(id);
     if(participant){
-        var activity = yield kv.loadActivityByIdAsync(participant.activity);
-        activity.bgImg = activity.bgImg.split(',');
-        var user = yield userKv.loadByIdAsync(participant.user);
+        var activity = yield powerActivityService.loadById(participant.activity);
+        var user = {};
+        if(activity.wechatId){
+            user = yield tenantUserService.loadByWechatIdAndIdAsync(activity.wechatId, participant.user);
+        }else{
+            user = yield userKv.loadByIdAsync(participant.user);
+        }
         var rank = yield kv.getParticipantRankAsync(participant.activity, participant.user);
         var helpArr = yield kv.getHelpFriendsSetAsync(id);
-        participant.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + activity._id;
-        participant.homePage = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participant._id;
+        if(activity.wechatId){
+            participant.participateLink = 'http://' + settings.app.domain + '/marketing/tenant/power/' + activity.wechatId + '/join?id=' + activity._id;
+            participant.homePage = 'http://' + settings.app.domain + '/marketing/tenant/power/' + activity.wechatId + '/participant?id=' + participant._id;
+        }else {
+            participant.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + activity._id;
+            participant.homePage = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participant._id;
+        }
         participant.activity = activity;
         participant.user = user;
         participant.rank = rank;
@@ -161,7 +173,11 @@ Service.prototype.getStatus = function*(participant, user){
             if (participantId) {
                 status.join = 'none';
                 status.joined = '';
-                status.homeLink = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participantId;
+                if(participant.activity.wechatId) {
+                    status.homeLink = 'http://' + settings.app.domain + '/marketing/tenant/power/' + participant.activity.wechatId + '/participant?id=' + participantId;
+                }else{
+                    status.homeLink = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participantId;
+                }
             }
             var helpArr = yield kv.getHelpFriendsSetAsync(participant.id);
             if (_.indexOf(helpArr, user.openid) !== -1) {
@@ -190,7 +206,8 @@ Service.prototype.help = function*(participant, user){
             var helpPower = myUtil.random(min, max);
             var data = yield kv.incParticipantPowerByIdAsync(participant.id, helpPower);
             yield kv.increaseParticipantScoreInRankingListAsync(participant.activity._id, participant.user.id, helpPower);
-            var rank = yield kv.getParticipantRankAsync(participant.activity, participant.user);
+
+            var rank = yield kv.getParticipantRankAsync(participant.activity._id, participant.user._id);
             result = {rank: rank, total_power: data, helpPower: helpPower};
         } else if(res === 0) {
             result = {helped: true};
@@ -212,38 +229,49 @@ Service.prototype.help = function*(participant, user){
  *    reply: 'xxxxx', reply msg send to user
  * }
  * */
-Service.prototype.scanParticipantPoster = function*(qr, openid){
+Service.prototype.scanParticipantPoster = function*(qr, wechatId, openid){
     var logger = this.context.logger;
+    var participant = null;
+    var wechatApi = (yield wechatApiCache.get(wechatId)).api;
+
     try {
-        var platformUserService = this.context.services.platformUserService;
+        var tenantUserService = this.context.services.tenantUserService;
         var powerPosterService = this.context.services.powerPosterService;
-        var poster = yield powerPosterService.loadBySceneId(qr.sceneId);
-        var user = yield platformUserService.loadPlatformUserByOpenidAsync(openid);
-        var participant = yield this.loadById(poster.participant);
+        var poster = yield powerPosterService.loadByWechatIdAndSceneId(wechatId, qr.sceneId);
+        var user = yield tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, openid);
+        participant = yield this.loadById(poster.participant);
         var res = yield this.help(participant, user);
         var reply = '';
         if(res.limited){
-            reply = '<' + participant.user.nickname + '> 助力人数已达上限\n'
-                    + '活动主页: <a href="' + participant.homePage + '"> 点击查看</a>';
+            reply = '<' + participant.user.nickname + '> 助力人数已达上限';
         }else if(res.error){
-            reply = '助力<' + participant.user.nickname + '> 失败\n'
-                + '活动主页: <a href="' + participant.homePage + '"> 点击查看</a>';
+            reply = '助力<' + participant.user.nickname + '> 失败';
         }else if(res.helped){
-            reply = '您已经助力过 <' + participant.user.nickname + '> \n'
-                + '活动主页: <a href="' + participant.homePage + '"> 点击查看</a>';
+            reply = '您已经助力过 <' + participant.user.nickname + '>';
         }else {
             if (participant.activity.type = PowerType.RedPacket.value()) {
-                reply = '<' + user.nickname + '> 您已成功为 \n<' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 红包,\n <' + participant.user.nickname + '> 目前总红包数: ' + res.total_power + ', 排名: ' + res.rank + '\n' + '活动主页: <a href="' + participant.homePage + '"> 点击查看</a>';
+                reply = '<' + user.nickname + '> 您已成功为 \n<' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 红包,\n <' + participant.user.nickname + '> 目前总红包数: ' + res.total_power + ', 排名: ' + res.rank;
             }else if(participant.activity.type = PowerType.Points.value()){
-                reply = '<' + user.nickname + '> 您已成功为 \n<' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 积分,\n <' + participant.user.nickname + '> 目前总积分: ' + res.total_power + ', 排名: ' + res.rank + '\n' + '活动主页: <a href="' + participant.homePage + '"> 点击查看</a>';
+                reply = '<' + user.nickname + '> 您已成功为 \n<' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 积分,\n <' + participant.user.nickname + '> 目前总积分: ' + res.total_power + ', 排名: ' + res.rank;
             }
         }
 
-        return reply;
+        yield wechatApi.sendTextAsync(openid, reply);
+        var articles = [
+            {
+                "title": participant.user.nickname + '  的活动主页，点击查看详情',
+                "description": participant.activity.shareDesc,
+                "url": participant.homePage,
+                "picurl": participant.activity.shareImg
+            }];
+        yield wechatApi.sendNewsAsync(openid, articles);
 
     }catch(e){
         logger.error('scan paticipant poster err: ' + e + ', qr: ' + qr._id + ', user openid: ' + openid);
-        return '助力好友失败';
+        logger.error(e.stack);
+        return wechatApi.sendText(openid, '抱歉,助力好友失败', function (err) {
+            if(err) logger.error(err);
+        });
     }
 }
 

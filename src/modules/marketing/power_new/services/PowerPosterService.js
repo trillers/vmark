@@ -3,6 +3,7 @@ var settings = require('@private/vmark-settings');
 var posterHandler = require('../../poster');
 var wechatApi = require('../../../wechat/common/api').api;
 var PosterType = require('../../../common/models/TypeRegistry').item('PosterType');
+var activityQrType = require('../../../wechatsite/qr').getQrType('ac');
 
 var Service = function(context){
     this.context = context
@@ -22,15 +23,14 @@ var Service = function(context){
 Service.prototype.create = function*(jsonData){
     var logger = this.context.logger;
     var PowerPoster = this.context.models.PowerPoster;
-    var userKv = this.context.kvs.platformUser;
+    var tenantUserService = this.context.services.tenantUserService;
     var posterKv = this.context.kvs.poster;
-    var user = yield userKv.loadByIdAsync(jsonData.user);
+    var user = yield tenantUserService.loadByWechatIdAndIdAsync(jsonData.wechatId, jsonData.user);
     var posterData = {};
-    jsonData.bgImg = 'http://picm.photophoto.cn/085/056/002/0560020133.jpg';
     if(jsonData.type === PosterType.activity.value()){
-        posterData = yield posterHandler.activityPosterHandler.create(jsonData.bgImg, user);
+        posterData = yield posterHandler.createActivityPoster(jsonData.wechatId, jsonData.posterBgImg, user);
     }else if(jsonData.type === PosterType.participant.value()){
-        posterData = yield posterHandler.participantPosterHandler.create(jsonData.bgImg, user);
+        posterData = yield posterHandler.createParticipantPoster(jsonData.wechatId, jsonData.posterBgImg, user);
     }
     if(posterData.err){
         logger.error('poster handler err: ' + posterData.err);
@@ -75,13 +75,13 @@ Service.prototype.loadById = function*(id){
     return doc;
 }
 
-Service.prototype.loadBySceneId = function*(sid){
+Service.prototype.loadByWechatIdAndSceneId = function*(wechatId, sid){
     var logger = this.context.logger;
     var kv = this.context.kvs.poster;
-    var posterId = yield kv.loadIdBySceneIdAsync(sid);
+    var posterId = yield kv.loadIdByWechatIdAndSceneIdAsync(wechatId, sid);
     var doc = yield kv.loadByIdAsync(posterId);
 
-    logger.info('success load poster by sceneId: ' + sid);
+    logger.info('success load poster by sceneId: ' + sid + ' and wechatId ' + wechatId );
     return doc;
 }
 
@@ -94,9 +94,9 @@ Service.prototype.loadBySceneId = function*(sid){
 Service.prototype.getPosterMediaId = function*(poster){
     var expired = this.isInvalid(poster);
     if(expired){
-        var imageData = yield wechatApi.uploadMediaAsync(activity.poster.path, 'image');
+        var imageData = yield wechatApi.uploadMediaAsync(poster.path, 'image');
         var mediaId = imageData[0].media_id;
-        yield this.updateById(activity.poster._id, {mediaId: mediaId});
+        yield this.updateById(poster._id, {mediaId: mediaId});
         return mediaId;
     }else {
         return poster.mediaId;
@@ -112,4 +112,17 @@ Service.prototype.isInvalid = function(poster){
     var nowTimestamp = (new Date()).getTime();
     return nowTimestamp >= oldTimestamp + poster.expire * 1000;
 }
+
+/**
+ * get activity poster qrCode url
+ * @params posterId
+ *
+ * return poster media id
+ **/
+Service.prototype.getPosterQrCodeUrlById = function*(posterId){
+    var poster = yield this.loadById(posterId);
+    var qrCode = yield activityQrType.getQrAsync(poster.sceneId);
+    return activityQrType.getQrCodeUrl(qrCode.ticket);
+}
+
 module.exports = Service;

@@ -1,11 +1,18 @@
 "use strict";
+var typeRegistry = require('../../modules/common/models/TypeRegistry');
+var MembershipType = typeRegistry.item('MembershipType');
+var OrderStatus = typeRegistry.item('OrderStatus');
 var context = require('../../context/context');
+var qrTypeRegistry = require('../../modules/wechatsite/qr/QrTypeRegistries').tenantQrTypeRegistry;
+var qrType = qrTypeRegistry.getQrType('sdpp');
+//var checkauth = require('../../middlewares/checkauth');
+
 var tenantOrgService = context.services.tenantOrgService;
 var courseService = context.services.courseService;
 var logger = context.logger;
 
 module.exports = function (router) {
-
+    //router.use(checkauth);
     router.get('/_:id', function*(){
         try{
             let tenant = yield tenantOrgService.loadByIdAsync(this.params.id);
@@ -152,8 +159,33 @@ module.exports = function (router) {
         try{
             let catalogId = this.params.id;
             let catalog = this.request.body.o;
+            console.log(catalog)
+            catalog.products = Array.from(catalog.products).map(function(product){
+                if(typeof product === 'object'){
+                    return product._id
+                }
+                return product
+            });
+
             let catalogUpdated = yield context.services.catalogService.updateByIdAsync(catalogId, catalog);
             this.body = {catalog: catalogUpdated, error: null};
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.post('/sd/catalog/poster', function*(){
+        try{
+            let product = this.request.body.product;
+            let media = this.request.body.media;
+            var poster = yield context.services.posterService.fetchAsync({product: product}, media.originalId, this.session.auth.user);
+            if(poster){
+                return this.body = {error: null, poster: poster}
+            }
+            else{
+                return this.body = {error: 'failed to get poster'};
+            }
         }catch(e){
             logger.error(e);
             this.body = {error: e};
@@ -171,16 +203,328 @@ module.exports = function (router) {
         }
     });
 
+    router.post('/sd/bespeak', function*(){
+        try{
+            let bespeak = this.request.body;
+
+            let wechatsite = yield context.services.tenantWechatSiteService.loadByIdAsync(bespeak.media);
+            yield context.services.membershipService.ensureSignUpAsync(wechatsite.originalId, bespeak.user._id);
+            yield context.services.bespeakService.createAsync({
+                product: bespeak.product._id,
+                media: bespeak.media,
+                user: bespeak.user._id,
+                telephone: bespeak.telephone
+            });
+            this.body = {error: null}
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e}
+        }
+    });
+
+    router.get('/sd/orders', function*(){
+        try{
+            let tenantId = this.request.query.tenant;
+            let status = this.request.query.status;
+            let options = {
+                page: {
+                    no: this.request.query.no,
+                    size: this.request.query.size
+                },
+                conditions: {
+                    org: tenantId
+                },
+                populates: [
+                    {
+                        path:'bespeak',
+                        populate: [{
+                            path: 'product',
+                            model: 'Course',
+                        },
+                            {
+                                path: 'media',
+                                model: 'WechatMedia',
+                            },
+                            {
+                                path: 'user',
+                                model: 'TenantUser',
+                            }
+                        ]
+                    }
+                    ,{
+                        "path": "distributors",
+                        populate: {
+                            path: 'user',
+                            model: 'TenantUser'
+                        }
+                    }
+                ]
+            };
+            if(status){
+                options.conditions.status = status;
+            }
+            let data = yield context.services.orderService.findAsync(options);
+            this.body = {orders: data.docs, count: data.count, error: null};
+        } catch (e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.get('/sd/orders/distributor', function*(){
+        try{
+            let distributorId = this.request.query.distributor;
+            let status = this.request.query.status;
+
+            let orders = yield context.services.orderService.findByRelatedDistributorAsync(distributorId, status);
+            this.body = {orders: orders, error: null};
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.post('/sd/order', function*(){
+        try{
+            let order = this.request.body;
+            let tenantWechatSite = yield context.services.tenantWechatSiteService.loadByIdAsync(order.bespeak.media);
+            let wechatId = tenantWechatSite.originalId;
+            let distributor = null;
+            order.org = tenantWechatSite.org;
+
+            let userId = order.bespeak.user._id;
+            let membership = yield context.services.membershipService.loadByUserIdAndWechatIdAsync(userId, wechatId);
+
+            let isDistributor = membership.type && (membership.type === 'd');
+            if(isDistributor){
+                distributor = yield context.services.membershipService.loadDistributorsChainByIdAsync(membership._id);
+                yield context.services.membershipService.splitBillAsync(distributor, order.bespeak.product, order.finalPrice, 3);
+            }
+            let orderMeta = {
+                bespeak: order.bespeak._id,
+                org: order.org,
+                finalPrice: order.finalPrice
+            };
+            if(distributor){
+                let distributors = [];
+                let recurPushDistributors = function(distributor){
+                    if(!distributor.upLine){
+                        return;
+                    }
+                    if(typeof distributor.upLine === 'string'){
+                        distributors.push(distributor.upLine);
+                    }else{
+                        distributors.push(distributor.upLine._id);
+                    }
+                    recurPushDistributors(distributor.upLine);
+                };
+                recurPushDistributors(distributor);
+                orderMeta['distributors'] = distributors;
+            }
+            let orderPersisted = yield context.services.orderService.createAsync(wechatId, order);
+            yield context.services.bespeakService.removeByIdAsync(wechatId, order.bespeak._id);
+
+            this.body = {order: orderPersisted, error: null};
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.get('/sd/bespeak', function*(){
+        try{
+            let query = this.request.query;
+            let tenantId = query.tenant;
+            query.lFlg = 'a';
+            delete query['tenant'];
+            let params = {
+                conditions: query
+            };
+            let bespeaks = yield context.services.bespeakService.findByTenantIdAsync(tenantId, params);
+            this.body = {bespeaks: bespeaks, error: null};
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.get('/sd/customers/count', function*() {
+        try {
+            let tenantId = this.request.query.tenant;
+            let count = yield context.services.membershipService.findCountByTenantIdAsync(tenantId, {type: MembershipType.Customer.value()});
+            this.body = {error: null, count: count};
+        }catch (e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.get('/sd/distributors/payment/count', function*() {
+        try {
+            let tenantId = this.request.query.tenant;
+            let conditions = {
+                $or: [
+                    {
+                        type: MembershipType.Distributor.value()
+                    },
+                    {
+                        type: MembershipType.Both.value()
+                    }
+                ],
+                accountBalance: {$gt: 0}
+            };
+            let count = yield context.services.membershipService.findCountByTenantIdAsync(tenantId, conditions);
+            this.body = {error: null, count: count};
+        }catch (e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.post('/sd/distributors/checkout', function*() {
+        try {
+            let distributorId = this.request.body.distributor;
+            let tenantId = this.request.body.tenant;
+            let media = this.request.body.media;
+
+            yield context.services.membershipService.checkoutByDistributorIdAsync(distributorId, tenantId, media);
+            this.body = {error: null};
+        }catch (e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.get('/sd/distributors/count', function*() {
+        try {
+            let tenantId = this.request.query.tenant;
+            let count = yield context.services.membershipService.findCountByTenantIdAsync(tenantId, {type: MembershipType.Distributor.value()});
+            this.body = {error: null, count: count};
+        }catch (e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.get('/sd/customers', function*(){
+        try{
+            let tenantId = this.request.query.tenant;
+            let options = {
+                page: {
+                    no: this.request.query.no,
+                    size: this.request.query.size
+                },
+                conditions: {
+                    org: tenantId,
+                    $or : [
+                        {type: MembershipType.Customer.value()},
+                        {type: MembershipType.Both.value()}
+                    ]
+                },
+                populates: [
+                    {path:'user', model: 'TenantUser'},
+                    {
+                        path: 'upLine',
+                        model: 'Membership',
+                        populate: [{
+                            path: 'user',
+                            model: 'TenantUser'
+                        },{
+                            path: 'media',
+                            model: 'WechatMedia'
+                        }]
+                    },
+                    {path: 'media'}
+                ]
+            };
+            let customers = yield context.services.membershipService.findAsync(options);
+            this.body = {customers: customers, error: null};
+        } catch (e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.get('/sd/distributors/payment', function*(){
+        try{
+            let tenantId = this.request.query.tenant;
+            let options = {
+                page: {
+                    no: this.request.query.no,
+                    size: this.request.query.size
+                },
+                conditions: {
+                    $or: [
+                        {
+                            type: MembershipType.Distributor.value()
+                        },
+                        {
+                            type: MembershipType.Both.value()
+                        }
+                    ],
+                    accountBalance: {$gt: 0},
+                    org: tenantId
+                },
+                populates: [
+                    {path:'user', model: 'TenantUser'},
+                    {
+                        path: 'upLine',
+                        model: 'Membership',
+                        populate: [{
+                            path: 'user',
+                            model: 'TenantUser'
+                        },{
+                            path: 'media',
+                            model: 'WechatMedia'
+                        }]
+                    },
+                    {path: 'media'}
+                ]
+            };
+            let distributors = yield context.services.membershipService.findAsync(options);
+            this.body = {distributors: distributors, error: null};
+        } catch (e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
     router.get('/sd/distributors', function*(){
         try{
             let tenantId = this.request.query.tenant;
             let options = {
-                populate: [
+                page: {
+                    no: this.request.query.no,
+                    size: this.request.query.size
+                },
+                conditions: {
+                    $or: [
+                        {
+                            type: MembershipType.Distributor.value()
+                        },
+                        {
+                            type: MembershipType.Both.value()
+                        }
+                    ],
+                    org: tenantId
+                },
+                populates: [
                     {path:'user', model: 'TenantUser'},
-                    {path: 'upLine', model: 'TenantUser'}
+                    {
+                        path: 'upLine',
+                        model: 'Membership',
+                        populate: [{
+                            path: 'user',
+                            model: 'TenantUser'
+                        },{
+                            path: 'media',
+                            model: 'WechatMedia'
+                        }]
+                    },
+                    {path: 'media'}
                 ]
             };
-            let distributors = yield context.services.distributorService.findAllByTenantIdAsync(tenantId, options);
+            let distributors = yield context.services.membershipService.findAsync(options);
             this.body = {distributors: distributors, error: null};
         } catch (e){
             logger.error(e);

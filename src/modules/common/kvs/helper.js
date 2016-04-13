@@ -112,6 +112,7 @@ helper.generateGetter = function(config){
     var okPrefix = 'Succeed to get ' +config.valueName+ ' by ' +config.keyName;
     var errPrefix = 'Fail to get ' +config.valueName+ ' by ' +config.keyName;
     return function(key, callback){
+        console.log(key);
         var redis = this.context.redis.main;
         redis.get(keyGenerator(key), function(err, result){
             cbUtil.logCallback(

@@ -1,4 +1,6 @@
-import {} from 'fetch';
+import {polyfill} from 'es6-promise';
+polyfill();
+import {} from 'isomorphic-fetch';
 
 function post(url, json){
     return fetch(url, {

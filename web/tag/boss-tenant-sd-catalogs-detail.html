@@ -39,7 +39,7 @@
                                         </tr>
                                         <tr>
                                             <td>微站URL</td>
-                                            <td><span>{__app.settings.app.url + "/sd/catalog?id=" + catalog._id}</span></td>
+                                            <td><span>{__app.settings.app.url + "/sd/" + catalog.media.originalId + "/catalog?id=" + catalog._id}</span></td>
                                         </tr>
                                     </table>
                                     <div class="row text-center" style="margin-top: 20px; margin-bottom: 20px">
@@ -66,6 +66,7 @@
                                                         <th>上/下架时间</th>
                                                         <th>创建时间</th>
                                                         <th>备注</th>
+                                                        <th>二维码</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
@@ -85,6 +86,9 @@
                                                         </td>
                                                         <td>
                                                             { desc }
+                                                        </td>
+                                                        <td>
+                                                            <input onclick="{parent.obtainQr(this)}" class="btn btn-default" value="获取"/>
                                                         </td>
                                                     </tr>
 
@@ -199,6 +203,7 @@
         var loadCatalogByIdAction = domain.action('loadCatalogById');
         var findCoursesAction = domain.action('findCourses');
         var updateCatalogByIdAction = domain.action('updateCatalogById');
+        var fetchSdQrByProductAndWechatSiteAction = domain.action('fetchSdQrByProductAndWechatSite');
 
         self.on('open', function(ctx){
             var catalogId = ctx.req.paramList[0];
@@ -207,7 +212,7 @@
             }).onDone(function(res){
                 self.catalog = res.catalog;
                 findCoursesAction.newInvocation({
-                    tenant: __app.tenant
+                    tenant: __page.tenantId
                 }).onDone(function(res){
                     self.courses = res.courses;
                     self.trigger('ready', false);
@@ -261,6 +266,27 @@
             });
         };
 
+        self.obtainQr = function(product){
+            return function(e){
+                if(typeof self.catalog.media != 'object' || !product){
+                    return;
+                }
+                fetchSdQrByProductAndWechatSiteAction.newInvocation({
+                    product: _.toObjectFromRiot(product),
+                    media: self.catalog.media
+                }).onDone(function(res){
+                    if(res.error){
+                        if(res.error.code === 801){
+                            alert('该课程尚没有背景图片');
+                        }
+                        return;
+                    }
+                    var qrTicket = res.poster.ticket || res.poster.qr.ticket;
+                    window.location.href = 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=' + qrTicket;
+                }).execute();
+            }
+        };
+
         self.onActive = function(){
             _.widget.confirm({
                 title: '操作确认',
@@ -276,6 +302,8 @@
                 }
             });
         };
+
+
 
         self.onDelete = function(){
             _.widget.confirm({
@@ -297,14 +325,21 @@
 
         self.onSubmitCourses = function(){
             var checkedArr = document.querySelectorAll('input[name="CourseCheckBox"]:checked');
+            var ids = [];
             self.catalog.products = [].slice.apply(checkedArr).map(function(input) {
+                ids.push(input.value);
                 return self.courses.filter(function(course){
                     return course._id === input.value
                 })[0]
             });
+
+            var catalogMeta = {};
+            catalogMeta._id = self.catalog._id;
+            catalogMeta.products = ids;
+
             updateCatalogByIdAction.newInvocation({
                 id: self.catalog._id,
-                o: self.catalog
+                o: catalogMeta
             }).onDone(function(res){
                 if(res.error){
                     alert("保存课程失败");

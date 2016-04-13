@@ -85,6 +85,10 @@ registry
     .addChild('Dark','dark', '深色')
     .addChild('Light','light', '浅色')
 
+    .up().item('OrderStatus', 'OrderStatus', '订单状态')
+    .addChild('finish','f', '已结算')
+    .addChild('unFinish','uf', '未结算')
+
     .up().item('UserStatus', 'UserStatus', '用户状态')
     .addChild('Anonymous','a', '匿名')
     .addChild('Registered','r', '已注册')
@@ -95,14 +99,21 @@ registry
     .addChild('UserInfo','u', '用户')
     .addChild('Subscribed','s', '关注')
 
+    .up().item('MembershipType', 'MembershipType', '分销会员类型')
+    .addChild('Distributor','d', '分销商')
+    .addChild('Customer','c', '客户')
+    .addChild('Both','s', '分销商/客户')
+
     .up().item('UserType', 'UserType', '用户类型')
     .addChild('Admin','a', '系统管理员')
     .addChild('Tenant','t', '租户')
     .addChild('Customer','c', '终端用户') /*参与活动用户等*/
 
     .up().item('PosterType', 'PosterType', '海报类型')
-    .addChild('activity','ac', '活动')
-    .addChild('participant','pa', '参与者')
+    .addChild('sdActivity','sdap', '分销活动海报')
+    .addChild('sdParticipant','sdpp', '分销参与海报')
+    .addChild('activity','acp', '活动')
+    .addChild('participant','pap', '参与者')
 
     .up().item('PowerType', 'PowerType', '助力活动类型')
     .addChild('RedPacket','rp', '红包助力')

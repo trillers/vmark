@@ -7,12 +7,12 @@
         <div if="{catalog.products && catalog.products.length}">
             <ul class="catalog-card">
                 <li each="{catalog.products}" onclick="{parent.routeTo}">
-                    <div>
-                        <img riot-src="{poster &&__app.settings.api.url + '/file?media_id=' + poster}"/>
+                    <div style="background-image:url('{__app.settings.api.url + '/file?media_id=' + poster}')">
+                        <!--<img riot-src="{poster &&__app.settings.api.url + '/file?media_id=' + poster}"/>-->
                     </div>
                     <div>
-                        <span>{name}</span>
-                        <span>{slogan}</span>
+                        <div>{name}</div>
+                        <div>{slogan}</div>
                     </div>
                 </li>
             </ul>
@@ -25,10 +25,20 @@
             padding: 0px;
         }
         .catalog-card li{
-            min-height: 48px;
+            list-style-type:none;
+            min-height: 60px;
+            border-bottom: 1px solid #ddd;
+        }
+        .catalog-card li >div{
+            float: left;
+            margin-left: 10px;
+            margin-top: 10px;
         }
         .catalog-card li >div:first-child{
             width: 40px;
+            height: 40px;
+            background-size: 100% 100%;
+            margin-top: 10px;
             float: left;
         }
         .catalog-card li >div:first-child >img{
@@ -39,14 +49,26 @@
     <script>
         this.mixin('dispatcher');
 
-        this.on('mount', ()=>{
-            this.on('loadCatalogById', res =>{
+        this.on('mount', function(){
+            alert('mount');
+            this.on('loadCatalogById', res => {
                 this.update({catalog: res.catalog});
             });
             this.dispatch(actions.loadCatalogById(this.opts.id));
         })
-        this.routeTo = e =>{
-            window.location = __app.settings.app.url + "/sd/product?id=" + e.item._id;
+        alert(this.opts.id);
+        $.get(__app.settings.api.url + '/tenant/sd/catalog/_' + this.opts.id)
+                .success(res=>{
+            alert('success');
+            console.error(res);
+
+        })
+        .error(e=>{
+            console.warn(e.stack)
+        })
+
+        this.routeTo = e => {
+            window.location = __app.settings.app.url + "/sd/" + __page.user.wechatId + "/product?id=" + e.item._id + '&media=' + this.catalog.media._id;
         }
 
     </script>

@@ -1,0 +1,73 @@
+<boss-tenant-power-list>
+    <div if="{!hidden}" class="container" style="margin-top: 0px">
+        <div class="col-md-10 col-md-offset-1">
+            <div class="jumbotron" style="height: auto; padding: 25px;">
+                <div id="powerList" class="panel" style="margin-top: 1em; padding: 0; min-height: 30em">
+                    <div style="padding-left: 20px; padding-top: 10px;"><a id="add" href="#power/add" style="font-size: 15px; text-decoration: none; cursor: pointer">新增</a>
+                    </div>
+                    <ul class="ul" id="list">
+                        <li>
+                            <strong class="col-md-2">活动名称</strong>
+                            <strong class="col-md-2">开始时间</strong>
+                            <strong class="col-md-2">结束时间</strong>
+                            <strong class="col-md-2">类型</strong>
+                            <strong class="col-md-4">操作</strong>
+                        </li>
+
+                        <li>
+                            <hr width="100%">
+                        </li>
+
+                        <li class="actItem" each={activityArr}>
+                            <strong class="col-md-2"><a href="#power/edit/_{_id}">{name}</a></strong>
+                            <strong class="col-md-2">{_.date.format(new Date(startTime), 'yyyy-MM-dd')}</strong>
+                            <strong class="col-md-2">{_.date.format(new Date(endTime), 'yyyy-MM-dd')}</strong>
+                            <strong class="col-md-2">{__app.enums.PowerType.values[type]}</strong>
+                            <strong class="col-md-4 actionCon"><a href="{ __app.settings.app.url + '/marketing/tenant/power/' + wechatId + '/activity?id=' + _id }" target="_blank">查看</a><a href="{__app.settings.api.url + '/marketing/tenant/power/exportParticipants?id=' + _id }" target="_blank" >导出</a><a data-toggle="modal" data-target="#showImg" onclick="{parent.showImg}">二维码</a></strong>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <style scoped>
+        .ul {list-style-type: none; text-align: center; padding: 0}
+        .ul li {margin-bottom: 20px;}
+        .actItem {height: 17px; overflow: hidden; margin-top: 2px;}
+        li strong{
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .actionCon a{
+            margin-left: 10px;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        "use strict"
+        var self = nest.presentable(this);
+        var loadPowerActivities = domain.action('loadPowerActivities');
+        self.showImg = function(e){
+            _.widget.showImg({
+                title: '用微信扫描下方二维码获取活动海报',
+                imgUrl: e.item.qrCodeUrl,
+                width: '300px',
+                height: '300px'
+            });
+        }
+        self.on('open', function(ctx){
+            loadPowerActivities.newInvocation({
+                tenantId: __page.tenantId
+            }).onDone(function(data){
+                self.activityArr = data;
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+            }).execute();
+        });
+        self.on('mount', function(){
+            self.validators = _.widget.validatify([]);
+        });
+    </script>
+</boss-tenant-power-list>
