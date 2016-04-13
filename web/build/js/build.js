@@ -3368,7 +3368,16 @@ webpackJsonp([0,1],[
 	            this.on('loadCatalogById', function(res){
 	                this.update({catalog: res.catalog});
 	            });
+	            console.error(this.opts.id);
 	            this.dispatch(actions.loadCatalogById(this.opts.id));
+	            $.get(__app.settings.api.url + '/tenant/sd/catalog/_' + this.opts.id)
+	                    .success(res=>{
+	                console.error(res);
+
+	            })
+	            .error(e=>{
+	                console.warn(e.stack)
+	            })
 	        })
 
 	        this.routeTo = function(e){
