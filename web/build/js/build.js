@@ -3386,23 +3386,13 @@ webpackJsonp([0,1],[
 
 	        this.on('mount', function(){
 	            alert('mount');
-	            this.on('loadCatalogById', res => {
+	            this.on('loadCatalogById', function(res) {
 	                this.update({catalog: res.catalog});
 	            });
 	            this.dispatch(actions.loadCatalogById(this.opts.id));
 	        })
-	        alert(this.opts.id);
-	        $.get(__app.settings.api.url + '/tenant/sd/catalog/_' + this.opts.id)
-	                .success(res=>{
-	            alert('success');
-	            console.error(res);
 
-	        })
-	        .error(e=>{
-	            console.warn(e.stack)
-	        })
-
-	        this.routeTo = e => {
+	        this.routeTo = function(e){
 	            window.location = __app.settings.app.url + "/sd/" + __page.user.wechatId + "/product?id=" + e.item._id + '&media=' + this.catalog.media._id;
 	        }
 
@@ -3421,15 +3411,15 @@ webpackJsonp([0,1],[
 	        self.id = this.opts.id;
 	        self.media = this.opts.media;
 
-	        self.on('mount', opts => {
+	        self.on('mount', function(opts) {
 	            self.dispatch(actions.productActions.loadProduct(self.id));
 	        })
 
-	        self.on('loadProduct', data => {
+	        self.on('loadProduct', function(data){
 	            self.update({product: data.course});
 	        })
 
-	        self.on('addBespeak', res => {
+	        self.on('addBespeak', function(res) {
 	            if(!res.error){
 	                alert('预约成功');
 	                self.update({formShow: false});
@@ -3438,27 +3428,27 @@ webpackJsonp([0,1],[
 	            console.error(res.error);
 	        })
 
-	        self.appointment = e => {
+	        self.appointment = function(e){
 	            if(self.isAnonymous()){
 	                return self.goToAuthorize();
 	            }
 	            self.update({formShow: true});
 	        }
 
-	        self.cancelAppointment = e => {
+	        self.cancelAppointment = function(e) {
 	            self.update({formShow: false});
 	        }
-	        self.isAnonymous = () => {
+	        self.isAnonymous = function() {
 	            return !__page.user || !__page.user.status || __page.user.status === __app.enums.TenantUserStatus.names.BaseInfo;
 	        }
 
-	        self.goToAuthorize = e => {
+	        self.goToAuthorize = function(e){
 	            var getUserInfoUrl = '/auth/' + __page.user.wechatId + '/authorize?';
 	            getUserInfoUrl += 'route=get_user_info&returnUrl='+location.href;
 	            location.href = getUserInfoUrl;
 	        }
 
-	        self.onSubmit = e => {
+	        self.onSubmit = function(e){
 	            if(self.telephone.value.trim() === ""){
 	                return;
 	            }
