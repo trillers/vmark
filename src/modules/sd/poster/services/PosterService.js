@@ -26,17 +26,16 @@ Service.prototype.loadByQrCodeId = function(qrCodeId, callback){
 Service.prototype.loadByProductIdAndWechatIdAndUserId = function(productId, wechatId, userId, callback){
     var Poster = this.context.models.Poster;
 
-    var query = Poster.find();
+    var query = Poster.find({product: productId, user: userId});
     query.populate({
         path: 'qr',
-        model: 'QrCode'
-    })
-    .find({
-        product: productId,
-        user: userId,
-        "qr.wechatId": wechatId
-    })
-    .exec(function(err, docs){
+        match: {
+            wechatId: wechatId
+        }
+    }).exec(function(err, docs){
+        docs = docs.filter(function(doc){
+            return doc.qr
+        });
         context.logger.info('Succeed to load poster by productId and wechatId' + util.inspect(docs));
         callback(err, docs)
     });
