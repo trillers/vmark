@@ -46,12 +46,12 @@ webpackJsonp([0,1],[
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-	/* Riot v2.3.18, @license MIT */
+	/* Riot v2.3.13, @license MIT, (c) 2015 Muut Inc. + contributors */
 
 	;(function (window, undefined) {
 	  'use strict';
 
-	  var riot = { version: 'v2.3.18', settings: {} },
+	  var riot = { version: 'v2.3.13', settings: {} },
 
 	  // be aware, internal usage
 	  // ATTENTION: prefix the global dynamic variables with `__`
@@ -69,13 +69,9 @@ webpackJsonp([0,1],[
 	  /**
 	   * Const
 	   */
-	  GLOBAL_MIXIN = '__global_mixin',
-
-
 	  // riot specific prefixes
 	  RIOT_PREFIX = 'riot-',
 	      RIOT_TAG = RIOT_PREFIX + 'tag',
-	      RIOT_TAG_IS = 'data-is',
 
 
 	  // for typeof == '' comparisons
@@ -85,16 +81,12 @@ webpackJsonp([0,1],[
 	      T_FUNCTION = 'function',
 
 	  // special native tags that cannot be treated like the others
-	  SPECIAL_TAGS_REGEX = /^(?:t(?:body|head|foot|[rhd])|caption|col(?:group)?|opt(?:ion|group))$/,
+	  SPECIAL_TAGS_REGEX = /^(?:opt(ion|group)|tbody|col|t[rhd])$/,
 	      RESERVED_WORDS_BLACKLIST = ['_item', '_id', '_parent', 'update', 'root', 'mount', 'unmount', 'mixin', 'isMounted', 'isLoop', 'tags', 'parent', 'opts', 'trigger', 'on', 'off', 'one'],
 
 
 	  // version# for IE 8-11, 0 for others
-	  IE_VERSION = (window && window.document || {}).documentMode | 0,
-
-
-	  // detect firefox to fix #1374
-	  FIREFOX = window && !!window.InstallTrigger;
+	  IE_VERSION = (window && window.document || {}).documentMode | 0;
 	  /* istanbul ignore next */
 	  riot.observable = function (el) {
 
@@ -112,116 +104,97 @@ webpackJsonp([0,1],[
 	        slice = Array.prototype.slice,
 	        onEachEvent = function onEachEvent(e, fn) {
 	      e.replace(/\S+/g, fn);
+	    },
+	        defineProperty = function defineProperty(key, value) {
+	      Object.defineProperty(el, key, {
+	        value: value,
+	        enumerable: false,
+	        writable: false,
+	        configurable: false
+	      });
 	    };
 
-	    // extend the object adding the observable methods
-	    Object.defineProperties(el, {
-	      /**
-	       * Listen to the given space separated list of `events` and execute the `callback` each time an event is triggered.
-	       * @param  { String } events - events ids
-	       * @param  { Function } fn - callback function
-	       * @returns { Object } el
-	       */
-	      on: {
-	        value: function value(events, fn) {
-	          if (typeof fn != 'function') return el;
+	    /**
+	     * Listen to the given space separated list of `events` and execute the `callback` each time an event is triggered.
+	     * @param  { String } events - events ids
+	     * @param  { Function } fn - callback function
+	     * @returns { Object } el
+	     */
+	    defineProperty('on', function (events, fn) {
+	      if (typeof fn != 'function') return el;
 
-	          onEachEvent(events, function (name, pos) {
-	            (callbacks[name] = callbacks[name] || []).push(fn);
-	            fn.typed = pos > 0;
-	          });
+	      onEachEvent(events, function (name, pos) {
+	        (callbacks[name] = callbacks[name] || []).push(fn);
+	        fn.typed = pos > 0;
+	      });
 
-	          return el;
-	        },
-	        enumerable: false,
-	        writable: false,
-	        configurable: false
-	      },
+	      return el;
+	    });
 
-	      /**
-	       * Removes the given space separated list of `events` listeners
-	       * @param   { String } events - events ids
-	       * @param   { Function } fn - callback function
-	       * @returns { Object } el
-	       */
-	      off: {
-	        value: function value(events, fn) {
-	          if (events == '*' && !fn) callbacks = {};else {
-	            onEachEvent(events, function (name) {
-	              if (fn) {
-	                var arr = callbacks[name];
-	                for (var i = 0, cb; cb = arr && arr[i]; ++i) {
-	                  if (cb == fn) arr.splice(i--, 1);
-	                }
-	              } else delete callbacks[name];
-	            });
-	          }
-	          return el;
-	        },
-	        enumerable: false,
-	        writable: false,
-	        configurable: false
-	      },
-
-	      /**
-	       * Listen to the given space separated list of `events` and execute the `callback` at most once
-	       * @param   { String } events - events ids
-	       * @param   { Function } fn - callback function
-	       * @returns { Object } el
-	       */
-	      one: {
-	        value: function value(events, fn) {
-	          function on() {
-	            el.off(events, on);
-	            fn.apply(el, arguments);
-	          }
-	          return el.on(events, on);
-	        },
-	        enumerable: false,
-	        writable: false,
-	        configurable: false
-	      },
-
-	      /**
-	       * Execute all callback functions that listen to the given space separated list of `events`
-	       * @param   { String } events - events ids
-	       * @returns { Object } el
-	       */
-	      trigger: {
-	        value: function value(events) {
-
-	          // getting the arguments
-	          var arglen = arguments.length - 1,
-	              args = new Array(arglen),
-	              fns;
-
-	          for (var i = 0; i < arglen; i++) {
-	            args[i] = arguments[i + 1]; // skip first argument
-	          }
-
-	          onEachEvent(events, function (name) {
-
-	            fns = slice.call(callbacks[name] || [], 0);
-
-	            for (var i = 0, fn; fn = fns[i]; ++i) {
-	              if (fn.busy) return;
-	              fn.busy = 1;
-	              fn.apply(el, fn.typed ? [name].concat(args) : args);
-	              if (fns[i] !== fn) {
-	                i--;
-	              }
-	              fn.busy = 0;
+	    /**
+	     * Removes the given space separated list of `events` listeners
+	     * @param   { String } events - events ids
+	     * @param   { Function } fn - callback function
+	     * @returns { Object } el
+	     */
+	    defineProperty('off', function (events, fn) {
+	      if (events == '*' && !fn) callbacks = {};else {
+	        onEachEvent(events, function (name) {
+	          if (fn) {
+	            var arr = callbacks[name];
+	            for (var i = 0, cb; cb = arr && arr[i]; ++i) {
+	              if (cb == fn) arr.splice(i--, 1);
 	            }
-
-	            if (callbacks['*'] && name != '*') el.trigger.apply(el, ['*', name].concat(args));
-	          });
-
-	          return el;
-	        },
-	        enumerable: false,
-	        writable: false,
-	        configurable: false
+	          } else delete callbacks[name];
+	        });
 	      }
+	      return el;
+	    });
+
+	    /**
+	     * Listen to the given space separated list of `events` and execute the `callback` at most once
+	     * @param   { String } events - events ids
+	     * @param   { Function } fn - callback function
+	     * @returns { Object } el
+	     */
+	    defineProperty('one', function (events, fn) {
+	      function on() {
+	        el.off(events, on);
+	        fn.apply(el, arguments);
+	      }
+	      return el.on(events, on);
+	    });
+
+	    /**
+	     * Execute all callback functions that listen to the given space separated list of `events`
+	     * @param   { String } events - events ids
+	     * @returns { Object } el
+	     */
+	    defineProperty('trigger', function (events) {
+
+	      // getting the arguments
+	      // skipping the first one
+	      var args = slice.call(arguments, 1),
+	          fns;
+
+	      onEachEvent(events, function (name) {
+
+	        fns = slice.call(callbacks[name] || [], 0);
+
+	        for (var i = 0, fn; fn = fns[i]; ++i) {
+	          if (fn.busy) return;
+	          fn.busy = 1;
+	          fn.apply(el, fn.typed ? [name].concat(args) : args);
+	          if (fns[i] !== fn) {
+	            i--;
+	          }
+	          fn.busy = 0;
+	        }
+
+	        if (callbacks['*'] && name != '*') el.trigger.apply(el, ['*', name].concat(args));
+	      });
+
+	      return el;
 	    });
 
 	    return el;
@@ -234,7 +207,7 @@ webpackJsonp([0,1],[
 	     * @module riot-route
 	     */
 
-	    var RE_ORIGIN = /^.+?\/\/+[^\/]+/,
+	    var RE_ORIGIN = /^.+?\/+[^\/]+/,
 	        EVENT_LISTENER = 'EventListener',
 	        REMOVE_EVENT_LISTENER = 'remove' + EVENT_LISTENER,
 	        ADD_EVENT_LISTENER = 'add' + EVENT_LISTENER,
@@ -335,7 +308,7 @@ webpackJsonp([0,1],[
 	     * @returns {string} path from root
 	     */
 	    function getPathFromRoot(href) {
-	      return (href || loc.href)[REPLACE](RE_ORIGIN, '');
+	      return (href || loc.href || '')[REPLACE](RE_ORIGIN, '');
 	    }
 
 	    /**
@@ -344,7 +317,7 @@ webpackJsonp([0,1],[
 	     * @returns {string} path from base
 	     */
 	    function getPathFromBase(href) {
-	      return base[0] == '#' ? (href || loc.href || '').split(base)[1] || '' : (loc ? getPathFromRoot(href) : href || '')[REPLACE](base, '');
+	      return base[0] == '#' ? (href || loc.href || '').split(base)[1] || '' : getPathFromRoot(href)[REPLACE](base, '');
 	    }
 
 	    function emit(force) {
@@ -479,11 +452,10 @@ webpackJsonp([0,1],[
 	     */
 	    route.create = function () {
 	      var newSubRouter = new Router();
-	      // assign sub-router's main method
-	      var router = newSubRouter.m.bind(newSubRouter);
 	      // stop only this sub-router
-	      router.stop = newSubRouter.s.bind(newSubRouter);
-	      return router;
+	      newSubRouter.m.stop = newSubRouter.s.bind(newSubRouter);
+	      // return sub-router's main method
+	      return newSubRouter.m.bind(newSubRouter);
 	    };
 
 	    /**
@@ -571,72 +543,87 @@ webpackJsonp([0,1],[
 
 	  /**
 	   * The riot template engine
-	   * @version v2.3.22
+	   * @version v2.3.20
 	   */
 
 	  /**
-	   * riot.util.brackets
+	   * @module brackets
 	   *
-	   * - `brackets    ` - Returns a string or regex based on its parameter
-	   * - `brackets.set` - Change the current riot brackets
-	   *
-	   * @module
+	   * `brackets         ` Returns a string or regex based on its parameter
+	   * `brackets.settings` Mirrors the `riot.settings` object (use brackets.set in new code)
+	   * `brackets.set     ` Change the current riot brackets
 	   */
+	  /*global riot */
 
 	  var brackets = function (UNDEF) {
 
 	    var REGLOB = 'g',
-	        R_MLCOMMS = /\/\*[^*]*\*+(?:[^*\/][^*]*\*+)*\//g,
-	        R_STRINGS = /"[^"\\]*(?:\\[\S\s][^"\\]*)*"|'[^'\\]*(?:\\[\S\s][^'\\]*)*'/g,
-	        S_QBLOCKS = R_STRINGS.source + '|' + /(?:\breturn\s+|(?:[$\w\)\]]|\+\+|--)\s*(\/)(?![*\/]))/.source + '|' + /\/(?=[^*\/])[^[\/\\]*(?:(?:\[(?:\\.|[^\]\\]*)*\]|\\.)[^[\/\\]*)*?(\/)[gim]*/.source,
+	        MLCOMMS = /\/\*[^*]*\*+(?:[^*\/][^*]*\*+)*\//g,
+	        STRINGS = /"[^"\\]*(?:\\[\S\s][^"\\]*)*"|'[^'\\]*(?:\\[\S\s][^'\\]*)*'/g,
+	        S_QBSRC = STRINGS.source + '|' + /(?:\breturn\s+|(?:[$\w\)\]]|\+\+|--)\s*(\/)(?![*\/]))/.source + '|' + /\/(?=[^*\/])[^[\/\\]*(?:(?:\[(?:\\.|[^\]\\]*)*\]|\\.)[^[\/\\]*)*?(\/)[gim]*/.source,
+	        DEFAULT = '{ }',
 	        FINDBRACES = {
-	      '(': RegExp('([()])|' + S_QBLOCKS, REGLOB),
-	      '[': RegExp('([[\\]])|' + S_QBLOCKS, REGLOB),
-	      '{': RegExp('([{}])|' + S_QBLOCKS, REGLOB)
-	    },
-	        DEFAULT = '{ }';
-
-	    var _pairs = ['{', '}', '{', '}', /{[^}]*}/, /\\([{}])/g, /\\({)|{/g, RegExp('\\\\(})|([[({])|(})|' + S_QBLOCKS, REGLOB), DEFAULT, /^\s*{\^?\s*([$\w]+)(?:\s*,\s*(\S+))?\s+in\s+(\S.*)\s*}/, /(^|[^\\]){=[\S\s]*?}/];
+	      '(': RegExp('([()])|' + S_QBSRC, REGLOB),
+	      '[': RegExp('([[\\]])|' + S_QBSRC, REGLOB),
+	      '{': RegExp('([{}])|' + S_QBSRC, REGLOB)
+	    };
 
 	    var cachedBrackets = UNDEF,
 	        _regex,
-	        _cache = [],
-	        _settings;
+	        _pairs = [];
 
 	    function _loopback(re) {
 	      return re;
 	    }
 
 	    function _rewrite(re, bp) {
-	      if (!bp) bp = _cache;
+	      if (!bp) bp = _pairs;
 	      return new RegExp(re.source.replace(/{/g, bp[2]).replace(/}/g, bp[3]), re.global ? REGLOB : '');
 	    }
 
 	    function _create(pair) {
-	      if (pair === DEFAULT) return _pairs;
+	      var cvt,
+	          arr = pair.split(' ');
 
-	      var arr = pair.split(' ');
-
-	      if (arr.length !== 2 || /[\x00-\x1F<>a-zA-Z0-9'",;\\]/.test(pair)) {
-	        throw new Error('Unsupported brackets "' + pair + '"');
+	      if (pair === DEFAULT) {
+	        arr[2] = arr[0];
+	        arr[3] = arr[1];
+	        cvt = _loopback;
+	      } else {
+	        if (arr.length !== 2 || /[\x00-\x1F<>a-zA-Z0-9'",;\\]/.test(pair)) {
+	          throw new Error('Unsupported brackets "' + pair + '"');
+	        }
+	        arr = arr.concat(pair.replace(/(?=[[\]()*+?.^$|])/g, '\\').split(' '));
+	        cvt = _rewrite;
 	      }
-	      arr = arr.concat(pair.replace(/(?=[[\]()*+?.^$|])/g, '\\').split(' '));
-
-	      arr[4] = _rewrite(arr[1].length > 1 ? /{[\S\s]*?}/ : _pairs[4], arr);
-	      arr[5] = _rewrite(pair.length > 3 ? /\\({|})/g : _pairs[5], arr);
-	      arr[6] = _rewrite(_pairs[6], arr);
-	      arr[7] = RegExp('\\\\(' + arr[3] + ')|([[({])|(' + arr[3] + ')|' + S_QBLOCKS, REGLOB);
+	      arr[4] = cvt(arr[1].length > 1 ? /{[\S\s]*?}/ : /{[^}]*}/, arr);
+	      arr[5] = cvt(/\\({|})/g, arr);
+	      arr[6] = cvt(/(\\?)({)/g, arr);
+	      arr[7] = RegExp('(\\\\?)(?:([[({])|(' + arr[3] + '))|' + S_QBSRC, REGLOB);
 	      arr[8] = pair;
 	      return arr;
 	    }
 
+	    function _reset(pair) {
+	      if (!pair) pair = DEFAULT;
+
+	      if (pair !== _pairs[8]) {
+	        _pairs = _create(pair);
+	        _regex = pair === DEFAULT ? _loopback : _rewrite;
+	        _pairs[9] = _regex(/^\s*{\^?\s*([$\w]+)(?:\s*,\s*(\S+))?\s+in\s+(\S.*)\s*}/);
+	        _pairs[10] = _regex(/(^|[^\\]){=[\S\s]*?}/);
+	        _brackets._rawOffset = _pairs[0].length;
+	      }
+	      cachedBrackets = pair;
+	    }
+
 	    function _brackets(reOrIdx) {
-	      return reOrIdx instanceof RegExp ? _regex(reOrIdx) : _cache[reOrIdx];
+	      return reOrIdx instanceof RegExp ? _regex(reOrIdx) : _pairs[reOrIdx];
 	    }
 
 	    _brackets.split = function split(str, tmpl, _bp) {
 	      // istanbul ignore next: _bp is for the compiler
-	      if (!_bp) _bp = _cache;
+	      if (!_bp) _bp = _pairs;
 
 	      var parts = [],
 	          match,
@@ -654,12 +641,11 @@ webpackJsonp([0,1],[
 	        if (isexpr) {
 
 	          if (match[2]) {
-	            re.lastIndex = skipBraces(str, match[2], re.lastIndex);
+	            re.lastIndex = skipBraces(match[2], re.lastIndex);
 	            continue;
 	          }
-	          if (!match[3]) {
-	            continue;
-	          }
+
+	          if (!match[3]) continue;
 	        }
 
 	        if (!match[1]) {
@@ -676,53 +662,39 @@ webpackJsonp([0,1],[
 
 	      return parts;
 
-	      function unescapeStr(s) {
-	        if (tmpl || isexpr) {
-	          parts.push(s && s.replace(_bp[5], '$1'));
-	        } else {
-	          parts.push(s);
-	        }
+	      function unescapeStr(str) {
+	        if (tmpl || isexpr) parts.push(str && str.replace(_bp[5], '$1'));else parts.push(str);
 	      }
 
-	      function skipBraces(s, ch, ix) {
+	      function skipBraces(ch, pos) {
 	        var match,
-	            recch = FINDBRACES[ch];
+	            recch = FINDBRACES[ch],
+	            level = 1;
+	        recch.lastIndex = pos;
 
-	        recch.lastIndex = ix;
-	        ix = 1;
-	        while (match = recch.exec(s)) {
-	          if (match[1] && !(match[1] === ch ? ++ix : --ix)) break;
+	        while (match = recch.exec(str)) {
+	          if (match[1] && !(match[1] === ch ? ++level : --level)) break;
 	        }
-	        return ix ? s.length : recch.lastIndex;
+	        return match ? recch.lastIndex : str.length;
 	      }
 	    };
 
 	    _brackets.hasExpr = function hasExpr(str) {
-	      return _cache[4].test(str);
+	      return _brackets(4).test(str);
 	    };
 
 	    _brackets.loopKeys = function loopKeys(expr) {
-	      var m = expr.match(_cache[9]);
-
-	      return m ? { key: m[1], pos: m[2], val: _cache[0] + m[3].trim() + _cache[1] } : { val: expr.trim() };
+	      var m = expr.match(_brackets(9));
+	      return m ? { key: m[1], pos: m[2], val: _pairs[0] + m[3].trim() + _pairs[1] } : { val: expr.trim() };
 	    };
 
 	    _brackets.array = function array(pair) {
-	      return pair ? _create(pair) : _cache;
+	      return _create(pair || cachedBrackets);
 	    };
 
-	    function _reset(pair) {
-	      if ((pair || (pair = DEFAULT)) !== _cache[8]) {
-	        _cache = _create(pair);
-	        _regex = pair === DEFAULT ? _loopback : _rewrite;
-	        _cache[9] = _regex(_pairs[9]);
-	      }
-	      cachedBrackets = pair;
-	    }
-
+	    var _settings;
 	    function _setSettings(o) {
 	      var b;
-
 	      o = o || {};
 	      b = o.brackets;
 	      Object.defineProperty(o, 'brackets', {
@@ -735,7 +707,6 @@ webpackJsonp([0,1],[
 	      _settings = o;
 	      _reset(b);
 	    }
-
 	    Object.defineProperty(_brackets, 'settings', {
 	      set: _setSettings,
 	      get: function get() {
@@ -743,13 +714,13 @@ webpackJsonp([0,1],[
 	      }
 	    });
 
-	    /* istanbul ignore next: in the browser riot is always in the scope */
+	    /* istanbul ignore next: in the node version riot is not in the scope */
 	    _brackets.settings = typeof riot !== 'undefined' && riot.settings || {};
 	    _brackets.set = _reset;
 
-	    _brackets.R_STRINGS = R_STRINGS;
-	    _brackets.R_MLCOMMS = R_MLCOMMS;
-	    _brackets.S_QBLOCKS = S_QBLOCKS;
+	    _brackets.R_STRINGS = STRINGS;
+	    _brackets.R_MLCOMMS = MLCOMMS;
+	    _brackets.S_QBLOCKS = S_QBSRC;
 
 	    return _brackets;
 	  }();
@@ -761,6 +732,7 @@ webpackJsonp([0,1],[
 	   * tmpl.hasExpr  - Test the existence of a expression inside a string
 	   * tmpl.loopKeys - Get the keys for an 'each' loop (used by `_each`)
 	   */
+	  /*global riot */
 
 	  var tmpl = function () {
 
@@ -772,7 +744,13 @@ webpackJsonp([0,1],[
 	      return (_cache[str] || (_cache[str] = _create(str))).call(data, _logErr);
 	    }
 
-	    _tmpl.haveRaw = brackets.hasRaw;
+	    _tmpl.isRaw = function (expr) {
+	      return expr[brackets._rawOffset] === '=';
+	    };
+
+	    _tmpl.haveRaw = function (src) {
+	      return brackets(10).test(src);
+	    };
 
 	    _tmpl.hasExpr = brackets.hasExpr;
 
@@ -793,23 +771,20 @@ webpackJsonp([0,1],[
 	    }
 
 	    function _create(str) {
-	      var expr = _getTmpl(str);
 
+	      var expr = _getTmpl(str);
 	      if (expr.slice(0, 11) !== 'try{return ') expr = 'return ' + expr;
 
-	      return new Function('E', expr + ';'); //eslint-disable-line no-new-func
+	      return new Function('E', expr + ';');
 	    }
 
-	    var CH_IDEXPR = '⁗',
-	        RE_CSNAME = /^(?:(-?[_A-Za-z\xA0-\xFF][-\w\xA0-\xFF]*)|\u2057(\d+)~):/,
-	        RE_QBLOCK = RegExp(brackets.S_QBLOCKS, 'g'),
-	        RE_DQUOTE = /\u2057/g,
-	        RE_QBMARK = /\u2057(\d+)~/g;
+	    var RE_QBLOCK = RegExp(brackets.S_QBLOCKS, 'g'),
+	        RE_QBMARK = /\x01(\d+)~/g;
 
 	    function _getTmpl(str) {
 	      var qstr = [],
 	          expr,
-	          parts = brackets.split(str.replace(RE_DQUOTE, '"'), 1);
+	          parts = brackets.split(str.replace(/\u2057/g, '"'), 1);
 
 	      if (parts.length > 2 || parts[0]) {
 	        var i,
@@ -829,24 +804,21 @@ webpackJsonp([0,1],[
 	        expr = _parseExpr(parts[1], 0, qstr);
 	      }
 
-	      if (qstr[0]) {
-	        expr = expr.replace(RE_QBMARK, function (_, pos) {
-	          return qstr[pos].replace(/\r/g, '\\r').replace(/\n/g, '\\n');
-	        });
-	      }
+	      if (qstr[0]) expr = expr.replace(RE_QBMARK, function (_, pos) {
+	        return qstr[pos].replace(/\r/g, '\\r').replace(/\n/g, '\\n');
+	      });
+
 	      return expr;
 	    }
 
-	    var RE_BREND = {
-	      '(': /[()]/g,
-	      '[': /[[\]]/g,
-	      '{': /[{}]/g
-	    };
+	    var CS_IDENT = /^(?:(-?[_A-Za-z\xA0-\xFF][-\w\xA0-\xFF]*)|\x01(\d+)~):/;
 
 	    function _parseExpr(expr, asText, qstr) {
 
+	      if (expr[0] === '=') expr = expr.slice(1);
+
 	      expr = expr.replace(RE_QBLOCK, function (s, div) {
-	        return s.length > 2 && !div ? CH_IDEXPR + (qstr.push(s) - 1) + '~' : s;
+	        return s.length > 2 && !div ? '\x01' + (qstr.push(s) - 1) + '~' : s;
 	      }).replace(/\s+/g, ' ').trim().replace(/\ ?([[\({},?\.:])\ ?/g, '$1');
 
 	      if (expr) {
@@ -854,7 +826,7 @@ webpackJsonp([0,1],[
 	            cnt = 0,
 	            match;
 
-	        while (expr && (match = expr.match(RE_CSNAME)) && !match.index) {
+	        while (expr && (match = expr.match(CS_IDENT)) && !match.index) {
 	          var key,
 	              jsb,
 	              re = /,|([[{(])|$/g;
@@ -874,22 +846,21 @@ webpackJsonp([0,1],[
 	      }
 	      return expr;
 
-	      function skipBraces(ch, re) {
-	        var mm,
+	      function skipBraces(jsb, re) {
+	        var match,
 	            lv = 1,
-	            ir = RE_BREND[ch];
+	            ir = jsb === '(' ? /[()]/g : jsb === '[' ? /[[\]]/g : /[{}]/g;
 
 	        ir.lastIndex = re.lastIndex;
-	        while (mm = ir.exec(expr)) {
-	          if (mm[0] === ch) ++lv;else if (! --lv) break;
+	        while (match = ir.exec(expr)) {
+	          if (match[0] === jsb) ++lv;else if (! --lv) break;
 	        }
 	        re.lastIndex = lv ? expr.length : ir.lastIndex;
 	      }
 	    }
 
 	    // istanbul ignore next: not both
-	    var // eslint-disable-next-line max-len
-	    JS_CONTEXT = '"in this?this:' + ((typeof window === 'undefined' ? 'undefined' : _typeof(window)) !== 'object' ? 'global' : 'window') + ').',
+	    var JS_CONTEXT = '"in this?this:' + ((typeof window === 'undefined' ? 'undefined' : _typeof(window)) !== 'object' ? 'global' : 'window') + ').',
 	        JS_VARNAME = /[,{][$\w]+:|(^ *|[^$\w\.])(?!(?:typeof|true|false|null|undefined|in|instanceof|is(?:Finite|NaN)|void|NaN|new|Date|RegExp|Math)(?![$\w]))([$_A-Za-z][$\w]*)/g,
 	        JS_NOPROPS = /^(?=(\.[$\w]+))\1(?:[^.[(]|$)/;
 
@@ -930,103 +901,93 @@ webpackJsonp([0,1],[
 	      return s;
 	    };
 
-	    _tmpl.version = brackets.version = 'v2.3.22';
-
 	    return _tmpl;
 	  }();
+
+	  tmpl.version = brackets.version = 'v2.3.20';
 
 	  /*
 	    lib/browser/tag/mkdom.js
 	  
 	    Includes hacks needed for the Internet Explorer version 9 and below
-	    See: http://kangax.github.io/compat-table/es5/#ie8
-	         http://codeplanet.io/dropping-ie8/
+	  
 	  */
-	  var mkdom = function _mkdom() {
-	    var reHasYield = /<yield\b/i,
-	        reYieldAll = /<yield\s*(?:\/>|>([\S\s]*?)<\/yield\s*>)/ig,
-	        reYieldSrc = /<yield\s+to=['"]([^'">]*)['"]\s*>([\S\s]*?)<\/yield\s*>/ig,
-	        reYieldDest = /<yield\s+from=['"]?([-\w]+)['"]?\s*(?:\/>|>([\S\s]*?)<\/yield\s*>)/ig;
-	    var rootEls = { tr: 'tbody', th: 'tr', td: 'tr', col: 'colgroup' },
-	        tblTags = IE_VERSION && IE_VERSION < 10 ? SPECIAL_TAGS_REGEX : /^(?:t(?:body|head|foot|[rhd])|caption|col(?:group)?)$/;
+	  // http://kangax.github.io/compat-table/es5/#ie8
+	  // http://codeplanet.io/dropping-ie8/
 
-	    /**
-	     * Creates a DOM element to wrap the given content. Normally an `DIV`, but can be
-	     * also a `TABLE`, `SELECT`, `TBODY`, `TR`, or `COLGROUP` element.
-	     *
-	     * @param   {string} templ  - The template coming from the custom tag definition
-	     * @param   {string} [html] - HTML content that comes from the DOM element where you
-	     *           will mount the tag, mostly the original tag in the page
-	     * @returns {HTMLElement} DOM element with _templ_ merged through `YIELD` with the _html_.
-	     */
+	  var mkdom = function (checkIE) {
+
+	    var rootEls = {
+	      tr: 'tbody',
+	      th: 'tr',
+	      td: 'tr',
+	      tbody: 'table',
+	      col: 'colgroup'
+	    },
+	        reToSrc = /<yield\s+to=(['"])?@\1\s*>([\S\s]+?)<\/yield\s*>/.source,
+	        GENERIC = 'div';
+
+	    checkIE = checkIE && checkIE < 10;
+
+	    // creates any dom element in a div, table, or colgroup container
 	    function _mkdom(templ, html) {
+
 	      var match = templ && templ.match(/^\s*<([-\w]+)/),
 	          tagName = match && match[1].toLowerCase(),
-	          el = mkEl('div');
-
-	      // replace all the yield tags with the tag inner html
-	      templ = replaceYield(templ, html);
-
-	      /* istanbul ignore next */
-	      if (tblTags.test(tagName)) el = specialTags(el, templ, tagName);else el.innerHTML = templ;
+	          rootTag = rootEls[tagName] || GENERIC,
+	          el = mkEl(rootTag);
 
 	      el.stub = true;
+
+	      // replace all the yield tags with the tag inner html
+	      if (html) templ = replaceYield(templ, html);
+
+	      /* istanbul ignore next */
+	      if (checkIE && tagName && (match = tagName.match(SPECIAL_TAGS_REGEX))) ie9elem(el, templ, tagName, !!match[1]);else el.innerHTML = templ;
 
 	      return el;
 	    }
 
-	    /*
-	      Creates the root element for table or select child elements:
-	      tr/th/td/thead/tfoot/tbody/caption/col/colgroup/option/optgroup
-	    */
-	    function specialTags(el, templ, tagName) {
-	      var select = tagName[0] === 'o',
-	          parent = select ? 'select>' : 'table>';
+	    // creates tr, th, td, option, optgroup element for IE8-9
+	    /* istanbul ignore next */
+	    function ie9elem(el, html, tagName, select) {
 
-	      // trim() is important here, this ensures we don't have artifacts,
-	      // so we can check if we have only one element inside the parent
-	      el.innerHTML = '<' + parent + templ.trim() + '</' + parent;
-	      parent = el.firstChild;
+	      var div = mkEl(GENERIC),
+	          tag = select ? 'select>' : 'table>',
+	          child;
 
-	      // returns the immediate parent if tr/th/td/col is the only element, if not
-	      // returns the whole tree, as this can include additional elements
-	      if (select) {
-	        parent.selectedIndex = -1; // for IE9, compatible w/current riot behavior
-	      } else {
-	          // avoids insertion of cointainer inside container (ex: tbody inside tbody)
-	          var tname = rootEls[tagName];
-	          if (tname && parent.childElementCount === 1) parent = $(tname, parent);
-	        }
-	      return parent;
+	      div.innerHTML = '<' + tag + html + '</' + tag;
+
+	      child = $(tagName, div);
+	      if (child) el.appendChild(child);
 	    }
+	    // end ie9elem()
 
-	    /*
-	      Replace the yield tag from any tag template with the innerHTML of the
-	      original tag in the page
-	    */
+	    /**
+	     * Replace the yield tag from any tag template with the innerHTML of the
+	     * original tag in the page
+	     * @param   { String } templ - tag implementation template
+	     * @param   { String } html  - original content of the tag in the DOM
+	     * @returns { String } tag template updated without the yield tag
+	     */
 	    function replaceYield(templ, html) {
 	      // do nothing if no yield
-	      if (!reHasYield.test(templ)) return templ;
+	      if (!/<yield\b/i.test(templ)) return templ;
 
 	      // be careful with #1343 - string on the source having `$1`
-	      var src = {};
-
-	      html = html && html.replace(reYieldSrc, function (_, ref, text) {
-	        src[ref] = src[ref] || text; // preserve first definition
-	        return '';
-	      }).trim();
-
-	      return templ.replace(reYieldDest, function (_, ref, def) {
-	        // yield with from - to attrs
-	        return src[ref] || def || '';
-	      }).replace(reYieldAll, function (_, def) {
-	        // yield without any "from"
-	        return html || def || '';
+	      var n = 0;
+	      templ = templ.replace(/<yield\s+from=['"]([-\w]+)['"]\s*(?:\/>|>\s*<\/yield\s*>)/ig, function (str, ref) {
+	        var m = html.match(RegExp(reToSrc.replace('@', ref), 'i'));
+	        ++n;
+	        return m && m[2] || '';
 	      });
+
+	      // yield without any "from", replace yield in templ with the innerHTML
+	      return n ? templ : templ.replace(/<yield\s*(?:\/>|>\s*<\/yield\s*>)/gi, html || '');
 	    }
 
 	    return _mkdom;
-	  }();
+	  }(IE_VERSION);
 
 	  /**
 	   * Convert the item looped into an object used to extend the child tag properties
@@ -1134,7 +1095,7 @@ webpackJsonp([0,1],[
 	        root = dom.parentNode,
 	        ref = document.createTextNode(''),
 	        child = getTag(dom),
-	        isOption = tagName.toLowerCase() === 'option',
+	        isOption = /option/gi.test(tagName),
 	        // the option tags must be treated differently
 	    tags = [],
 	        oldItems = [],
@@ -1169,13 +1130,9 @@ webpackJsonp([0,1],[
 	      }
 
 	      // loop all the new items
-	      var i = 0,
-	          itemsLength = items.length;
-
-	      for (; i < itemsLength; i++) {
+	      items.forEach(function (item, i) {
 	        // reorder only if the items are objects
-	        var item = items[i],
-	            _mustReorder = mustReorder && item instanceof Object && !hasKeys,
+	        var _mustReorder = mustReorder && item instanceof Object,
 	            oldPos = oldItems.indexOf(item),
 	            pos = ~oldPos && _mustReorder ? oldPos : i,
 
@@ -1198,64 +1155,48 @@ webpackJsonp([0,1],[
 	            }, dom.innerHTML);
 
 	            tag.mount();
-
 	            if (isVirtual) tag._root = tag.root.firstChild; // save reference for further moves or inserts
 	            // this tag must be appended
-	            if (i == tags.length || !tags[i]) {
-	              // fix 1581
+	            if (i == tags.length) {
 	              if (isVirtual) addVirtual(tag, frag);else frag.appendChild(tag.root);
 	            }
 	            // this tag must be insert
 	            else {
-	                if (isVirtual) addVirtual(tag, root, tags[i]);else root.insertBefore(tag.root, tags[i].root); // #1374 some browsers reset selected here
+	                if (isVirtual) addVirtual(tag, root, tags[i]);else root.insertBefore(tag.root, tags[i].root);
 	                oldItems.splice(i, 0, item);
 	              }
 
 	            tags.splice(i, 0, tag);
 	            pos = i; // handled here so no move
-	          } else tag.update(item, true);
+	          } else tag.update(item);
 
 	        // reorder the tag if it's not located in its previous position
-	        if (pos !== i && _mustReorder && tags[i] // fix 1581 unable to reproduce it in a test!
-	        ) {
-	            // update the DOM
-	            if (isVirtual) moveVirtual(tag, root, tags[i], dom.childNodes.length);else root.insertBefore(tag.root, tags[i].root);
-	            // update the position attribute if it exists
-	            if (expr.pos) tag[expr.pos] = i;
-	            // move the old tag instance
-	            tags.splice(i, 0, tags.splice(pos, 1)[0]);
-	            // move the old item
-	            oldItems.splice(i, 0, oldItems.splice(pos, 1)[0]);
-	            // if the loop tags are not custom
-	            // we need to move all their custom tags into the right position
-	            if (!child && tag.tags) moveNestedTags(tag, i);
-	          }
+	        if (pos !== i && _mustReorder) {
+	          // update the DOM
+	          if (isVirtual) moveVirtual(tag, root, tags[i], dom.childNodes.length);else root.insertBefore(tag.root, tags[i].root);
+	          // update the position attribute if it exists
+	          if (expr.pos) tag[expr.pos] = i;
+	          // move the old tag instance
+	          tags.splice(i, 0, tags.splice(pos, 1)[0]);
+	          // move the old item
+	          oldItems.splice(i, 0, oldItems.splice(pos, 1)[0]);
+	          // if the loop tags are not custom
+	          // we need to move all their custom tags into the right position
+	          if (!child) moveNestedTags(tag, i);
+	        }
 
 	        // cache the original item to use it in the events bound to this node
 	        // and its children
 	        tag._item = item;
 	        // cache the real parent tag internally
 	        defineProperty(tag, '_parent', parent);
-	      }
+	      }, true); // allow null values
 
 	      // remove the redundant tags
 	      unmountRedundant(items, tags);
 
 	      // insert the new nodes
-	      if (isOption) {
-	        root.appendChild(frag);
-
-	        // #1374 FireFox bug in <option selected={expression}>
-	        if (FIREFOX && !root.multiple) {
-	          for (var n = 0; n < root.length; n++) {
-	            if (root[n].__riot1374) {
-	              root.selectedIndex = n; // clear other options
-	              delete root[n].__riot1374;
-	              break;
-	            }
-	          }
-	        }
-	      } else root.insertBefore(frag, ref);
+	      if (isOption) root.appendChild(frag);else root.insertBefore(frag, ref);
 
 	      // set the 'tags' property of the parent tag
 	      // if child is 'undefined' it means that we don't need to set this property
@@ -1396,13 +1337,13 @@ webpackJsonp([0,1],[
 	        expressions = [],
 	        childTags = [],
 	        root = conf.root,
+	        fn = impl.fn,
 	        tagName = root.tagName.toLowerCase(),
 	        attr = {},
 	        propsInSyncWithParent = [],
 	        dom;
 
-	    // only call unmount if we have a valid __tagImpl (has name property)
-	    if (impl.name && root._tag) root._tag.unmount(true);
+	    if (fn && root._tag) root._tag.unmount(true);
 
 	    // not yet mounted
 	    this.isMounted = false;
@@ -1462,13 +1403,7 @@ webpackJsonp([0,1],[
 	      });
 	    }
 
-	    /**
-	     * Update the tag expressions and options
-	     * @param   { * }  data - data we want to use to extend the tag properties
-	     * @param   { Boolean } isInherited - is this update coming from a parent tag?
-	     * @returns { self }
-	     */
-	    defineProperty(this, 'update', function (data, isInherited) {
+	    defineProperty(this, 'update', function (data) {
 
 	      // make sure the data passed will not override
 	      // the component core methods
@@ -1476,7 +1411,7 @@ webpackJsonp([0,1],[
 	      // inherit properties from the parent
 	      inheritFromParent();
 	      // normalize the tag properties in case an item object was initially passed
-	      if (data && isObject(item)) {
+	      if (data && (typeof item === 'undefined' ? 'undefined' : _typeof(item)) === T_OBJECT) {
 	        normalizeData(data);
 	        item = data;
 	      }
@@ -1484,19 +1419,13 @@ webpackJsonp([0,1],[
 	      updateOpts();
 	      self.trigger('update', data);
 	      update(expressions, self);
-
 	      // the updated event will be triggered
-	      // once the DOM will be ready and all the re-flows are completed
+	      // once the DOM will be ready and all the reflows are completed
 	      // this is useful if you want to get the "real" root properties
 	      // 4 ex: root.offsetWidth ...
-	      if (isInherited && self.parent)
-	        // closes #1599
-	        self.parent.one('updated', function () {
-	          self.trigger('updated');
-	        });else rAF(function () {
+	      rAF(function () {
 	        self.trigger('updated');
 	      });
-
 	      return this;
 	    });
 
@@ -1530,12 +1459,8 @@ webpackJsonp([0,1],[
 
 	      updateOpts();
 
-	      // add global mixin
-	      var globalMixin = riot.mixin(GLOBAL_MIXIN);
-	      if (globalMixin) self.mixin(globalMixin);
-
 	      // initialiation
-	      if (impl.fn) impl.fn.call(self, opts);
+	      if (fn) fn.call(self, opts);
 
 	      // parse layout after init. fn may calculate args for nested custom tags
 	      parseExpressions(dom, self, expressions);
@@ -1545,10 +1470,12 @@ webpackJsonp([0,1],[
 
 	      // update the root adding custom attributes coming from the compiler
 	      // it fixes also #1087
-	      if (impl.attrs) walkAttributes(impl.attrs, function (k, v) {
-	        setAttr(root, k, v);
-	      });
-	      if (impl.attrs || hasImpl) parseExpressions(self.root, self, expressions);
+	      if (impl.attrs || hasImpl) {
+	        walkAttributes(impl.attrs, function (k, v) {
+	          setAttr(root, k, v);
+	        });
+	        parseExpressions(self.root, self, expressions);
+	      }
 
 	      if (!self.parent || isLoop) self.update(item);
 
@@ -1557,14 +1484,12 @@ webpackJsonp([0,1],[
 
 	      if (isLoop && !hasImpl) {
 	        // update the root attribute for the looped elements
-	        root = dom.firstChild;
+	        self.root = root = dom.firstChild;
 	      } else {
 	        while (dom.firstChild) {
 	          root.appendChild(dom.firstChild);
-	        }if (root.stub) root = parent.root;
+	        }if (root.stub) self.root = root = parent.root;
 	      }
-
-	      defineProperty(self, 'root', root);
 
 	      // parse the named dom nodes in the looped child
 	      // adding them to the parent as well
@@ -1589,13 +1514,18 @@ webpackJsonp([0,1],[
 	    defineProperty(this, 'unmount', function (keepRootTag) {
 	      var el = root,
 	          p = el.parentNode,
-	          ptag,
-	          tagIndex = __virtualDom.indexOf(self);
+	          ptag;
 
 	      self.trigger('before-unmount');
 
 	      // remove this tag instance from the global virtualDom variable
-	      if (~tagIndex) __virtualDom.splice(tagIndex, 1);
+	      __virtualDom.splice(__virtualDom.indexOf(self), 1);
+
+	      if (this._virts) {
+	        each(this._virts, function (v) {
+	          v.parentNode.removeChild(v);
+	        });
+	      }
 
 	      if (p) {
 
@@ -1611,17 +1541,9 @@ webpackJsonp([0,1],[
 	            ptag.tags[tagName] = undefined;
 	        } else while (el.firstChild) {
 	          el.removeChild(el.firstChild);
-	        }if (!keepRootTag) p.removeChild(el);else {
-	          // the riot-tag and the data-is attributes aren't needed anymore, remove them
-	          remAttr(p, RIOT_TAG_IS);
-	          remAttr(p, RIOT_TAG); // this will be removed in riot 3.0.0
-	        }
-	      }
-
-	      if (this._virts) {
-	        each(this._virts, function (v) {
-	          if (v.parentNode) v.parentNode.removeChild(v);
-	        });
+	        }if (!keepRootTag) p.removeChild(el);else
+	          // the riot-tag attribute isn't needed anymore, remove it
+	          remAttr(p, 'riot-tag');
 	      }
 
 	      self.trigger('unmount');
@@ -1630,12 +1552,6 @@ webpackJsonp([0,1],[
 	      self.isMounted = false;
 	      delete root._tag;
 	    });
-
-	    // proxy function to bind updates
-	    // dispatched from a parent tag
-	    function onChildUpdate(data) {
-	      self.update(data, true);
-	    }
 
 	    function toggle(isMount) {
 
@@ -1649,9 +1565,7 @@ webpackJsonp([0,1],[
 	      var evt = isMount ? 'on' : 'off';
 
 	      // the loop tags will be always in sync with the parent automatically
-	      if (isLoop) parent[evt]('unmount', self.unmount);else {
-	        parent[evt]('update', onChildUpdate)[evt]('unmount', self.unmount);
-	      }
+	      if (isLoop) parent[evt]('unmount', self.unmount);else parent[evt]('update', self.update)[evt]('unmount', self.unmount);
 	    }
 
 	    // named elements available for fn
@@ -1726,44 +1640,28 @@ webpackJsonp([0,1],[
 	          value = tmpl(expr.expr, tag),
 	          parent = expr.dom.parentNode;
 
-	      if (expr.bool) {
-	        value = !!value;
-	      } else if (value == null) {
-	        value = '';
+	      if (expr.bool) value = value ? attrName : false;else if (value == null) value = '';
+
+	      // leave out riot- prefixes from strings inside textarea
+	      // fix #815: any value -> string
+	      if (parent && parent.tagName == 'TEXTAREA') {
+	        value = ('' + value).replace(/riot-/g, '');
+	        // change textarea's value
+	        parent.value = value;
 	      }
 
-	      // #1638: regression of #1612, update the dom only if the value of the
-	      // expression was changed
-	      if (expr.value === value) {
-	        return;
-	      }
+	      // no change
+	      if (expr.value === value) return;
 	      expr.value = value;
 
-	      // textarea and text nodes has no attribute name
+	      // text node
 	      if (!attrName) {
-	        // about #815 w/o replace: the browser converts the value to a string,
-	        // the comparison by "==" does too, but not in the server
-	        value += '';
-	        // test for parent avoids error with invalid assignment to nodeValue
-	        if (parent) {
-	          if (parent.tagName === 'TEXTAREA') {
-	            parent.value = value; // #1113
-	            if (!IE_VERSION) dom.nodeValue = value; // #1625 IE throws here, nodeValue
-	          } // will be available on 'updated'
-	          else dom.nodeValue = value;
-	        }
-	        return;
-	      }
-
-	      // ~~#1612: look for changes in dom.value when updating the value~~
-	      if (attrName === 'value') {
-	        dom.value = value;
+	        dom.nodeValue = '' + value; // #815 related
 	        return;
 	      }
 
 	      // remove original attribute
 	      remAttr(dom, attrName);
-
 	      // event handler
 	      if (isFunction(value)) {
 	        setEventHandler(attrName, value, dom, tag);
@@ -1802,37 +1700,37 @@ webpackJsonp([0,1],[
 	              dom.inStub = true;
 	            }
 	          // show / hide
-	        } else if (attrName === 'show') {
+	        } else if (/^(show|hide)$/.test(attrName)) {
+	            if (attrName == 'hide') value = !value;
 	            dom.style.display = value ? '' : 'none';
-	          } else if (attrName === 'hide') {
-	            dom.style.display = value ? 'none' : '';
-	          } else if (expr.bool) {
-	            dom[attrName] = value;
-	            if (value) setAttr(dom, attrName, attrName);
-	            if (FIREFOX && attrName === 'selected' && dom.tagName === 'OPTION') {
-	              dom.__riot1374 = value; // #1374
-	            }
-	          } else if (value === 0 || value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== T_OBJECT) {
+
+	            // field value
+	          } else if (attrName == 'value') {
+	              dom.value = value;
+
 	              // <img src="{ expr }">
-	              if (startsWith(attrName, RIOT_PREFIX) && attrName != RIOT_TAG) {
-	                attrName = attrName.slice(RIOT_PREFIX.length);
+	            } else if (startsWith(attrName, RIOT_PREFIX) && attrName != RIOT_TAG) {
+	                if (value) setAttr(dom, attrName.slice(RIOT_PREFIX.length), value);
+	              } else {
+	                if (expr.bool) {
+	                  dom[attrName] = value;
+	                  if (!value) return;
+	                }
+
+	                if (value === 0 || value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== T_OBJECT) setAttr(dom, attrName, value);
 	              }
-	              setAttr(dom, attrName, value);
-	            }
 	    });
 	  }
 	  /**
-	   * Specialized function for looping an array-like collection with `each={}`
+	   * Loops an array
 	   * @param   { Array } els - collection of items
 	   * @param   {Function} fn - callback function
 	   * @returns { Array } the array looped
 	   */
 	  function each(els, fn) {
-	    var len = els ? els.length : 0;
-
-	    for (var i = 0, el; i < len; i++) {
+	    for (var i = 0, len = (els || []).length, el; i < len; i++) {
 	      el = els[i];
-	      // return false -> current item was removed by fn during the loop
+	      // return false -> remove current item during loop
 	      if (el != null && fn(el, i) === false) i--;
 	    }
 	    return els;
@@ -1845,16 +1743,6 @@ webpackJsonp([0,1],[
 	   */
 	  function isFunction(v) {
 	    return (typeof v === 'undefined' ? 'undefined' : _typeof(v)) === T_FUNCTION || false; // avoid IE problems
-	  }
-
-	  /**
-	   * Detect if the argument passed is an object, exclude null.
-	   * NOTE: Use isObject(x) && !isArray(x) to excludes arrays.
-	   * @param   { * } v - whatever you want to pass to this function
-	   * @returns { Boolean } -
-	   */
-	  function isObject(v) {
-	    return v && (typeof v === 'undefined' ? 'undefined' : _typeof(v)) === T_OBJECT; // typeof null is 'object'
 	  }
 
 	  /**
@@ -1903,7 +1791,7 @@ webpackJsonp([0,1],[
 	   * @returns { Object } it returns an object containing the implementation of a custom tag (template and boot function)
 	   */
 	  function getTag(dom) {
-	    return dom.tagName && __tagImpl[getAttr(dom, RIOT_TAG_IS) || getAttr(dom, RIOT_TAG) || dom.tagName.toLowerCase()];
+	    return dom.tagName && __tagImpl[getAttr(dom, RIOT_TAG) || dom.tagName.toLowerCase()];
 	  }
 	  /**
 	   * Add a child tag to its parent into the `tags` object
@@ -2002,7 +1890,7 @@ webpackJsonp([0,1],[
 	      value: value,
 	      enumerable: false,
 	      writable: false,
-	      configurable: true
+	      configurable: false
 	    }, options));
 	    return el;
 	  }
@@ -2297,17 +2185,11 @@ webpackJsonp([0,1],[
 
 	    /**
 	     * Create/Return a mixin by its name
-	     * @param   { String } name - mixin name (global mixin if missing)
+	     * @param   { String } name - mixin name
 	     * @param   { Object } mixin - mixin logic
 	     * @returns { Object } the mixin logic
 	     */
 	    return function (name, mixin) {
-	      if (isObject(name)) {
-	        mixin = name;
-	        mixins[GLOBAL_MIXIN] = extend(mixins[GLOBAL_MIXIN] || {}, mixin);
-	        return;
-	      }
-
 	      if (!mixin) return mixins[name];
 	      mixins[name] = mixin;
 	    };
@@ -2333,7 +2215,6 @@ webpackJsonp([0,1],[
 	    if (css) {
 	      if (isFunction(css)) fn = css;else styleManager.add(css);
 	    }
-	    name = name.toLowerCase();
 	    __tagImpl[name] = { name: name, tmpl: html, attrs: attrs, fn: fn };
 	    return name;
 	  };
@@ -2345,9 +2226,10 @@ webpackJsonp([0,1],[
 	   * @param   { String }   css - custom tag css
 	   * @param   { String }   attrs - root tag attributes
 	   * @param   { Function } fn - user function
+	   * @param   { string }  [bpair] - brackets used in the compilation
 	   * @returns { String } name/id of the tag just created
 	   */
-	  riot.tag2 = function (name, html, css, attrs, fn) {
+	  riot.tag2 = function (name, html, css, attrs, fn, bpair) {
 	    if (css) styleManager.add(css);
 	    //if (bpair) riot.settings.brackets = bpair
 	    __tagImpl[name] = { name: name, tmpl: html, attrs: attrs, fn: fn };
@@ -2372,10 +2254,7 @@ webpackJsonp([0,1],[
 	    function addRiotTags(arr) {
 	      var list = '';
 	      each(arr, function (e) {
-	        if (!/[^-\w]/.test(e)) {
-	          e = e.trim().toLowerCase();
-	          list += ',[' + RIOT_TAG_IS + '="' + e + '"],[' + RIOT_TAG + '="' + e + '"]';
-	        }
+	        if (!/[^-\w]/.test(e)) list += ',*[' + RIOT_TAG + '=' + e.trim() + ']';
 	      });
 	      return list;
 	    }
@@ -2386,21 +2265,15 @@ webpackJsonp([0,1],[
 	    }
 
 	    function pushTags(root) {
-	      if (root.tagName) {
-	        var riotTag = getAttr(root, RIOT_TAG_IS) || getAttr(root, RIOT_TAG);
+	      var last;
 
-	        // have tagName? force riot-tag to be the same
-	        if (tagName && riotTag !== tagName) {
-	          riotTag = tagName;
-	          setAttr(root, RIOT_TAG_IS, tagName);
-	          setAttr(root, RIOT_TAG, tagName); // this will be removed in riot 3.0.0
-	        }
-	        var tag = mountTo(root, riotTag || root.tagName.toLowerCase(), opts);
+	      if (root.tagName) {
+	        if (tagName && (!(last = getAttr(root, RIOT_TAG)) || last != tagName)) setAttr(root, RIOT_TAG, tagName);
+
+	        var tag = mountTo(root, tagName || root.getAttribute(RIOT_TAG) || root.tagName.toLowerCase(), opts);
 
 	        if (tag) tags.push(tag);
-	      } else if (root.length) {
-	        each(root, pushTags); // assume nodeList
-	      }
+	      } else if (root.length) each(root, pushTags); // assume nodeList
 	    }
 
 	    // ----- mount code -----
@@ -2408,7 +2281,7 @@ webpackJsonp([0,1],[
 	    // inject styles into DOM
 	    styleManager.inject();
 
-	    if (isObject(tagName)) {
+	    if ((typeof tagName === 'undefined' ? 'undefined' : _typeof(tagName)) === T_OBJECT) {
 	      opts = tagName;
 	      tagName = 0;
 	    }
@@ -2420,7 +2293,7 @@ webpackJsonp([0,1],[
 	        // and also the tags found with the riot-tag attribute set
 	        selector = allTags = selectAllTags();else
 	        // or just the ones named like the selector
-	        selector += addRiotTags(selector.split(/, */));
+	        selector += addRiotTags(selector.split(','));
 
 	      // make sure to pass always a selector
 	      // to the querySelectorAll function
@@ -2446,7 +2319,7 @@ webpackJsonp([0,1],[
 	      tagName = 0;
 	    }
 
-	    pushTags(els);
+	    if (els.tagName) pushTags(els);else each(els, pushTags);
 
 	    return tags;
 	  };
@@ -2460,11 +2333,6 @@ webpackJsonp([0,1],[
 	      tag.update();
 	    });
 	  };
-
-	  /**
-	   * Export the Virtual DOM
-	   */
-	  riot.vdom = __virtualDom;
 
 	  /**
 	   * Export the Tag constructor
