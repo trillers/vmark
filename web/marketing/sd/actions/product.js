@@ -5,14 +5,11 @@ let productActions = {};
 
 productActions.loadProduct = function(id){
     return function(done){
-        $.get(__app.settings.api.url + '/tenant/sd/course/_' + id).success(res=>{
+        $.get(__app.settings.api.url + '/tenant/sd/course/_' + id).then(res=>{
                 done({
                     name: 'loadProduct',
                     res
                 });
-            })
-            .error(e=>{
-                console.warn(e)
             })
     };
 };

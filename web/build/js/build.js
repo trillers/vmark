@@ -3882,14 +3882,12 @@ webpackJsonp([0,1],[
 	    console.error('adsfasdfasdfasdfasdf');
 	    console.error(id);
 	    return function (done) {
-	        return $.get(baseUrl + '/tenant/sd/catalog/_' + id).success(function (res) {
+	        return $.get(baseUrl + '/tenant/sd/catalog/_' + id).then(function (res) {
 	            console.error('adfad');
 	            done({
 	                name: 'loadCatalogById',
 	                res: res
 	            });
-	        }).error(function (e) {
-	            console.warn(e.stack);
 	        });
 	    };
 	};
@@ -3919,13 +3917,11 @@ webpackJsonp([0,1],[
 
 	var addBespeak = exports.addBespeak = function addBespeak(data) {
 	    return function (done) {
-	        return $.post(baseUrl + '/tenant/sd/bespeak', data).success(function (res) {
+	        return $.post(baseUrl + '/tenant/sd/bespeak', data).then(function (res) {
 	            done({
 	                name: 'addBespeak',
 	                res: res
 	            });
-	        }).error(function (e) {
-	            console.warn(e);
 	        });
 	    };
 	};
@@ -3944,13 +3940,11 @@ webpackJsonp([0,1],[
 
 	productActions.loadProduct = function (id) {
 	    return function (done) {
-	        $.get(__app.settings.api.url + '/tenant/sd/course/_' + id).success(function (res) {
+	        $.get(__app.settings.api.url + '/tenant/sd/course/_' + id).then(function (res) {
 	            done({
 	                name: 'loadProduct',
 	                res: res
 	            });
-	        }).error(function (e) {
-	            console.warn(e);
 	        });
 	    };
 	};

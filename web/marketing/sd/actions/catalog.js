@@ -5,15 +5,12 @@ export var loadCatalogById = function(id){
     console.error(id);
     return function(done){
         return $.get(baseUrl + '/tenant/sd/catalog/_' + id)
-            .success(res=>{
+            .then(res=>{
                 console.error('adfad');
                 done({
                     name: 'loadCatalogById',
                     res
                 });
-            })
-            .error(e=>{
-                console.warn(e.stack)
             })
     }
 };
