@@ -12,10 +12,10 @@ module.exports = function(){
     var router = new Router();
     router.prefix('/sd');
     require('../../app/routes-spa')(router);
-    router.get('/:wechatId/catalog', tenantFilter, needBaseInfoFilter, function *(){
-        var auth = authentication.getAuthentication(this, this.wechatId)
-        var user = auth && auth.user || {};
-        this.state.__page.user = user;
+    router.get('/:wechatId/catalog', function *(){
+        //var auth = authentication.getAuthentication(this, this.wechatId)
+        //var user = auth && auth.user || {};
+        //this.state.__page.user = user;
         let catalogId = this.request.query.id;
         if(!catalogId){
             return yield this.render('404');
