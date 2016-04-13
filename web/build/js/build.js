@@ -2625,7 +2625,7 @@ webpackJsonp([0,1],[
 /***/ },
 /* 6 */
 /***/ function(module, exports) {
-
+	alert(7)
 	'use strict';
 
 	;(function (a, b) {
@@ -3088,7 +3088,7 @@ webpackJsonp([0,1],[
 /***/ },
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
-
+	alert(8)
 	/* WEBPACK VAR INJECTION */(function(riot) {'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -3109,7 +3109,7 @@ webpackJsonp([0,1],[
 /***/ },
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
-
+	alert(9)
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -3132,7 +3132,7 @@ webpackJsonp([0,1],[
 /***/ },
 /* 9 */
 /***/ function(module, exports) {
-
+	alert(10)
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -3221,7 +3221,7 @@ webpackJsonp([0,1],[
 /***/ },
 /* 12 */
 /***/ function(module, exports, __webpack_require__) {
-
+	alert(12)
 	'use strict';
 
 	var _dispatcher = __webpack_require__(13);
