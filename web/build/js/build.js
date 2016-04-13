@@ -7,7 +7,7 @@ webpackJsonp([0,1],[
 	__webpack_require__(4);
 
 	__webpack_require__(11);
-
+	alert(12)
 	var _app = __webpack_require__(12);
 
 	var _index = __webpack_require__(13);
@@ -50,7 +50,7 @@ webpackJsonp([0,1],[
 
 	;(function (window, undefined) {
 	  'use strict';
-
+		alert(1)
 	  var riot = { version: 'v2.3.18', settings: {} },
 
 	  // be aware, internal usage
@@ -233,8 +233,9 @@ webpackJsonp([0,1],[
 	     * Simple client-side router
 	     * @module riot-route
 	     */
+		alert(2)
 
-	    var RE_ORIGIN = /^.+?\/\/+[^\/]+/,
+				var RE_ORIGIN = /^.+?\/\/+[^\/]+/,
 	        EVENT_LISTENER = 'EventListener',
 	        REMOVE_EVENT_LISTENER = 'remove' + EVENT_LISTENER,
 	        ADD_EVENT_LISTENER = 'add' + EVENT_LISTENER,
@@ -2472,6 +2473,7 @@ webpackJsonp([0,1],[
 	  riot.Tag = Tag;
 	  // support CommonJS, AMD & browser
 	  /* istanbul ignore next */
+	 alert(JSON.stringify(riot));
 	  if (( false ? 'undefined' : _typeof(exports)) === T_OBJECT) module.exports = riot;else if (( false ? 'undefined' : _typeof(__webpack_require__(2))) === T_FUNCTION && _typeof(__webpack_require__(3)) !== T_UNDEF) !(__WEBPACK_AMD_DEFINE_RESULT__ = function () {
 	    return riot;
 	  }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));else window.riot = riot;
