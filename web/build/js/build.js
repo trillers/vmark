@@ -2517,7 +2517,7 @@ webpackJsonp([0,1],[
 	        !Array.isArray(nodes) && (nodes = [].slice.apply(nodes));
 	        return nodes.length === 1 ? nodes[0] : nodes;
 	    };
-	    jQuery = Object.assign(jQuery, fetch.default);
+	    //jQuery = Object.assign(jQuery, fetch.default);
 	    window.$ = jQuery;
 			alert('jquery')
 	})(window);
