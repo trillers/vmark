@@ -20,6 +20,9 @@ webpackJsonp([0,1],[
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+	console.error('errr');
+
+
 	__webpack_require__(17);
 	__webpack_require__(18);
 

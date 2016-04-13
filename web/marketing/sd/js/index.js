@@ -1,3 +1,4 @@
+console.error('errr');
 import {} from 'jQuery';
 import {} from 'wx';
 
