@@ -1,7 +1,7 @@
 webpackJsonp([0,1],[
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
-
+	alert(0);
 	/* WEBPACK VAR INJECTION */(function(riot) {'use strict';
 
 	__webpack_require__(4);
@@ -41,13 +41,13 @@ webpackJsonp([0,1],[
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
-
+	alert('riot');
 	var __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 	/* Riot v2.3.18, @license MIT */
-
+	alert('start')
 	;(function (window, undefined) {
 	  'use strict';
 		alert(1)
