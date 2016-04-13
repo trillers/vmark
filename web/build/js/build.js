@@ -2506,8 +2506,9 @@ webpackJsonp([0,1],[
 
 	;(function (window, undefined) {
 	    'use strict';
-
+		alert('a')
 	    var _jQuery = window.jQuery;
+			alert('d')
 	    if (_jQuery) {
 	        return _jQuery;
 	    }
