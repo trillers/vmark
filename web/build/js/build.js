@@ -2474,5 +2474,780 @@ webpackJsonp([0,1],[
 
 	/* WEBPACK VAR INJECTION */}.call(exports, {}))
 
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _ajax = __webpack_require__(5);
+
+	var fetch = _interopRequireWildcard(_ajax);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	;(function (window, undefined) {
+	    'use strict';
+
+	    var _jQuery = window.jQuery;
+	    if (_jQuery) {
+	        return _jQuery;
+	    }
+	    var jQuery = function jQuery(selector) {
+	        var nodes = document.querySelectorAll(selector);
+	        !Array.isArray(nodes) && (nodes = [].slice.apply(nodes));
+	        return nodes.length === 1 ? nodes[0] : nodes;
+	    };
+	    jQuery = Object.assign(jQuery, fetch.default);
+	    window.$ = jQuery;
+	})(window);
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	(function (root, factory) {
+	    if (true) {
+	        !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	    } else if ((typeof exports === 'undefined' ? 'undefined' : _typeof(exports)) === 'object') {
+	        module.exports = factory;
+	    } else {
+	        root.atomic = factory(root);
+	    }
+	})(undefined, function (root) {
+
+	    'use strict';
+
+	    var exports = {};
+
+	    var config = {
+	        contentType: 'application/x-www-form-urlencoded'
+	    };
+
+	    var parse = function parse(req) {
+	        var result;
+	        try {
+	            result = JSON.parse(req.responseText);
+	        } catch (e) {
+	            result = req.responseText;
+	        }
+	        return [result, req];
+	    };
+
+	    var xhr = function xhr(type, url, data) {
+	        var methods = {
+	            success: function success() {},
+	            error: function error() {},
+	            always: function always() {}
+	        };
+	        var XHR = XMLHttpRequest || ActiveXObject;
+	        var request = new XHR('MSXML2.XMLHTTP.3.0');
+
+	        request.open(type, url, true);
+	        request.setRequestHeader('Content-type', config.contentType);
+	        request.onreadystatechange = function () {
+	            var req;
+	            if (request.readyState === 4) {
+	                req = parse(request);
+	                if (request.status >= 200 && request.status < 300) {
+	                    methods.success.apply(methods, req);
+	                } else {
+	                    methods.error.apply(methods, req);
+	                }
+	                methods.always.apply(methods, req);
+	            }
+	        };
+	        request.send(data);
+
+	        var atomXHR = {
+	            success: function success(callback) {
+	                methods.success = callback;
+	                return atomXHR;
+	            },
+	            error: function error(callback) {
+	                methods.error = callback;
+	                return atomXHR;
+	            },
+	            always: function always(callback) {
+	                methods.always = callback;
+	                return atomXHR;
+	            }
+	        };
+
+	        return atomXHR;
+	    };
+
+	    exports.get = function (src) {
+	        return xhr('GET', src);
+	    };
+
+	    exports.put = function (url, data) {
+	        return xhr('PUT', url, data);
+	    };
+
+	    exports.post = function (url, data) {
+	        return xhr('POST', url, data);
+	    };
+
+	    exports.delete = function (url) {
+	        return xhr('DELETE', url);
+	    };
+
+	    exports.setContentType = function (value) {
+	        config.contentType = value;
+	    };
+
+	    return exports;
+	});
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	;(function (a, b) {
+	    var wx = b(a);
+	    a.wx = a.jWeixin = wx;
+	    module.exports = null;
+	})(window, function (a, b) {
+	    function c(b, c, d) {
+	        a.WeixinJSBridge ? WeixinJSBridge.invoke(b, e(c), function (a) {
+	            g(b, a, d);
+	        }) : j(b, d);
+	    }
+	    function d(b, c, d) {
+	        a.WeixinJSBridge ? WeixinJSBridge.on(b, function (a) {
+	            d && d.trigger && d.trigger(a), g(b, a, c);
+	        }) : d ? j(b, d) : j(b, c);
+	    }
+	    function e(a) {
+	        return a = a || {}, a.appId = z.appId, a.verifyAppId = z.appId, a.verifySignType = 'sha1', a.verifyTimestamp = z.timestamp + '', a.verifyNonceStr = z.nonceStr, a.verifySignature = z.signature, a;
+	    }
+	    function f(a) {
+	        return {
+	            timeStamp: a.timestamp + '',
+	            nonceStr: a.nonceStr,
+	            'package': a.package,
+	            paySign: a.paySign,
+	            signType: a.signType || 'SHA1'
+	        };
+	    }
+	    function g(a, b, c) {
+	        var d, e, f;
+	        switch (delete b.err_code, delete b.err_desc, delete b.err_detail, d = b.errMsg, d || (d = b.err_msg, delete b.err_msg, d = h(a, d, c), b.errMsg = d), c = c || {}, c._complete && (c._complete(b), delete c._complete), d = b.errMsg || '', z.debug && !c.isInnerInvoke && alert(JSON.stringify(b)), e = d.indexOf(':'), f = d.substring(e + 1)) {
+	            case 'ok':
+	                c.success && c.success(b);
+	                break;
+	            case 'cancel':
+	                c.cancel && c.cancel(b);
+	                break;
+	            default:
+	                c.fail && c.fail(b);
+	        }
+	        c.complete && c.complete(b);
+	    }
+	    function h(a, b) {
+	        var d, e, f, g;
+	        if (b) {
+	            switch (d = b.indexOf(':'), a) {
+	                case o.config:
+	                    e = 'config';
+	                    break;
+	                case o.openProductSpecificView:
+	                    e = 'openProductSpecificView';
+	                    break;
+	                default:
+	                    e = b.substring(0, d), e = e.replace(/_/g, ' '), e = e.replace(/\b\w+\b/g, function (a) {
+	                        return a.substring(0, 1).toUpperCase() + a.substring(1);
+	                    }), e = e.substring(0, 1).toLowerCase() + e.substring(1), e = e.replace(/ /g, ''), -1 != e.indexOf('Wcpay') && (e = e.replace('Wcpay', 'WCPay')), f = p[e], f && (e = f);
+	            }
+	            g = b.substring(d + 1), 'confirm' == g && (g = 'ok'), 'failed' == g && (g = 'fail'), -1 != g.indexOf('failed_') && (g = g.substring(7)), -1 != g.indexOf('fail_') && (g = g.substring(5)), g = g.replace(/_/g, ' '), g = g.toLowerCase(), ('access denied' == g || 'no permission to execute' == g) && (g = 'permission denied'), 'config' == e && 'function not exist' == g && (g = 'ok'), b = e + ':' + g;
+	        }
+	        return b;
+	    }
+	    function i(a) {
+	        var b, c, d, e;
+	        if (a) {
+	            for (b = 0, c = a.length; c > b; ++b) {
+	                d = a[b], e = o[d], e && (a[b] = e);
+	            }return a;
+	        }
+	    }
+	    function j(a, b) {
+	        if (z.debug && !b.isInnerInvoke) {
+	            var c = p[a];
+	            c && (a = c), b && b._complete && delete b._complete, console.log('"' + a + '",', b || '');
+	        }
+	    }
+	    function k() {
+	        if (!('6.0.2' > w || y.systemType < 0)) {
+	            var b = new Image();
+	            y.appId = z.appId, y.initTime = x.initEndTime - x.initStartTime, y.preVerifyTime = x.preVerifyEndTime - x.preVerifyStartTime, C.getNetworkType({
+	                isInnerInvoke: !0,
+	                success: function success(a) {
+	                    y.networkType = a.networkType;
+	                    var c = 'https://open.weixin.qq.com/sdk/report?v=' + y.version + '&o=' + y.isPreVerifyOk + '&s=' + y.systemType + '&c=' + y.clientVersion + '&a=' + y.appId + '&n=' + y.networkType + '&i=' + y.initTime + '&p=' + y.preVerifyTime + '&u=' + y.url;
+	                    b.src = c;
+	                }
+	            });
+	        }
+	    }
+	    function l() {
+	        return new Date().getTime();
+	    }
+	    function m(b) {
+	        t && (a.WeixinJSBridge ? b() : q.addEventListener && q.addEventListener('WeixinJSBridgeReady', b, !1));
+	    }
+	    function n() {
+	        C.invoke || (C.invoke = function (b, c, d) {
+	            a.WeixinJSBridge && WeixinJSBridge.invoke(b, e(c), d);
+	        }, C.on = function (b, c) {
+	            a.WeixinJSBridge && WeixinJSBridge.on(b, c);
+	        });
+	    }
+	    var o, p, q, r, s, t, u, v, w, x, y, z, A, B, C;
+	    if (!a.jWeixin) return o = {
+	        config: 'preVerifyJSAPI',
+	        onMenuShareTimeline: 'menu:share:timeline',
+	        onMenuShareAppMessage: 'menu:share:appmessage',
+	        onMenuShareQQ: 'menu:share:qq',
+	        onMenuShareWeibo: 'menu:share:weiboApp',
+	        previewImage: 'imagePreview',
+	        getLocation: 'geoLocation',
+	        openProductSpecificView: 'openProductViewWithPid',
+	        addCard: 'batchAddCard',
+	        openCard: 'batchViewCard',
+	        chooseWXPay: 'getBrandWCPayRequest'
+	    }, p = function () {
+	        var b,
+	            a = {};
+	        for (b in o) {
+	            a[o[b]] = b;
+	        }return a;
+	    }(), q = window.document, r = q.title, s = navigator.userAgent.toLowerCase(), t = -1 != s.indexOf('micromessenger'), u = -1 != s.indexOf('android'), v = -1 != s.indexOf('iphone') || -1 != s.indexOf('ipad'), w = function () {
+	        var a = s.match(/micromessenger\/(\d+\.\d+\.\d+)/) || s.match(/micromessenger\/(\d+\.\d+)/);
+	        return a ? a[1] : '';
+	    }(), x = {
+	        initStartTime: l(),
+	        initEndTime: 0,
+	        preVerifyStartTime: 0,
+	        preVerifyEndTime: 0
+	    }, y = {
+	        version: 1,
+	        appId: '',
+	        initTime: 0,
+	        preVerifyTime: 0,
+	        networkType: '',
+	        isPreVerifyOk: 1,
+	        systemType: v ? 1 : u ? 2 : -1,
+	        clientVersion: w,
+	        url: encodeURIComponent(location.href)
+	    }, z = {}, A = { _completes: [] }, B = {
+	        state: 0,
+	        res: {}
+	    }, m(function () {
+	        x.initEndTime = l();
+	    }), C = {
+	        config: function config(a) {
+	            z = a, j('config', a);
+	            var b = z.check === !1 ? !1 : !0;
+	            m(function () {
+	                var a, d, e;
+	                if (b) c(o.config, { verifyJsApiList: i(z.jsApiList) }, function () {
+	                    A._complete = function (a) {
+	                        x.preVerifyEndTime = l(), B.state = 1, B.res = a;
+	                    }, A.success = function () {
+	                        y.isPreVerifyOk = 0;
+	                    }, A.fail = function (a) {
+	                        A._fail ? A._fail(a) : B.state = -1;
+	                    };
+	                    var a = A._completes;
+	                    return a.push(function () {
+	                        z.debug || k();
+	                    }), A.complete = function () {
+	                        for (var c = 0, d = a.length; d > c; ++c) {
+	                            a[c]();
+	                        }A._completes = [];
+	                    }, A;
+	                }()), x.preVerifyStartTime = l();else {
+	                    for (B.state = 1, a = A._completes, d = 0, e = a.length; e > d; ++d) {
+	                        a[d]();
+	                    }A._completes = [];
+	                }
+	            }), z.beta && n();
+	        },
+	        ready: function ready(a) {
+	            0 != B.state ? a() : (A._completes.push(a), !t && z.debug && a());
+	        },
+	        error: function error(a) {
+	            '6.0.2' > w || (-1 == B.state ? a(B.res) : A._fail = a);
+	        },
+	        checkJsApi: function checkJsApi(a) {
+	            var b = function b(a) {
+	                var c,
+	                    d,
+	                    b = a.checkResult;
+	                for (c in b) {
+	                    d = p[c], d && (b[d] = b[c], delete b[c]);
+	                }return a;
+	            };
+	            c('checkJsApi', { jsApiList: i(a.jsApiList) }, function () {
+	                return a._complete = function (a) {
+	                    if (u) {
+	                        var c = a.checkResult;
+	                        c && (a.checkResult = JSON.parse(c));
+	                    }
+	                    a = b(a);
+	                }, a;
+	            }());
+	        },
+	        onMenuShareTimeline: function onMenuShareTimeline(a) {
+	            d(o.onMenuShareTimeline, {
+	                complete: function complete() {
+	                    c('shareTimeline', {
+	                        title: a.title || r,
+	                        desc: a.title || r,
+	                        img_url: a.imgUrl,
+	                        link: a.link || location.href
+	                    }, a);
+	                }
+	            }, a);
+	        },
+	        onMenuShareAppMessage: function onMenuShareAppMessage(a) {
+	            d(o.onMenuShareAppMessage, {
+	                complete: function complete() {
+	                    c('sendAppMessage', {
+	                        title: a.title || r,
+	                        desc: a.desc || '',
+	                        link: a.link || location.href,
+	                        img_url: a.imgUrl,
+	                        type: a.type || 'link',
+	                        data_url: a.dataUrl || ''
+	                    }, a);
+	                }
+	            }, a);
+	        },
+	        onMenuShareQQ: function onMenuShareQQ(a) {
+	            d(o.onMenuShareQQ, {
+	                complete: function complete() {
+	                    c('shareQQ', {
+	                        title: a.title || r,
+	                        desc: a.desc || '',
+	                        img_url: a.imgUrl,
+	                        link: a.link || location.href
+	                    }, a);
+	                }
+	            }, a);
+	        },
+	        onMenuShareWeibo: function onMenuShareWeibo(a) {
+	            d(o.onMenuShareWeibo, {
+	                complete: function complete() {
+	                    c('shareWeiboApp', {
+	                        title: a.title || r,
+	                        desc: a.desc || '',
+	                        img_url: a.imgUrl,
+	                        link: a.link || location.href
+	                    }, a);
+	                }
+	            }, a);
+	        },
+	        startRecord: function startRecord(a) {
+	            c('startRecord', {}, a);
+	        },
+	        stopRecord: function stopRecord(a) {
+	            c('stopRecord', {}, a);
+	        },
+	        onVoiceRecordEnd: function onVoiceRecordEnd(a) {
+	            d('onVoiceRecordEnd', a);
+	        },
+	        playVoice: function playVoice(a) {
+	            c('playVoice', { localId: a.localId }, a);
+	        },
+	        pauseVoice: function pauseVoice(a) {
+	            c('pauseVoice', { localId: a.localId }, a);
+	        },
+	        stopVoice: function stopVoice(a) {
+	            c('stopVoice', { localId: a.localId }, a);
+	        },
+	        onVoicePlayEnd: function onVoicePlayEnd(a) {
+	            d('onVoicePlayEnd', a);
+	        },
+	        uploadVoice: function uploadVoice(a) {
+	            c('uploadVoice', {
+	                localId: a.localId,
+	                isShowProgressTips: 0 == a.isShowProgressTips ? 0 : 1
+	            }, a);
+	        },
+	        downloadVoice: function downloadVoice(a) {
+	            c('downloadVoice', {
+	                serverId: a.serverId,
+	                isShowProgressTips: 0 == a.isShowProgressTips ? 0 : 1
+	            }, a);
+	        },
+	        translateVoice: function translateVoice(a) {
+	            c('translateVoice', {
+	                localId: a.localId,
+	                isShowProgressTips: 0 == a.isShowProgressTips ? 0 : 1
+	            }, a);
+	        },
+	        chooseImage: function chooseImage(a) {
+	            c('chooseImage', {
+	                scene: '1|2',
+	                count: a.count || 9,
+	                sizeType: a.sizeType || ['original', 'compressed']
+	            }, function () {
+	                return a._complete = function (a) {
+	                    if (u) {
+	                        var b = a.localIds;
+	                        b && (a.localIds = JSON.parse(b));
+	                    }
+	                }, a;
+	            }());
+	        },
+	        previewImage: function previewImage(a) {
+	            c(o.previewImage, {
+	                current: a.current,
+	                urls: a.urls
+	            }, a);
+	        },
+	        uploadImage: function uploadImage(a) {
+	            c('uploadImage', {
+	                localId: a.localId,
+	                isShowProgressTips: 0 == a.isShowProgressTips ? 0 : 1
+	            }, a);
+	        },
+	        downloadImage: function downloadImage(a) {
+	            c('downloadImage', {
+	                serverId: a.serverId,
+	                isShowProgressTips: 0 == a.isShowProgressTips ? 0 : 1
+	            }, a);
+	        },
+	        getNetworkType: function getNetworkType(a) {
+	            var b = function b(a) {
+	                var c,
+	                    d,
+	                    e,
+	                    b = a.errMsg;
+	                if (a.errMsg = 'getNetworkType:ok', c = a.subtype, delete a.subtype, c) a.networkType = c;else switch (d = b.indexOf(':'), e = b.substring(d + 1)) {
+	                    case 'wifi':
+	                    case 'edge':
+	                    case 'wwan':
+	                        a.networkType = e;
+	                        break;
+	                    default:
+	                        a.errMsg = 'getNetworkType:fail';
+	                }
+	                return a;
+	            };
+	            c('getNetworkType', {}, function () {
+	                return a._complete = function (a) {
+	                    a = b(a);
+	                }, a;
+	            }());
+	        },
+	        openLocation: function openLocation(a) {
+	            c('openLocation', {
+	                latitude: a.latitude,
+	                longitude: a.longitude,
+	                name: a.name || '',
+	                address: a.address || '',
+	                scale: a.scale || 28,
+	                infoUrl: a.infoUrl || ''
+	            }, a);
+	        },
+	        getLocation: function getLocation(a) {
+	            a = a || {}, c(o.getLocation, { type: a.type || 'wgs84' }, function () {
+	                return a._complete = function (a) {
+	                    delete a.type;
+	                }, a;
+	            }());
+	        },
+	        hideOptionMenu: function hideOptionMenu(a) {
+	            c('hideOptionMenu', {}, a);
+	        },
+	        showOptionMenu: function showOptionMenu(a) {
+	            c('showOptionMenu', {}, a);
+	        },
+	        closeWindow: function closeWindow(a) {
+	            a = a || {}, c('closeWindow', { immediate_close: a.immediateClose || 0 }, a);
+	        },
+	        hideMenuItems: function hideMenuItems(a) {
+	            c('hideMenuItems', { menuList: a.menuList }, a);
+	        },
+	        showMenuItems: function showMenuItems(a) {
+	            c('showMenuItems', { menuList: a.menuList }, a);
+	        },
+	        hideAllNonBaseMenuItem: function hideAllNonBaseMenuItem(a) {
+	            c('hideAllNonBaseMenuItem', {}, a);
+	        },
+	        showAllNonBaseMenuItem: function showAllNonBaseMenuItem(a) {
+	            c('showAllNonBaseMenuItem', {}, a);
+	        },
+	        scanQRCode: function scanQRCode(a) {
+	            a = a || {}, c('scanQRCode', {
+	                needResult: a.needResult || 0,
+	                scanType: a.scanType || ['qrCode', 'barCode']
+	            }, function () {
+	                return a._complete = function (a) {
+	                    var b, c;
+	                    v && (b = a.resultStr, b && (c = JSON.parse(b), a.resultStr = c && c.scan_code && c.scan_code.scan_result));
+	                }, a;
+	            }());
+	        },
+	        openProductSpecificView: function openProductSpecificView(a) {
+	            c(o.openProductSpecificView, {
+	                pid: a.productId,
+	                view_type: a.viewType || 0
+	            }, a);
+	        },
+	        addCard: function addCard(a) {
+	            var e,
+	                f,
+	                g,
+	                h,
+	                b = a.cardList,
+	                d = [];
+	            for (e = 0, f = b.length; f > e; ++e) {
+	                g = b[e], h = {
+	                    card_id: g.cardId,
+	                    card_ext: g.cardExt
+	                }, d.push(h);
+	            }c(o.addCard, { card_list: d }, function () {
+	                return a._complete = function (a) {
+	                    var c,
+	                        d,
+	                        e,
+	                        b = a.card_list;
+	                    if (b) {
+	                        for (b = JSON.parse(b), c = 0, d = b.length; d > c; ++c) {
+	                            e = b[c], e.cardId = e.card_id, e.cardExt = e.card_ext, e.isSuccess = e.is_succ ? !0 : !1, delete e.card_id, delete e.card_ext, delete e.is_succ;
+	                        }a.cardList = b, delete a.card_list;
+	                    }
+	                }, a;
+	            }());
+	        },
+	        chooseCard: function chooseCard(a) {
+	            c('chooseCard', {
+	                app_id: z.appId,
+	                location_id: a.shopId || '',
+	                sign_type: a.signType || 'SHA1',
+	                card_id: a.cardId || '',
+	                card_type: a.cardType || '',
+	                card_sign: a.cardSign,
+	                time_stamp: a.timestamp + '',
+	                nonce_str: a.nonceStr
+	            }, function () {
+	                return a._complete = function (a) {
+	                    a.cardList = a.choose_card_info, delete a.choose_card_info;
+	                }, a;
+	            }());
+	        },
+	        openCard: function openCard(a) {
+	            var e,
+	                f,
+	                g,
+	                h,
+	                b = a.cardList,
+	                d = [];
+	            for (e = 0, f = b.length; f > e; ++e) {
+	                g = b[e], h = {
+	                    card_id: g.cardId,
+	                    code: g.code
+	                }, d.push(h);
+	            }c(o.openCard, { card_list: d }, a);
+	        },
+	        chooseWXPay: function chooseWXPay(a) {
+	            c(o.chooseWXPay, f(a), a);
+	        }
+	    }, b && (a.wx = a.jWeixin = C), C;
+	});
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var app = exports.app = riot.observable();
+
+	app.views = {};
+
+	app.off('action').on('action', onAction);
+	function onAction(action) {
+	    Object.keys(app.views).forEach(function (tagName) {
+	        app.views[tagName].trigger(action.name, action.res);
+	    });
+	}
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.actions = undefined;
+
+	var _catalog = __webpack_require__(9);
+
+	var _bespeak = __webpack_require__(10);
+
+	var _product = __webpack_require__(11);
+
+	var actions = exports.actions = {
+	    loadCatalogById: _catalog.loadCatalogById,
+	    productActions: _product.productActions,
+	    addBespeak: _bespeak.addBespeak
+	};
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var baseUrl = __app.settings.api.url;
+
+	var loadCatalogById = exports.loadCatalogById = function loadCatalogById(id) {
+	    console.error('adsfasdfasdfasdfasdf');
+	    console.error(id);
+	    return function (done) {
+	        return $.get(baseUrl + '/tenant/sd/catalog/_' + id).success(function (res) {
+	            console.error('adfad');
+	            done({
+	                name: 'loadCatalogById',
+	                res: res
+	            });
+	        }).error(function (e) {
+	            console.warn(e.stack);
+	        });
+	    };
+	};
+	//export var loadCatalogById = id = done =>{
+	//    return $.get(baseUrl + '/tenant/sd/catalog/_' + id)
+	//        .success(res=>{
+	//            done({
+	//                name: 'loadCatalogById',
+	//                res
+	//            });
+	//        })
+	//        .error(e=>{
+	//            console.warn(e.stack)
+	//        })
+	//};
+
+/***/ },
+/* 10 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var baseUrl = __app.settings.api.url;
+
+	var addBespeak = exports.addBespeak = function addBespeak(data) {
+	    return function (done) {
+	        return $.post(baseUrl + '/tenant/sd/bespeak', data).success(function (res) {
+	            done({
+	                name: 'addBespeak',
+	                res: res
+	            });
+	        }).error(function (e) {
+	            console.warn(e);
+	        });
+	    };
+	};
+
+/***/ },
+/* 11 */
+/***/ function(module, exports) {
+
+	'use strict';
+	//import {appDispatcher} from '../dispatcher';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var productActions = {};
+
+	productActions.loadProduct = function (id) {
+	    return function (done) {
+	        $.get(__app.settings.api.url + '/tenant/sd/course/_' + id).success(function (res) {
+	            done({
+	                name: 'loadProduct',
+	                res: res
+	            });
+	        }).error(function (e) {
+	            console.warn(e);
+	        });
+	    };
+	};
+	exports.productActions = productActions;
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _dispatcher = __webpack_require__(13);
+
+	var appStore = {};
+
+	var loadProduct = function loadProduct(actionType, id) {
+	    $.get(__app.settings.api.url + '/tenant/sd/course/_' + id).then(function (data) {
+	        appStore.done(actionType, data);
+	    }).catch(function (e) {
+	        console.warn(e);
+	    });
+	};
+
+	appStore.done = function (actionType, data) {
+	    Object.keys(app.views).forEach(function (tagName) {
+	        app.views[tagName].trigger(actionType, data);
+	    });
+	};
+
+	_dispatcher.appDispatcher.registry(function (action) {
+	    switch (action.actionType) {
+	        case 'loadProduct':
+	            loadProduct(action.actionType, action.id);
+	            break;
+	    }
+	});
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.appDispatcher = undefined;
+
+	var _AppDispatcher = __webpack_require__(14);
+
+	var appDispatcher = new _AppDispatcher.AppDispatcher();
+
+	exports.appDispatcher = appDispatcher;
+
 /***/ }
 ]);
