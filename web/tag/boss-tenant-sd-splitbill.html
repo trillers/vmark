@@ -83,30 +83,26 @@
                                 <table class="table table-striped">
                                     <thead>
                                     <tr>
-                                        <th>名称</th>
-                                        <th>状态</th>
-                                        <th>上/下架时间</th>
-                                        <th>创建时间</th>
-                                        <th>备注</th>
+                                        <th>客户</th>
+                                        <th>产品</th>
+                                        <th>成交价</th>
+                                        <th>所获分成</th>
                                     </tr>
                                     </thead>
                                     <tbody>
 
-                                    <tr each="{courses}">
+                                    <tr each="{orders}">
                                         <td>
-                                            {name}
+                                            { bespeak.user.nickname }
                                         </td>
                                         <td>
-                                            { __app.enums.LiveStatus.values[liveStatus] }
+                                            { bespeak.product.name }
                                         </td>
                                         <td>
-                                            { actionTime && _.date.format(new Date(actionTime), 'yyyy-MM-dd hh点mm分') || '空'}
+                                            { finalPrice }
                                         </td>
                                         <td>
-                                            {_.date.format(new Date(crtOn), 'yyyy-MM-dd hh点mm分')}
-                                        </td>
-                                        <td>
-                                            { desc }
+                                            { commission }
                                         </td>
                                     </tr>
 
@@ -125,7 +121,7 @@
         var self = nest.presentable(this);
         var findDistributorsWithPendingPaymentByTenantIdAction = domain.action('findDistributorsWithPendingPaymentByTenantId');
         var findDistributorsCountWithPendingPaymentByTenantIdAction = domain.action('findDistributorsCountWithPendingPaymentByTenantId');
-        var findOrdersAction = domain.action('findOrders');
+        var findOrderRelatedDistributorAction = domain.action('findOrderRelatedDistributor');
         var checkoutAction = domain.action('checkout');
         self.distributors = [];
         self.totalPage = 1;
@@ -133,12 +129,6 @@
             tenant: __page.tenantId,
             no: 1,
             size: 10
-        };
-        self.ordersFilter = {
-            tenant: __page.tenantId,
-            conditions: {
-
-            }
         };
         self.on('mount', function(){
             findDistributorsWithPendingPaymentByTenantIdAction.onDone(function(res){
@@ -174,7 +164,36 @@
             });
         };
         self.onClickDistributor = function(e){
-            console.log(e.item);
+            findOrderRelatedDistributorAction
+                .newInvocation({
+                    distributor: e.item._id,
+                    status: __app.enums.OrderStatus.names['unFinish']
+                })
+                .onDone(function(res){
+                    if(res.error){
+                        alert('获取相关订单失败');
+                        return;
+                    }
+                    self.orders = res.orders.map(function(order){
+                        var commission = 0;
+                        var product = order.bespeak.product;
+                        if(order.distributors){
+                            var level = order.distributors.indexOf(e.item._id) + 1;
+                            var cmType = product['upLine' + level + 'CommissionType'];
+                            var cmValue = product['upLine' + level + 'CommissionValue'];
+                            if(cmType === __app.enums.CommissionType.names.Percent){
+                                commission = parseFloat(order.finalPrice) * parseFloat(cmValue);
+                            }else{
+                                commission = cmValue;
+                            }
+                        }
+                        order.commission = commission;
+                        return order;
+                    });
+
+                    self.update();
+                })
+                .execute();
         };
         self.onCheckout = function(e){
             _.widget.confirm({
@@ -231,7 +250,6 @@
             });
         };
         self.jumpToPage = function(e){
-            console.log(typeof self.pageTo.value)
             if(self.pageTo.value.trim() === ''){
                 alert('请输入页码');
                 return;

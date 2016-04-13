@@ -176,7 +176,18 @@ Service.prototype.checkoutByDistributorId = function(distributorId, tenantId, me
             let wechatApi = (yield wechatApiCache.get(media.originalId)).api;
             for(let i=0, len=orders.length; i<len; i++){
                 let order = yield me.context.services.orderService.loadFullInfoByIdAsync(orders[i]._id);
-                let payment = null;
+                let payment = 0;
+                if(order.distributors){
+                    let level = order.distributors.indexOf(distributorId) + 1;
+                    let cmType = order.bespeak.product['upLine' + level + 'CommissionType'];
+                    let cmValue = order.bespeak.product['upLine' + level + 'CommissionValue'];
+
+                    if(cmType === CommissionType.Percent.value()){
+                        payment = parseFloat(order.finalPrice, 10) * parseFloat(cmValue, 10);
+                    }else{
+                        payment = parseFloat(cmValue, 10);
+                    }
+                }
                 let responseText = "尊贵的经纪人 " + distributor.user.nickname + " : </br>" +
                     "客户 [ " + order.bespeak.user.nickname + " ] 购买了您分享的 " + order.bespeak.product.name + '</br>' +
                     "您此单收入 " + payment;
@@ -207,6 +218,9 @@ Service.prototype.loadByUserIdAndWechatId = function(userId, wechatId, callback)
         if(!docs.length){
             return callback(null, null)
         }
+        docs = docs.filter(function(doc){
+            return doc.media;
+        });
         callback(null, docs[0]);
     })
 };

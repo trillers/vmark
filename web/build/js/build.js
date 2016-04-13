@@ -3720,6 +3720,7 @@ webpackJsonp([0,1],[
 
 	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('catalog-index', '<div> <div>产品目录</div> <div if="{!catalog || !catalog.products || !catalog.products.length}"> 该机构尚没有上架任何课程 </div> <div if="{catalog.products && catalog.products.length}"> <ul class="catalog-card"> <li each="{catalog.products}" onclick="{parent.routeTo}"> <div> <img riot-src="{poster &&__app.settings.api.url + \'/file?media_id=\' + poster}"> </div> <div> <span>{name}</span> <span>{slogan}</span> </div> </li> </ul> </div> </div>', '.catalog-card{ margin: 0px; padding: 0px; } .catalog-card li{ min-height: 48px; } .catalog-card li >div:first-child{ width: 40px; float: left; } .catalog-card li >div:first-child >img{ width: 40px; }', '', function(opts) {
 	        this.mixin('dispatcher');
+
 	        this.on('mount', ()=>{
 	            this.on('loadCatalogById', res =>{
 	                this.update({catalog: res.catalog});

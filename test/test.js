@@ -1,3 +1,5 @@
-var t = 0.111;
-var t1 = parseFloat(t);
-console.log(t1)
+var test = [];
+var teat1 = test.filter(function(t){
+    return t._id
+})
+console.log(teat1)

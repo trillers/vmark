@@ -1,6 +1,8 @@
 var co = require('co');
 var cbUtil = require('../../../../framework/callback');
 var typeRegistry = require('../../../common/models/TypeRegistry');
+var OrderStatus = typeRegistry.item('OrderStatus');
+var Promise = require('bluebird');
 
 var Service = function(context){
     this.context = context;
@@ -47,14 +49,41 @@ Service.prototype.findByTenantId = function(tenantId, params, callback){
             me.context.logger.error(err);
             return callback(err);
         }
+        if(docs && docs.length){
+            docs = docs.filter(function(doc){return doc.product});
+        }
         callback(null, docs);
     })
 
 };
 
-Service.prototype.finishByDistributorIdAndTenantIdAndMediaId = function(distributorId, tenantId, mediaId){
+Service.prototype.findByRelatedDistributor = function(distributorId, status, callback){
+    var Order = this.context.models.Order;
+    var done = callback || function noop(){};
+
+    console.log(distributorId);
+    console.log(status);
+    Order.find({status: status, distributors: {$all: [distributorId]}}, null, {lean: true})
+    .populate({
+        path: 'bespeak',
+        model: 'Bespeak',
+        populate: [
+            {
+                path: 'product',
+                model: 'Course'
+            },
+            {
+                path: 'user',
+                model: 'TenantUser'
+            }
+        ]
+    }).exec(done)
+};
+
+Service.prototype.finishByDistributorIdAndTenantIdAndMediaId = function(distributorId, tenantId, mediaId, callback){
     var me = this;
     var Order = this.context.models.Order;
+
     var query = Order.find({org: tenantId, distributors: { $all: [distributorId]}});
     query
         .populate({
@@ -63,13 +92,26 @@ Service.prototype.finishByDistributorIdAndTenantIdAndMediaId = function(distribu
                 media: mediaId
             }
         })
-        .update({}, {$set: {status: 'xx'}}, null, true, function(err, docs){
+        .exec(function(err, docs){
             if(err){
-                me.context.logger.error(err);
-                return callback(err);
+                return callback(err)
             }
-            callback(null, docs);
-        })
+            if(docs && docs.length){
+                docs = docs.filter(function(doc){
+                    return doc.bespeak;
+                });
+                var promises = [];
+                docs.forEach(function(doc){
+                    doc.status = OrderStatus.finish.value();
+                    promises.push(doc.save());
+                });
+                Promise.all(promises).then(function(err, doc){
+                    callback(null, docs);
+                });
+            }else{
+                callback(null, docs);
+            }
+        });
 };
 
 Service.prototype.loadFullInfoById = function(id, callback){

@@ -58,6 +58,11 @@ Service.prototype.findByTenantId = function(tenantId, params, callback){
             me.context.logger.error(err);
             return callback(err);
         }
+        if(docs && docs.length){
+            docs = docs.filter(function(doc){
+                return doc.product;
+            })
+        }
         callback(null, docs);
     })
 

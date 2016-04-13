@@ -33,6 +33,9 @@ Service.prototype.loadByProductIdAndWechatIdAndUserId = function(productId, wech
             wechatId: wechatId
         }
     }).exec(function(err, docs){
+        docs = docs.filter(function(doc){
+            return doc.qr
+        });
         context.logger.info('Succeed to load poster by productId and wechatId' + util.inspect(docs));
         callback(err, docs)
     });
