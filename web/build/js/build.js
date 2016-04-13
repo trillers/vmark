@@ -2497,7 +2497,7 @@ webpackJsonp([0,1],[
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	alert(5)
 	var _ajax = __webpack_require__(5);
 
 	var fetch = _interopRequireWildcard(_ajax);
@@ -2523,7 +2523,7 @@ webpackJsonp([0,1],[
 /***/ },
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
-
+	alert(6)
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
