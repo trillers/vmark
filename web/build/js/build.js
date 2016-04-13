@@ -1,7 +1,7 @@
 webpackJsonp([0,1],[
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
-
+	alert('678')
 	/* WEBPACK VAR INJECTION */(function(riot) {'use strict';
 	alert('1234')
 	__webpack_require__(4);
