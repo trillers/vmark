@@ -7,7 +7,7 @@ module.exports = function(){
         key: 'koss:test_sid',
         prefix: 'koss:test',
         cookie: {
-            maxAge: 60000*60
+            maxAge: 2*60000*60
         },
         store: redisStore({host: settings.host, port: settings.port, pass: settings.auth}),
         reconnectTimeout: 100
