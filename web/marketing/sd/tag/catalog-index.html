@@ -51,7 +51,7 @@
 
         this.on('mount', function(){
             alert('mount');
-            this.on('loadCatalogById', function(res){
+            this.on('loadCatalogById', res => {
                 this.update({catalog: res.catalog});
             });
             this.dispatch(actions.loadCatalogById(this.opts.id));
@@ -67,7 +67,7 @@
             console.warn(e.stack)
         })
 
-        this.routeTo = function(e){
+        this.routeTo = e => {
             window.location = __app.settings.app.url + "/sd/" + __page.user.wechatId + "/product?id=" + e.item._id + '&media=' + this.catalog.media._id;
         }
 

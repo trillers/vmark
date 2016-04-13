@@ -3,7 +3,7 @@ webpackJsonp([0,1],[
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {'use strict';
-
+	alert('1234')
 	__webpack_require__(4);
 
 	__webpack_require__(6);
@@ -3371,7 +3371,7 @@ webpackJsonp([0,1],[
 
 	        this.on('mount', function(){
 	            alert('mount');
-	            this.on('loadCatalogById', function(res){
+	            this.on('loadCatalogById', res => {
 	                this.update({catalog: res.catalog});
 	            });
 	            this.dispatch(actions.loadCatalogById(this.opts.id));
@@ -3387,7 +3387,7 @@ webpackJsonp([0,1],[
 	            console.warn(e.stack)
 	        })
 
-	        this.routeTo = function(e){
+	        this.routeTo = e => {
 	            window.location = __app.settings.app.url + "/sd/" + __page.user.wechatId + "/product?id=" + e.item._id + '&media=' + this.catalog.media._id;
 	        }
 
