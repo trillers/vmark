@@ -1,4 +1,4 @@
-{
+module.exports = {
     "button": [
     {
         "name": "文章发布",
@@ -7,4 +7,4 @@
         "url": "http://qa.www.wenode.org/recontent-set"
     }
 ]
-}
+};
