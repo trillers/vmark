@@ -1,7 +1,7 @@
 /******/
-
+var alert = window.alert;
 alert('456')
-(function(modules, alert) { // webpackBootstrap
+(function(modules) { // webpackBootstrap
     alert('commonjs');
 /******/ 	// install a JSONP callback for chunk loading
 /******/ 	var parentJsonpFunction = window["webpackJsonp"];
@@ -96,4 +96,4 @@ alert('456')
 
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
-/******/ })([], window.alert);
+/******/ })([]);
