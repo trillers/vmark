@@ -3121,8 +3121,11 @@ webpackJsonp([0,1],[
 	var baseUrl = __app.settings.api.url;
 
 	var loadCatalogById = exports.loadCatalogById = function loadCatalogById(id) {
+	    console.error('adsfasdfasdfasdfasdf');
+	    console.error(id);
 	    return function (done) {
 	        return $.get(baseUrl + '/tenant/sd/catalog/_' + id).success(function (res) {
+	            console.error('adfad');
 	            done({
 	                name: 'loadCatalogById',
 	                res: res
@@ -3367,6 +3370,7 @@ webpackJsonp([0,1],[
 	            });
 	            this.dispatch(actions.loadCatalogById(this.opts.id));
 	        })
+
 	        this.routeTo = e =>{
 	            window.location = __app.settings.app.url + "/sd/" + __page.user.wechatId + "/product?id=" + e.item._id + '&media=' + this.catalog.media._id;
 	        }
