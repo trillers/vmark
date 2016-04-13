@@ -3,17 +3,16 @@
 
 let productActions = {};
 
-productActions.loadProduct = function(id){
-    return function(done){
-        $.get(__app.settings.api.url + '/tenant/sd/course/_' + id).success(res=>{
-                done({
-                    name: 'loadProduct',
-                    res
-                });
-            })
-            .error(e=>{
-                console.warn(e)
-            })
-    };
+productActions.loadProduct = (id) => {
+    return $.get(__app.settings.api.url + '/tenant/sd/course/_' + id)
+        .then(res=>{
+            return {
+                name: 'loadProduct',
+                res
+            };
+        })
+        .catch(e=>{
+            console.warn(e)
+        })
 };
 export {productActions};
