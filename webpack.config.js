@@ -14,7 +14,8 @@ module.exports = {
         extensions: ['', '.js'],
         root: __dirname,
         alias: {
-            fetch: '../../../../public/components/fetch/fetch.js',
+            fetch: '../../../../node_modules/components/isomorphic-fetch/fetch-npm-browserify.js',
+            'es6-promise': '../../../../node_modules/es6-promise/dist/es6-promise.min.js',
             jQuery: '../../../../web/marketing/sd/framework/jQueryLean.js',
             wx: '../../../../web/js/app/jssdk.js',
             h2: '../../../../web/js/h2/index.js'

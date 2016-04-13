@@ -6,22 +6,22 @@ webpackJsonp([0,1],[
 
 	__webpack_require__(4);
 
-	__webpack_require__(7);
+	__webpack_require__(11);
 
-	var _app = __webpack_require__(8);
+	var _app = __webpack_require__(12);
 
-	var _index = __webpack_require__(9);
+	var _index = __webpack_require__(13);
 
-	var _AppStore = __webpack_require__(13);
+	var _AppStore = __webpack_require__(17);
 
 	var AppStore = _interopRequireWildcard(_AppStore);
 
-	var _index2 = __webpack_require__(16);
+	var _index2 = __webpack_require__(20);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-	__webpack_require__(18);
-	__webpack_require__(19);
+	__webpack_require__(22);
+	__webpack_require__(23);
 
 	window.app = _app.app;
 	window.actions = _index.actions;
@@ -2513,6 +2513,10 @@ webpackJsonp([0,1],[
 
 	__webpack_require__(6);
 
+	var _es6Promise = __webpack_require__(8);
+
+	(0, _es6Promise.polyfill)();
+
 	function post(url, json) {
 	    return fetch(url, {
 	        method: 'post',
@@ -2586,6 +2590,19 @@ webpackJsonp([0,1],[
 
 /***/ },
 /* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	// the whatwg-fetch polyfill installs the fetch() function
+	// on the global object (window or self)
+	//
+	// Return that as the export for use in Webpack, Browserify etc.
+	__webpack_require__(7);
+	module.exports = self.fetch.bind(self);
+
+/***/ },
+/* 7 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2979,7 +2996,348 @@ webpackJsonp([0,1],[
 	})(typeof self !== 'undefined' ? self : undefined);
 
 /***/ },
-/* 7 */
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global) {"use strict";
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	/*!
+	 * @overview es6-promise - a tiny implementation of Promises/A+.
+	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
+	 * @license   Licensed under MIT license
+	 *            See https://raw.githubusercontent.com/jakearchibald/es6-promise/master/LICENSE
+	 * @version   3.1.2
+	 */
+
+	(function () {
+	  "use strict";
+	  function t(t) {
+	    return "function" == typeof t || "object" == (typeof t === "undefined" ? "undefined" : _typeof(t)) && null !== t;
+	  }function e(t) {
+	    return "function" == typeof t;
+	  }function n(t) {
+	    W = t;
+	  }function r(t) {
+	    H = t;
+	  }function o() {
+	    return function () {
+	      process.nextTick(a);
+	    };
+	  }function i() {
+	    return function () {
+	      U(a);
+	    };
+	  }function s() {
+	    var t = 0,
+	        e = new Q(a),
+	        n = document.createTextNode("");return e.observe(n, { characterData: !0 }), function () {
+	      n.data = t = ++t % 2;
+	    };
+	  }function u() {
+	    var t = new MessageChannel();return t.port1.onmessage = a, function () {
+	      t.port2.postMessage(0);
+	    };
+	  }function c() {
+	    return function () {
+	      setTimeout(a, 1);
+	    };
+	  }function a() {
+	    for (var t = 0; G > t; t += 2) {
+	      var e = X[t],
+	          n = X[t + 1];e(n), X[t] = void 0, X[t + 1] = void 0;
+	    }G = 0;
+	  }function f() {
+	    try {
+	      var t = require,
+	          e = __webpack_require__(10);return U = e.runOnLoop || e.runOnContext, i();
+	    } catch (n) {
+	      return c();
+	    }
+	  }function l(t, e) {
+	    var n = this,
+	        r = n._state;if (r === et && !t || r === nt && !e) return this;var o = new this.constructor(p),
+	        i = n._result;if (r) {
+	      var s = arguments[r - 1];H(function () {
+	        C(r, o, s, i);
+	      });
+	    } else j(n, o, t, e);return o;
+	  }function h(t) {
+	    var e = this;if (t && "object" == (typeof t === "undefined" ? "undefined" : _typeof(t)) && t.constructor === e) return t;var n = new e(p);return g(n, t), n;
+	  }function p() {}function _() {
+	    return new TypeError("You cannot resolve a promise with itself");
+	  }function v() {
+	    return new TypeError("A promises callback cannot return that same promise.");
+	  }function d(t) {
+	    try {
+	      return t.then;
+	    } catch (e) {
+	      return rt.error = e, rt;
+	    }
+	  }function y(t, e, n, r) {
+	    try {
+	      t.call(e, n, r);
+	    } catch (o) {
+	      return o;
+	    }
+	  }function m(t, e, n) {
+	    H(function (t) {
+	      var r = !1,
+	          o = y(n, e, function (n) {
+	        r || (r = !0, e !== n ? g(t, n) : E(t, n));
+	      }, function (e) {
+	        r || (r = !0, S(t, e));
+	      }, "Settle: " + (t._label || " unknown promise"));!r && o && (r = !0, S(t, o));
+	    }, t);
+	  }function w(t, e) {
+	    e._state === et ? E(t, e._result) : e._state === nt ? S(t, e._result) : j(e, void 0, function (e) {
+	      g(t, e);
+	    }, function (e) {
+	      S(t, e);
+	    });
+	  }function b(t, n, r) {
+	    n.constructor === t.constructor && r === Z && constructor.resolve === $ ? w(t, n) : r === rt ? S(t, rt.error) : void 0 === r ? E(t, n) : e(r) ? m(t, n, r) : E(t, n);
+	  }function g(e, n) {
+	    e === n ? S(e, _()) : t(n) ? b(e, n, d(n)) : E(e, n);
+	  }function A(t) {
+	    t._onerror && t._onerror(t._result), T(t);
+	  }function E(t, e) {
+	    t._state === tt && (t._result = e, t._state = et, 0 !== t._subscribers.length && H(T, t));
+	  }function S(t, e) {
+	    t._state === tt && (t._state = nt, t._result = e, H(A, t));
+	  }function j(t, e, n, r) {
+	    var o = t._subscribers,
+	        i = o.length;t._onerror = null, o[i] = e, o[i + et] = n, o[i + nt] = r, 0 === i && t._state && H(T, t);
+	  }function T(t) {
+	    var e = t._subscribers,
+	        n = t._state;if (0 !== e.length) {
+	      for (var r, o, i = t._result, s = 0; s < e.length; s += 3) {
+	        r = e[s], o = e[s + n], r ? C(n, r, o, i) : o(i);
+	      }t._subscribers.length = 0;
+	    }
+	  }function P() {
+	    this.error = null;
+	  }function x(t, e) {
+	    try {
+	      return t(e);
+	    } catch (n) {
+	      return ot.error = n, ot;
+	    }
+	  }function C(t, n, r, o) {
+	    var i,
+	        s,
+	        u,
+	        c,
+	        a = e(r);if (a) {
+	      if (i = x(r, o), i === ot ? (c = !0, s = i.error, i = null) : u = !0, n === i) return void S(n, v());
+	    } else i = o, u = !0;n._state !== tt || (a && u ? g(n, i) : c ? S(n, s) : t === et ? E(n, i) : t === nt && S(n, i));
+	  }function M(t, e) {
+	    try {
+	      e(function (e) {
+	        g(t, e);
+	      }, function (e) {
+	        S(t, e);
+	      });
+	    } catch (n) {
+	      S(t, n);
+	    }
+	  }function O(t) {
+	    return new ft(this, t).promise;
+	  }function k(t) {
+	    function e(t) {
+	      g(o, t);
+	    }function n(t) {
+	      S(o, t);
+	    }var r = this,
+	        o = new r(p);if (!B(t)) return S(o, new TypeError("You must pass an array to race.")), o;for (var i = t.length, s = 0; o._state === tt && i > s; s++) {
+	      j(r.resolve(t[s]), void 0, e, n);
+	    }return o;
+	  }function Y(t) {
+	    var e = this,
+	        n = new e(p);return S(n, t), n;
+	  }function q() {
+	    throw new TypeError("You must pass a resolver function as the first argument to the promise constructor");
+	  }function F() {
+	    throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.");
+	  }function D(t) {
+	    this._id = ct++, this._state = void 0, this._result = void 0, this._subscribers = [], p !== t && ("function" != typeof t && q(), this instanceof D ? M(this, t) : F());
+	  }function K(t, e) {
+	    this._instanceConstructor = t, this.promise = new t(p), Array.isArray(e) ? (this._input = e, this.length = e.length, this._remaining = e.length, this._result = new Array(this.length), 0 === this.length ? E(this.promise, this._result) : (this.length = this.length || 0, this._enumerate(), 0 === this._remaining && E(this.promise, this._result))) : S(this.promise, this._validationError());
+	  }function L() {
+	    var t;if ("undefined" != typeof global) t = global;else if ("undefined" != typeof self) t = self;else try {
+	      t = Function("return this")();
+	    } catch (e) {
+	      throw new Error("polyfill failed because global object is unavailable in this environment");
+	    }var n = t.Promise;(!n || "[object Promise]" !== Object.prototype.toString.call(n.resolve()) || n.cast) && (t.Promise = at);
+	  }var N;N = Array.isArray ? Array.isArray : function (t) {
+	    return "[object Array]" === Object.prototype.toString.call(t);
+	  };var U,
+	      W,
+	      z,
+	      B = N,
+	      G = 0,
+	      H = function H(t, e) {
+	    X[G] = t, X[G + 1] = e, G += 2, 2 === G && (W ? W(a) : z());
+	  },
+	      I = "undefined" != typeof window ? window : void 0,
+	      J = I || {},
+	      Q = J.MutationObserver || J.WebKitMutationObserver,
+	      R = "undefined" != typeof process && "[object process]" === {}.toString.call(process),
+	      V = "undefined" != typeof Uint8ClampedArray && "undefined" != typeof importScripts && "undefined" != typeof MessageChannel,
+	      X = new Array(1e3);z = R ? o() : Q ? s() : V ? u() : void 0 === I && "function" == "function" ? f() : c();var Z = l,
+	      $ = h,
+	      tt = void 0,
+	      et = 1,
+	      nt = 2,
+	      rt = new P(),
+	      ot = new P(),
+	      it = O,
+	      st = k,
+	      ut = Y,
+	      ct = 0,
+	      at = D;D.all = it, D.race = st, D.resolve = $, D.reject = ut, D._setScheduler = n, D._setAsap = r, D._asap = H, D.prototype = { constructor: D, then: Z, "catch": function _catch(t) {
+	      return this.then(null, t);
+	    } };var ft = K;K.prototype._validationError = function () {
+	    return new Error("Array Methods must be provided an Array");
+	  }, K.prototype._enumerate = function () {
+	    for (var t = this.length, e = this._input, n = 0; this._state === tt && t > n; n++) {
+	      this._eachEntry(e[n], n);
+	    }
+	  }, K.prototype._eachEntry = function (t, e) {
+	    var n = this._instanceConstructor,
+	        r = n.resolve;if (r === $) {
+	      var o = d(t);if (o === Z && t._state !== tt) this._settledAt(t._state, e, t._result);else if ("function" != typeof o) this._remaining--, this._result[e] = t;else if (n === at) {
+	        var i = new n(p);b(i, t, o), this._willSettleAt(i, e);
+	      } else this._willSettleAt(new n(function (e) {
+	        e(t);
+	      }), e);
+	    } else this._willSettleAt(r(t), e);
+	  }, K.prototype._settledAt = function (t, e, n) {
+	    var r = this.promise;r._state === tt && (this._remaining--, t === nt ? S(r, n) : this._result[e] = n), 0 === this._remaining && E(r, this._result);
+	  }, K.prototype._willSettleAt = function (t, e) {
+	    var n = this;j(t, void 0, function (t) {
+	      n._settledAt(et, e, t);
+	    }, function (t) {
+	      n._settledAt(nt, e, t);
+	    });
+	  };var lt = L,
+	      ht = { Promise: at, polyfill: lt }; true ? !(__WEBPACK_AMD_DEFINE_RESULT__ = function () {
+	    return ht;
+	  }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)) : "undefined" != typeof module && module.exports ? module.exports = ht : "undefined" != typeof this && (this.ES6Promise = ht), lt();
+	}).call(undefined);
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9), (function() { return this; }())))
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	// shim for using process in browser
+
+	var process = module.exports = {};
+	var queue = [];
+	var draining = false;
+	var currentQueue;
+	var queueIndex = -1;
+
+	function cleanUpNextTick() {
+	    draining = false;
+	    if (currentQueue.length) {
+	        queue = currentQueue.concat(queue);
+	    } else {
+	        queueIndex = -1;
+	    }
+	    if (queue.length) {
+	        drainQueue();
+	    }
+	}
+
+	function drainQueue() {
+	    if (draining) {
+	        return;
+	    }
+	    var timeout = setTimeout(cleanUpNextTick);
+	    draining = true;
+
+	    var len = queue.length;
+	    while (len) {
+	        currentQueue = queue;
+	        queue = [];
+	        while (++queueIndex < len) {
+	            if (currentQueue) {
+	                currentQueue[queueIndex].run();
+	            }
+	        }
+	        queueIndex = -1;
+	        len = queue.length;
+	    }
+	    currentQueue = null;
+	    draining = false;
+	    clearTimeout(timeout);
+	}
+
+	process.nextTick = function (fun) {
+	    var args = new Array(arguments.length - 1);
+	    if (arguments.length > 1) {
+	        for (var i = 1; i < arguments.length; i++) {
+	            args[i - 1] = arguments[i];
+	        }
+	    }
+	    queue.push(new Item(fun, args));
+	    if (queue.length === 1 && !draining) {
+	        setTimeout(drainQueue, 0);
+	    }
+	};
+
+	// v8 likes predictible objects
+	function Item(fun, array) {
+	    this.fun = fun;
+	    this.array = array;
+	}
+	Item.prototype.run = function () {
+	    this.fun.apply(null, this.array);
+	};
+	process.title = 'browser';
+	process.browser = true;
+	process.env = {};
+	process.argv = [];
+	process.version = ''; // empty string to avoid regexp issues
+	process.versions = {};
+
+	function noop() {}
+
+	process.on = noop;
+	process.addListener = noop;
+	process.once = noop;
+	process.off = noop;
+	process.removeListener = noop;
+	process.removeAllListeners = noop;
+	process.emit = noop;
+
+	process.binding = function (name) {
+	    throw new Error('process.binding is not supported');
+	};
+
+	process.cwd = function () {
+	    return '/';
+	};
+	process.chdir = function (dir) {
+	    throw new Error('process.chdir is not supported');
+	};
+	process.umask = function () {
+	    return 0;
+	};
+
+/***/ },
+/* 10 */
+/***/ function(module, exports) {
+
+	/* (ignored) */
+
+/***/ },
+/* 11 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -3442,7 +3800,7 @@ webpackJsonp([0,1],[
 	});
 
 /***/ },
-/* 8 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {'use strict';
@@ -3463,7 +3821,7 @@ webpackJsonp([0,1],[
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 9 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3473,11 +3831,11 @@ webpackJsonp([0,1],[
 	});
 	exports.actions = undefined;
 
-	var _catalog = __webpack_require__(10);
+	var _catalog = __webpack_require__(14);
 
-	var _bespeak = __webpack_require__(11);
+	var _bespeak = __webpack_require__(15);
 
-	var _product = __webpack_require__(12);
+	var _product = __webpack_require__(16);
 
 	var actions = exports.actions = {
 	    loadCatalogById: _catalog.loadCatalogById,
@@ -3486,7 +3844,7 @@ webpackJsonp([0,1],[
 	};
 
 /***/ },
-/* 10 */
+/* 14 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -3508,7 +3866,7 @@ webpackJsonp([0,1],[
 	};
 
 /***/ },
-/* 11 */
+/* 15 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -3530,7 +3888,7 @@ webpackJsonp([0,1],[
 	};
 
 /***/ },
-/* 12 */
+/* 16 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -3556,12 +3914,12 @@ webpackJsonp([0,1],[
 	exports.productActions = productActions;
 
 /***/ },
-/* 13 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _dispatcher = __webpack_require__(14);
+	var _dispatcher = __webpack_require__(18);
 
 	var appStore = {};
 
@@ -3588,7 +3946,7 @@ webpackJsonp([0,1],[
 	});
 
 /***/ },
-/* 14 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3598,14 +3956,14 @@ webpackJsonp([0,1],[
 	});
 	exports.appDispatcher = undefined;
 
-	var _AppDispatcher = __webpack_require__(15);
+	var _AppDispatcher = __webpack_require__(19);
 
 	var appDispatcher = new _AppDispatcher.AppDispatcher();
 
 	exports.appDispatcher = appDispatcher;
 
 /***/ },
-/* 15 */
+/* 19 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -3652,7 +4010,7 @@ webpackJsonp([0,1],[
 	exports.AppDispatcher = AppDispatcher;
 
 /***/ },
-/* 16 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3662,14 +4020,14 @@ webpackJsonp([0,1],[
 	});
 	exports.mixins = undefined;
 
-	var _dispatcher = __webpack_require__(17);
+	var _dispatcher = __webpack_require__(21);
 
 	var mixins = exports.mixins = {
 	    dispatcher: _dispatcher.dispatcher
 	};
 
 /***/ },
-/* 17 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3681,7 +4039,7 @@ webpackJsonp([0,1],[
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-	var _app = __webpack_require__(8);
+	var _app = __webpack_require__(12);
 
 	var dispatcher = exports.dispatcher = {
 	    dispatch: function dispatch(action) {
@@ -3715,10 +4073,10 @@ webpackJsonp([0,1],[
 	}
 
 /***/ },
-/* 18 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('catalog-index', '<div> <div>产品目录</div> <div if="{!catalog || !catalog.products || !catalog.products.length}"> 该机构尚没有上架任何课程 </div> <div if="{catalog.products && catalog.products.length}"> <ul class="catalog-card"> <li each="{catalog.products}" onclick="{parent.routeTo}"> <div> <img riot-src="{poster &&__app.settings.api.url + \'/file?media_id=\' + poster}"> </div> <div> <span>{name}</span> <span>{slogan}</span> </div> </li> </ul> </div> </div>', '.catalog-card{ margin: 0px; padding: 0px; } .catalog-card li{ min-height: 48px; } .catalog-card li >div:first-child{ width: 40px; float: left; } .catalog-card li >div:first-child >img{ width: 40px; }', '', function(opts) {
+	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('catalog-index', '<div> <div>产品目录</div> <div if="{!catalog || !catalog.products || !catalog.products.length}"> 该机构尚没有上架任何课程 </div> <div if="{catalog.products && catalog.products.length}"> <ul class="catalog-card"> <li each="{catalog.products}" onclick="{parent.routeTo}"> <div riot-style="background-image:url(\'{__app.settings.api.url + \'/file?media_id=\' + poster}\')"> </div> <div> <div>{name}</div> <div>{slogan}</div> </div> </li> </ul> </div> </div>', '.catalog-card{ margin: 0px; padding: 0px; } .catalog-card li{ list-style-type:none; min-height: 60px; border-bottom: 1px solid #ddd; } .catalog-card li >div{ float: left; margin-left: 10px; margin-top: 10px; } .catalog-card li >div:first-child{ width: 40px; height: 40px; background-size: 100% 100%; margin-top: 10px; float: left; } .catalog-card li >div:first-child >img{ width: 40px; }', '', function(opts) {
 	        this.mixin('dispatcher');
 
 	        this.on('mount', ()=>{
@@ -3735,7 +4093,7 @@ webpackJsonp([0,1],[
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 19 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('product', '<ul> <li>{product.name}</li> <li>{product.slogan}</li> <li>{product.listPrice}</li> <li>{product.desc}</li> <li>{product.details}</li> </ul> <div> <input type="button" value="预约" onclick="{appointment}"> </div> <div id="form" if="{formShow}"> <div id="bg" onclick="{cancelAppointment}"></div> <div id="info"> <input name="telephone" type="text" placeholder="请输入电话号码"> <input type="button" value="提交" onclick="{onSubmit}"> <input type="button" value="取消" onclick="{cancelAppointment}"> </div> </div>', 'product #bg,[riot-tag="product"] #bg,[data-is="product"] #bg{ position: fixed; top: 0; left: 0; width: 100%; height: 100%; text-align: center; background: rgba(0, 0, 0, 0.7); z-index: 99; } product #info,[riot-tag="product"] #info,[data-is="product"] #info{ position: fixed; top: 200px; left: 0; width: 100%; height: 200px; text-align: center; z-index: 100; }', '', function(opts) {

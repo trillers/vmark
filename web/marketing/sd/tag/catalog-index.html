@@ -7,12 +7,12 @@
         <div if="{catalog.products && catalog.products.length}">
             <ul class="catalog-card">
                 <li each="{catalog.products}" onclick="{parent.routeTo}">
-                    <div>
-                        <img riot-src="{poster &&__app.settings.api.url + '/file?media_id=' + poster}"/>
+                    <div style="background-image:url('{__app.settings.api.url + '/file?media_id=' + poster}')">
+                        <!--<img riot-src="{poster &&__app.settings.api.url + '/file?media_id=' + poster}"/>-->
                     </div>
                     <div>
-                        <span>{name}</span>
-                        <span>{slogan}</span>
+                        <div>{name}</div>
+                        <div>{slogan}</div>
                     </div>
                 </li>
             </ul>
@@ -25,12 +25,22 @@
             padding: 0px;
         }
         .catalog-card li{
-            min-height: 48px;
+            list-style-type:none;
+            min-height: 60px;
+            border-bottom: 1px solid #ddd;
+        }
+        .catalog-card li >div{
+            float: left;
+            margin-left: 10px;
+            margin-top: 10px;
         }
         .catalog-card li >div:first-child{
             width: 40px;
+            height: 40px;
+            background-size: 100% 100%;
+            margin-top: 10px;
             float: left;
-        }
+        }  
         .catalog-card li >div:first-child >img{
             width: 40px;
         }

@@ -35,10 +35,10 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
                     user: user._id
                 };
                 poster && poster.user && poster.user != user._id && (membership['upLine'] = poster.user);
-                yield context.services.membershipService.createAsync(membership);
+                let membershipPersisted = yield context.services.membershipService.createAsync(membership);
                 if(membership['upLine']){
                     let upLineMembership = yield context.services.membershipService.loadByUserIdAndWechatIdAsync(poster.user, wechatId);
-                    yield context.services.membershipService.addDownLineAsync(upLineMembership._id, user._id);
+                    yield context.services.membershipService.addDownLineAsync(upLineMembership._id, membershipPersisted._id);
                 }
                 responseText = '恭喜您成为经纪人,分享图片到朋友圈,获取丰厚回报';
             }
@@ -51,7 +51,7 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
 
                 yield context.services.membershipService.updateByIdAsync(membership._id, distributor);
                 if(distributor['upLine']){
-                    yield context.services.membershipService.addDownLineAsync(poster.user, user._id);
+                    yield context.services.membershipService.addDownLineAsync(poster.user, membership._id);
                 }
                 responseText = '恭喜您成为经纪人,分享图片到朋友圈,获取丰厚回报';
             }
