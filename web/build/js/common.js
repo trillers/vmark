@@ -1,4 +1,6 @@
-/******/ (function(modules) { // webpackBootstrap
+/******/alert('456')
+(function(modules) { // webpackBootstrap
+        alert('commonjs');
 /******/ 	// install a JSONP callback for chunk loading
 /******/ 	var parentJsonpFunction = window["webpackJsonp"];
 /******/ 	window["webpackJsonp"] = function webpackJsonpCallback(chunkIds, moreModules) {
