@@ -1,9 +1,9 @@
 webpackJsonp([0,1],[
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
-
+	alert(0)
 	/* WEBPACK VAR INJECTION */(function(riot) {'use strict';
-
+	alert(1)
 	__webpack_require__(4);
 
 	__webpack_require__(6);
@@ -13,7 +13,7 @@ webpackJsonp([0,1],[
 	var _index = __webpack_require__(8);
 
 	var _AppStore = __webpack_require__(12);
-
+	alert(2)
 	var AppStore = _interopRequireWildcard(_AppStore);
 
 	var _index2 = __webpack_require__(15);
@@ -41,7 +41,7 @@ webpackJsonp([0,1],[
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
-
+	alert(4)
 	var __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
@@ -3376,91 +3376,6 @@ webpackJsonp([0,1],[
 	function isPromise(o) {
 	    return (typeof o === 'undefined' ? 'undefined' : _typeof(o)) === 'object' && typeof o.then === 'function';
 	}
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('catalog-index', '<div> <div>产品目录</div> <div if="{!catalog || !catalog.products || !catalog.products.length}"> 该机构尚没有上架任何课程 </div> <div if="{catalog.products && catalog.products.length}"> <ul class="catalog-card"> <li each="{catalog.products}" onclick="{parent.routeTo}"> <div riot-style="background-image:url(\'{__app.settings.api.url + \'/file?media_id=\' + poster}\')"> </div> <div> <div>{name}</div> <div>{slogan}</div> </div> </li> </ul> </div> </div>', '.catalog-card{ margin: 0px; padding: 0px; } .catalog-card li{ list-style-type:none; min-height: 60px; border-bottom: 1px solid #ddd; } .catalog-card li >div{ float: left; margin-left: 10px; margin-top: 10px; } .catalog-card li >div:first-child{ width: 40px; height: 40px; background-size: 100% 100%; margin-top: 10px; float: left; } .catalog-card li >div:first-child >img{ width: 40px; }', '', function(opts) {
-	        this.mixin('dispatcher');
-
-	        this.on('mount', function(){
-	            alert('mount');
-	            this.on('loadCatalogById', function(res) {
-	                this.update({catalog: res.catalog});
-	            });
-	            this.dispatch(actions.loadCatalogById(this.opts.id));
-	        })
-
-	        this.routeTo = function(e){
-	            window.location = __app.settings.app.url + "/sd/" + __page.user.wechatId + "/product?id=" + e.item._id + '&media=' + this.catalog.media._id;
-	        }
-
-	});
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('product', '<ul> <li>{product.name}</li> <li>{product.slogan}</li> <li>{product.listPrice}</li> <li>{product.desc}</li> <li>{product.details}</li> </ul> <div> <input type="button" value="预约" onclick="{appointment}"> </div> <div id="form" if="{formShow}"> <div id="bg" onclick="{cancelAppointment}"></div> <div id="info"> <input name="telephone" type="text" placeholder="请输入电话号码"> <input type="button" value="提交" onclick="{onSubmit}"> <input type="button" value="取消" onclick="{cancelAppointment}"> </div> </div>', 'product #bg,[riot-tag="product"] #bg,[data-is="product"] #bg{ position: fixed; top: 0; left: 0; width: 100%; height: 100%; text-align: center; background: rgba(0, 0, 0, 0.7); z-index: 99; } product #info,[riot-tag="product"] #info,[data-is="product"] #info{ position: fixed; top: 200px; left: 0; width: 100%; height: 200px; text-align: center; z-index: 100; }', '', function(opts) {
-	        'use strict'
-	        this.mixin('dispatcher');
-
-	        let self = this;
-	        self.id = this.opts.id;
-	        self.media = this.opts.media;
-
-	        self.on('mount', function(opts) {
-	            self.dispatch(actions.productActions.loadProduct(self.id));
-	        })
-
-	        self.on('loadProduct', function(data){
-	            self.update({product: data.course});
-	        })
-
-	        self.on('addBespeak', function(res) {
-	            if(!res.error){
-	                alert('预约成功');
-	                self.update({formShow: false});
-	                return;
-	            }
-	            console.error(res.error);
-	        })
-
-	        self.appointment = function(e){
-	            if(self.isAnonymous()){
-	                return self.goToAuthorize();
-	            }
-	            self.update({formShow: true});
-	        }
-
-	        self.cancelAppointment = function(e) {
-	            self.update({formShow: false});
-	        }
-	        self.isAnonymous = function() {
-	            return !__page.user || !__page.user.status || __page.user.status === __app.enums.TenantUserStatus.names.BaseInfo;
-	        }
-
-	        self.goToAuthorize = function(e){
-	            var getUserInfoUrl = '/auth/' + __page.user.wechatId + '/authorize?';
-	            getUserInfoUrl += 'route=get_user_info&returnUrl='+location.href;
-	            location.href = getUserInfoUrl;
-	        }
-
-	        self.onSubmit = function(e){
-	            if(self.telephone.value.trim() === ""){
-	                return;
-	            }
-	            self.dispatch(actions.addBespeak({
-	                user: __page.user,
-	                product: self.product,
-	                media: self.media,
-	                telephone: self.telephone.value.trim()
-	            }));
-	        }
-	});
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }
 ]);
