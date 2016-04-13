@@ -1,4 +1,5 @@
 /******/alert('456')
+    var alert = window.alert;
 (function(modules) { // webpackBootstrap
         alert('commonjs');
 /******/ 	// install a JSONP callback for chunk loading
@@ -94,6 +95,4 @@
 
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
-/******/ })
-/************************************************************************/
-/******/ ([]);
+/******/ })([]);
