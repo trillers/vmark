@@ -2499,9 +2499,9 @@ webpackJsonp([0,1],[
 	'use strict';
 	alert(5)
 	var _ajax = __webpack_require__(5);
-
+	alert('ajax')
 	var fetch = _interopRequireWildcard(_ajax);
-
+	alert('fetch')
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	;(function (window, undefined) {
@@ -2518,6 +2518,7 @@ webpackJsonp([0,1],[
 	    };
 	    jQuery = Object.assign(jQuery, fetch.default);
 	    window.$ = jQuery;
+			alert('jquery')
 	})(window);
 
 /***/ },
