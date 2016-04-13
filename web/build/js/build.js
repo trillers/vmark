@@ -48,9 +48,9 @@ alert(webpackJsonp.toString());
 					riot.mixin(key, _index2.mixins[key]);
 				});
 
-				alert(riot);
+				alert(riot.toString());
 				var tags = riot.mount('*');
-				alert(tags);
+				alert(tags.toString());
 				tags.forEach(function (tag) {
 					_app.app.views[tag.name] = tag;
 				});
