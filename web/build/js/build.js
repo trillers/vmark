@@ -4,24 +4,24 @@ webpackJsonp([0,1],[
 
 	/* WEBPACK VAR INJECTION */(function(riot) {'use strict';
 
+	__webpack_require__(2);
+
 	__webpack_require__(4);
 
-	__webpack_require__(6);
+	var _app = __webpack_require__(5);
 
-	var _app = __webpack_require__(7);
+	var _index = __webpack_require__(6);
 
-	var _index = __webpack_require__(8);
-
-	var _AppStore = __webpack_require__(12);
+	var _AppStore = __webpack_require__(10);
 
 	var AppStore = _interopRequireWildcard(_AppStore);
 
-	var _index2 = __webpack_require__(15);
+	var _index2 = __webpack_require__(13);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-	__webpack_require__(17);
-	__webpack_require__(18);
+	__webpack_require__(15);
+	__webpack_require__(16);
 
 	window.app = _app.app;
 	window.actions = _index.actions;
@@ -46,12 +46,12 @@ webpackJsonp([0,1],[
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-	/* Riot v2.3.13, @license MIT, (c) 2015 Muut Inc. + contributors */
+	/* Riot v2.3.1, @license MIT, (c) 2015 Muut Inc. + contributors */
 
 	;(function (window, undefined) {
 	  'use strict';
 
-	  var riot = { version: 'v2.3.13', settings: {} },
+	  var riot = { version: 'v2.3.1', settings: {} },
 
 	  // be aware, internal usage
 	  // ATTENTION: prefix the global dynamic variables with `__`
@@ -100,8 +100,8 @@ webpackJsonp([0,1],[
 	    /**
 	     * Private variables and methods
 	     */
+
 	    var callbacks = {},
-	        slice = Array.prototype.slice,
 	        onEachEvent = function onEachEvent(e, fn) {
 	      e.replace(/\S+/g, fn);
 	    },
@@ -120,6 +120,7 @@ webpackJsonp([0,1],[
 	     * @param  { Function } fn - callback function
 	     * @returns { Object } el
 	     */
+
 	    defineProperty('on', function (events, fn) {
 	      if (typeof fn != 'function') return el;
 
@@ -137,8 +138,9 @@ webpackJsonp([0,1],[
 	     * @param   { Function } fn - callback function
 	     * @returns { Object } el
 	     */
+
 	    defineProperty('off', function (events, fn) {
-	      if (events == '*' && !fn) callbacks = {};else {
+	      if (events == '*') callbacks = {};else {
 	        onEachEvent(events, function (name) {
 	          if (fn) {
 	            var arr = callbacks[name];
@@ -157,6 +159,7 @@ webpackJsonp([0,1],[
 	     * @param   { Function } fn - callback function
 	     * @returns { Object } el
 	     */
+
 	    defineProperty('one', function (events, fn) {
 	      function on() {
 	        el.off(events, on);
@@ -170,28 +173,35 @@ webpackJsonp([0,1],[
 	     * @param   { String } events - events ids
 	     * @returns { Object } el
 	     */
+
 	    defineProperty('trigger', function (events) {
 
 	      // getting the arguments
 	      // skipping the first one
-	      var args = slice.call(arguments, 1),
-	          fns;
+	      var arglen = arguments.length - 1,
+	          args = new Array(arglen);
+	      for (var i = 0; i < arglen; i++) {
+	        args[i] = arguments[i + 1];
+	      }
 
 	      onEachEvent(events, function (name) {
 
-	        fns = slice.call(callbacks[name] || [], 0);
+	        var fns = (callbacks[name] || []).slice(0);
 
 	        for (var i = 0, fn; fn = fns[i]; ++i) {
 	          if (fn.busy) return;
 	          fn.busy = 1;
-	          fn.apply(el, fn.typed ? [name].concat(args) : args);
+
+	          try {
+	            fn.apply(el, fn.typed ? [name].concat(args) : args);
+	          } catch (e) {/* error */}
 	          if (fns[i] !== fn) {
 	            i--;
 	          }
 	          fn.busy = 0;
 	        }
 
-	        if (callbacks['*'] && name != '*') el.trigger.apply(el, ['*', name].concat(args));
+	        if (callbacks.all && name != 'all') el.trigger.apply(el, ['all', name].concat(args));
 	      });
 
 	      return el;
@@ -201,6 +211,7 @@ webpackJsonp([0,1],[
 	  }
 	  /* istanbul ignore next */
 	  ;(function (riot) {
+	    if (!window) return;
 
 	    /**
 	     * Simple client-side router
@@ -214,21 +225,17 @@ webpackJsonp([0,1],[
 	        HAS_ATTRIBUTE = 'hasAttribute',
 	        REPLACE = 'replace',
 	        POPSTATE = 'popstate',
-	        HASHCHANGE = 'hashchange',
 	        TRIGGER = 'trigger',
 	        MAX_EMIT_STACK_LEVEL = 3,
-	        win = typeof window != 'undefined' && window,
-	        doc = typeof document != 'undefined' && document,
-	        hist = win && history,
-	        loc = win && (hist.location || win.location),
+	        win = window,
+	        doc = document,
+	        loc = win.history.location || win.location,
 	        // see html5-history-api
 	    prot = Router.prototype,
 	        // to minify more
 	    clickEvent = doc && doc.ontouchstart ? 'touchstart' : 'click',
 	        started = false,
 	        central = riot.observable(),
-	        routeFound = false,
-	        debouncedEmit,
 	        base,
 	        current,
 	        parser,
@@ -259,32 +266,6 @@ webpackJsonp([0,1],[
 	    }
 
 	    /**
-	     * Simple/cheap debounce implementation
-	     * @param   {function} fn - callback
-	     * @param   {number} delay - delay in seconds
-	     * @returns {function} debounced function
-	     */
-	    function debounce(fn, delay) {
-	      var t;
-	      return function () {
-	        clearTimeout(t);
-	        t = setTimeout(fn, delay);
-	      };
-	    }
-
-	    /**
-	     * Set the window listeners to trigger the routes
-	     * @param {boolean} autoExec - see route.start
-	     */
-	    function start(autoExec) {
-	      debouncedEmit = debounce(emit, 1);
-	      win[ADD_EVENT_LISTENER](POPSTATE, debouncedEmit);
-	      win[ADD_EVENT_LISTENER](HASHCHANGE, debouncedEmit);
-	      doc[ADD_EVENT_LISTENER](clickEvent, click);
-	      if (autoExec) emit(true);
-	    }
-
-	    /**
 	     * Router class
 	     */
 	    function Router() {
@@ -308,7 +289,7 @@ webpackJsonp([0,1],[
 	     * @returns {string} path from root
 	     */
 	    function getPathFromRoot(href) {
-	      return (href || loc.href || '')[REPLACE](RE_ORIGIN, '');
+	      return (href || loc.href)[REPLACE](RE_ORIGIN, '');
 	    }
 
 	    /**
@@ -317,7 +298,7 @@ webpackJsonp([0,1],[
 	     * @returns {string} path from base
 	     */
 	    function getPathFromBase(href) {
-	      return base[0] == '#' ? (href || loc.href || '').split(base)[1] || '' : getPathFromRoot(href)[REPLACE](base, '');
+	      return base[0] == '#' ? (href || loc.href).split(base)[1] || '' : getPathFromRoot(href)[REPLACE](base, '');
 	    }
 
 	    function emit(force) {
@@ -359,12 +340,9 @@ webpackJsonp([0,1],[
 	      ) return;
 
 	      if (el.href != loc.href) {
-	        if (el.href.split('#')[0] == loc.href.split('#')[0] // internal jump
-	         || base != '#' && getPathFromRoot(el.href).indexOf(base) !== 0 // outside of base
-	         || !go(getPathFromBase(el.href), el.title || doc.title) // route not found
-	        ) return;
+	        if (el.href.split('#')[0] == loc.href.split('#')[0]) return; // internal jump
+	        go(getPathFromBase(el.href), el.title || doc.title);
 	      }
-
 	      e.preventDefault();
 	    }
 
@@ -372,40 +350,27 @@ webpackJsonp([0,1],[
 	     * Go to the path
 	     * @param {string} path - destination path
 	     * @param {string} title - page title
-	     * @param {boolean} shouldReplace - use replaceState or pushState
-	     * @returns {boolean} - route not found flag
 	     */
-	    function go(path, title, shouldReplace) {
-	      if (hist) {
-	        // if a browser
-	        path = base + normalize(path);
-	        title = title || doc.title;
-	        // browsers ignores the second parameter `title`
-	        shouldReplace ? hist.replaceState(null, title, path) : hist.pushState(null, title, path);
-	        // so we need to set it manually
-	        doc.title = title;
-	        routeFound = false;
-	        emit();
-	        return routeFound;
-	      }
-
-	      // Server-side usage: directly execute handlers for the path
-	      return central[TRIGGER]('emit', getPathFromBase(path));
+	    function go(path, title) {
+	      title = title || doc.title;
+	      // browsers ignores the second parameter `title`
+	      history.pushState(null, title, base + normalize(path));
+	      // so we need to set it manually
+	      doc.title = title;
+	      emit();
 	    }
 
 	    /**
 	     * Go to path or set action
 	     * a single string:                go there
 	     * two strings:                    go there with setting a title
-	     * two strings and boolean:        replace history with setting a title
 	     * a single function:              set an action on the default route
 	     * a string/RegExp and a function: set an action on the route
 	     * @param {(string|function)} first - path / action / filter
 	     * @param {(string|RegExp|function)} second - title / action
-	     * @param {boolean} third - replace flag
 	     */
-	    prot.m = function (first, second, third) {
-	      if (isString(first) && (!second || isString(second))) go(first, second, third || false);else if (second) this.r(first, second);else this.r('@', first);
+	    prot.m = function (first, second) {
+	      if (isString(first) && (!second || isString(second))) go(first, second);else if (second) this.r(first, second);else this.r('@', first);
 	    };
 
 	    /**
@@ -423,9 +388,9 @@ webpackJsonp([0,1],[
 	    prot.e = function (path) {
 	      this.$.concat('@').some(function (filter) {
 	        var args = (filter == '@' ? parser : secondParser)(normalize(path), normalize(filter));
-	        if (typeof args != 'undefined') {
+	        if (args) {
 	          this[TRIGGER].apply(null, [filter].concat(args));
-	          return routeFound = true; // exit from loop
+	          return true; // exit from loop
 	        }
 	      }, this);
 	    };
@@ -493,8 +458,7 @@ webpackJsonp([0,1],[
 	     */
 	    route.query = function () {
 	      var q = {};
-	      var href = loc.href || current;
-	      href[REPLACE](/[?&](.+?)=([^&]*)/g, function (_, k, v) {
+	      loc.href[REPLACE](/[?&](.+?)=([^&]*)/g, function (_, k, v) {
 	        q[k] = v;
 	      });
 	      return q;
@@ -503,11 +467,8 @@ webpackJsonp([0,1],[
 	    /** Stop routing **/
 	    route.stop = function () {
 	      if (started) {
-	        if (win) {
-	          win[REMOVE_EVENT_LISTENER](POPSTATE, debouncedEmit);
-	          win[REMOVE_EVENT_LISTENER](HASHCHANGE, debouncedEmit);
-	          doc[REMOVE_EVENT_LISTENER](clickEvent, click);
-	        }
+	        win[REMOVE_EVENT_LISTENER](POPSTATE, emit);
+	        doc[REMOVE_EVENT_LISTENER](clickEvent, click);
 	        central[TRIGGER]('stop');
 	        started = false;
 	      }
@@ -519,18 +480,11 @@ webpackJsonp([0,1],[
 	     */
 	    route.start = function (autoExec) {
 	      if (!started) {
-	        if (win) {
-	          if (document.readyState == 'complete') start(autoExec);
-	          // the timeout is needed to solve
-	          // a weird safari bug https://github.com/riot/route/issues/33
-	          else win[ADD_EVENT_LISTENER]('load', function () {
-	              setTimeout(function () {
-	                start(autoExec);
-	              }, 1);
-	            });
-	        }
+	        win[ADD_EVENT_LISTENER](POPSTATE, emit);
+	        doc[ADD_EVENT_LISTENER](clickEvent, click);
 	        started = true;
 	      }
+	      if (autoExec) emit(true);
 	    };
 
 	    /** Prepare the router **/
@@ -543,94 +497,98 @@ webpackJsonp([0,1],[
 
 	  /**
 	   * The riot template engine
-	   * @version v2.3.20
+	   * @version 2.3.0
 	   */
 
 	  /**
 	   * @module brackets
 	   *
-	   * `brackets         ` Returns a string or regex based on its parameter
-	   * `brackets.settings` Mirrors the `riot.settings` object (use brackets.set in new code)
-	   * `brackets.set     ` Change the current riot brackets
+	   * `brackets         `  Returns a string or regex based on its parameter:
+	   *                      With a number returns the current left (0) or right (1) brackets.
+	   *                      With a regex, returns the original regex if the current brackets
+	   *                      are the default, or a new one with the default brackets replaced
+	   *                      by the current custom brackets.
+	   *                      WARNING: recreated regexes discards the `/i` and `/m` flags.
+	   * `brackets.settings`  This object mirrors the `riot.settings` object, you can assign this
+	   *                      if riot is not in context.
+	   * `brackets.set     `  The recommended option to change the current tiot brackets, check
+	   *                      its parameter and reconfigures the internal state immediately.
 	   */
-	  /*global riot */
 
 	  var brackets = function (UNDEF) {
 
 	    var REGLOB = 'g',
 	        MLCOMMS = /\/\*[^*]*\*+(?:[^*\/][^*]*\*+)*\//g,
 	        STRINGS = /"[^"\\]*(?:\\[\S\s][^"\\]*)*"|'[^'\\]*(?:\\[\S\s][^'\\]*)*'/g,
-	        S_QBSRC = STRINGS.source + '|' + /(?:\breturn\s+|(?:[$\w\)\]]|\+\+|--)\s*(\/)(?![*\/]))/.source + '|' + /\/(?=[^*\/])[^[\/\\]*(?:(?:\[(?:\\.|[^\]\\]*)*\]|\\.)[^[\/\\]*)*?(\/)[gim]*/.source,
+	        S_QBSRC = STRINGS.source + '|' + /(?:[$\w\)\]]|\+\+|--)\s*(\/)(?![*\/])/.source + '|' + /\/(?=[^*\/])[^[\/\\]*(?:(?:\[(?:\\.|[^\]\\]*)*\]|\\.)[^[\/\\]*)*?(\/)[gim]*/.source,
 	        DEFAULT = '{ }',
 	        FINDBRACES = {
-	      '(': RegExp('([()])|' + S_QBSRC, REGLOB),
-	      '[': RegExp('([[\\]])|' + S_QBSRC, REGLOB),
-	      '{': RegExp('([{}])|' + S_QBSRC, REGLOB)
+	      '(': _regExp('([()])|' + S_QBSRC, REGLOB),
+	      '[': _regExp('([[\\]])|' + S_QBSRC, REGLOB),
+	      '{': _regExp('([{}])|' + S_QBSRC, REGLOB)
 	    };
 
 	    var cachedBrackets = UNDEF,
 	        _regex,
 	        _pairs = [];
 
+	    function _regExp(source, flags) {
+	      return new RegExp(source, flags);
+	    }
+
 	    function _loopback(re) {
 	      return re;
 	    }
 
-	    function _rewrite(re, bp) {
-	      if (!bp) bp = _pairs;
-	      return new RegExp(re.source.replace(/{/g, bp[2]).replace(/}/g, bp[3]), re.global ? REGLOB : '');
-	    }
-
-	    function _create(pair) {
-	      var cvt,
-	          arr = pair.split(' ');
-
-	      if (pair === DEFAULT) {
-	        arr[2] = arr[0];
-	        arr[3] = arr[1];
-	        cvt = _loopback;
-	      } else {
-	        if (arr.length !== 2 || /[\x00-\x1F<>a-zA-Z0-9'",;\\]/.test(pair)) {
-	          throw new Error('Unsupported brackets "' + pair + '"');
-	        }
-	        arr = arr.concat(pair.replace(/(?=[[\]()*+?.^$|])/g, '\\').split(' '));
-	        cvt = _rewrite;
-	      }
-	      arr[4] = cvt(arr[1].length > 1 ? /{[\S\s]*?}/ : /{[^}]*}/, arr);
-	      arr[5] = cvt(/\\({|})/g, arr);
-	      arr[6] = cvt(/(\\?)({)/g, arr);
-	      arr[7] = RegExp('(\\\\?)(?:([[({])|(' + arr[3] + '))|' + S_QBSRC, REGLOB);
-	      arr[8] = pair;
-	      return arr;
+	    function _rewrite(re) {
+	      return new RegExp(re.source.replace(/{/g, _pairs[2]).replace(/}/g, _pairs[3]), re.global ? REGLOB : '');
 	    }
 
 	    function _reset(pair) {
-	      if (!pair) pair = DEFAULT;
+	      pair = pair || DEFAULT;
 
 	      if (pair !== _pairs[8]) {
-	        _pairs = _create(pair);
-	        _regex = pair === DEFAULT ? _loopback : _rewrite;
-	        _pairs[9] = _regex(/^\s*{\^?\s*([$\w]+)(?:\s*,\s*(\S+))?\s+in\s+(\S.*)\s*}/);
-	        _pairs[10] = _regex(/(^|[^\\]){=[\S\s]*?}/);
-	        _brackets._rawOffset = _pairs[0].length;
+	        var bp = pair.split(' ');
+
+	        if (pair === DEFAULT) {
+	          _pairs = bp.concat(bp);
+	          _regex = _loopback;
+	        } else {
+	          if (bp.length !== 2 || /[\x00-\x1F<>a-zA-Z0-9'",;\\]/.test(pair)) {
+	            throw new Error('Unsupported brackets "' + pair + '"');
+	          }
+	          _pairs = bp.concat(pair.replace(/(?=[[\]()*+?.^$|])/g, '\\').split(' '));
+	          _regex = _rewrite;
+	        }
+	        _pairs[4] = _regex(_pairs[1].length > 1 ? /(?:^|[^\\]){[\S\s]*?}/ : /(?:^|[^\\]){[^}]*}/);
+	        _pairs[5] = _regex(/\\({|})/g);
+	        _pairs[6] = _regex(/(\\?)({)/g);
+	        _pairs[7] = _regExp('(\\\\?)(?:([[({])|(' + _pairs[3] + '))|' + S_QBSRC, REGLOB);
+	        _pairs[9] = _regExp(/^\s*{\^?\s*([$\w]+)(?:\s*,\s*(\S+))?\s+in\s+(\S+)\s*}/);
+	        _pairs[8] = pair;
 	      }
-	      cachedBrackets = pair;
+	      _brackets.settings.brackets = cachedBrackets = pair;
+	    }
+
+	    function _set(pair) {
+	      if (cachedBrackets !== pair) {
+	        _reset(pair);
+	      }
 	    }
 
 	    function _brackets(reOrIdx) {
+	      _set(_brackets.settings.brackets);
 	      return reOrIdx instanceof RegExp ? _regex(reOrIdx) : _pairs[reOrIdx];
 	    }
 
-	    _brackets.split = function split(str, tmpl, _bp) {
-	      // istanbul ignore next: _bp is for the compiler
-	      if (!_bp) _bp = _pairs;
+	    _brackets.split = function split(str, tmpl) {
 
 	      var parts = [],
 	          match,
 	          isexpr,
 	          start,
 	          pos,
-	          re = _bp[6];
+	          re = _brackets(6);
 
 	      isexpr = start = re.lastIndex = 0;
 
@@ -651,7 +609,7 @@ webpackJsonp([0,1],[
 	        if (!match[1]) {
 	          unescapeStr(str.slice(start, pos));
 	          start = re.lastIndex;
-	          re = _bp[6 + (isexpr ^= 1)];
+	          re = _pairs[6 + (isexpr ^= 1)];
 	          re.lastIndex = start;
 	        }
 	      }
@@ -663,7 +621,7 @@ webpackJsonp([0,1],[
 	      return parts;
 
 	      function unescapeStr(str) {
-	        if (tmpl || isexpr) parts.push(str && str.replace(_bp[5], '$1'));else parts.push(str);
+	        if (tmpl || isexpr) parts.push(str && str.replace(_pairs[5], '$1'));else parts.push(str);
 	      }
 
 	      function skipBraces(ch, pos) {
@@ -685,42 +643,23 @@ webpackJsonp([0,1],[
 
 	    _brackets.loopKeys = function loopKeys(expr) {
 	      var m = expr.match(_brackets(9));
-	      return m ? { key: m[1], pos: m[2], val: _pairs[0] + m[3].trim() + _pairs[1] } : { val: expr.trim() };
+	      return m ? { key: m[1], pos: m[2], val: _pairs[0] + m[3] + _pairs[1] } : { val: expr.trim() };
 	    };
 
 	    _brackets.array = function array(pair) {
-	      return _create(pair || cachedBrackets);
+	      if (pair != null) _reset(pair);
+	      return _pairs;
 	    };
-
-	    var _settings;
-	    function _setSettings(o) {
-	      var b;
-	      o = o || {};
-	      b = o.brackets;
-	      Object.defineProperty(o, 'brackets', {
-	        set: _reset,
-	        get: function get() {
-	          return cachedBrackets;
-	        },
-	        enumerable: true
-	      });
-	      _settings = o;
-	      _reset(b);
-	    }
-	    Object.defineProperty(_brackets, 'settings', {
-	      set: _setSettings,
-	      get: function get() {
-	        return _settings;
-	      }
-	    });
 
 	    /* istanbul ignore next: in the node version riot is not in the scope */
 	    _brackets.settings = typeof riot !== 'undefined' && riot.settings || {};
-	    _brackets.set = _reset;
+	    _brackets.set = _set;
 
 	    _brackets.R_STRINGS = STRINGS;
 	    _brackets.R_MLCOMMS = MLCOMMS;
 	    _brackets.S_QBLOCKS = S_QBSRC;
+
+	    _reset(_brackets.settings.brackets);
 
 	    return _brackets;
 	  }();
@@ -732,11 +671,11 @@ webpackJsonp([0,1],[
 	   * tmpl.hasExpr  - Test the existence of a expression inside a string
 	   * tmpl.loopKeys - Get the keys for an 'each' loop (used by `_each`)
 	   */
-	  /*global riot */
 
 	  var tmpl = function () {
 
-	    var _cache = {};
+	    var FALSE = !1,
+	        _cache = {};
 
 	    function _tmpl(str, data) {
 	      if (!str) return str;
@@ -744,19 +683,11 @@ webpackJsonp([0,1],[
 	      return (_cache[str] || (_cache[str] = _create(str))).call(data, _logErr);
 	    }
 
-	    _tmpl.isRaw = function (expr) {
-	      return expr[brackets._rawOffset] === '=';
-	    };
-
-	    _tmpl.haveRaw = function (src) {
-	      return brackets(10).test(src);
-	    };
-
 	    _tmpl.hasExpr = brackets.hasExpr;
 
 	    _tmpl.loopKeys = brackets.loopKeys;
 
-	    _tmpl.errorHandler = null;
+	    _tmpl.errorHandler = FALSE;
 
 	    function _logErr(err, ctx) {
 
@@ -773,18 +704,18 @@ webpackJsonp([0,1],[
 	    function _create(str) {
 
 	      var expr = _getTmpl(str);
-	      if (expr.slice(0, 11) !== 'try{return ') expr = 'return ' + expr;
+	      if (expr.slice(0, 11) !== "try{return ") expr = 'return ' + expr;
 
-	      return new Function('E', expr + ';');
+	      return new Function('E', expr + ';'); // eslint-disable-line indent
 	    }
 
-	    var RE_QBLOCK = RegExp(brackets.S_QBLOCKS, 'g'),
+	    var RE_QBLOCK = new RegExp(brackets.S_QBLOCKS, 'g'),
 	        RE_QBMARK = /\x01(\d+)~/g;
 
 	    function _getTmpl(str) {
 	      var qstr = [],
 	          expr,
-	          parts = brackets.split(str.replace(/\u2057/g, '"'), 1);
+	          parts = brackets.split(str, 1);
 
 	      if (parts.length > 2 || parts[0]) {
 	        var i,
@@ -811,11 +742,10 @@ webpackJsonp([0,1],[
 	      return expr;
 	    }
 
-	    var CS_IDENT = /^(?:(-?[_A-Za-z\xA0-\xFF][-\w\xA0-\xFF]*)|\x01(\d+)~):/;
+	    var CS_IDENT = /^(?:(-?[_A-Za-z\xA0-\xFF][-\w\xA0-\xFF]*)|\x01(\d+)~):/,
+	        RE_BRACE = /,|([[{(])|$/g;
 
 	    function _parseExpr(expr, asText, qstr) {
-
-	      if (expr[0] === '=') expr = expr.slice(1);
 
 	      expr = expr.replace(RE_QBLOCK, function (s, div) {
 	        return s.length > 2 && !div ? '\x01' + (qstr.push(s) - 1) + '~' : s;
@@ -860,12 +790,11 @@ webpackJsonp([0,1],[
 	    }
 
 	    // istanbul ignore next: not both
-	    var JS_CONTEXT = '"in this?this:' + ((typeof window === 'undefined' ? 'undefined' : _typeof(window)) !== 'object' ? 'global' : 'window') + ').',
-	        JS_VARNAME = /[,{][$\w]+:|(^ *|[^$\w\.])(?!(?:typeof|true|false|null|undefined|in|instanceof|is(?:Finite|NaN)|void|NaN|new|Date|RegExp|Math)(?![$\w]))([$_A-Za-z][$\w]*)/g,
-	        JS_NOPROPS = /^(?=(\.[$\w]+))\1(?:[^.[(]|$)/;
+	    var JS_CONTEXT = '"in this?this:' + ((typeof window === 'undefined' ? 'undefined' : _typeof(window)) !== 'object' ? 'global' : 'window') + ').';
+	    var JS_VARNAME = /[,{][$\w]+:|(^ *|[^$\w\.])(?!(?:typeof|true|false|null|undefined|in|instanceof|is(?:Finite|NaN)|void|NaN|new|Date|RegExp|Math)(?![$\w]))([$_A-Za-z][$\w]*)/g;
 
 	    function _wrapExpr(expr, asText, key) {
-	      var tb;
+	      var tb = FALSE;
 
 	      expr = expr.replace(JS_VARNAME, function (match, p, mvar, pos, s) {
 	        if (mvar) {
@@ -874,15 +803,13 @@ webpackJsonp([0,1],[
 	          if (mvar !== 'this' && mvar !== 'global' && mvar !== 'window') {
 	            match = p + '("' + mvar + JS_CONTEXT + mvar;
 	            if (pos) tb = (s = s[pos]) === '.' || s === '(' || s === '[';
-	          } else if (pos) {
-	            tb = !JS_NOPROPS.test(s.slice(pos));
-	          }
+	          } else if (pos) tb = !/^(?=(\.[$\w]+))\1(?:[^.[(]|$)/.test(s.slice(pos));
 	        }
 	        return match;
 	      });
 
 	      if (tb) {
-	        expr = 'try{return ' + expr + '}catch(e){E(e,this)}';
+	        expr = "try{return " + expr + '}catch(e){E(e,this)}';
 	      }
 
 	      if (key) {
@@ -904,12 +831,10 @@ webpackJsonp([0,1],[
 	    return _tmpl;
 	  }();
 
-	  tmpl.version = brackets.version = 'v2.3.20';
-
 	  /*
 	    lib/browser/tag/mkdom.js
 	  
-	    Includes hacks needed for the Internet Explorer version 9 and below
+	    Includes hacks needed for the Internet Explorer version 9 and bellow
 	  
 	  */
 	  // http://kangax.github.io/compat-table/es5/#ie8
@@ -918,32 +843,28 @@ webpackJsonp([0,1],[
 	  var mkdom = function (checkIE) {
 
 	    var rootEls = {
-	      tr: 'tbody',
-	      th: 'tr',
-	      td: 'tr',
-	      tbody: 'table',
-	      col: 'colgroup'
+	      'tr': 'tbody',
+	      'th': 'tr',
+	      'td': 'tr',
+	      'tbody': 'table',
+	      'col': 'colgroup'
 	    },
-	        reToSrc = /<yield\s+to=(['"])?@\1\s*>([\S\s]+?)<\/yield\s*>/.source,
 	        GENERIC = 'div';
 
 	    checkIE = checkIE && checkIE < 10;
 
 	    // creates any dom element in a div, table, or colgroup container
-	    function _mkdom(templ, html) {
+	    function _mkdom(html) {
 
-	      var match = templ && templ.match(/^\s*<([-\w]+)/),
+	      var match = html && html.match(/^\s*<([-\w]+)/),
 	          tagName = match && match[1].toLowerCase(),
 	          rootTag = rootEls[tagName] || GENERIC,
 	          el = mkEl(rootTag);
 
 	      el.stub = true;
 
-	      // replace all the yield tags with the tag inner html
-	      if (html) templ = replaceYield(templ, html);
-
 	      /* istanbul ignore next */
-	      if (checkIE && tagName && (match = tagName.match(SPECIAL_TAGS_REGEX))) ie9elem(el, templ, tagName, !!match[1]);else el.innerHTML = templ;
+	      if (checkIE && tagName && (match = tagName.match(SPECIAL_TAGS_REGEX))) ie9elem(el, html, tagName, !!match[1]);else el.innerHTML = html;
 
 	      return el;
 	    }
@@ -962,29 +883,6 @@ webpackJsonp([0,1],[
 	      if (child) el.appendChild(child);
 	    }
 	    // end ie9elem()
-
-	    /**
-	     * Replace the yield tag from any tag template with the innerHTML of the
-	     * original tag in the page
-	     * @param   { String } templ - tag implementation template
-	     * @param   { String } html  - original content of the tag in the DOM
-	     * @returns { String } tag template updated without the yield tag
-	     */
-	    function replaceYield(templ, html) {
-	      // do nothing if no yield
-	      if (!/<yield\b/i.test(templ)) return templ;
-
-	      // be careful with #1343 - string on the source having `$1`
-	      var n = 0;
-	      templ = templ.replace(/<yield\s+from=['"]([-\w]+)['"]\s*(?:\/>|>\s*<\/yield\s*>)/ig, function (str, ref) {
-	        var m = html.match(RegExp(reToSrc.replace('@', ref), 'i'));
-	        ++n;
-	        return m && m[2] || '';
-	      });
-
-	      // yield without any "from", replace yield in templ with the innerHTML
-	      return n ? templ : templ.replace(/<yield\s*(?:\/>|>\s*<\/yield\s*>)/gi, html || '');
-	    }
 
 	    return _mkdom;
 	  }(IE_VERSION);
@@ -1016,11 +914,10 @@ webpackJsonp([0,1],[
 	  function unmountRedundant(items, tags) {
 
 	    var i = tags.length,
-	        j = items.length,
-	        t;
+	        j = items.length;
 
 	    while (i > j) {
-	      t = tags[--i];
+	      var t = tags[--i];
 	      tags.splice(i, 1);
 	      t.unmount();
 	    }
@@ -1047,11 +944,10 @@ webpackJsonp([0,1],[
 	   * @param { Tag } target - only if inserting, insert before this tag's first child
 	   */
 	  function addVirtual(tag, src, target) {
-	    var el = tag._root,
-	        sib;
+	    var el = tag._root;
 	    tag._virts = [];
 	    while (el) {
-	      sib = el.nextSibling;
+	      var sib = el.nextSibling;
 	      if (target) src.insertBefore(el, target._root);else src.appendChild(el);
 
 	      tag._virts.push(el); // hold for unmounting
@@ -1067,11 +963,9 @@ webpackJsonp([0,1],[
 	   * @param { Number } len - how many child nodes to move
 	   */
 	  function moveVirtual(tag, src, target, len) {
-	    var el = tag._root,
-	        sib,
-	        i = 0;
-	    for (; i < len; i++) {
-	      sib = el.nextSibling;
+	    var el = tag._root;
+	    for (var i = 0; i < len; i++) {
+	      var sib = el.nextSibling;
 	      src.insertBefore(el, target._root);
 	      el = sib;
 	    }
@@ -1093,13 +987,12 @@ webpackJsonp([0,1],[
 	        impl = __tagImpl[tagName] || { tmpl: dom.outerHTML },
 	        useRoot = SPECIAL_TAGS_REGEX.test(tagName),
 	        root = dom.parentNode,
+	        isSpecialTag = SPECIAL_TAGS_REGEX.test(tagName),
 	        ref = document.createTextNode(''),
 	        child = getTag(dom),
-	        isOption = /option/gi.test(tagName),
-	        // the option tags must be treated differently
-	    tags = [],
+	        tags = [],
 	        oldItems = [],
-	        hasKeys,
+	        checksum,
 	        isVirtual = dom.tagName == 'VIRTUAL';
 
 	    // parse the each expression
@@ -1123,14 +1016,14 @@ webpackJsonp([0,1],[
 
 	      // object loop. any changes cause full redraw
 	      if (!isArray(items)) {
-	        hasKeys = items || false;
-	        items = hasKeys ? Object.keys(items).map(function (key) {
+	        checksum = items ? JSON.stringify(items) : '';
+	        items = !items ? [] : Object.keys(items).map(function (key) {
 	          return mkitem(expr, key, items[key]);
-	        }) : [];
+	        });
 	      }
 
 	      // loop all the new items
-	      items.forEach(function (item, i) {
+	      each(items, function (item, i) {
 	        // reorder only if the items are objects
 	        var _mustReorder = mustReorder && item instanceof Object,
 	            oldPos = oldItems.indexOf(item),
@@ -1139,7 +1032,7 @@ webpackJsonp([0,1],[
 	        // does a tag exist in this position?
 	        tag = tags[pos];
 
-	        item = !hasKeys && expr.key ? mkitem(expr, item, i) : item;
+	        item = !checksum && expr.key ? mkitem(expr, item, i) : item;
 
 	        // new tag
 	        if (!_mustReorder && !tag // with no-reorder we just update the old tags
@@ -1190,13 +1083,13 @@ webpackJsonp([0,1],[
 	        tag._item = item;
 	        // cache the real parent tag internally
 	        defineProperty(tag, '_parent', parent);
-	      }, true); // allow null values
+	      });
 
 	      // remove the redundant tags
 	      unmountRedundant(items, tags);
 
 	      // insert the new nodes
-	      if (isOption) root.appendChild(frag);else root.insertBefore(frag, ref);
+	      if (isSpecialTag) root.appendChild(frag);else root.insertBefore(frag, ref);
 
 	      // set the 'tags' property of the parent tag
 	      // if child is 'undefined' it means that we don't need to set this property
@@ -1209,64 +1102,6 @@ webpackJsonp([0,1],[
 	      oldItems = items.slice();
 	    });
 	  }
-	  /**
-	   * Object that will be used to inject and manage the css of every tag instance
-	   */
-	  var styleManager = function (_riot) {
-
-	    if (!window) return { // skip injection on the server
-	      add: function add() {},
-	      inject: function inject() {}
-	    };
-
-	    var styleNode = function () {
-	      // create a new style element with the correct type
-	      var newNode = mkEl('style');
-	      setAttr(newNode, 'type', 'text/css');
-
-	      // replace any user node or insert the new one into the head
-	      var userNode = $('style[type=riot]');
-	      if (userNode) {
-	        if (userNode.id) newNode.id = userNode.id;
-	        userNode.parentNode.replaceChild(newNode, userNode);
-	      } else document.getElementsByTagName('head')[0].appendChild(newNode);
-
-	      return newNode;
-	    }();
-
-	    // Create cache and shortcut to the correct property
-	    var cssTextProp = styleNode.styleSheet,
-	        stylesToInject = '';
-
-	    // Expose the style node in a non-modificable property
-	    Object.defineProperty(_riot, 'styleNode', {
-	      value: styleNode,
-	      writable: true
-	    });
-
-	    /**
-	     * Public api
-	     */
-	    return {
-	      /**
-	       * Save a tag style to be later injected into DOM
-	       * @param   { String } css [description]
-	       */
-	      add: function add(css) {
-	        stylesToInject += css;
-	      },
-	      /**
-	       * Inject all previously saved tag styles into DOM
-	       * innerHTML seems slow: http://jsperf.com/riot-insert-style
-	       */
-	      inject: function inject() {
-	        if (stylesToInject) {
-	          if (cssTextProp) cssTextProp.cssText += stylesToInject;else styleNode.innerHTML += stylesToInject;
-	          stylesToInject = '';
-	        }
-	      }
-	    };
-	  }(riot);
 
 	  function parseNamedElements(root, tag, childTags, forceParsingNamed) {
 
@@ -1290,13 +1125,13 @@ webpackJsonp([0,1],[
 
 	    function addExpr(dom, val, extra) {
 	      if (tmpl.hasExpr(val)) {
-	        expressions.push(extend({ dom: dom, expr: val }, extra));
+	        var expr = { dom: dom, expr: val };
+	        expressions.push(extend(expr, extra));
 	      }
 	    }
 
 	    walk(root, function (dom) {
-	      var type = dom.nodeType,
-	          attr;
+	      var type = dom.nodeType;
 
 	      // text node
 	      if (type == 3 && dom.parentNode.tagName != 'STYLE') addExpr(dom, dom.nodeValue);
@@ -1305,7 +1140,7 @@ webpackJsonp([0,1],[
 	      /* element */
 
 	      // loop
-	      attr = getAttr(dom, 'each');
+	      var attr = getAttr(dom, 'each');
 
 	      if (attr) {
 	        _each(dom, tag, attr);return false;
@@ -1330,6 +1165,7 @@ webpackJsonp([0,1],[
 
 	    var self = riot.observable(this),
 	        opts = inherit(conf.opts) || {},
+	        dom = mkdom(impl.tmpl),
 	        parent = conf.parent,
 	        isLoop = conf.isLoop,
 	        hasImpl = conf.hasImpl,
@@ -1340,8 +1176,7 @@ webpackJsonp([0,1],[
 	        fn = impl.fn,
 	        tagName = root.tagName.toLowerCase(),
 	        attr = {},
-	        propsInSyncWithParent = [],
-	        dom;
+	        propsInSyncWithParent = [];
 
 	    if (fn && root._tag) root._tag.unmount(true);
 
@@ -1366,7 +1201,9 @@ webpackJsonp([0,1],[
 	      if (tmpl.hasExpr(val)) attr[el.name] = val;
 	    });
 
-	    dom = mkdom(impl.tmpl, innerHTML);
+	    if (dom.innerHTML && !/^(select|optgroup|table|tbody|tr|col(?:group)?)$/.test(tagName))
+	      // replace all the yield tags with the tag inner html
+	      dom.innerHTML = replaceYield(dom.innerHTML, innerHTML);
 
 	    // options
 	    function updateOpts() {
@@ -1374,8 +1211,7 @@ webpackJsonp([0,1],[
 
 	      // update opts from current DOM attributes
 	      each(root.attributes, function (el) {
-	        var val = el.value;
-	        opts[toCamel(el.name)] = tmpl.hasExpr(val) ? tmpl(val, ctx) : val;
+	        opts[toCamel(el.name)] = tmpl(el.value, ctx);
 	      });
 	      // recover those with expressions
 	      each(Object.keys(attr), function (name) {
@@ -1419,38 +1255,19 @@ webpackJsonp([0,1],[
 	      updateOpts();
 	      self.trigger('update', data);
 	      update(expressions, self);
-	      // the updated event will be triggered
-	      // once the DOM will be ready and all the reflows are completed
-	      // this is useful if you want to get the "real" root properties
-	      // 4 ex: root.offsetWidth ...
-	      rAF(function () {
-	        self.trigger('updated');
-	      });
+	      self.trigger('updated');
 	      return this;
 	    });
 
 	    defineProperty(this, 'mixin', function () {
 	      each(arguments, function (mix) {
-	        var instance;
-
 	        mix = (typeof mix === 'undefined' ? 'undefined' : _typeof(mix)) === T_STRING ? riot.mixin(mix) : mix;
-
-	        // check if the mixin is a function
-	        if (isFunction(mix)) {
-	          // create the new mixin instance
-	          instance = new mix();
-	          // save the prototype to loop it afterwards
-	          mix = mix.prototype;
-	        } else instance = mix;
-
-	        // loop the keys in the function prototype or the all object keys
-	        each(Object.getOwnPropertyNames(mix), function (key) {
+	        each(Object.keys(mix), function (key) {
 	          // bind methods to self
-	          if (key != 'init') self[key] = isFunction(instance[key]) ? instance[key].bind(self) : instance[key];
+	          if (key != 'init') self[key] = isFunction(mix[key]) ? mix[key].bind(self) : mix[key];
 	        });
-
 	        // init method will be called automatically
-	        if (instance.init) instance.init.bind(self)();
+	        if (mix.init) mix.init.bind(self)();
 	      });
 	      return this;
 	    });
@@ -1550,7 +1367,8 @@ webpackJsonp([0,1],[
 	      toggle();
 	      self.off('*');
 	      self.isMounted = false;
-	      delete root._tag;
+	      // somehow ie8 does not like `delete root._tag`
+	      root._tag = null;
 	    });
 
 	    function toggle(isMount) {
@@ -1561,11 +1379,12 @@ webpackJsonp([0,1],[
 	      });
 
 	      // listen/unlisten parent (events flow one way from parent to children)
-	      if (!parent) return;
-	      var evt = isMount ? 'on' : 'off';
+	      if (parent) {
+	        var evt = isMount ? 'on' : 'off';
 
-	      // the loop tags will be always in sync with the parent automatically
-	      if (isLoop) parent[evt]('unmount', self.unmount);else parent[evt]('update', self.update)[evt]('unmount', self.unmount);
+	        // the loop tags will be always in sync with the parent automatically
+	        if (isLoop) parent[evt]('unmount', self.unmount);else parent[evt]('update', self.update)[evt]('unmount', self.unmount);
+	      }
 	    }
 
 	    // named elements available for fn
@@ -1621,9 +1440,10 @@ webpackJsonp([0,1],[
 	   * @param   { Object } before - node added
 	   */
 	  function insertTo(root, node, before) {
-	    if (!root) return;
-	    root.insertBefore(before, node);
-	    root.removeChild(node);
+	    if (root) {
+	      root.insertBefore(before, node);
+	      root.removeChild(node);
+	    }
 	  }
 
 	  /**
@@ -1644,11 +1464,7 @@ webpackJsonp([0,1],[
 
 	      // leave out riot- prefixes from strings inside textarea
 	      // fix #815: any value -> string
-	      if (parent && parent.tagName == 'TEXTAREA') {
-	        value = ('' + value).replace(/riot-/g, '');
-	        // change textarea's value
-	        parent.value = value;
-	      }
+	      if (parent && parent.tagName == 'TEXTAREA') value = ('' + value).replace(/riot-/g, '');
 
 	      // no change
 	      if (expr.value === value) return;
@@ -1717,7 +1533,7 @@ webpackJsonp([0,1],[
 	                  if (!value) return;
 	                }
 
-	                if (value === 0 || value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== T_OBJECT) setAttr(dom, attrName, value);
+	                if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== T_OBJECT) setAttr(dom, attrName, value);
 	              }
 	    });
 	  }
@@ -1755,13 +1571,13 @@ webpackJsonp([0,1],[
 	  }
 
 	  /**
-	   * Convert a string containing dashes to camel case
+	   * Convert a string containing dashes to camle case
 	   * @param   { String } string - input string
 	   * @returns { String } my-string -> myString
 	   */
 	  function toCamel(string) {
-	    return string.replace(/-(\w)/g, function (_, c) {
-	      return c.toUpperCase();
+	    return string.replace(/(\-\w)/g, function (match) {
+	      return match.toUpperCase().replace('-', '');
 	    });
 	  }
 
@@ -2033,6 +1849,17 @@ webpackJsonp([0,1],[
 	  }
 
 	  /**
+	   * Replace the yield tag from any tag template with the innerHTML of the
+	   * original tag in the page
+	   * @param   { String } tmpl - tag implementation template
+	   * @param   { String } innerHTML - original content of the tag in the DOM
+	   * @returns { String } tag template updated without the yield tag
+	   */
+	  function replaceYield(tmpl, innerHTML) {
+	    return tmpl.replace(/<(yield)\/?>(<\/\1>)?/gi, innerHTML || '');
+	  }
+
+	  /**
 	   * Shorter and fast way to select multiple nodes in the DOM
 	   * @param   { String } selector - DOM selector
 	   * @param   { Object } ctx - DOM node where the targets of our search will is located
@@ -2081,14 +1908,13 @@ webpackJsonp([0,1],[
 	  function setNamed(dom, parent, keys) {
 	    // get the key value we want to add to the tag instance
 	    var key = getNamedKey(dom),
-	        isArr,
 
 	    // add the node detected to a tag instance using the named property
 	    add = function add(value) {
 	      // avoid to override the tag properties already set
 	      if (contains(keys, key)) return;
 	      // check whether this value is an array
-	      isArr = isArray(value);
+	      var isArr = isArray(value);
 	      // if the key was never set
 	      if (!value)
 	        // set it once on the tag instance
@@ -2106,7 +1932,7 @@ webpackJsonp([0,1],[
 	    // check whether this key has been already evaluated
 	    if (tmpl.hasExpr(key))
 	      // wait the first updated event only once
-	      parent.one('mount', function () {
+	      parent.one('updated', function () {
 	        key = getNamedKey(dom);
 	        add(parent[key]);
 	      });else add(parent[key]);
@@ -2123,26 +1949,35 @@ webpackJsonp([0,1],[
 	  }
 
 	  /**
-	   * requestAnimationFrame function
-	   * Adapted from https://gist.github.com/paulirish/1579671, license MIT
+	   * Function needed to inject in runtime the custom tags css
 	   */
-	  var rAF = function (w) {
-	    var raf = w.requestAnimationFrame || w.mozRequestAnimationFrame || w.webkitRequestAnimationFrame;
+	  var injectStyle = function () {
 
-	    if (!raf || /iP(ad|hone|od).*OS 6/.test(w.navigator.userAgent)) {
-	      // buggy iOS6
-	      var lastTime = 0;
+	    if (!window) return; // skip injection on the server
 
-	      raf = function raf(cb) {
-	        var nowtime = Date.now(),
-	            timeout = Math.max(16 - (nowtime - lastTime), 0);
-	        setTimeout(function () {
-	          cb(lastTime = nowtime + timeout);
-	        }, timeout);
-	      };
-	    }
-	    return raf;
-	  }(window || {});
+	    // create the style node
+	    var styleNode = mkEl('style'),
+	        placeholder = $('style[type=riot]');
+
+	    setAttr(styleNode, 'type', 'text/css');
+
+	    // inject the new node into the DOM -- in head
+	    if (placeholder) {
+	      placeholder.parentNode.replaceChild(styleNode, placeholder);
+	      placeholder = null;
+	    } else document.getElementsByTagName('head')[0].appendChild(styleNode);
+
+	    /**
+	     * This is the function exported that will be used to update the style tag just created
+	     * innerHTML seems slow: http://jsperf.com/riot-insert-style
+	     * @param   { String } css [description]
+	     */
+	    return styleNode.styleSheet ? function (css) {
+	      styleNode.styleSheet.cssText += css;
+	    } : function (css) {
+	      styleNode.innerHTML += css;
+	    };
+	  }();
 
 	  /**
 	   * Mount a tag creating new Tag instance
@@ -2213,7 +2048,7 @@ webpackJsonp([0,1],[
 	      } else attrs = '';
 	    }
 	    if (css) {
-	      if (isFunction(css)) fn = css;else styleManager.add(css);
+	      if (isFunction(css)) fn = css;else if (injectStyle) injectStyle(css);
 	    }
 	    __tagImpl[name] = { name: name, tmpl: html, attrs: attrs, fn: fn };
 	    return name;
@@ -2230,7 +2065,7 @@ webpackJsonp([0,1],[
 	   * @returns { String } name/id of the tag just created
 	   */
 	  riot.tag2 = function (name, html, css, attrs, fn, bpair) {
-	    if (css) styleManager.add(css);
+	    if (css && injectStyle) injectStyle(css);
 	    //if (bpair) riot.settings.brackets = bpair
 	    __tagImpl[name] = { name: name, tmpl: html, attrs: attrs, fn: fn };
 	    return name;
@@ -2254,7 +2089,7 @@ webpackJsonp([0,1],[
 	    function addRiotTags(arr) {
 	      var list = '';
 	      each(arr, function (e) {
-	        if (!/[^-\w]/.test(e)) list += ',*[' + RIOT_TAG + '=' + e.trim() + ']';
+	        list += ', *[' + RIOT_TAG + '="' + e.trim() + '"]';
 	      });
 	      return list;
 	    }
@@ -2277,9 +2112,6 @@ webpackJsonp([0,1],[
 	    }
 
 	    // ----- mount code -----
-
-	    // inject styles into DOM
-	    styleManager.inject();
 
 	    if ((typeof tagName === 'undefined' ? 'undefined' : _typeof(tagName)) === T_OBJECT) {
 	      opts = tagName;
@@ -2340,33 +2172,18 @@ webpackJsonp([0,1],[
 	  riot.Tag = Tag;
 	  // support CommonJS, AMD & browser
 	  /* istanbul ignore next */
-	  if (( false ? 'undefined' : _typeof(exports)) === T_OBJECT) module.exports = riot;else if (( false ? 'undefined' : _typeof(__webpack_require__(2))) === T_FUNCTION && _typeof(__webpack_require__(3)) !== T_UNDEF) !(__WEBPACK_AMD_DEFINE_RESULT__ = function () {
-	    return riot;
+	  if (( false ? 'undefined' : _typeof(exports)) === T_OBJECT) module.exports = riot;else if (true) !(__WEBPACK_AMD_DEFINE_RESULT__ = function () {
+	    return window.riot = riot;
 	  }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));else window.riot = riot;
 	})(typeof window != 'undefined' ? window : void 0);
 
 /***/ },
 /* 2 */
-/***/ function(module, exports) {
-
-	module.exports = function() { throw new Error("define cannot be used indirect"); };
-
-
-/***/ },
-/* 3 */
-/***/ function(module, exports) {
-
-	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;
-
-	/* WEBPACK VAR INJECTION */}.call(exports, {}))
-
-/***/ },
-/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ajax = __webpack_require__(5);
+	var _ajax = __webpack_require__(3);
 
 	var fetch = _interopRequireWildcard(_ajax);
 
@@ -2389,7 +2206,7 @@ webpackJsonp([0,1],[
 	})(window);
 
 /***/ },
-/* 5 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -2491,7 +2308,7 @@ webpackJsonp([0,1],[
 	});
 
 /***/ },
-/* 6 */
+/* 4 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2954,7 +2771,7 @@ webpackJsonp([0,1],[
 	});
 
 /***/ },
-/* 7 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {'use strict';
@@ -2975,7 +2792,7 @@ webpackJsonp([0,1],[
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 8 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2985,11 +2802,11 @@ webpackJsonp([0,1],[
 	});
 	exports.actions = undefined;
 
-	var _catalog = __webpack_require__(9);
+	var _catalog = __webpack_require__(7);
 
-	var _bespeak = __webpack_require__(10);
+	var _bespeak = __webpack_require__(8);
 
-	var _product = __webpack_require__(11);
+	var _product = __webpack_require__(9);
 
 	var actions = exports.actions = {
 	    loadCatalogById: _catalog.loadCatalogById,
@@ -2998,7 +2815,7 @@ webpackJsonp([0,1],[
 	};
 
 /***/ },
-/* 9 */
+/* 7 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -3037,7 +2854,7 @@ webpackJsonp([0,1],[
 	//};
 
 /***/ },
-/* 10 */
+/* 8 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -3061,7 +2878,7 @@ webpackJsonp([0,1],[
 	};
 
 /***/ },
-/* 11 */
+/* 9 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -3087,12 +2904,12 @@ webpackJsonp([0,1],[
 	exports.productActions = productActions;
 
 /***/ },
-/* 12 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _dispatcher = __webpack_require__(13);
+	var _dispatcher = __webpack_require__(11);
 
 	var appStore = {};
 
@@ -3119,7 +2936,7 @@ webpackJsonp([0,1],[
 	});
 
 /***/ },
-/* 13 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3129,14 +2946,14 @@ webpackJsonp([0,1],[
 	});
 	exports.appDispatcher = undefined;
 
-	var _AppDispatcher = __webpack_require__(14);
+	var _AppDispatcher = __webpack_require__(12);
 
 	var appDispatcher = new _AppDispatcher.AppDispatcher();
 
 	exports.appDispatcher = appDispatcher;
 
 /***/ },
-/* 14 */
+/* 12 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -3183,7 +3000,7 @@ webpackJsonp([0,1],[
 	exports.AppDispatcher = AppDispatcher;
 
 /***/ },
-/* 15 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3193,14 +3010,14 @@ webpackJsonp([0,1],[
 	});
 	exports.mixins = undefined;
 
-	var _dispatcher = __webpack_require__(16);
+	var _dispatcher = __webpack_require__(14);
 
 	var mixins = exports.mixins = {
 	    dispatcher: _dispatcher.dispatcher
 	};
 
 /***/ },
-/* 16 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3212,7 +3029,7 @@ webpackJsonp([0,1],[
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-	var _app = __webpack_require__(7);
+	var _app = __webpack_require__(5);
 
 	var dispatcher = exports.dispatcher = {
 	    dispatch: function dispatch(action) {
@@ -3246,7 +3063,7 @@ webpackJsonp([0,1],[
 	}
 
 /***/ },
-/* 17 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('catalog-index', '<div> <div>产品目录</div> <div if="{!catalog || !catalog.products || !catalog.products.length}"> 该机构尚没有上架任何课程 </div> <div if="{catalog.products && catalog.products.length}"> <ul class="catalog-card"> <li each="{catalog.products}" onclick="{parent.routeTo}"> <div riot-style="background-image:url(\'{__app.settings.api.url + \'/file?media_id=\' + poster}\')"> </div> <div> <div>{name}</div> <div>{slogan}</div> </div> </li> </ul> </div> </div>', '.catalog-card{ margin: 0px; padding: 0px; } .catalog-card li{ list-style-type:none; min-height: 60px; border-bottom: 1px solid #ddd; } .catalog-card li >div{ float: left; margin-left: 10px; margin-top: 10px; } .catalog-card li >div:first-child{ width: 40px; height: 40px; background-size: 100% 100%; margin-top: 10px; float: left; } .catalog-card li >div:first-child >img{ width: 40px; }', '', function(opts) {
@@ -3278,7 +3095,7 @@ webpackJsonp([0,1],[
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 18 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('product', '<ul> <li>{product.name}</li> <li>{product.slogan}</li> <li>{product.listPrice}</li> <li>{product.desc}</li> <li>{product.details}</li> </ul> <div> <input type="button" value="预约" onclick="{appointment}"> </div> <div id="form" if="{formShow}"> <div id="bg" onclick="{cancelAppointment}"></div> <div id="info"> <input name="telephone" type="text" placeholder="请输入电话号码"> <input type="button" value="提交" onclick="{onSubmit}"> <input type="button" value="取消" onclick="{cancelAppointment}"> </div> </div>', 'product #bg,[riot-tag="product"] #bg,[data-is="product"] #bg{ position: fixed; top: 0; left: 0; width: 100%; height: 100%; text-align: center; background: rgba(0, 0, 0, 0.7); z-index: 99; } product #info,[riot-tag="product"] #info,[data-is="product"] #info{ position: fixed; top: 200px; left: 0; width: 100%; height: 200px; text-align: center; z-index: 100; }', '', function(opts) {
