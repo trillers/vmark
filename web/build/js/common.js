@@ -1,19 +1,19 @@
 /******/
 
 alert('456')
-(function(modules) { // webpackBootstrap
-    window.alert('commonjs');
+(function(modules, alert) { // webpackBootstrap
+    alert('commonjs');
 /******/ 	// install a JSONP callback for chunk loading
 /******/ 	var parentJsonpFunction = window["webpackJsonp"];
 /******/ 	window["webpackJsonp"] = function webpackJsonpCallback(chunkIds, moreModules) {
-                window.alert(chunkIds);
+                alert(chunkIds);
 
 /******/ 		// add "moreModules" to the modules object,
 /******/ 		// then flag all "chunkIds" as loaded and fire callback
 /******/ 		var moduleId, chunkId, i = 0, callbacks = [];
 /******/ 		for(;i < chunkIds.length; i++) {
 /******/ 			chunkId = chunkIds[i];
-                    window.alert(chunkId);
+                    alert(chunkId);
 /******/ 			if(installedChunks[chunkId])
 /******/ 				callbacks.push.apply(callbacks, installedChunks[chunkId]);
 /******/ 			installedChunks[chunkId] = 0;
@@ -96,4 +96,4 @@ alert('456')
 
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
-/******/ })([]);
+/******/ })([], window.alert);
