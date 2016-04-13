@@ -1,4 +1,3 @@
-console.error('errr');
 import {} from 'jQuery';
 import {} from 'wx';
 
@@ -17,9 +16,9 @@ Object.keys(mixins).forEach(key => {
     riot.mixin(key, mixins[key]);
 });
 
-alert(riot);
+alert(JSON.stringify(riot));
 let tags = riot.mount('*');
-alert(tags);
+alert(JSON.stringify(tags));
 tags.forEach(tag=>{
     app.views[tag.name] = tag;
 });
