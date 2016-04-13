@@ -4114,7 +4114,7 @@ webpackJsonp([0,1],[
 /***/ },
 /* 22 */
 /***/ function(module, exports, __webpack_require__) {
-
+	alert(22);
 	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('catalog-index', '<div> <div>产品目录</div> <div if="{!catalog || !catalog.products || !catalog.products.length}"> 该机构尚没有上架任何课程 </div> <div if="{catalog.products && catalog.products.length}"> <ul class="catalog-card"> <li each="{catalog.products}" onclick="{parent.routeTo}"> <div riot-style="background-image:url(\'{__app.settings.api.url + \'/file?media_id=\' + poster}\')"> </div> <div> <div>{name}</div> <div>{slogan}</div> </div> </li> </ul> </div> </div>', '.catalog-card{ margin: 0px; padding: 0px; } .catalog-card li{ list-style-type:none; min-height: 60px; border-bottom: 1px solid #ddd; } .catalog-card li >div{ float: left; margin-left: 10px; margin-top: 10px; } .catalog-card li >div:first-child{ width: 40px; height: 40px; background-size: 100% 100%; margin-top: 10px; float: left; } .catalog-card li >div:first-child >img{ width: 40px; }', '', function(opts) {
 	        this.mixin('dispatcher');
 
@@ -4136,7 +4136,7 @@ webpackJsonp([0,1],[
 /***/ },
 /* 23 */
 /***/ function(module, exports, __webpack_require__) {
-
+	alert(23);
 	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('product', '<ul> <li>{product.name}</li> <li>{product.slogan}</li> <li>{product.listPrice}</li> <li>{product.desc}</li> <li>{product.details}</li> </ul> <div> <input type="button" value="预约" onclick="{appointment}"> </div> <div id="form" if="{formShow}"> <div id="bg" onclick="{cancelAppointment}"></div> <div id="info"> <input name="telephone" type="text" placeholder="请输入电话号码"> <input type="button" value="提交" onclick="{onSubmit}"> <input type="button" value="取消" onclick="{cancelAppointment}"> </div> </div>', 'product #bg,[riot-tag="product"] #bg,[data-is="product"] #bg{ position: fixed; top: 0; left: 0; width: 100%; height: 100%; text-align: center; background: rgba(0, 0, 0, 0.7); z-index: 99; } product #info,[riot-tag="product"] #info,[data-is="product"] #info{ position: fixed; top: 200px; left: 0; width: 100%; height: 200px; text-align: center; z-index: 100; }', '', function(opts) {
 	        'use strict'
 	        this.mixin('dispatcher');
