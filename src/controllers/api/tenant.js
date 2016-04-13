@@ -159,6 +159,14 @@ module.exports = function (router) {
         try{
             let catalogId = this.params.id;
             let catalog = this.request.body.o;
+            console.log(catalog)
+            catalog.products = Array.from(catalog.products).map(function(product){
+                if(typeof product === 'object'){
+                    return product._id
+                }
+                return product
+            });
+
             let catalogUpdated = yield context.services.catalogService.updateByIdAsync(catalogId, catalog);
             this.body = {catalog: catalogUpdated, error: null};
         }catch(e){

@@ -1,3 +1,5 @@
-var t = 0.111;
-var t1 = parseFloat(t);
-console.log(t1)
+function test(){
+    console.log(arguments)
+    console.log([].slice.apply(arguments))
+}
+test(1, 2, [1, 2])
