@@ -1,6 +1,6 @@
 var OrgMemberRole = require('../../../common/models/TypeRegistry').item('OrgMemberRole');
 var typeRegistry = require('../../../common/models/TypeRegistry');
-var UserStatus = typeRegistry.item('UserStatus');
+var UserStatus = typeRegistry.item('TenantUserStatus');
 var UserType = typeRegistry.item('UserType');
 
 var Model = function(domainBuilder){
@@ -10,7 +10,8 @@ var Model = function(domainBuilder){
         .withLifeFlag()
         .withCreatedOn()
         .withProperties({
-            status: {type: String, enum: UserStatus.valueList(), default: UserStatus.Anonymous.value(), required: true}
+            status: {type: String, enum: UserStatus.valueList(), default: UserStatus.BaseInfo.value(), required: true}
+            , wechatId:       {type: String} //服务号原始id
             , openid:       {type: String} //服务号粉丝openid 或者 助手号联系人buid (bot's contact id)
             , nickname:     {type: String, required: true}
             , headimgurl:   {type: String}

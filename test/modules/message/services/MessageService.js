@@ -37,7 +37,6 @@ describe('createMessage', function () {
         MessageService.deleteAsync(txtMsgId)
             .then(function(){
                 return MessageService.deleteAsync(mediaMsgId);
-
             })
             .then(function(){
                 done();

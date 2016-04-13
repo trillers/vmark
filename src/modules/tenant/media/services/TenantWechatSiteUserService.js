@@ -6,6 +6,7 @@ var WechatMediaUserType = require('../../../common/models/TypeRegistry').item('W
 var WechatMediaUserService = require('../../../media/services/WechatMediaUserService');
 var Kv = require('../kvs/TenantWechatSiteUser');
 var agentToken = require('../../../auth/agentToken');
+var openToken = require('../../../auth/openToken');
 
 var Service = function(context){
     this.context = context;
@@ -13,37 +14,39 @@ var Service = function(context){
 
 util.inherits(Service, WechatMediaUserService);
 
-Service.prototype.loadByOpenid = Kv.prototype.loadByOpenid;
+Service.prototype.loadByWechatIdAndOpenid = Kv.prototype.loadByWechatIdAndOpenid;
 
-Service.prototype.createTenantWechatSiteUser = function(mediaUserJson, callback){
-    var logger = this.context.logger;
-    var tenantWechatSiteService = this.context.services.tenantWechatSiteService;
+Service.prototype.createTenantWechatSiteUser = function(wechatId, mediaUserJson, callback){
     var kv = this.context.kvs.tenantWechatSiteUser;
-    var tenantUserKv = this.context.kvs.tenantUser;
+    var teAtToOpenidKv = this.context.kvs.teAtToOpenid;
     var me = this;
-        mediaUserJson.host = 'xxxxxxx';
+        mediaUserJson.host = mediaUserJson.host;
         mediaUserJson.type = WechatMediaUserType.WechatSiteUser.value();
         var openid = mediaUserJson.openid;
         var at = agentToken.generate(openid);
+        var ot = openToken.generate(openid);
+
         mediaUserJson.at = at;
+        mediaUserJson.ot = ot;
         me.create(mediaUserJson, function(err, json){
-            tenantUserKv.linkAtToOpenid(at, openid, function(err){
+            teAtToOpenidKv.set(wechatId, at, openid, function(err){
                 if(err) {
                     if(callback) callback(err);
                     return;
                 }
-                kv.saveByOpenid(json, callback);
+                json.wechatId = wechatId;
+                kv.saveByWechatIdAndOpenid(json, callback);
             });
         });
 };
 
-Service.prototype.deleteTenantWechatSiteUserByOpenid = function(openid, callback){
+Service.prototype.deleteTenantWechatSiteUserByWechatIdAndOpenid = function(wechatId, openid, callback){
     var logger = this.context.logger;
     var kv = this.context.kvs.tenantWechatSiteUser;
-    var tenantUserKv = this.context.kvs.tenantUser;
+    var teAtToOpenid = this.context.kvs.teAtToOpenid;
     var wechatMediaUserService = this.context.services.wechatMediaUserService;
     co(function* (){
-        var json = yield kv.loadByOpenidAsync(openid);
+        var json = yield kv.loadByWechatIdAndOpenidAsync(wechatId, openid);
         if(!json){ //user is not found, so skip running further
             if(callback) callback(null, null);
             return;
@@ -53,10 +56,10 @@ Service.prototype.deleteTenantWechatSiteUserByOpenid = function(openid, callback
         var at = json.at;
         try{
             if(at){
-                yield tenantUserKv.unlinkAtToOpenidAsync(at);
+                yield teAtToOpenid.deleteAsync(wechatId, at);
             }
 
-            yield kv.deleteByOpenidAsync(openid);
+            yield kv.deleteByWechatIdAndOpenidAsync(wechatId, openid);
             yield wechatMediaUserService.deleteByIdAsync(wechatSiteUserId);
         }
         catch(e){
@@ -74,6 +77,7 @@ Service.prototype.deleteTenantWechatSiteUserByOpenid = function(openid, callback
 Service.prototype.updateTenantWechatSiteUserById = function(id, update, callback){
     var logger = this.context.logger;
     var kv = this.context.kvs.tenantWechatSiteUser;
+    var mediaKv = this.context.kvs.wechatMedia;
     var me = this;
     co(function* (){
         var user = yield me.updateByIdAsync(id, update);
@@ -81,8 +85,9 @@ Service.prototype.updateTenantWechatSiteUserById = function(id, update, callback
             if(callback) callback(null, null);
             return;
         }
-
-        yield kv.saveByOpenidAsync(user);
+        var media = yield mediaKv.loadByIdAsync(user.host);
+        user.wechatId = media.originalId;
+        yield kv.saveByWechatIdAndOpenidAsync(user);
         if(callback) callback(null, user);
     }).catch(Error, function(err){
         logger.error('Fail to update tenant wechat site user by id ' + id + ': ' + err);

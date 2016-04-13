@@ -1,20 +1,22 @@
 <catalog-index>
-    <div>产品目录</div>
-    <div if="{!catalog || !catalog.products || !catalog.products.length}">
-        该机构尚没有上架任何课程
-    </div>
-    <div if="{catalog.products && catalog.products.length}">
-        <ul class="catalog-card">
-            <li each="{catalog.products}" onclick="{parent.routeTo}">
-                <div>
-                    <img riot-src="{poster &&__app.settings.api.url + '/file?media_id=' + poster}"/>
-                </div>
-                <div>
-                    <span>{name}</span>
-                    <span>{slogan}</span>
-                </div>
-            </li>
-        </ul>
+    <div>
+        <div>产品目录</div>
+        <div if="{!catalog || !catalog.products || !catalog.products.length}">
+            该机构尚没有上架任何课程
+        </div>
+        <div if="{catalog.products && catalog.products.length}">
+            <ul class="catalog-card">
+                <li each="{catalog.products}" onclick="{parent.routeTo}">
+                    <div>
+                        <img riot-src="{poster &&__app.settings.api.url + '/file?media_id=' + poster}"/>
+                    </div>
+                    <div>
+                        <span>{name}</span>
+                        <span>{slogan}</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
     </div>
 
     <style>

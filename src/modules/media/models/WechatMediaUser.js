@@ -1,7 +1,7 @@
 var WechatMediaUserType = require('../../common/models/TypeRegistry').item('WechatMediaUserType');
 var WechatMediaUserContactType = require('../../common/models/TypeRegistry').item('WechatMediaUserContactType');
 var typeRegistry = require('../../common/models/TypeRegistry');
-var UserStatus = typeRegistry.item('UserStatus');
+var UserStatus = typeRegistry.item('TenantUserStatus');
 
 var Model = function(domainBuilder){
     var schema = domainBuilder
@@ -10,7 +10,7 @@ var Model = function(domainBuilder){
         .withLifeFlag()
         .withCreatedOn()
         .withProperties({
-            status:       {type: String, enum: UserStatus.valueList(), default: UserStatus.Anonymous.value(), required: true}
+            status:       {type: String, enum: UserStatus.valueList(), default: UserStatus.BaseInfo.value(), required: true}
             ,host:           {type: String, ref: 'WechatMedia', required: true}
             , type:         {type: String, enum: WechatMediaUserType.valueList(), default: WechatMediaUserType.WechatSiteUser.value(), required: true}
 

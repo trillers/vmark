@@ -2,27 +2,32 @@ var co = require('co');
 var cbUtil = require('../../../../framework/callback');
 var WechatMediaUserType = require('../../../common/models/TypeRegistry').item('WechatMediaUserType');
 var wechat = require('../../../wechat/common/api');
-var helper = require('../../../wechat/common/helper');
 var Kv = require('../kvs/TenantUser');
 
 var Service = function(context){
     this.context = context;
 };
 
-Service.prototype.loadTenantUserByOpenid = function(openid, callback) {
+/**
+ * load tenant user by openid
+ * @param wechatId
+ * @param openid
+ * @param callback
+ */
+Service.prototype.loadUserByWechatIdAndOpenid = function(wechatId, openid, callback) {
     var logger = this.context.logger;
     var tenantWechatSiteUserKv = this.context.kvs.tenantWechatSiteUser;
     var me = this;
 
     co(function* (){
-        var wechatSiteUser = yield tenantWechatSiteUserKv.loadByOpenidAsync(openid);
+        var wechatSiteUser = yield tenantWechatSiteUserKv.loadByWechatIdAndOpenidAsync(wechatId, openid);
         if(!wechatSiteUser){
             if(callback) callback(null, null);
         }
         var userId = wechatSiteUser.user;
         var user = null;
         if(userId){
-            user = yield me.loadByIdAsync(userId);
+            user = yield me.loadByWechatIdAndIdAsync(wechatId, userId);
             user.wechatSiteUser = wechatSiteUser;
         }
         else{
@@ -37,18 +42,24 @@ Service.prototype.loadTenantUserByOpenid = function(openid, callback) {
     });
 };
 
-Service.prototype.deleteTenantUserByOpenid = function(openid, callback) {
+/**
+ * delete tenant user by openid
+ * @param wechatId
+ * @param openid
+ * @param callback
+ */
+Service.prototype.deleteUserByWechatIdAndOpenid = function(wechatId, openid, callback) {
     var logger = this.context.logger;
     var tenantWechatSiteUserService = this.context.services.tenantWechatSiteUserService;
     var me = this;
     co(function* (){
-        var userid = yield tenantWechatSiteUserService.deleteTenantWechatSiteUserByOpenidAsync(openid);
+        var userid = yield tenantWechatSiteUserService.deleteTenantWechatSiteUserByWechatIdAndOpenidAsync(wechatId, openid);
         if(!userid){
-            logger.warn('No platfrom wechat site user [openid = ' + openid + '] found, skip deleting tenant user');
+            logger.warn('No tenant wechat site user [openid = ' + openid + '] found, skip deleting tenant user');
             if(callback) callback(null);
             return;
         }
-        yield me.deleteByIdAsync(userid);
+        yield me.deleteByIdAsync(wechatId, userid);
         if(callback) callback();
     }).catch(Error, function(err){
         logger.error('Fail to delete tenant user by wechat site user\'s openid ' + openid + ' : ' + err);
@@ -57,60 +68,14 @@ Service.prototype.deleteTenantUserByOpenid = function(openid, callback) {
     });
 };
 
-Service.prototype.createTenantUser = function(openid, callback) {
-    var logger = this.context.logger;
-    var tenantWechatSiteUserService = this.context.services.tenantWechatSiteUserService;
-    var me = this;
+/**
+ * load tenant user by id
+ * @param wechatId
+ * @param id
+ * @param callback
+ */
+Service.prototype.loadByWechatIdAndId = Kv.prototype.loadById;
 
-    co(function* (){
-        var wechatSiteUser = yield tenantWechatSiteUserService.loadByOpenidAsync(openid);
-        var userId = null;
-        var user = null;
-        if(wechatSiteUser){
-            userId = wechatSiteUser.user;
-            if(userId){
-                user = yield me.loadByIdAsync(userId);
-                if(user){
-                    if(callback) callback(null, user); //TODO: set action result action: 'loaded'
-                    return;
-                }
-                else{
-                    //db is in not illegal state. create user and link to wechat site user again.
-                    logger.error('Fail to load tenant user by id ' + userId + ', begin to create a brand new one and link it');
-                }
-            }
-
-            /*
-             *  Create user and link to wechat site user
-             */
-            var userJson = {};
-            helper.copyUserInfo(userJson, wechatSiteUser);
-            user = yield me.createAsync(userJson);
-            yield tenantWechatSiteUserService.updateTenantWechatSiteUserByIdAsync(wechatSiteUser.id, {user: user.id});
-            if(callback) callback(null, user); //TODO: set action result action: 'attached'
-            return;
-        }
-
-        var wechatSiteUserInfo = yield helper.getUserInfoAsync(wechat.api, openid, 'zh_CN');
-        var userJson = {};
-        helper.copyUserInfo(userJson, wechatSiteUserInfo);
-        user = yield me.createAsync(userJson);
-        var wechatSiteUserJson = {};
-        wechatSiteUserJson.user = user.id;
-        helper.copyUserInfo(wechatSiteUserJson, wechatSiteUserInfo);
-        wechatSiteUser = yield tenantWechatSiteUserService.createTenantWechatSiteUserAsync(wechatSiteUserJson);
-        if(wechatSiteUser){
-            user.wechatSiteUser = wechatSiteUser;
-        }
-        if(callback) callback(null, user);
-    }).catch(Error, function(err){
-        logger.error('Fail to create tenant user linked to wechat site user: ' + err);
-        logger.error(err.stack);
-        if(callback) callback(err);
-    });
-};
-
-Service.prototype.loadById = Kv.prototype.loadById;
 
 /**
  * Create user in mongoose and redis.
@@ -130,7 +95,7 @@ Service.prototype.create = function(userJson, callback){
 
         cbUtil.handleAffected(function(err, doc){
             var obj = doc.toObject({virtuals: true});
-            kv.saveById(obj, function(err, obj){
+            kv.saveById(obj.wechatId, obj.id, obj, function(err, obj){
                 if(err){
                     logger.error('Fail to create tenant user: ' + err);
                     logger.error(err.stack);
@@ -164,7 +129,7 @@ Service.prototype.update = function(conditions, update, callback){
 
         cbUtil.handleSingleValue(function(err, doc){
             var obj = doc.toObject({virtuals: true});
-            kv.saveById(obj, function(err, obj){
+            kv.saveById(obj.wechatId, obj.id, obj, function(err, obj){
                 if(err){
                     logger.error('Fail to update tenant user: ' + err);
                     logger.error(err.stack);
@@ -192,7 +157,7 @@ Service.prototype.update = function(conditions, update, callback){
  * @param id
  * @param callback
  */
-Service.prototype.deleteById = function(id, callback) {
+Service.prototype.deleteById = function(wechatId, id, callback) {
     var logger = this.context.logger;
     var TenantUser = this.context.models.TenantUser;
     var kv = this.context.kvs.tenantUser;
@@ -202,7 +167,7 @@ Service.prototype.deleteById = function(id, callback) {
             if(callback) callback(err);
             return;
         }
-        kv.deleteById(id, function(err){
+        kv.deleteById(wechatId, id, function(err){
             if (err) {
                 logger.error('Fail to delete tenant user by [id=' + id + ']: ' + err);
                 if(callback) callback(err);
