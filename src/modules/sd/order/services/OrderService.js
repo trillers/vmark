@@ -49,6 +49,9 @@ Service.prototype.findByTenantId = function(tenantId, params, callback){
             me.context.logger.error(err);
             return callback(err);
         }
+        if(docs && docs.length){
+            docs = docs.filter(function(doc){return doc.product});
+        }
         callback(null, docs);
     })
 
@@ -93,14 +96,21 @@ Service.prototype.finishByDistributorIdAndTenantIdAndMediaId = function(distribu
             if(err){
                 return callback(err)
             }
-            var promises = [];
-            docs.forEach(function(doc){
-                doc.status = OrderStatus.finish.value();
-                promises.push(doc.save());
-            });
-            Promise.all(promises).then(function(err, doc){
+            if(docs && docs.length){
+                docs = docs.filter(function(doc){
+                    return doc.bespeak;
+                });
+                var promises = [];
+                docs.forEach(function(doc){
+                    doc.status = OrderStatus.finish.value();
+                    promises.push(doc.save());
+                });
+                Promise.all(promises).then(function(err, doc){
+                    callback(null, docs);
+                });
+            }else{
                 callback(null, docs);
-            });
+            }
         });
 };
 

@@ -1,5 +1,5 @@
-function test(){
-    console.log(arguments)
-    console.log([].slice.apply(arguments))
-}
-test(1, 2, [1, 2])
+var test = [];
+var teat1 = test.filter(function(t){
+    return t._id
+})
+console.log(teat1)

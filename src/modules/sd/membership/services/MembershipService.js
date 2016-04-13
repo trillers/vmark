@@ -218,6 +218,9 @@ Service.prototype.loadByUserIdAndWechatId = function(userId, wechatId, callback)
         if(!docs.length){
             return callback(null, null)
         }
+        docs = docs.filter(function(doc){
+            return doc.media;
+        });
         callback(null, docs[0]);
     })
 };
