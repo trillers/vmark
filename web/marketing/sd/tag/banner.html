@@ -1,6 +1,6 @@
 <banner>
     <div class="banner">
-        <img src="http://www.0739i.com.cn/data/attachment/portal/201603/09/120155zrcvtsvaj9ptaawt.jpg" width="100%" alt="">
+        <img src="{src}" width="100%" alt="">
     </div>
     <style scoped>
         .banner {
@@ -10,9 +10,16 @@
         }
     </style>
     <script>
-        console.error(this.opts);
-        var banners = this.opts.banners;
-        var i = 0;
+        var banners = [];
+        this.on('update', function(){
+            banners = this.opts.banners;
+            var mediaId = banners && banners[0] || '';
+            if(mediaId){
+                var src = __app.settings.api.url + '/file?media_id=' + mediaId;
+                this.update({src: src})
+            }
+        })
+        var i = 1;
         setInterval(function(){
             var doc = document.querySelector('.banner img');
             doc.setAttribute('src', __app.settings.api.url + '/file?media_id=' +

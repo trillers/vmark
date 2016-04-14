@@ -9,7 +9,6 @@ import {util} from './util';
 
 require('../tag/catalog-index.html');
 require('../tag/product.html');
-require('../tag/banner.html');
 
 window.app = app;
 window.actions = actions;
