@@ -180,6 +180,9 @@
                 id: courseId
             }).onDone(function(res){
                 self.course = res.course;
+                if(!self.course.banners){
+                    self.course.banners = [];
+                }
                 self.trigger('ready', false);
                 self.trigger('view-route-to');
             }).execute();

@@ -343,7 +343,6 @@
                 id: courseId
             }).onDone(function(res){
                 self.course = res.course;
-                console.log(self.course);
                 if(!self.course.banners){
                     self.course.banners = [];
                 }
