@@ -10,11 +10,13 @@
         }
     </style>
     <script>
-        var banners = this.opts.imgs || ['http://www.0739i.com.cn/data/attachment/portal/201603/09/120155zrcvtsvaj9ptaawt.jpg', 'http://www.0739i.com.cn/data/attachment/portal/201603/09/120158ksjocrjsoohrmhtg.jpg', 'http://img1.imgtn.bdimg.com/it/u=1538368858,4289171815&fm=11&gp=0.jpg'];
+        console.error(this.opts);
+        var banners = this.opts.banners;
         var i = 0;
         setInterval(function(){
             var doc = document.querySelector('.banner img');
-            doc.setAttribute('src', banners[i%3]);
+            doc.setAttribute('src', __app.settings.api.url + '/file?media_id=' +
+banners[i%3]);
             i++;
         }, 3000);
     </script>

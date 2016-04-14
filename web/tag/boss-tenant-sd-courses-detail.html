@@ -111,8 +111,18 @@
 
                                         <tr>
                                             <td><strong>分销海报背景</strong></td>
-                                            <td><img style="width: 200px" riot-src="{course.poster &&__app.settings.api.url + '/file?media_id=' + course.poster}"/></td>
-                                            <td></td>
+                                            <td colspan="2"><img style="width: 200px" riot-src="{course.poster &&__app.settings.api.url + '/file?media_id=' + course.poster}"/></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td><strong>焦点图</strong></td>
+                                            <td colspan="2">
+                                                <ul class="banners-container">
+                                                    <li each="{banner, i in course.banners}">
+                                                        <img riot-src="{banner && (__app.settings.api.url + '/file?media_id=' + banner)}"/>
+                                                    </li>
+                                                </ul>
+                                            </td>
                                         </tr>
 
                                     </table>
@@ -170,6 +180,9 @@
                 id: courseId
             }).onDone(function(res){
                 self.course = res.course;
+                if(!self.course.banners){
+                    self.course.banners = [];
+                }
                 self.trigger('ready', false);
                 self.trigger('view-route-to');
             }).execute();

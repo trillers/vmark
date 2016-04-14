@@ -230,14 +230,14 @@
                                         <td colspan="2">
                                             <input multiple="multiple" onchange="{onBannersChange}" id="bannersInput" type="file" accept="image/jpeg, image/png, image/jpg"/>
                                             <ul class="banners-container">
-                                                <li each="{banner in course.banners}" onmouseenter="{parent.onHover}" onmouseleave="{parent.onUnHover}">
+                                                <li each="{banner, i in course.banners}" onmouseenter="{parent.onHover}" onmouseleave="{parent.onUnHover}">
                                                     <div onclick="{parent.removeBanner}" if="{isImgMaskShow}">
                                                         <b>
                                                             <b class="close-a"></b>
                                                             <b class="close-b"></b>
                                                         </b>
                                                     </div>
-                                                    <img riot-src="{banner.data || banner && __app.settings.api.url + '/file?media_id=' + banner}"/>
+                                                    <img riot-src="{banner.data || banner && (__app.settings.api.url + '/file?media_id=' + banner)}"/>
                                                 </li>
                                             </ul>
                                         </td>
@@ -343,6 +343,9 @@
                 id: courseId
             }).onDone(function(res){
                 self.course = res.course;
+                if(!self.course.banners){
+                    self.course.banners = [];
+                }
                 self.trigger('ready', false);
                 self.trigger('view-route-to');
             }).execute();
@@ -538,8 +541,8 @@
                     return;
                 }
 
-                if(banner === e.item){
-                    self.course.banners.splice(i, 1)
+                if(banner === e.item.banner){
+                    self.course.banners.splice(i, 1);
                 }
             });
         };
@@ -586,42 +589,79 @@
         };
 
         self.onSubmit = function(){
+            var totalTasksNum = 0;
+            var completelyTasksNum = 0;
             var req = {
                 id: self.course._id,
                 o: self.course
             };
+            console.log(req.o)
             if(self.course.poster && self.course.poster.file){
-                var formData = new FormData();
-                formData.append('file', self.course.poster.file);
+                ++totalTasksNum;
+                var formData1 = new FormData();
+                formData1.append('file', self.course.poster.file);
                 $.ajax({
                     url: __app.settings.api.url + '/file/upload',
                     type: 'POST',
-                    data: formData,
+                    data: formData1,
                     processData: false,
                     contentType: false,
                     success: function (res) {
                         req.o.poster = res.media_id;
-                        updateCourseById();
+                        ++completelyTasksNum;
+                        done();
                     },
                     error: function (responseStr) {
                         console.error("失败:" + JSON.stringify(responseStr));
                     }
                 });
-                return;
             }
 
             if(self.course.banners){
+                ++totalTasksNum;
+                var formData2 = new FormData();
+                self.course.banners.map(function(banner){
+                    if(banner.file){
+                        formData2.append('files', banner.file);
+                    }
+                });
 
+                $.ajax({
+                    url: __app.settings.api.url + '/file/uploads',
+                    type: 'POST',
+                    data: formData2,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        console.log(res);
+                        var persistedBanners = [];
+                        if(self.course.banners && self.course.banners.length){
+                            persistedBanners = self.course.banners.filter(function(banner){
+                                return typeof banner === 'string'
+                            });
+                        }
+                        req.o.banners = persistedBanners.concat(res.metas.map(function(meta){return meta.media_id}));
+                        console.log(req.o.banners);
+                        ++completelyTasksNum;
+                        done();
+                    },
+                    error: function (responseStr) {
+                        console.error("失败:" + JSON.stringify(responseStr));
+                    }
+                });
             }
 
-            updateCourseById();
+            done();
 
-            function updateCourseById(){
+            function done(){
+                if(completelyTasksNum != totalTasksNum){
+                    return;
+                }
                 updateCourseByIdAction.newInvocation(req)
-                        .onDone(function(res){
-                            riot.route('sd/courses');
-                        })
-                        .execute();
+                    .onDone(function(res){
+                        riot.route('sd/courses');
+                    })
+                    .execute();
             }
 
         };
