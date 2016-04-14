@@ -1,12 +1,13 @@
 require('./raw.html');
 <product>
     <div class="container">
+        <banner imgs="{product.banners}"></banner>
         <div class="header">
             <div class="title"><span>{product.name}</span></div>
             <div class="slogan"><span>{product.slogan}</span></div>
             <div>
                 <span class="main-color">会员价</span>
-                <span><span style="margin-left: 10px" class="primary-color">¥ </span> <span class="primary-color h2">{product.listPrice}</span></span>
+                <span><span style="margin-left: 10px" class="primary-color">¥ </span> <span class="primary-color h2">{_.getMemberPrice(product.listPrice, product.memberDiscountsType, product.memberDiscountsValue)}</span></span>
                 <span class="secondary-color" style="margin-left: 10px;text-decoration:line-through">{product.listPrice}</span>
             </div>
         </div>
@@ -28,7 +29,6 @@ require('./raw.html');
             </div>
             <input style="width:70%" class="btn btn-primary" value="立刻预约" onclick="{appointment}"/>
         </div>
-
     </div>
 
     <div id="form" if="{formShow}" >
@@ -121,6 +121,7 @@ require('./raw.html');
         .container{
             position: relative;
         }
+
         .container .header{
             padding: 10px;
             height: 100px;

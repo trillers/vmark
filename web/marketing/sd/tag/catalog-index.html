@@ -14,8 +14,8 @@
                         <div>{slogan}</div>
                         <div>
                             <span class="main-color">会员价</span>
-                            <span class="primary-color" style="font-size: 18px">¥ 8800.00</span>
-                            <span class="secondary-color" style="margin-left: 5px;text-decoration:line-through ">10000.00</span>
+                            <span class="primary-color" style="font-size: 18px">¥ {_.getMemberPrice(listPrice, memberDiscountsType, memberDiscountsValue)}</span>
+                            <span class="secondary-color" style="margin-left: 5px;text-decoration:line-through ">{listPrice}</span>
                         </div>
 
                     </div>

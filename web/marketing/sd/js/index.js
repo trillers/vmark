@@ -5,9 +5,11 @@ import {app} from './app';
 import {actions} from '../actions/index';
 import * as AppStore from '../store/AppStore';
 import {mixins} from '../mixins/index';
+import {util} from './util';
 
 require('../tag/catalog-index.html');
 require('../tag/product.html');
+require('../tag/banner.html');
 
 window.app = app;
 window.actions = actions;

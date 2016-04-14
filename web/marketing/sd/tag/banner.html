@@ -1,0 +1,21 @@
+<banner>
+    <div class="banner">
+        <img src="http://www.0739i.com.cn/data/attachment/portal/201603/09/120155zrcvtsvaj9ptaawt.jpg" width="100%" alt="">
+    </div>
+    <style scoped>
+        .banner {
+            padding: 10px;
+            background-color: white;
+            margin-bottom: 10px;
+        }
+    </style>
+    <script>
+        var banners = this.opts.imgs || ['http://www.0739i.com.cn/data/attachment/portal/201603/09/120155zrcvtsvaj9ptaawt.jpg', 'http://www.0739i.com.cn/data/attachment/portal/201603/09/120158ksjocrjsoohrmhtg.jpg', 'http://img1.imgtn.bdimg.com/it/u=1538368858,4289171815&fm=11&gp=0.jpg'];
+        var i = 0;
+        setInterval(function(){
+            var doc = document.querySelector('.banner img');
+            doc.setAttribute('src', banners[i%3]);
+            i++;
+        }, 3000);
+    </script>
+</banner>
