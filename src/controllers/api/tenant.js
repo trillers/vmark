@@ -6,8 +6,6 @@ var OrderStatus = typeRegistry.item('OrderStatus');
 var context = require('../../context/context');
 var qrTypeRegistry = require('../../modules/wechatsite/qr/QrTypeRegistries').tenantQrTypeRegistry;
 var qrType = qrTypeRegistry.getQrType('sdpp');
-//var checkauth = require('../../middlewares/checkauth');
-
 var tenantOrgService = context.services.tenantOrgService;
 var courseService = context.services.courseService;
 var logger = context.logger;
@@ -174,7 +172,6 @@ module.exports = function (router) {
         try{
             let catalogId = this.params.id;
             let catalog = this.request.body.o;
-            console.log(catalog)
             catalog.products = Array.from(catalog.products).map(function(product){
                 if(typeof product === 'object'){
                     return product._id
@@ -221,10 +218,7 @@ module.exports = function (router) {
     router.post('/sd/bespeak', function*(){
         try{
             let bespeak = this.request.body;
-
-            console.log(bespeak);
             let wechatsite = yield context.services.tenantWechatSiteService.loadByIdAsync(bespeak.media);
-            console.warn(wechatsite)
             yield context.services.membershipService.ensureSignUpAsync(wechatsite.originalId, bespeak.user._id);
             yield context.services.bespeakService.createAsync({
                 product: bespeak.product._id,
@@ -572,7 +566,7 @@ module.exports = function (router) {
             logger.error('load tenant wechat site err: ' + e);
             this.body = [];
         }
-    })
+    });
 
     router.get('/wechatsite/load', function*(){
         var logger = context.logger;
@@ -586,7 +580,7 @@ module.exports = function (router) {
             logger.error('load tenant wechat site by id: ' + id + ' err: ' + e);
             this.body = {error: 'failed load wechat site'};
         }
-    })
+    });
 
     router.put('/wechatsite/_:id', function*(){
         try{

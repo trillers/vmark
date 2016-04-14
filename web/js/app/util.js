@@ -263,6 +263,10 @@ var util = {
                     return me.meta[k];
                 })
             };
+            api.allOk = function(){
+                 console.log(Object.keys(this.meta).length)
+                return Object.keys(this.meta).length <=0;
+            };
             api.notOk = function(k){
                 return this.meta[k];
             };

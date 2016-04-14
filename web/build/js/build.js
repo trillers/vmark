@@ -4167,7 +4167,7 @@ webpackJsonp([0,1],[
 	                window.location = returnUrl;
 	            });
 	            self.dispatch(actions.loadCatalogByProductIdAndMediaId(self.product._id, self.opts.media));
-	        }
+	        };
 
 	        self.goToAuthorize = function(e){
 	            var getUserInfoUrl = '/auth/' + __page.user.wechatId + '/authorize?';
