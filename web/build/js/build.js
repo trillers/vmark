@@ -31,6 +31,7 @@ webpackJsonp([0,1],[
 	});
 
 	var tags = riot.mount('*');
+
 	tags.forEach(function (tag) {
 	    _app.app.views[tag.name] = tag;
 	});
@@ -2496,8 +2497,10 @@ webpackJsonp([0,1],[
 	        !Array.isArray(nodes) && (nodes = [].slice.apply(nodes));
 	        return nodes.length === 1 ? nodes[0] : nodes;
 	    };
-	    jQuery = Object.assign(jQuery, fetch);
-	    window.$ = jQuery;
+	    for (var p in fetch) {
+	        jQuery[p] = fetch[p];
+	    }
+	    root.$ = jQuery;
 	})(window);
 
 /***/ },
@@ -4088,16 +4091,18 @@ webpackJsonp([0,1],[
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('catalog-index', '<div> <div if="{!catalog || !catalog.products || !catalog.products.length}"> 该机构尚没有上架任何课程 </div> <div if="{catalog.products && catalog.products.length}"> <ul class="catalog-card"> <li each="{catalog.products}" onclick="{parent.routeTo}"> <div riot-style="background-image:url(\'{__app.settings.api.url + \'/file?media_id=\' + poster}\')"> </div> <div class="right-panel"> <div>{name}</div> <div>{slogan}</div> <div> <span class="main-color">会员价</span> <span class="primary-color" style="font-size: 18px">¥ 8800.00</span> <span class="secondary-color" style="margin-left: 5px;text-decoration:line-through ">10000.00</span> </div> </div> <div style="clear:both"></div> <div style="position: absolute; right:10px; top:40px"> <div class="arrow main-color"> <div></div> </div> </div> </li> </ul> </div> </div>', '.arrow { border: 10px solid rgba(0,0,0,0); border-left-color: #ff5000; width: 0; height: 0; position: relative; left: 0px; top: 0px; } .arrow >div{ border: 12px solid rgba(0,0,0,0); border-left-color: white; width: 0; height: 0; position: absolute; left: -15px; top: -12px; } .catalog-card{ margin: 0px; padding: 0px; } .catalog-card li{ background-color: white; list-style-type:none; min-height: 100px; border-bottom: 1px solid #ddd; margin-bottom: 10px; position: relative; } .catalog-card li >div{ float: left; margin-left: 10px; } .catalog-card li >div:first-child{ width: 80px; height: 80px; background-size: 100% 100%; margin-top: 10px; float: left; } .catalog-card li >div:first-child >img{ width: 40px; } .catalog-card .right-panel >div{ margin-top: 12px; font-size: 14px; } .right-panel >div:first-child{ font-size: 20px; }', '', function(opts) {
-	        this.mixin('dispatcher');
+	        var self = this;
+	        self.mixin('dispatcher');
 
-	        this.on('mount', ()=>{
-	            this.on('loadCatalogById', res =>{
-	                this.update({catalog: res.catalog});
+	        self.on('mount', function(){
+	            self.on('loadCatalogById', function(res) {
+	                self.update({catalog: res.catalog});
 	            });
-	            this.dispatch(actions.loadCatalogById(this.opts.id));
-	        })
-	        this.routeTo = e =>{
-	            window.location = __app.settings.app.url + "/sd/" + __page.user.wechatId + "/product?id=" + e.item._id + '&media=' + this.catalog.media._id + '&catalog=' + this.catalog._id;
+	            self.dispatch(actions.loadCatalogById(self.opts.id));
+	        });
+
+	        self.routeTo = function(e){
+	            window.location = __app.settings.app.url + "/sd/" + __page.user.wechatId + "/product?id=" + e.item._id + '&media=' + self.catalog.media._id + '&catalog=' + self.catalog._id;
 	        }
 
 	});
@@ -4109,50 +4114,51 @@ webpackJsonp([0,1],[
 
 	/* WEBPACK VAR INJECTION */(function(riot) {__webpack_require__(24);
 	riot.tag2('product', '<div class="container"> <div class="header"> <div class="title"><span>{product.name}</span></div> <div class="slogan"><span>{product.slogan}</span></div> <div> <span class="main-color">会员价</span> <span><span style="margin-left: 10px" class="primary-color">¥ </span> <span class="primary-color h2">{product.listPrice}</span></span> <span class="secondary-color" style="margin-left: 10px;text-decoration:line-through">{product.listPrice}</span> </div> </div> <div class="body" style="min-height: 200px"> <div> <div> <b style="display: inline-block; width: 3px; height: 12px;background-color: #ff5000"></b> <span>课程详情</span> </div> <div style="margin-top: 10px"> <raw content="{product.details}"></raw> </div> </div> </div> <div class="footer"> <div onclick="{routeTo}" style="width:30%" class="btn btn-default" onclick="{appointment}"> <div style="margin-top: 6px"><img src="/web/images/list.png" style="width: 24px"></div> <div style="font-size: 14px; margin-top: 3px">课程详情</div> </div> <input style="width:70%" class="btn btn-primary" value="立刻预约" onclick="{appointment}"> </div> </div> <div id="form" if="{formShow}"> <div id="bg" onclick="{cancelAppointment}"></div> <div id="info"> <div class="pop-window"> <div> <p>请留下您的联系方式</p> <p>我们的课程顾问会尽快和您联系</p> <p>为您提供专业的建议和服务</p> </div> <div> <div style="position:relative;width: 220px;margin:0px auto"> <b style="background: #ff5000;width: 3px; height: 24px;position: absolute;left:10px;top:10px"></b> <input style="text-indent: 15px" class="text-input" name="telephone" type="text" placeholder="请输入电话号码"> </div> </div> <div> <input class="btn-rd btn-primary" type="button" value="确认提交" onclick="{onSubmit}"> </div> <div onclick="{cancelAppointment}" style="text-align:center;line-height: 32px;width :32px;height: 32px;position: absolute; top: -20px; right: 0px">X</div> </div> </div> </div>', 'product .pop-window,[riot-tag="product"] .pop-window,[data-is="product"] .pop-window{ position: relative; margin: 0px auto; height: 240px; width: 280px; background-color: white; border-radius: 5px; overflow: hidden; } product .pop-window >div,[riot-tag="product"] .pop-window >div,[data-is="product"] .pop-window >div{ margin-top: 20px } product .pop-window >div >p,[riot-tag="product"] .pop-window >div >p,[data-is="product"] .pop-window >div >p{ margin: 10px auto; font-size: 16px; } product .text-input,[riot-tag="product"] .text-input,[data-is="product"] .text-input{ background: #f1f1f1; border: none; width: 220px; height: 40px; font-size: 16px; border-radius: 5px; } product .btn-rd,[riot-tag="product"] .btn-rd,[data-is="product"] .btn-rd{ display: inline-block; width: 220px; height:40px; border:none; border-radius: 5px; text-align: center; font-size: 18px; } product .header >div,[riot-tag="product"] .header >div,[data-is="product"] .header >div{ margin-bottom: 15px; } product .header .title >span,[riot-tag="product"] .header .title >span,[data-is="product"] .header .title >span{ font-size: 24px; } product .header .slogan >span,[riot-tag="product"] .header .slogan >span,[data-is="product"] .header .slogan >span{ font-size: 16px; color: #ababab; } product .body,[riot-tag="product"] .body,[data-is="product"] .body{ padding: 10px } product .btn,[riot-tag="product"] .btn,[data-is="product"] .btn{ box-sizing: border-box; display: block; float: left; height:56px; border:none; text-align: center; font-size: 18px; } product .btn-default,[riot-tag="product"] .btn-default,[data-is="product"] .btn-default{ background-color: white; color: #ff5000; } product .btn-primary,[riot-tag="product"] .btn-primary,[data-is="product"] .btn-primary{ background-color: #ff5000; color: white; } product .container,[riot-tag="product"] .container,[data-is="product"] .container{ position: relative; } product .container .header,[riot-tag="product"] .container .header,[data-is="product"] .container .header{ padding: 10px; height: 100px; background-color: white; margin-bottom: 10px; } product .container .body,[riot-tag="product"] .container .body,[data-is="product"] .container .body{ height: 120px; background-color: white; margin-bottom: 10px; } product .container .footer,[riot-tag="product"] .container .footer,[data-is="product"] .container .footer{ background-color: white; width: 100%; height: 56px; position: fixed; bottom: 0px; } product #bg,[riot-tag="product"] #bg,[data-is="product"] #bg{ position: fixed; top: 0; left: 0; width: 100%; height: 100%; text-align: center; background: rgba(0, 0, 0, 0.7); z-index: 99; } product #info,[riot-tag="product"] #info,[data-is="product"] #info{ position: fixed; top: 160px; left: 0; width: 100%; height: 200px; text-align: center; z-index: 100; }', '', function(opts) {
-	        'use strict'
+	        'use strict';
 	        this.mixin('dispatcher');
 
-	        let self = this;
+	        var self = this;
 
-	        self.on('mount', opts => {
+	        self.on('mount', function(opts){
 	            self.dispatch(actions.productActions.loadProduct(self.opts.id));
-	        })
+	        });
 
-	        self.on('loadProduct', data => {
+	        self.on('loadProduct', function(data){
 	            self.update({product: data.course});
-	        })
+	        });
 
-	        self.on('addBespeak', res => {
+	        self.on('addBespeak', function(res) {
 	            if(!res.error){
 	                alert('预约成功');
 	                self.update({formShow: false});
 	                return;
 	            }
 	            console.error(res.error);
-	        })
+	        });
 
-	        self.appointment = e => {
+	        self.appointment = function(e){
 	            if(self.isAnonymous()){
 	                return self.goToAuthorize();
 	            }
 	            self.update({formShow: true});
-	        }
+	        };
 
-	        self.cancelAppointment = e => {
+	        self.cancelAppointment = function(e) {
 	            self.update({formShow: false});
-	        }
-	        self.isAnonymous = () => {
-	            return !__page.user || !__page.user.status || __page.user.status === __app.enums.TenantUserStatus.names.BaseInfo;
-	        }
+	        };
 
-	        self.routeTo = (e) =>{
+	        self.isAnonymous = function() {
+	            return !__page.user || !__page.user.status || __page.user.status === __app.enums.TenantUserStatus.names.BaseInfo;
+	        };
+
+	        self.routeTo = function(e){
 	            var returnUrl = __app.settings.app.url + "/sd/" + __page.user.wechatId + "/catalog?id=";
 	            if(self.opts.catalog){
 	                returnUrl += self.opts.catalog;
 	                window.location = returnUrl;
 	                return;
 	            }
-	            self.one('loadCatalogByProductIdAndMediaId', res=>{
+	            self.one('loadCatalogByProductIdAndMediaId', function(res){
 	                if(res.error || !res.catalogs || !res.catalogs.length){
 	                    alert('读取目录失败');
 	                    return;
@@ -4163,13 +4169,13 @@ webpackJsonp([0,1],[
 	            self.dispatch(actions.loadCatalogByProductIdAndMediaId(self.product._id, self.opts.media));
 	        }
 
-	        self.goToAuthorize = e => {
+	        self.goToAuthorize = function(e){
 	            var getUserInfoUrl = '/auth/' + __page.user.wechatId + '/authorize?';
 	            getUserInfoUrl += 'route=get_user_info&returnUrl='+location.href;
 	            location.href = getUserInfoUrl;
-	        }
+	        };
 
-	        self.onSubmit = e => {
+	        self.onSubmit = function(e){
 	            if(self.telephone.value.trim() === ""){
 	                return;
 	            }

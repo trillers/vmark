@@ -12,7 +12,9 @@ import * as fetch from './fetchMonkeyPatch';
         !Array.isArray(nodes) && (nodes = [].slice.apply(nodes));
         return nodes.length ===1 ? nodes[0] : nodes;
     };
-    jQuery = Object.assign(jQuery, fetch);
-    window.$ = jQuery;
+    for( var p in fetch){
+        jQuery[p] = fetch[p];
+    }
+    root.$ = jQuery;
 
 })(window);

@@ -1,12 +1,10 @@
 "use strict";
-var settings = require('@private/vmark-settings');
 var Router = require('koa-router');
 var context = require('../../context/context');
 var tenantFilter = require('../../modules/tenant/common/middlewares/tenantFilter');
 var authentication = require('../../modules/tenant/auth/authentication');
 var generateAuthFilter = require('../../modules/tenant/auth/middlewares/generateAuthFilter');
 var needBaseInfoFilter = generateAuthFilter(1);
-var _ = require('underscore');
 
 module.exports = function(){
     var router = new Router();

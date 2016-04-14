@@ -5,14 +5,14 @@ let productActions = {};
 
 productActions.loadProduct = (id) => {
     return $.get(__app.settings.api.url + '/tenant/sd/course/_' + id)
-        .then(res=>{
+        .then(res=> {
             return {
                 name: 'loadProduct',
                 res
             };
         })
-        .catch(e=>{
+        .catch(e=> {
             console.warn(e)
         })
-};
+}
 export {productActions};

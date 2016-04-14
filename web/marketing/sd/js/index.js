@@ -17,6 +17,7 @@ Object.keys(mixins).forEach(key => {
 });
 
 let tags = riot.mount('*');
+
 tags.forEach(tag=>{
     app.views[tag.name] = tag;
 });

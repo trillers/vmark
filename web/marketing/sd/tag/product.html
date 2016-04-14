@@ -160,50 +160,51 @@ require('./raw.html');
         }
     </style>
     <script>
-        'use strict'
+        'use strict';
         this.mixin('dispatcher');
 
-        let self = this;
+        var self = this;
 
-        self.on('mount', opts => {
+        self.on('mount', function(opts){
             self.dispatch(actions.productActions.loadProduct(self.opts.id));
-        })
+        });
 
-        self.on('loadProduct', data => {
+        self.on('loadProduct', function(data){
             self.update({product: data.course});
-        })
+        });
 
-        self.on('addBespeak', res => {
+        self.on('addBespeak', function(res) {
             if(!res.error){
                 alert('预约成功');
                 self.update({formShow: false});
                 return;
             }
             console.error(res.error);
-        })
+        });
 
-        self.appointment = e => {
+        self.appointment = function(e){
             if(self.isAnonymous()){
                 return self.goToAuthorize();
             }
             self.update({formShow: true});
-        }
+        };
 
-        self.cancelAppointment = e => {
+        self.cancelAppointment = function(e) {
             self.update({formShow: false});
-        }
-        self.isAnonymous = () => {
-            return !__page.user || !__page.user.status || __page.user.status === __app.enums.TenantUserStatus.names.BaseInfo;
-        }
+        };
 
-        self.routeTo = (e) =>{
+        self.isAnonymous = function() {
+            return !__page.user || !__page.user.status || __page.user.status === __app.enums.TenantUserStatus.names.BaseInfo;
+        };
+
+        self.routeTo = function(e){
             var returnUrl = __app.settings.app.url + "/sd/" + __page.user.wechatId + "/catalog?id=";
             if(self.opts.catalog){
                 returnUrl += self.opts.catalog;
                 window.location = returnUrl;
                 return;
             }
-            self.one('loadCatalogByProductIdAndMediaId', res=>{
+            self.one('loadCatalogByProductIdAndMediaId', function(res){
                 if(res.error || !res.catalogs || !res.catalogs.length){
                     alert('读取目录失败');
                     return;
@@ -214,13 +215,13 @@ require('./raw.html');
             self.dispatch(actions.loadCatalogByProductIdAndMediaId(self.product._id, self.opts.media));
         }
 
-        self.goToAuthorize = e => {
+        self.goToAuthorize = function(e){
             var getUserInfoUrl = '/auth/' + __page.user.wechatId + '/authorize?';
             getUserInfoUrl += 'route=get_user_info&returnUrl='+location.href;
             location.href = getUserInfoUrl;
-        }
+        };
 
-        self.onSubmit = e => {
+        self.onSubmit = function(e){
             if(self.telephone.value.trim() === ""){
                 return;
             }

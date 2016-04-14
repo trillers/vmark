@@ -15,13 +15,13 @@ export var loadCatalogById = id => {
 
 export var loadCatalogByProductIdAndMediaId = (productId, mediaId) => {
     return $.get(baseUrl + '?product=' + productId + '&media=' + mediaId)
-        .then(res=>{
+        .then(res=> {
             return {
                 name: 'loadCatalogByProductIdAndMediaId',
                 res
             };
         })
-        .catch(e=>{
+        .catch(e=> {
             console.warn(e.stack);
         })
 };
