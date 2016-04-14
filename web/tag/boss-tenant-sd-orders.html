@@ -131,7 +131,7 @@
             var commissionType = 'upLine' + level + 'CommissionType';
             var commissionValue = 'upLine' + level + 'CommissionValue';
             if(course[commissionType] === __app.enums.CommissionType.names.Percent){
-                money = (parseFloat(finalPrice)*parseFloat(course[commissionValue])).toFixed(2);
+                money = (parseFloat(finalPrice)*parseFloat(parseFloat(course[commissionValue])/100)).toFixed(2);
             }else if(course[commissionType] === __app.enums.CommissionType.names.Cash){
                 money = parseFloat(course[commissionValue]);
             }

@@ -61,8 +61,6 @@ Service.prototype.findByRelatedDistributor = function(distributorId, status, cal
     var Order = this.context.models.Order;
     var done = callback || function noop(){};
 
-    console.log(distributorId);
-    console.log(status);
     Order.find({status: status, distributors: {$all: [distributorId]}}, null, {lean: true})
     .populate({
         path: 'bespeak',

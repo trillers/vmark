@@ -1,5 +1,3 @@
-var test = [];
-var teat1 = test.filter(function(t){
-    return t._id
-})
-console.log(teat1)
+var test = [1, 2, 3];
+var test1 = test.slice(1);
+console.log(test1);

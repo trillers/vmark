@@ -182,7 +182,7 @@
                             var cmType = product['upLine' + level + 'CommissionType'];
                             var cmValue = product['upLine' + level + 'CommissionValue'];
                             if(cmType === __app.enums.CommissionType.names.Percent){
-                                commission = parseFloat(order.finalPrice) * parseFloat(cmValue);
+                                commission = parseFloat(order.finalPrice) * parseFloat(parseFloat(cmValue)/100);
                             }else{
                                 commission = cmValue;
                             }

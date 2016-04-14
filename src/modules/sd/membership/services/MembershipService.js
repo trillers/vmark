@@ -126,7 +126,7 @@ Service.prototype.splitBill = function(distributor, product, finalPrice, level, 
                 let commissionType = product['upLine' + index + 'CommissionType'];
                 let commissionValue = product['upLine' + index + 'CommissionValue'];
                 if(commissionType === CommissionType.Percent.value()){
-                    IncomeAmount = parseFloat(finalPrice, 10) * parseFloat(commissionValue, 10);
+                    IncomeAmount = parseFloat(finalPrice, 10) * (parseFloat(commissionValue, 10)/100);
                 }else if(commissionType === CommissionType.Cash.value()){
                     IncomeAmount = parseFloat(commissionValue, 10);
                 }else{
@@ -183,7 +183,7 @@ Service.prototype.checkoutByDistributorId = function(distributorId, tenantId, me
                     let cmValue = order.bespeak.product['upLine' + level + 'CommissionValue'];
 
                     if(cmType === CommissionType.Percent.value()){
-                        payment = parseFloat(order.finalPrice, 10) * parseFloat(cmValue, 10);
+                        payment = parseFloat(order.finalPrice, 10) * (parseFloat(cmValue, 10)/100);
                     }else{
                         payment = parseFloat(cmValue, 10);
                     }

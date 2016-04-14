@@ -217,11 +217,30 @@
                                         <td>
                                             <strong>分销海报背景</strong>
                                         </td>
-                                        <td>
+                                        <td colspan="2">
                                             <input onchange="{onFileChange}" id="posterInput" type="file" accept="image/jpeg, image/png, image/jpg"/>
-                                            <img style="width: 100px" riot-src="{course.poster && !course.poster.data && __app.settings.api.url + '/file?media_id=' + course.poster || course.poster.data}"/>
+                                            <img style="width: 100px; margin-top: 10px" riot-src="{course.poster && !course.poster.data && __app.settings.api.url + '/file?media_id=' + course.poster || course.poster.data}"/>
                                         </td>
-                                        <td></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>
+                                            <strong>轮播焦点图</strong>
+                                        </td>
+                                        <td colspan="2">
+                                            <input multiple="multiple" onchange="{onBannersChange}" id="bannersInput" type="file" accept="image/jpeg, image/png, image/jpg"/>
+                                            <ul class="banners-container">
+                                                <li each="{banner in course.banners}" onmouseenter="{parent.onHover}" onmouseleave="{parent.onUnHover}">
+                                                    <div onclick="{parent.removeBanner}" if="{isImgMaskShow}">
+                                                        <b>
+                                                            <b class="close-a"></b>
+                                                            <b class="close-b"></b>
+                                                        </b>
+                                                    </div>
+                                                    <img riot-src="{banner.data || banner && __app.settings.api.url + '/file?media_id=' + banner}"/>
+                                                </li>
+                                            </ul>
+                                        </td>
                                     </tr>
                                 </table>
 
@@ -261,10 +280,54 @@
             border-top: none;
             border-color: #ddd;
         }
+        .banners-container{
+            margin: 0px; margin-top: 10px;overflow: hidden;padding:0px
+        }
+        .banners-container >li {
+            position: relative;width: 100px;height:100px;overflow: hidden;background-color: #EFEFEF; list-style-type:none;float:left;margin-right: 10px;line-height: 100px;text-align: center
+        }
+        .banners-container >li img{
+            width: 100px;
+        }
+        .banners-container >li div{
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        .banners-container >li div >b{
+            position: absolute;
+            top:38px;
+            left:38px;
+            width:24px;
+            height:24px;
+        }
+        .close-a{
+            position: absolute;
+            top:0px;
+            left:10px;
+            width: 4px;
+            height: 24px;
+            transform:rotate(45deg);
+            background: white;
+        }
+        .close-b{
+            position: absolute;
+            top:0px;
+            left:10px;
+            width: 4px;
+            height: 24px;
+            transform:rotate(135deg);
+            background: white;
+        }
+
     </style>
     <script>
-        "use strict"
+        "use strict";
         var self = nest.presentable(this);
+        var maxBannerCount = 3;
         var loadCourseByIdAction = domain.action('loadCourseById');
         var updateCourseByIdAction = domain.action('updateCourseById');
         self.currNav = 0;
@@ -284,6 +347,12 @@
                 self.trigger('view-route-to');
             }).execute();
         });
+        self.onHover = function(){
+            this.isImgMaskShow = true;
+        };
+        self.onUnHover = function(){
+            this.isImgMaskShow = false;
+        };
         self.on('mount', function(){
             self.validators = _.widget.validatify([]);
             setTimeout(function(){
@@ -454,6 +523,68 @@
             };
         };
 
+        self.removeBanner = function(e){
+            self.course.banners.map(function(banner, i){
+                if(banner
+                    && banner.file
+                    && banner.file.name
+                    && e.item.banner
+                    && e.item.banner.file
+                    && e.item.banner.file.name){
+
+                    if(banner.file.name === e.item.banner.file.name){
+                        self.course.banners.splice(i, 1)
+                    }
+                    return;
+                }
+
+                if(banner === e.item){
+                    self.course.banners.splice(i, 1)
+                }
+            });
+        };
+
+        self.onBannersChange = function(e){
+            var files = document.getElementById("bannersInput").files;
+
+            if(self.course.banners){
+                if(self.course.banners.length + files.length > maxBannerCount){
+                    alert('焦点图最多' + maxBannerCount + '张');
+                    return;
+                }
+            }else if(files.length > maxBannerCount){
+                alert('焦点图最多' + maxBannerCount + '张');
+                return;
+            }
+            if(files && files.length){
+                var index = 0;
+                var loadRecur = function(index){
+                    var file = files[index];
+                    if(!file){
+                        return;
+                    }
+                    if(file.size > 2*1024*1024){
+                        alert("文件大小超过限制-2M");
+                        return;
+                    }
+                    var reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = function(e){
+                        if(!self.course.banners){
+                            self.course.banners = [];
+                        }
+                        self.course.banners.push({
+                            file: file,
+                            data: e.target.result
+                        });
+                        self.update();
+                        loadRecur(++index)
+                    };
+                };
+                loadRecur(index)
+            }
+        };
+
         self.onSubmit = function(){
             var req = {
                 id: self.course._id,
@@ -477,6 +608,10 @@
                     }
                 });
                 return;
+            }
+
+            if(self.course.banners){
+
             }
 
             updateCourseById();
