@@ -64,6 +64,9 @@ module.exports = function (router) {
             let courseId = this.params.id;
             let json = this.request.body.o;
             let intention = this.request.body.intention;
+            if(!json.banners){
+                json.banners = [];
+            }
             json['updOn'] = new Date();
             if(intention === 'GoLiveOrSunset'){
                 json['actionTime'] = new Date();

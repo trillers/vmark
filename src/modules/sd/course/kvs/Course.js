@@ -16,6 +16,9 @@ Kv.prototype.loadById = function(id, callback){
             err,
             'Fail to get catalog by id ' + id + ': ' + err,
             'Succeed to get catalog by id ' + id);
+        if(result && result.banners){
+            result.banners = result.banners.split(',');
+        }
 
         cbUtil.handleSingleValue(callback, err, result);
     });
