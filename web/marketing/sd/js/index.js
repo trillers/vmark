@@ -16,9 +16,8 @@ Object.keys(mixins).forEach(key => {
     riot.mixin(key, mixins[key]);
 });
 
-alert(JSON.stringify(riot));
 let tags = riot.mount('*');
-alert(JSON.stringify(tags));
+
 tags.forEach(tag=>{
     app.views[tag.name] = tag;
 });

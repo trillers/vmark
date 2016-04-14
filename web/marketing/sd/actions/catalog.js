@@ -1,12 +1,9 @@
 var baseUrl = __app.settings.api.url;
 
 export var loadCatalogById = function(id){
-    console.error('adsfasdfasdfasdfasdf');
-    console.error(id);
     return function(done){
         return $.get(baseUrl + '/tenant/sd/catalog/_' + id)
             .then(res=>{
-                console.error('adfad');
                 done({
                     name: 'loadCatalogById',
                     res

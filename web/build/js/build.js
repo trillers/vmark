@@ -30,9 +30,8 @@ webpackJsonp([0,1],[
 	    riot.mixin(key, _index2.mixins[key]);
 	});
 
-	alert(JSON.stringify(riot));
 	var tags = riot.mount('*');
-	alert(JSON.stringify(tags));
+
 	tags.forEach(function (tag) {
 	    _app.app.views[tag.name] = tag;
 	});
@@ -3879,11 +3878,8 @@ webpackJsonp([0,1],[
 	var baseUrl = __app.settings.api.url;
 
 	var loadCatalogById = exports.loadCatalogById = function loadCatalogById(id) {
-	    console.error('adsfasdfasdfasdfasdf');
-	    console.error(id);
 	    return function (done) {
 	        return $.get(baseUrl + '/tenant/sd/catalog/_' + id).then(function (res) {
-	            console.error('adfad');
 	            done({
 	                name: 'loadCatalogById',
 	                res: res
@@ -4117,7 +4113,6 @@ webpackJsonp([0,1],[
 	        this.mixin('dispatcher');
 
 	        this.on('mount', function(){
-	            alert('mount');
 	            this.on('loadCatalogById', function(res) {
 	                this.update({catalog: res.catalog});
 	            });

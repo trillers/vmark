@@ -50,7 +50,6 @@
         this.mixin('dispatcher');
 
         this.on('mount', function(){
-            alert('mount');
             this.on('loadCatalogById', function(res) {
                 this.update({catalog: res.catalog});
             });
