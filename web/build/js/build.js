@@ -4140,6 +4140,7 @@ webpackJsonp([0,1],[
 	        this.mixin('dispatcher');
 
 	        var self = this;
+
 	        self.id = this.opts.id;
 	        self.media = this.opts.media;
 
