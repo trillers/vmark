@@ -9,19 +9,19 @@ webpackJsonp([0,1],[
 	__webpack_require__(11);
 	alert(12)
 	var _app = __webpack_require__(12);
-
+	alert(13)
 	var _index = __webpack_require__(13);
-
+	alert(17)
 	var _AppStore = __webpack_require__(17);
-
+	alert('app')
 	var AppStore = _interopRequireWildcard(_AppStore);
-
+	alert(20)
 	var _index2 = __webpack_require__(20);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-	__webpack_require__(22);
-	__webpack_require__(23);
+	//__webpack_require__(22);
+	//__webpack_require__(23);
 
 	window.app = _app.app;
 	window.actions = _index.actions;
