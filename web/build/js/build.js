@@ -3839,6 +3839,7 @@ webpackJsonp([0,1],[
 	var _product = __webpack_require__(16);
 
 	var actions = exports.actions = {
+	    loadCatalogByProductIdAndMediaId: _catalog.loadCatalogByProductIdAndMediaId,
 	    loadCatalogById: _catalog.loadCatalogById,
 	    productActions: _product.productActions,
 	    addBespeak: _bespeak.addBespeak
@@ -3853,30 +3854,29 @@ webpackJsonp([0,1],[
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	var baseUrl = __app.settings.api.url;
+	var baseUrl = __app.settings.api.url + '/tenant/sd/catalog';
 
 	var loadCatalogById = exports.loadCatalogById = function loadCatalogById(id) {
-	    return $.get(baseUrl + '/tenant/sd/catalog/_' + id).then(function (res) {
-	        done({
+	    return $.get(baseUrl + '/_' + id).then(function (res) {
+	        return {
 	            name: 'loadCatalogById',
 	            res: res
-	        });
+	        };
 	    }).catch(function (e) {
 	        console.warn(e.stack);
 	    });
 	};
-	//export var loadCatalogById = id = done =>{
-	//    return $.get(baseUrl + '/tenant/sd/catalog/_' + id)
-	//        .success(res=>{
-	//            done({
-	//                name: 'loadCatalogById',
-	//                res
-	//            });
-	//        })
-	//        .error(e=>{
-	//            console.warn(e.stack)
-	//        })
-	//};
+
+	var loadCatalogByProductIdAndMediaId = exports.loadCatalogByProductIdAndMediaId = function loadCatalogByProductIdAndMediaId(productId, mediaId) {
+	    return $.get(baseUrl + '?product=' + productId + '&media=' + mediaId).then(function (res) {
+	        return {
+	            name: 'loadCatalogByProductIdAndMediaId',
+	            res: res
+	        };
+	    }).catch(function (e) {
+	        console.warn(e.stack);
+	    });
+	};
 
 /***/ },
 /* 15 */
@@ -4097,7 +4097,7 @@ webpackJsonp([0,1],[
 	            this.dispatch(actions.loadCatalogById(this.opts.id));
 	        })
 	        this.routeTo = e =>{
-	            window.location = __app.settings.app.url + "/sd/" + __page.user.wechatId + "/product?id=" + e.item._id + '&media=' + this.catalog.media._id;
+	            window.location = __app.settings.app.url + "/sd/" + __page.user.wechatId + "/product?id=" + e.item._id + '&media=' + this.catalog.media._id + '&catalog=' + this.catalog._id;
 	        }
 
 	});
@@ -4108,16 +4108,14 @@ webpackJsonp([0,1],[
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {__webpack_require__(24);
-	riot.tag2('product', '<div class="container"> <div class="header"> <div class="title"><span>{product.name}</span></div> <div class="slogan"><span>{product.slogan}</span></div> <div> <span class="main-color">会员价</span> <span><span style="margin-left: 10px" class="primary-color">¥ </span> <span class="primary-color h2">{product.listPrice}</span></span> <span class="secondary-color" style="margin-left: 10px;text-decoration:line-through">{product.listPrice}</span> </div> </div> <div class="body" style="min-height: 200px"> <div> <div> <b style="display: inline-block; width: 5px; height: 12px;background-color: #ff5000"></b> <span>课程详情</span> </div> <div style="margin-top: 10px"> <raw content="{product.details}"></raw> </div> </div> </div> <div class="footer"> <div onclick="{routeTo}" style="width:30%" class="btn btn-default" onclick="{appointment}"> <div style="margin-top: 6px"><img src="/web/images/list.png" style="width: 24px"></div> <div style="font-size: 14px; margin-top: 3px">课程详情</div> </div> <input style="width:70%" class="btn btn-primary" value="立刻预约" onclick="{appointment}"> </div> </div> <div id="form" if="{formShow}"> <div id="bg" onclick="{cancelAppointment}"></div> <div id="info"> <div class="pop-window"> <div> <p>请留下您的联系方式</p> <p>我们的课程顾问会尽快和您联系</p> <p>为您提供专业的建议和服务</p> </div> <div> <div style="position:relative;width: 220px;margin:0px auto"> <b style="background: #ff5000;width: 3px; height: 24px;position: absolute;left:10px;top:10px"></b> <input style="text-indent: 15px" class="text-input" name="telephone" type="text" placeholder="请输入电话号码"> </div> </div> <div> <input class="btn-rd btn-primary" type="button" value="确认提交" onclick="{onSubmit}"> </div> <div onclick="{cancelAppointment}" style="text-align:center;line-height: 32px;width :32px;height: 32px;position: absolute; top: -20px; right: 0px">X</div> </div> </div> </div>', 'product .pop-window,[riot-tag="product"] .pop-window,[data-is="product"] .pop-window{ position: relative; margin: 0px auto; height: 240px; width: 280px; background-color: white; border-radius: 5px; overflow: hidden; } product .pop-window >div,[riot-tag="product"] .pop-window >div,[data-is="product"] .pop-window >div{ margin-top: 20px } product .pop-window >div >p,[riot-tag="product"] .pop-window >div >p,[data-is="product"] .pop-window >div >p{ margin: 10px auto; font-size: 16px; } product .text-input,[riot-tag="product"] .text-input,[data-is="product"] .text-input{ background: #f1f1f1; border: none; width: 220px; height: 40px; font-size: 16px; border-radius: 5px; } product .btn-rd,[riot-tag="product"] .btn-rd,[data-is="product"] .btn-rd{ display: inline-block; width: 220px; height:40px; border:none; border-radius: 5px; text-align: center; font-size: 18px; } product .header >div,[riot-tag="product"] .header >div,[data-is="product"] .header >div{ margin-bottom: 15px; } product .header .title >span,[riot-tag="product"] .header .title >span,[data-is="product"] .header .title >span{ font-size: 24px; } product .header .slogan >span,[riot-tag="product"] .header .slogan >span,[data-is="product"] .header .slogan >span{ font-size: 16px; color: #ababab; } product .body,[riot-tag="product"] .body,[data-is="product"] .body{ padding: 10px } product .btn,[riot-tag="product"] .btn,[data-is="product"] .btn{ box-sizing: border-box; display: block; float: left; height:56px; border:none; text-align: center; font-size: 18px; } product .btn-default,[riot-tag="product"] .btn-default,[data-is="product"] .btn-default{ background-color: white; color: #ff5000; } product .btn-primary,[riot-tag="product"] .btn-primary,[data-is="product"] .btn-primary{ background-color: #ff5000; color: white; } product .container,[riot-tag="product"] .container,[data-is="product"] .container{ position: relative; } product .container .header,[riot-tag="product"] .container .header,[data-is="product"] .container .header{ padding: 10px; height: 100px; background-color: white; margin-bottom: 10px; } product .container .body,[riot-tag="product"] .container .body,[data-is="product"] .container .body{ height: 120px; background-color: white; margin-bottom: 10px; } product .container .footer,[riot-tag="product"] .container .footer,[data-is="product"] .container .footer{ background-color: white; width: 100%; height: 56px; position: fixed; bottom: 0px; } product #bg,[riot-tag="product"] #bg,[data-is="product"] #bg{ position: fixed; top: 0; left: 0; width: 100%; height: 100%; text-align: center; background: rgba(0, 0, 0, 0.7); z-index: 99; } product #info,[riot-tag="product"] #info,[data-is="product"] #info{ position: fixed; top: 160px; left: 0; width: 100%; height: 200px; text-align: center; z-index: 100; }', '', function(opts) {
+	riot.tag2('product', '<div class="container"> <div class="header"> <div class="title"><span>{product.name}</span></div> <div class="slogan"><span>{product.slogan}</span></div> <div> <span class="main-color">会员价</span> <span><span style="margin-left: 10px" class="primary-color">¥ </span> <span class="primary-color h2">{product.listPrice}</span></span> <span class="secondary-color" style="margin-left: 10px;text-decoration:line-through">{product.listPrice}</span> </div> </div> <div class="body" style="min-height: 200px"> <div> <div> <b style="display: inline-block; width: 3px; height: 12px;background-color: #ff5000"></b> <span>课程详情</span> </div> <div style="margin-top: 10px"> <raw content="{product.details}"></raw> </div> </div> </div> <div class="footer"> <div onclick="{routeTo}" style="width:30%" class="btn btn-default" onclick="{appointment}"> <div style="margin-top: 6px"><img src="/web/images/list.png" style="width: 24px"></div> <div style="font-size: 14px; margin-top: 3px">课程详情</div> </div> <input style="width:70%" class="btn btn-primary" value="立刻预约" onclick="{appointment}"> </div> </div> <div id="form" if="{formShow}"> <div id="bg" onclick="{cancelAppointment}"></div> <div id="info"> <div class="pop-window"> <div> <p>请留下您的联系方式</p> <p>我们的课程顾问会尽快和您联系</p> <p>为您提供专业的建议和服务</p> </div> <div> <div style="position:relative;width: 220px;margin:0px auto"> <b style="background: #ff5000;width: 3px; height: 24px;position: absolute;left:10px;top:10px"></b> <input style="text-indent: 15px" class="text-input" name="telephone" type="text" placeholder="请输入电话号码"> </div> </div> <div> <input class="btn-rd btn-primary" type="button" value="确认提交" onclick="{onSubmit}"> </div> <div onclick="{cancelAppointment}" style="text-align:center;line-height: 32px;width :32px;height: 32px;position: absolute; top: -20px; right: 0px">X</div> </div> </div> </div>', 'product .pop-window,[riot-tag="product"] .pop-window,[data-is="product"] .pop-window{ position: relative; margin: 0px auto; height: 240px; width: 280px; background-color: white; border-radius: 5px; overflow: hidden; } product .pop-window >div,[riot-tag="product"] .pop-window >div,[data-is="product"] .pop-window >div{ margin-top: 20px } product .pop-window >div >p,[riot-tag="product"] .pop-window >div >p,[data-is="product"] .pop-window >div >p{ margin: 10px auto; font-size: 16px; } product .text-input,[riot-tag="product"] .text-input,[data-is="product"] .text-input{ background: #f1f1f1; border: none; width: 220px; height: 40px; font-size: 16px; border-radius: 5px; } product .btn-rd,[riot-tag="product"] .btn-rd,[data-is="product"] .btn-rd{ display: inline-block; width: 220px; height:40px; border:none; border-radius: 5px; text-align: center; font-size: 18px; } product .header >div,[riot-tag="product"] .header >div,[data-is="product"] .header >div{ margin-bottom: 15px; } product .header .title >span,[riot-tag="product"] .header .title >span,[data-is="product"] .header .title >span{ font-size: 24px; } product .header .slogan >span,[riot-tag="product"] .header .slogan >span,[data-is="product"] .header .slogan >span{ font-size: 16px; color: #ababab; } product .body,[riot-tag="product"] .body,[data-is="product"] .body{ padding: 10px } product .btn,[riot-tag="product"] .btn,[data-is="product"] .btn{ box-sizing: border-box; display: block; float: left; height:56px; border:none; text-align: center; font-size: 18px; } product .btn-default,[riot-tag="product"] .btn-default,[data-is="product"] .btn-default{ background-color: white; color: #ff5000; } product .btn-primary,[riot-tag="product"] .btn-primary,[data-is="product"] .btn-primary{ background-color: #ff5000; color: white; } product .container,[riot-tag="product"] .container,[data-is="product"] .container{ position: relative; } product .container .header,[riot-tag="product"] .container .header,[data-is="product"] .container .header{ padding: 10px; height: 100px; background-color: white; margin-bottom: 10px; } product .container .body,[riot-tag="product"] .container .body,[data-is="product"] .container .body{ height: 120px; background-color: white; margin-bottom: 10px; } product .container .footer,[riot-tag="product"] .container .footer,[data-is="product"] .container .footer{ background-color: white; width: 100%; height: 56px; position: fixed; bottom: 0px; } product #bg,[riot-tag="product"] #bg,[data-is="product"] #bg{ position: fixed; top: 0; left: 0; width: 100%; height: 100%; text-align: center; background: rgba(0, 0, 0, 0.7); z-index: 99; } product #info,[riot-tag="product"] #info,[data-is="product"] #info{ position: fixed; top: 160px; left: 0; width: 100%; height: 200px; text-align: center; z-index: 100; }', '', function(opts) {
 	        'use strict'
 	        this.mixin('dispatcher');
 
 	        let self = this;
-	        self.id = this.opts.id;
-	        self.media = this.opts.media;
 
 	        self.on('mount', opts => {
-	            self.dispatch(actions.productActions.loadProduct(self.id));
+	            self.dispatch(actions.productActions.loadProduct(self.opts.id));
 	        })
 
 	        self.on('loadProduct', data => {
@@ -4148,16 +4146,21 @@ webpackJsonp([0,1],[
 	        }
 
 	        self.routeTo = (e) =>{
-	            var loadCatalogDone = res => {
-	                if(res.error || !res.catalog){
-	                    alert('页面跳转失败');
+	            var returnUrl = __app.settings.app.url + "/sd/" + __page.user.wechatId + "/catalog?id=";
+	            if(self.opts.catalog){
+	                returnUrl += self.opts.catalog;
+	                window.location = returnUrl;
+	                return;
+	            }
+	            self.one('loadCatalogByProductIdAndMediaId', res=>{
+	                if(res.error || !res.catalogs || !res.catalogs.length){
+	                    alert('读取目录失败');
 	                    return;
 	                }
-	                self.off('loadCatalog');
-	                window.location = __app.settings.app.url + "/sd/" + __page.user.wechatId + "/catalog?id=" + res.catalog._id;
-	            }
-	            self.on('loadCatalog', loadCatalogDone);
-	            self.dispatch(actions.productActions.loadProduct(self.id));
+	                returnUrl += res.catalogs[0]._id;
+	                window.location = returnUrl;
+	            });
+	            self.dispatch(actions.loadCatalogByProductIdAndMediaId(self.product._id, self.opts.media));
 	        }
 
 	        self.goToAuthorize = e => {
@@ -4172,8 +4175,8 @@ webpackJsonp([0,1],[
 	            }
 	            self.dispatch(actions.addBespeak({
 	                user: __page.user,
-	                product: self.product,
-	                media: self.media,
+	                product: self.product._id,
+	                media: self.opts.media,
 	                telephone: self.telephone.value.trim()
 	            }));
 	        }

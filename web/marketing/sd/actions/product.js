@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 //import {appDispatcher} from '../dispatcher';
 
 let productActions = {};

@@ -13,7 +13,7 @@ require('./raw.html');
         <div class="body" style="min-height: 200px">
             <div>
                 <div>
-                    <b style="display: inline-block; width: 5px; height: 12px;background-color: #ff5000"></b>
+                    <b style="display: inline-block; width: 3px; height: 12px;background-color: #ff5000"></b>
                     <span>课程详情</span>
                 </div>
                 <div style="margin-top: 10px">
@@ -164,11 +164,9 @@ require('./raw.html');
         this.mixin('dispatcher');
 
         let self = this;
-        self.id = this.opts.id;
-        self.media = this.opts.media;
 
         self.on('mount', opts => {
-            self.dispatch(actions.productActions.loadProduct(self.id));
+            self.dispatch(actions.productActions.loadProduct(self.opts.id));
         })
 
         self.on('loadProduct', data => {
@@ -199,16 +197,21 @@ require('./raw.html');
         }
 
         self.routeTo = (e) =>{
-            var loadCatalogDone = res => {
-                if(res.error || !res.catalog){
-                    alert('页面跳转失败');
+            var returnUrl = __app.settings.app.url + "/sd/" + __page.user.wechatId + "/catalog?id=";
+            if(self.opts.catalog){
+                returnUrl += self.opts.catalog;
+                window.location = returnUrl;
+                return;
+            }
+            self.one('loadCatalogByProductIdAndMediaId', res=>{
+                if(res.error || !res.catalogs || !res.catalogs.length){
+                    alert('读取目录失败');
                     return;
                 }
-                self.off('loadCatalog');
-                window.location = __app.settings.app.url + "/sd/" + __page.user.wechatId + "/catalog?id=" + res.catalog._id;
-            }
-            self.on('loadCatalog', loadCatalogDone);
-            self.dispatch(actions.productActions.loadProduct(self.id));
+                returnUrl += res.catalogs[0]._id;
+                window.location = returnUrl;
+            });
+            self.dispatch(actions.loadCatalogByProductIdAndMediaId(self.product._id, self.opts.media));
         }
 
         self.goToAuthorize = e => {
@@ -223,8 +226,8 @@ require('./raw.html');
             }
             self.dispatch(actions.addBespeak({
                 user: __page.user,
-                product: self.product,
-                media: self.media,
+                product: self.product._id,
+                media: self.opts.media,
                 telephone: self.telephone.value.trim()
             }));
         }

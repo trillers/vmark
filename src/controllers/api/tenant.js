@@ -1,4 +1,5 @@
 "use strict";
+var _ = require('underscore');
 var typeRegistry = require('../../modules/common/models/TypeRegistry');
 var MembershipType = typeRegistry.item('MembershipType');
 var OrderStatus = typeRegistry.item('OrderStatus');
@@ -128,6 +129,8 @@ module.exports = function (router) {
     router.get('/sd/catalog', function*(){
         try{
             let query = this.request.query;
+            let context = require('../../context/context');
+            //let catalog = new context.models.Catalog(query);
             let params = {
                 conditions: query,
                 populate: [
@@ -136,6 +139,18 @@ module.exports = function (router) {
                     {path: 'media'}
                 ]
             };
+            if(query.product){
+                if(typeof query.product != 'string'){
+                    this.throw(new Error('load catalog expected a product id'));
+                }
+                var addonConditions = {
+                    products: {
+                        $all: [query.product]
+                    }
+                };
+                delete query['product'];
+                _.extend(params.conditions, addonConditions);
+            }
             let catalogs = yield context.services.catalogService.findAsync(params);
             this.body = {catalogs: catalogs, error: null};
         }catch(e){

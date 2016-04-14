@@ -1,29 +1,30 @@
-var baseUrl = __app.settings.api.url;
+var baseUrl = __app.settings.api.url + '/tenant/sd/catalog';
 
 export var loadCatalogById = id => {
-    return $.get(baseUrl + '/tenant/sd/catalog/_' + id)
+    return $.get(baseUrl + '/_' + id)
         .then(res=>{
-            done({
+            return {
                 name: 'loadCatalogById',
                 res
-            });
+            };
         })
         .catch(e=>{
-            console.warn(e.stack)
+            console.warn(e.stack);
         })
 };
-//export var loadCatalogById = id = done =>{
-//    return $.get(baseUrl + '/tenant/sd/catalog/_' + id)
-//        .success(res=>{
-//            done({
-//                name: 'loadCatalogById',
-//                res
-//            });
-//        })
-//        .error(e=>{
-//            console.warn(e.stack)
-//        })
-//};
+
+export var loadCatalogByProductIdAndMediaId = (productId, mediaId) => {
+    return $.get(baseUrl + '?product=' + productId + '&media=' + mediaId)
+        .then(res=>{
+            return {
+                name: 'loadCatalogByProductIdAndMediaId',
+                res
+            };
+        })
+        .catch(e=>{
+            console.warn(e.stack);
+        })
+};
 
 
 

@@ -24,15 +24,16 @@ module.exports = function(){
     });
 
     router.get('/:wechatId/product',  tenantFilter, needBaseInfoFilter, function *(){
-        var auth = authentication.getAuthentication(this, this.wechatId)
+        var auth = authentication.getAuthentication(this, this.wechatId);
         var user = auth && auth.user || {};
         this.state.__page.user = user;
         let productId = this.request.query.id;
         let mediaId = this.request.query.media;
+        let catalogId = this.request.query.catalog;
         if(!productId){
             return yield this.render('404');
         }
-        yield this.render('marketing/sd/product', {id: productId, media: mediaId});
+        yield this.render('marketing/sd/product', {id: productId, media: mediaId, catalog: catalogId});
     });
 
     return router.routes();
