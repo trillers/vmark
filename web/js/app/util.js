@@ -289,6 +289,34 @@ var util = {
             res += chars[id];
         }
         return res;
+    },
+
+    /**
+     *upload img file to server
+     * @param file
+     * @param callback
+     */
+    uploadImgFile: function(file, callback){
+        if(file.size > 2*1024*1024){
+            alert('图片大小不能超过2M');
+            return;
+        }
+        var formData = new FormData();
+        formData.append('file', file);
+        $.ajax({
+            url: __app.settings.api.url + '/file/upload',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                var imgUrl = __app.settings.api.url + '/file?media_id=' + res.media_id;
+                callback(null, imgUrl);
+            },
+            error: function (res) {
+                callback(res, null);
+            }
+        });
     }
 };
 if(!window._){
