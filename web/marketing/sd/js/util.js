@@ -17,7 +17,7 @@ var util = {
         var winw = $container.outerWidth() + 'px';
         var winh = $container.height() + 'px';
         var changeDis = parseInt(winw,10) * 0.3;
-        var html = '<div class="imgPreviewer" style="position:absolute;z-index:44444444;top:0px;left:0px;width:'+ winw +';height:'+ winh +';overflow: hidden;background-color:black">'+
+        var html = '<div class="imgPreviewer" style="position:absolute;z-index:1;top:0px;left:0px;width:'+ winw +';height:'+ winh +';overflow: hidden;background-color:black">'+
             '<ul class="imgPreviewerUl" style="overflow:hidden;width:'+ (imglen*100) +'%;margin:0px;padding: 0px;transition:all 0.2s ease-out;">';
 
         for(i = 0; i<imglen; i++){
