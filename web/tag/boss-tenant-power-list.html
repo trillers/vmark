@@ -11,7 +11,8 @@
                             <strong class="col-md-2">开始时间</strong>
                             <strong class="col-md-2">结束时间</strong>
                             <strong class="col-md-2">类型</strong>
-                            <strong class="col-md-4">操作</strong>
+                            <strong class="col-md-2">海报二维码</strong>
+                            <strong class="col-md-2">操作</strong>
                         </li>
 
                         <li>
@@ -23,7 +24,10 @@
                             <strong class="col-md-2">{_.date.format(new Date(startTime), 'yyyy-MM-dd')}</strong>
                             <strong class="col-md-2">{_.date.format(new Date(endTime), 'yyyy-MM-dd')}</strong>
                             <strong class="col-md-2">{__app.enums.PowerType.values[type]}</strong>
-                            <strong class="col-md-4 actionCon"><a href="{ __app.settings.app.url + '/marketing/tenant/power/' + wechatId + '/activity?id=' + _id }" target="_blank">查看</a><a href="{__app.settings.api.url + '/marketing/tenant/power/exportParticipants?id=' + _id }" target="_blank" >导出</a><a data-toggle="modal" data-target="#showImg" onclick="{parent.showImg}">二维码</a></strong>
+                            <strong class="col-md-2 actionCon">
+                                <a class="fa fa-qrcode fa-lg" data-toggle="modal" data-target="#showImg" onclick="{parent.showImg}"></a>
+                            </strong>
+                            <strong class="col-md-2 actionCon"><a href="{ __app.settings.app.url + '/marketing/tenant/power/' + wechatId + '/activity?id=' + _id }" target="_blank">查看</a><a href="{__app.settings.api.url + '/marketing/tenant/power/exportParticipants?id=' + _id }" target="_blank" >导出</a></strong>
                         </li>
 
                     </ul>
@@ -50,11 +54,16 @@
         var self = nest.presentable(this);
         var loadPowerActivities = domain.action('loadPowerActivities');
         self.showImg = function(e){
+            var errorMsg = '';
+            if(!e.item.qrCodeUrl){
+                errorMsg = '该活动不是海报助力活动'
+            }
             _.widget.showImg({
                 title: '用微信扫描下方二维码获取活动海报',
                 imgUrl: e.item.qrCodeUrl,
                 width: '300px',
-                height: '300px'
+                height: '300px',
+                errorMsg: errorMsg
             });
         }
         self.on('open', function(ctx){

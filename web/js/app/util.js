@@ -224,7 +224,7 @@ var util = {
                 });
         },
         showImg: function(opts){
-            window.app.trigger('showImg', {title: opts.title, imgUrl: opts.imgUrl, width: opts.width, height: opts.height});
+            window.app.trigger('showImg', opts);
         },
         alert: function(opts){
             window.app.trigger('alert', opts);
