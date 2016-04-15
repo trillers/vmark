@@ -29,7 +29,7 @@ var util = {
         }
 
         html+= '</ul>'+
-            '<div style="width:100%;height:40px;line-height: 40px;color:white;position: absolute;bottom:0px;left: 0px;text-align: center"><div style="height:40px;width:100%;line-height: 40px">';
+            '<div style="width:100%;height:40px;line-height: 40px;color:white;position: absolute;bottom:0px;left: 0px;text-align: right"><div style="height:40px;width:100%;line-height: 40px;position: relative;right: 10px;">';
 
         for(i = 0; i<imglen; i++){
             html+='<span class="picPrevIndexSpan" id="picIndexSpan'+ i +'"></span>';
@@ -124,7 +124,7 @@ var util = {
             });
             $("#picIndexSpan"+index).addClass('picIndexSpanSelected');
         }
-        
+
     },
     assign: function(...args){
         let cloneSingleValue = (t, s)=> {
