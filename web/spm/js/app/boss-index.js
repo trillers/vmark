@@ -3,16 +3,16 @@
  */
 var riot = require('seedriot');
 require('./tags')();
-var agent = require('./agent').init();
+var agent = require('./agent-boss').init();
 var util = require('./util');
 
 var Spa = require('./spa');
-var app = new Spa({defaultHash: 'overview'});
+var app = new Spa({defaultHash: 'tenants'});
 
-app.routeView('overview', nest.viewable({
-  name: 'overview',
+app.routeView('tenants', nest.viewable({
+  name: 'tenants',
   mount: function(ctx){
-    var tags = riot.mount('overview', {filter: ctx.req.query, app: this.parent});
+    var tags = riot.mount('tenants', {filter: ctx.req.query, app: this.parent});
     this.tag = tags[0];
   },
   route: function(ctx){
@@ -21,34 +21,34 @@ app.routeView('overview', nest.viewable({
   }
 }));
 
-app.routeView('broadcast', nest.viewable({
-  name: 'broadcast',
+app.routeView('tenants/edit/_:id', nest.viewable({
+  name: 'tenant-edit',
   mount: function(ctx){
-    var tags = riot.mount('broadcast', {filter: ctx.req.query, app: this.parent});
+    var tags = riot.mount('tenant-edit', {filter: ctx.req.query, app: this.parent});
     this.tag = tags[0];
   },
   route: function(ctx){
     this.context = ctx;
-    this.tag.trigger('open', ctx.req.query);
+    this.tag.trigger('open', ctx);
   }
 }));
 
-app.routeView('group', nest.viewable({
-  name: 'group',
+app.routeView('tenants/_:id', nest.viewable({
+  name: 'tenant',
   mount: function(ctx){
-    var tags = riot.mount('group', {filter: ctx.req.query, app: this.parent});
+    var tags = riot.mount('tenant', {filter: ctx.req.query, app: this.parent});
     this.tag = tags[0];
   },
   route: function(ctx){
     this.context = ctx;
-    this.tag.trigger('open', ctx.req.query);
+    this.tag.trigger('open', ctx);
   }
 }));
 
-app.routeView('contacts', nest.viewable({
-  name: 'contacts',
+app.routeView('redpacket', nest.viewable({
+  name: 'redpacket',
   mount: function(ctx){
-    var tags = riot.mount('contacts', {filter: ctx.req.query, app: this.parent});
+    var tags = riot.mount('redpacket-boss', {filter: ctx.req.query, app: this.parent});
     this.tag = tags[0];
   },
   route: function(ctx){
@@ -61,11 +61,13 @@ app.on('init', function(){
   var attentionUrl = util.getCookie('attentionUrl');
   var hash = attentionUrl || window.location.hash;
   hash || (hash = app.defaultHash);
-  riot.mount('top-menu');
-  riot.route(hash);
   if(attentionUrl){
     util.setCookie('attentionUrl', "", -1);
   }
+  window.app = app;
+  riot.mount('boss-topbar');
+  riot.mount('confirm');
+  riot.route(hash);
 });
 
 app.init();
