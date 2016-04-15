@@ -28,6 +28,8 @@ module.exports = function(router){
         var self = this;
         var metas = [];
         var files = self.request.body.files.files;
+        files = Array.isArray(files) ? files : [files];
+
         try{
             for(var i=0, len=files.length; i<len; i++){
                 var file = files[i];
