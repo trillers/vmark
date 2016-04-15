@@ -224,7 +224,7 @@ module.exports = function (router) {
             let wechatsite = yield context.services.tenantWechatSiteService.loadByIdAsync(bespeak.media);
             yield context.services.membershipService.ensureSignUpAsync(wechatsite.originalId, bespeak.user._id);
             yield context.services.bespeakService.createAsync({
-                product: bespeak.product._id,
+                product: bespeak.product._id || bespeak.product,
                 media: bespeak.media,
                 user: bespeak.user._id,
                 telephone: bespeak.telephone

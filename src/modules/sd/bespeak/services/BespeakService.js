@@ -45,6 +45,7 @@ Service.prototype.findByTenantId = function(tenantId, params, callback){
     query
         .populate({
             path: 'product',
+            model: 'Course',
             match:{
                 tenant: tenantId
             }
