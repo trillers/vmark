@@ -13,7 +13,7 @@
                     <div class="row" style="margin-bottom: 10px">
                         <input onclick="{onEdit}" type="button" class="btn btn-primary" value="编辑"/>
                     </div>
-                    <div class="row" style="height:450px; background: white; padding: 10px; margin-bottom: 20px">
+                    <div class="row" style="height:450px; background: white; padding: 10px; margin-bottom: 20px; overflow: scroll">
                         <raw content="{course.details}"/>
                     </div>
                 </div>
@@ -21,7 +21,7 @@
                     <div class="row" style="margin-bottom: 10px">
                         <input onclick="{onPreview}" type="button" class="btn btn-primary" value="预览"/>
                     </div>
-                    <div class="row text-center">
+                    <div class="row text-center" style="padding-bottom: 50px">
                         <div id="richEditor"></div>
                         <input onclick="{onSubmit}" type="button" class="btn-primary btn" value="保存"/>
                         <input onclick="{onCancel}" type="button" class="btn-default btn" value="取消"/>
@@ -29,14 +29,14 @@
                 </div>
                 <div if="{status==='preview'}">
                     <div class="row" style="margin-bottom: 10px">
-                        <input onclick="{onPreview}" type="button" class="btn btn-primary" value="预览"/>
+                        <input onclick="{onBack}" type="button" class="btn btn-primary" value="返回"/>
                     </div>
-                    <div class="row" style="height: 450px;background: white; padding: 10px; margin-bottom: 20px">
+                    <div class="row" style="height: 450px;background: white; padding: 10px; margin-bottom: 20px; overflow: scroll">
                         <raw content="{preview}"/>
                     </div>
-                    <div class="row text-center">
-                        <input onclick="{onBack}" type="button" class="btn-primary btn" value="返回"/>
-                    </div>
+                    <!--<div class="row text-center">-->
+                        <!--<input onclick="{onBack}" type="button" class="btn-primary btn" value="返回"/>-->
+                    <!--</div>-->
                 </div>
             </div>
         </div>
@@ -65,7 +65,22 @@
                 $('#richEditor').summernote({
                     height: 400,
                     minHeight: null,
-                    maxHeight: null
+                    maxHeight: null,
+                    toolbar: [
+                        ['style', ['bold', 'italic', 'underline', 'clear']],
+                        ['fontsize', ['fontsize']],
+                        ['color', ['color']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['height', ['height']],
+                        ['fontname', ['fontname']],
+                        ['insert', ['picture', 'link', 'video', 'hr', 'table']]
+                    ],
+                    callbacks: {
+                        onImageUpload: function(files) {
+                            uploadEditorImg(files[0])
+                        }
+                    }
+
                 }).summernote('code', self.course.details || '');
             }, 10);
         };
@@ -93,5 +108,15 @@
         self.onCancel = function(){
             self.status = 'view';
         };
+
+        var uploadEditorImg = function(file){
+            _.uploadImgFile(file, function(err, url){
+                if(!err) {
+                    $('#richEditor').summernote('insertImage', url);
+                }else{
+                    alert('上传图片失败');
+                }
+            });
+        }
     </script>
 </boss-tenant-sd-courses-edit-detail>
