@@ -6,19 +6,19 @@ webpackJsonp([0,1],[
 
 	__webpack_require__(4);
 
-	__webpack_require__(11);
+	__webpack_require__(12);
 
-	var _app = __webpack_require__(12);
+	var _app = __webpack_require__(13);
 
-	var _index = __webpack_require__(13);
+	var _index = __webpack_require__(14);
 
-	var _AppStore = __webpack_require__(17);
+	var _AppStore = __webpack_require__(18);
 
 	var AppStore = _interopRequireWildcard(_AppStore);
 
-	var _index2 = __webpack_require__(20);
+	var _index2 = __webpack_require__(21);
 
-	var _util = __webpack_require__(22);
+	var _util = __webpack_require__(11);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -2481,11 +2481,15 @@ webpackJsonp([0,1],[
 
 	'use strict';
 
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 	var _fetchMonkeyPatch = __webpack_require__(5);
 
 	var fetch = _interopRequireWildcard(_fetchMonkeyPatch);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	var _ = __webpack_require__(11);
 
 	;(function (root, undefined) {
 	    'use strict';
@@ -2494,21 +2498,94 @@ webpackJsonp([0,1],[
 	    if (_jQuery) {
 	        return _jQuery;
 	    }
-	    var jQuery = function jQuery(selector) {
-	        var nodes = document.querySelectorAll(selector);
-	        !Array.isArray(nodes) && (nodes = [].slice.apply(nodes));
-	        return nodes.length === 1 ? nodes[0] : nodes;
-	    };
-	    jQuery.append = function appendHtml(el, str) {
-	        var div = document.createElement('div');
-	        div.innerHTML = str;
-	        while (div.children.length > 0) {
-	            el.appendChild(div.children[0]);
+
+	    var domify = function domify(obj) {
+	        if (!obj) {
+	            return;
 	        }
+	        var domApi = {
+
+	            append: function append(str) {
+	                var me = this;
+	                var div = document.createElement('div');
+	                div.innerHTML = str;
+	                while (div.children.length > 0) {
+	                    me.appendChild(div.children[0]);
+	                }
+	                return this;
+	            },
+
+	            css: function css(opts) {
+	                if (typeof opts === 'string') {
+	                    return this.style[opts];
+	                }
+	                for (var p in opts) {
+	                    this.style[p] = opts[p];
+	                }
+	                return this;
+	            },
+
+	            parent: function parent() {
+	                return domify(this.parentNode);
+	            },
+
+	            next: function next() {
+	                return domify(this.nextSbiling);
+	            },
+
+	            remove: function remove() {
+	                if (!this.parentNode) {
+	                    return;
+	                }
+	                this.parentNode.removeChild(this);
+	            },
+
+	            addClass: function addClass(cls) {
+	                if (!this.hasClass(cls)) this.className += " " + cls;
+	            },
+
+	            removeClass: function removeClass(cls) {
+	                if (this.hasClass(cls)) {
+	                    var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
+	                    this.className = this.className.replace(reg, ' ');
+	                }
+	            },
+
+	            hasClass: function hasClass(cls) {
+	                return this.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+	            },
+
+	            outerWidth: function outerWidth() {
+	                if (this.css && (this.css('marginLeft') || this.css('marginRight'))) {
+	                    return this.offsetWidth + parseInt(this.css('marginLeft') || 0, 10) + parseInt(this.css('marginRight') || 0, 10);
+	                }
+	                return this.offsetWidth;
+	            },
+
+	            height: function height() {
+	                return this.offsetHeight;
+	            }
+	        };
+	        if (Array.isArray(obj)) {
+	            obj.each = obj.forEach;
+	            return obj.map(function (o) {
+	                return _.mixin(o, domApi);
+	            });
+	        }
+	        return _.mixin(obj, domApi);
 	    };
-	    for (var p in fetch) {
-	        jQuery[p] = fetch[p];
-	    }
+
+	    var jQuery = function jQuery(selector) {
+	        if ((typeof selector === 'undefined' ? 'undefined' : _typeof(selector)) === 'object') {
+	            return domify(selector);
+	        }
+	        var nodes = document.querySelectorAll(selector);
+	        nodes = [].slice.apply(nodes);
+	        return nodes.length === 1 ? domify(nodes[0]) : domify(nodes);
+	    };
+
+	    jQuery = _.mixin(jQuery, fetch);
+
 	    root.$ = jQuery;
 	})(window);
 
@@ -3355,6 +3432,196 @@ webpackJsonp([0,1],[
 
 	'use strict';
 
+	var util = {
+	    getMemberPrice: function getMemberPrice(listPrice, type, rate) {
+	        if (type === 'c') {
+	            return listPrice - rate;
+	        } else if (type === 'p') {
+	            var price = listPrice - listPrice * rate;
+	            return Math.ceil(price);
+	        } else {
+	            throw new Error('error discount type');
+	        }
+	    },
+	    imgPreviewer: function imgPreviewer($container, imgs, options) {
+	        var me = this;
+	        var i,
+	            len,
+	            $ul,
+	            imgWHRate,
+	            imgHeight,
+	            startPosX = 0,
+	            startPosY = 0,
+	            oldPosX = 0,
+	            oldPosY = 0,
+	            newPosX = 0,
+	            newPosY = 0,
+	            timer;
+	        var currentIndex = options.currentIndex || 0,
+	            currentMargin = 0;
+	        var imglen = imgs.length;
+	        var winw = $container.outerWidth() + 'px';
+	        var winh = $container.height() + 'px';
+	        var changeDis = parseInt(winw, 10) * 0.3;
+	        var html = '<div class="imgPreviewer" style="position:absolute;z-index:44444444;top:0px;left:0px;width:' + winw + ';height:' + winh + ';overflow: hidden;background-color:black">' + '<ul class="imgPreviewerUl" style="overflow:hidden;width:' + imglen * 100 + '%;margin:0px;padding: 0px;transition:all 0.2s ease-out;">';
+
+	        for (i = 0; i < imglen; i++) {
+	            imgWHRate = imgs[i].meta.split('|')[0] / imgs[i].meta.split('|')[1];
+	            imgHeight = parseInt(winw, 10) / imgWHRate;
+	            html += '<li style="width:' + 100 / imglen + '%;height:' + winh + ';float:left;line-height:' + winh + '">' + '<img src=' + imgs[i].url + ' style="width:100%;height:' + imgHeight + 'px"/>' + '</li>';
+	        }
+
+	        html += '</ul>' + '<div style="width:100%;height:40px;line-height: 40px;color:white;position: absolute;bottom:0px;left: 0px;text-align: center"><div style="height:40px;width:100%;line-height: 40px">';
+
+	        for (i = 0; i < imglen; i++) {
+	            html += '<span class="picPrevIndexSpan" id="picIndexSpan' + i + '"></span>';
+	        }
+
+	        $container.append(html);
+
+	        renderIndexSpan(currentIndex);
+
+	        $container.css({
+	            height: winh,
+	            overflow: 'hidden'
+	        });
+
+	        $('body').css({
+	            height: winh,
+	            overflow: 'hidden',
+	            minHeight: winh
+	        });
+
+	        $ul = $('.imgPreviewerUl');
+	        document.querySelector('.imgPreviewerUl').addEventListener('touchstart', touchStart, false);
+	        document.querySelector('.imgPreviewerUl').addEventListener('touchmove', touchMove, false);
+	        document.querySelector('.imgPreviewerUl').addEventListener('touchend', touchEnd, false);
+	        function touchStart(e) {
+	            e.preventDefault();
+	            e || (e = window.event);
+	            currentMargin = parseInt($ul.css('marginLeft'), 10);
+	            timer = new Date().getTime();
+	            startPosX = e.touches[0].pageX;
+	            startPosY = e.touches[0].pageY;
+	            oldPosX = e.touches[0].pageX;
+	            oldPosY = e.touches[0].pageY;
+	        }
+	        function touchMove(e) {
+	            e.preventDefault();
+	            var moveevent = e || window.event;
+	            newPosX = moveevent.touches[0].pageX;
+	            newPosY = moveevent.touches[0].pageY;
+	            if (newPosX > oldPosX && currentIndex === 0 || newPosX < oldPosX && currentIndex === imglen - 1) {
+	                return;
+	            }
+	            if (newPosX < oldPosX) {
+	                $ul.css({
+	                    'marginLeft': currentMargin - Math.abs(newPosX - startPosX) + 'px'
+	                });
+	            } else {
+	                $ul.css({
+	                    'marginLeft': currentMargin + Math.abs(newPosX - startPosX) + 'px'
+	                });
+	            }
+	            oldPosX = newPosX;
+	        }
+	        function touchEnd(e) {
+	            var endTime = new Date().getTime() - timer,
+	                distanceX = newPosX - startPosX,
+	                distanceY = newPosY - startPosY,
+	                swipeLeft = newPosX - startPosX < 0;
+	            if (endTime < 100 && newPosX === 0 && newPosY === 0 || endTime < 100 && Math.abs(distanceX) < 5 && Math.abs(distanceY < 5)) {
+	                return;
+	            }
+	            if (Math.abs(distanceX) >= changeDis && swipeLeft) {
+	                if (currentIndex === imglen - 1) {
+	                    $ul.css({
+	                        'marginLeft': '-' + currentIndex * parseInt(winw, 10) + 'px'
+	                    });
+	                    return;
+	                }
+	                currentIndex++;
+	                $ul.css({
+	                    'marginLeft': '-' + currentIndex * parseInt(winw, 10) + 'px'
+	                });
+	            } else if (Math.abs(distanceX) >= changeDis && !swipeLeft) {
+	                if (currentIndex === 0) {
+	                    $ul.css({
+	                        'marginLeft': '0px'
+	                    });
+	                    return;
+	                }
+	                currentIndex--;
+	                $ul.css({
+	                    'marginLeft': '-' + currentIndex * parseInt(winw, 10) + 'px'
+	                });
+	            } else {
+	                $ul.css({
+	                    'marginLeft': '-' + currentIndex * parseInt(winw, 10) + 'px'
+	                });
+	            }
+	            renderIndexSpan(currentIndex);
+	            newPosX = 0;newPosY = 0;
+	        }
+	        function renderIndexSpan(index) {
+	            $(".picPrevIndexSpan").forEach(function (o) {
+	                $(o).removeClass('picIndexSpanSelected');
+	            });
+	            $("#picIndexSpan" + index).addClass('picIndexSpanSelected');
+	        }
+	    },
+	    assign: function assign() {
+	        var cloneSingleValue = function cloneSingleValue(t, s) {
+	            var o = {};
+	            for (var ps in s) {
+	                o[ps] = s[ps];
+	            }
+	            for (var pt in t) {
+	                o[pt] = t[pt];
+	            }
+	            return o;
+	        };
+
+	        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	            args[_key] = arguments[_key];
+	        }
+
+	        return args.reduceRight(function (acc, curr) {
+	            if (acc) return cloneSingleValue(curr, acc);
+	        }, {});
+	    },
+	    mixin: function mixin() {
+	        var cloneSingleValue = function cloneSingleValue(t, s) {
+	            for (var p in s) {
+	                t[p] = s[p];
+	            }
+	            return t;
+	        };
+
+	        for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+	            args[_key2] = arguments[_key2];
+	        }
+
+	        return args.reduceRight(function (acc, curr) {
+	            if (acc) return cloneSingleValue(curr, acc);
+	        }, {});
+	    },
+	    nextTick: function nextTick(fn) {
+	        return setTimeout(fn, 0);
+	    }
+	};
+	if (!window._) {
+	    window._ = util;
+	}
+
+	module.exports = util;
+
+/***/ },
+/* 12 */
+/***/ function(module, exports) {
+
+	'use strict';
+
 	;(function (a, b) {
 	    var wx = b(a);
 	    a.wx = a.jWeixin = wx;
@@ -3813,7 +4080,7 @@ webpackJsonp([0,1],[
 	});
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {'use strict';
@@ -3834,7 +4101,7 @@ webpackJsonp([0,1],[
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3844,11 +4111,11 @@ webpackJsonp([0,1],[
 	});
 	exports.actions = undefined;
 
-	var _catalog = __webpack_require__(14);
+	var _catalog = __webpack_require__(15);
 
-	var _bespeak = __webpack_require__(15);
+	var _bespeak = __webpack_require__(16);
 
-	var _product = __webpack_require__(16);
+	var _product = __webpack_require__(17);
 
 	var actions = exports.actions = {
 	    loadCatalogByProductIdAndMediaId: _catalog.loadCatalogByProductIdAndMediaId,
@@ -3858,7 +4125,7 @@ webpackJsonp([0,1],[
 	};
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -3891,7 +4158,7 @@ webpackJsonp([0,1],[
 	};
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -3913,7 +4180,7 @@ webpackJsonp([0,1],[
 	};
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -3937,12 +4204,12 @@ webpackJsonp([0,1],[
 	exports.productActions = productActions;
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _dispatcher = __webpack_require__(18);
+	var _dispatcher = __webpack_require__(19);
 
 	var appStore = {};
 
@@ -3969,7 +4236,7 @@ webpackJsonp([0,1],[
 	});
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3979,14 +4246,14 @@ webpackJsonp([0,1],[
 	});
 	exports.appDispatcher = undefined;
 
-	var _AppDispatcher = __webpack_require__(19);
+	var _AppDispatcher = __webpack_require__(20);
 
 	var appDispatcher = new _AppDispatcher.AppDispatcher();
 
 	exports.appDispatcher = appDispatcher;
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -4033,7 +4300,7 @@ webpackJsonp([0,1],[
 	exports.AppDispatcher = AppDispatcher;
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4043,14 +4310,14 @@ webpackJsonp([0,1],[
 	});
 	exports.mixins = undefined;
 
-	var _dispatcher = __webpack_require__(21);
+	var _dispatcher = __webpack_require__(22);
 
 	var mixins = exports.mixins = {
 	    dispatcher: _dispatcher.dispatcher
 	};
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4062,7 +4329,7 @@ webpackJsonp([0,1],[
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-	var _app = __webpack_require__(12);
+	var _app = __webpack_require__(13);
 
 	var dispatcher = exports.dispatcher = {
 	    dispatch: function dispatch(action) {
@@ -4096,172 +4363,6 @@ webpackJsonp([0,1],[
 	}
 
 /***/ },
-/* 22 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	var util = {
-	    getMemberPrice: function getMemberPrice(listPrice, type, rate) {
-	        if (type === 'c') {
-	            return listPrice - rate;
-	        } else if (type === 'p') {
-	            var price = listPrice - listPrice * rate;
-	            return Math.ceil(price);
-	        } else {
-	            throw new Error('error discount type');
-	        }
-	    },
-	    imgPreviewer: function imgPreviewer($container, imgs, options) {
-	        var me = this;
-	        var i,
-	            len,
-	            $ul,
-	            imgWHRate,
-	            imgHeight,
-	            startPosX = 0,
-	            startPosY = 0,
-	            oldPosX = 0,
-	            oldPosY = 0,
-	            newPosX = 0,
-	            newPosY = 0,
-	            timer;
-	        var currentIndex = options.currentIndex || 0,
-	            currentMargin = 0;
-	        var imglen = imgs.length;
-	        var winw = $container.outerWidth() + 'px';
-	        var winh = $(window).height() + 'px';
-	        var changeDis = parseInt(winw, 10) * 0.3;
-	        var html = '<div class="imgPreviewer" style="position:absolute;z-index:44444444;top:0px;left:0px;width:' + winw + ';height:' + winh + ';overflow: hidden;background-color:black">' + '<ul class="imgPreviewerUl" style="overflow:hidden;width:' + imglen * 100 + '%;margin:0px;padding: 0px;transition:all 0.2s ease-out;">';
-
-	        for (i = 0; i < imglen; i++) {
-	            imgWHRate = imgs[i].meta.split('|')[0] / imgs[i].meta.split('|')[1];
-	            imgHeight = parseInt(winw, 10) / imgWHRate;
-	            html += '<li style="width:' + 100 / imglen + '%;height:' + winh + ';float:left;line-height:' + winh + '">' + '<img src="http://' + imgs[i].url + '" style="width:100%;height:' + imgHeight + 'px"/>' + '</li>';
-	        }
-
-	        html += '</ul>' + '<div style="background-color: rgba(0,0,0,0.4);width:100%;height:80px;line-height: 40px;color:white;position: absolute;bottom:0px;left: 0px;text-align: center"><div style="height:40px;width:100%;line-height: 40px">';
-
-	        for (i = 0; i < imglen; i++) {
-	            html += '<span class="picPrevIndexSpan" id="picIndexSpan' + i + '"></span>';
-	        }
-
-	        html += '</div><p style="text-align:left;text-indent:15px;">' + options.msg + '</p></div></div>';
-
-	        $container.append(html);
-
-	        renderIndexSpan(currentIndex);
-
-	        $container.css({
-	            height: winh,
-	            overflow: 'hidden'
-	        });
-
-	        $('body').css({
-	            height: winh,
-	            overflow: 'hidden',
-	            minHeight: winh
-	        });
-
-	        $ul = $('.imgPreviewerUl');
-	        document.querySelector('.imgPreviewerUl').addEventListener('touchstart', touchStart, false);
-	        document.querySelector('.imgPreviewerUl').addEventListener('touchmove', touchMove, false);
-	        document.querySelector('.imgPreviewerUl').addEventListener('touchend', touchEnd, false);
-	        document.querySelector('.imgPreviewer').addEventListener('click', removeSelf, false);
-	        function removeSelf(e) {
-	            $('.imgPreviewerUl').parent().remove();
-	            $container.css({
-	                height: 'auto',
-	                overflow: 'auto'
-	            });
-	            $('body').css({
-	                height: 'auto',
-	                overflow: 'auto',
-	                minHeight: 'auto'
-	            });
-	        }
-	        function touchStart(e) {
-	            e.preventDefault();
-	            e || (e = window.event);
-	            currentMargin = parseInt($ul.css('marginLeft'), 10);
-	            timer = new Date().getTime();
-	            startPosX = e.touches[0].pageX;
-	            startPosY = e.touches[0].pageY;
-	            oldPosX = e.touches[0].pageX;
-	            oldPosY = e.touches[0].pageY;
-	        }
-	        function touchMove(e) {
-	            e.preventDefault();
-	            var moveevent = e || window.event;
-	            newPosX = moveevent.touches[0].pageX;
-	            newPosY = moveevent.touches[0].pageY;
-	            if (newPosX > oldPosX && currentIndex === 0 || newPosX < oldPosX && currentIndex === imglen - 1) {
-	                return;
-	            }
-	            if (newPosX < oldPosX) {
-	                $ul.css({
-	                    'marginLeft': currentMargin - Math.abs(newPosX - startPosX) + 'px'
-	                });
-	            } else {
-	                $ul.css({
-	                    'marginLeft': currentMargin + Math.abs(newPosX - startPosX) + 'px'
-	                });
-	            }
-	            oldPosX = newPosX;
-	        }
-	        function touchEnd(e) {
-	            var endTime = new Date().getTime() - timer,
-	                distanceX = newPosX - startPosX,
-	                distanceY = newPosY - startPosY,
-	                swipeLeft = newPosX - startPosX < 0;
-	            if (endTime < 100 && newPosX === 0 && newPosY === 0 || endTime < 100 && Math.abs(distanceX) < 5 && Math.abs(distanceY < 5)) {
-	                removeSelf();
-	            }
-	            if (Math.abs(distanceX) >= changeDis && swipeLeft) {
-	                if (currentIndex === imglen - 1) {
-	                    $ul.css({
-	                        'marginLeft': '-' + currentIndex * parseInt(winw, 10) + 'px'
-	                    });
-	                    return;
-	                }
-	                currentIndex++;
-	                $ul.css({
-	                    'marginLeft': '-' + currentIndex * parseInt(winw, 10) + 'px'
-	                });
-	            } else if (Math.abs(distanceX) >= changeDis && !swipeLeft) {
-	                if (currentIndex === 0) {
-	                    $ul.css({
-	                        'marginLeft': '0px'
-	                    });
-	                    return;
-	                }
-	                currentIndex--;
-	                $ul.css({
-	                    'marginLeft': '-' + currentIndex * parseInt(winw, 10) + 'px'
-	                });
-	            } else {
-	                $ul.css({
-	                    'marginLeft': '-' + currentIndex * parseInt(winw, 10) + 'px'
-	                });
-	            }
-	            renderIndexSpan(currentIndex);
-	            newPosX = 0;newPosY = 0;
-	        }
-	        function renderIndexSpan(index) {
-	            $(".picPrevIndexSpan").each(function () {
-	                $(this).removeClass('picIndexSpanSelected');
-	            });
-	            $("#picIndexSpan" + index).addClass('picIndexSpanSelected');
-	        }
-	    }
-	};
-	if (!window._) {
-	    window._ = util;
-	}
-
-	module.exports = util;
-
-/***/ },
 /* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -4289,8 +4390,7 @@ webpackJsonp([0,1],[
 
 	/* WEBPACK VAR INJECTION */(function(riot) {__webpack_require__(25);
 	__webpack_require__(26);
-	__webpack_require__(25);
-	riot.tag2('product', '<div class="container"> <banner banners="{product.banners}"></banner> <div class="header"> <div class="title"><span>{product.name}</span></div> <div class="slogan"><span>{product.slogan}</span></div> <div> <span class="main-color">会员价</span> <span><span style="margin-left: 10px" class="primary-color">¥ </span> <span class="primary-color h2">{_.getMemberPrice(product.listPrice, product.memberDiscountsType, product.memberDiscountsValue)}</span></span> <span class="secondary-color" style="margin-left: 10px;text-decoration:line-through">{product.listPrice}</span> </div> </div> <div class="body" style="min-height: 200px"> <div> <div> <b style="display: inline-block; width: 3px; height: 12px;background-color: #ff5000"></b> <span>课程详情</span> </div> <div style="margin-top: 10px"> <raw content="{product.details}"></raw> </div> </div> </div> <div class="footer"> <div onclick="{routeTo}" style="width:30%" class="btn btn-default" onclick="{appointment}"> <div style="margin-top: 6px"><img src="/web/images/list.png" style="width: 24px"></div> <div style="font-size: 14px; margin-top: 3px">课程详情</div> </div> <input style="width:70%" class="btn btn-primary" value="立刻预约" onclick="{appointment}"> </div> </div> <div id="form" if="{formShow}"> <div id="bg" onclick="{cancelAppointment}"></div> <div id="info"> <div class="pop-window"> <div> <p>请留下您的联系方式</p> <p>我们的课程顾问会尽快和您联系</p> <p>为您提供专业的建议和服务</p> </div> <div> <div style="position:relative;width: 220px;margin:0px auto"> <b style="background: #ff5000;width: 3px; height: 24px;position: absolute;left:10px;top:10px"></b> <input style="text-indent: 15px" class="text-input" name="telephone" type="text" placeholder="请输入电话号码"> </div> </div> <div> <input class="btn-rd btn-primary" type="button" value="确认提交" onclick="{onSubmit}"> </div> <div onclick="{cancelAppointment}" style="text-align:center;line-height: 32px;width :32px;height: 32px;position: absolute; top: -20px; right: 0px">X</div> </div> </div> </div>', 'product .pop-window,[riot-tag="product"] .pop-window,[data-is="product"] .pop-window{ position: relative; margin: 0px auto; height: 240px; width: 280px; background-color: white; border-radius: 5px; overflow: hidden; } product .pop-window >div,[riot-tag="product"] .pop-window >div,[data-is="product"] .pop-window >div{ margin-top: 20px } product .pop-window >div >p,[riot-tag="product"] .pop-window >div >p,[data-is="product"] .pop-window >div >p{ margin: 10px auto; font-size: 16px; } product .text-input,[riot-tag="product"] .text-input,[data-is="product"] .text-input{ background: #f1f1f1; border: none; width: 220px; height: 40px; font-size: 16px; border-radius: 5px; } product .btn-rd,[riot-tag="product"] .btn-rd,[data-is="product"] .btn-rd{ display: inline-block; width: 220px; height:40px; border:none; border-radius: 5px; text-align: center; font-size: 18px; } product .header >div,[riot-tag="product"] .header >div,[data-is="product"] .header >div{ margin-bottom: 15px; } product .header .title >span,[riot-tag="product"] .header .title >span,[data-is="product"] .header .title >span{ font-size: 24px; } product .header .slogan >span,[riot-tag="product"] .header .slogan >span,[data-is="product"] .header .slogan >span{ font-size: 16px; color: #ababab; } product .body,[riot-tag="product"] .body,[data-is="product"] .body{ padding: 10px } product .btn,[riot-tag="product"] .btn,[data-is="product"] .btn{ box-sizing: border-box; display: block; float: left; height:56px; border:none; text-align: center; font-size: 18px; } product .btn-default,[riot-tag="product"] .btn-default,[data-is="product"] .btn-default{ background-color: white; color: #ff5000; } product .btn-primary,[riot-tag="product"] .btn-primary,[data-is="product"] .btn-primary{ background-color: #ff5000; color: white; } product .container,[riot-tag="product"] .container,[data-is="product"] .container{ position: relative; } product .container .header,[riot-tag="product"] .container .header,[data-is="product"] .container .header{ padding: 10px; height: 100px; background-color: white; margin-bottom: 10px; } product .container .body,[riot-tag="product"] .container .body,[data-is="product"] .container .body{ height: 120px; background-color: white; margin-bottom: 10px; } product .container .footer,[riot-tag="product"] .container .footer,[data-is="product"] .container .footer{ background-color: white; width: 100%; height: 56px; position: fixed; bottom: 0px; } product #bg,[riot-tag="product"] #bg,[data-is="product"] #bg{ position: fixed; top: 0; left: 0; width: 100%; height: 100%; text-align: center; background: rgba(0, 0, 0, 0.7); z-index: 99; } product #info,[riot-tag="product"] #info,[data-is="product"] #info{ position: fixed; top: 160px; left: 0; width: 100%; height: 200px; text-align: center; z-index: 100; }', '', function(opts) {
+	riot.tag2('product', '<div class="test"></div> <div class="container"> <banner each="{[product.name]}" imgs="{parent.product.banners}"></banner> <div class="header"> <div class="title"><span>{product.name}</span></div> <div class="slogan"><span>{product.slogan}</span></div> <div> <span class="main-color">会员价</span> <span><span style="margin-left: 10px" class="primary-color">¥ </span> <span class="primary-color h2">{_.getMemberPrice(product.listPrice, product.memberDiscountsType, product.memberDiscountsValue)}</span></span> <span class="secondary-color" style="margin-left: 10px;text-decoration:line-through">{product.listPrice}</span> </div> </div> <div class="body" style="min-height: 200px"> <div> <div> <b style="display: inline-block; width: 3px; height: 12px;background-color: #ff5000"></b> <span>课程详情</span> </div> <div style="margin-top: 10px"> <raw content="{product.details}"></raw> </div> </div> </div> <div class="footer"> <div onclick="{routeTo}" style="width:30%" class="btn btn-default"> <div style="margin-top: 6px"><img src="/web/images/list.png" style="width: 24px"></div> <div style="font-size: 14px; margin-top: 3px">课程详情</div> </div> <input style="width:70%" class="btn btn-primary" value="立刻预约" onclick="{appointment}"> </div> </div> <div id="form" if="{formShow}"> <div id="bg" onclick="{cancelAppointment}"></div> <div id="info"> <div class="pop-window"> <div> <p>请留下您的联系方式</p> <p>我们的课程顾问会尽快和您联系</p> <p>为您提供专业的建议和服务</p> </div> <div> <div style="position:relative;width: 220px;margin:0px auto"> <b style="background: #ff5000;width: 3px; height: 24px;position: absolute;left:10px;top:10px"></b> <input style="text-indent: 15px" class="text-input" name="telephone" type="text" placeholder="请输入电话号码"> </div> </div> <div> <input class="btn-rd btn-primary" type="button" value="确认提交" onclick="{onSubmit}"> </div> <div onclick="{cancelAppointment}" style="text-align:center;line-height: 32px;width :32px;height: 32px;position: absolute; top: -20px; right: 0px">X</div> </div> </div> </div>', 'product .pop-window,[riot-tag="product"] .pop-window,[data-is="product"] .pop-window{ position: relative; margin: 0px auto; height: 240px; width: 280px; background-color: white; border-radius: 5px; overflow: hidden; } product .pop-window >div,[riot-tag="product"] .pop-window >div,[data-is="product"] .pop-window >div{ margin-top: 20px } product .pop-window >div >p,[riot-tag="product"] .pop-window >div >p,[data-is="product"] .pop-window >div >p{ margin: 10px auto; font-size: 16px; } product .text-input,[riot-tag="product"] .text-input,[data-is="product"] .text-input{ background: #f1f1f1; border: none; width: 220px; height: 40px; font-size: 16px; border-radius: 5px; } product .btn-rd,[riot-tag="product"] .btn-rd,[data-is="product"] .btn-rd{ display: inline-block; width: 220px; height:40px; border:none; border-radius: 5px; text-align: center; font-size: 18px; } product .header >div,[riot-tag="product"] .header >div,[data-is="product"] .header >div{ margin-bottom: 15px; } product .header .title >span,[riot-tag="product"] .header .title >span,[data-is="product"] .header .title >span{ font-size: 24px; } product .header .slogan >span,[riot-tag="product"] .header .slogan >span,[data-is="product"] .header .slogan >span{ font-size: 16px; color: #ababab; } product .body,[riot-tag="product"] .body,[data-is="product"] .body{ padding: 10px } product .btn,[riot-tag="product"] .btn,[data-is="product"] .btn{ box-sizing: border-box; display: block; float: left; height:56px; border:none; text-align: center; font-size: 18px; } product .btn-default,[riot-tag="product"] .btn-default,[data-is="product"] .btn-default{ background-color: white; color: #ff5000; } product .btn-primary,[riot-tag="product"] .btn-primary,[data-is="product"] .btn-primary{ background-color: #ff5000; color: white; } product .container,[riot-tag="product"] .container,[data-is="product"] .container{ position: relative; } product .container .header,[riot-tag="product"] .container .header,[data-is="product"] .container .header{ padding: 10px; height: 100px; background-color: white; margin-bottom: 10px; } product .container .body,[riot-tag="product"] .container .body,[data-is="product"] .container .body{ height: 120px; background-color: white; margin-bottom: 10px; } product .container .footer,[riot-tag="product"] .container .footer,[data-is="product"] .container .footer{ background-color: white; width: 100%; height: 56px; position: fixed; bottom: 0px; } product #bg,[riot-tag="product"] #bg,[data-is="product"] #bg{ position: fixed; top: 0; left: 0; width: 100%; height: 100%; text-align: center; background: rgba(0, 0, 0, 0.7); z-index: 99; } product #info,[riot-tag="product"] #info,[data-is="product"] #info{ position: fixed; top: 160px; left: 0; width: 100%; height: 200px; text-align: center; z-index: 100; } product .imgPreviewer ul li,[riot-tag="product"] .imgPreviewer ul li,[data-is="product"] .imgPreviewer ul li{ float:left; } product .picPrevIndexSpan,[riot-tag="product"] .picPrevIndexSpan,[data-is="product"] .picPrevIndexSpan{ display: inline-block; border-radius: 50em; width: 5px; height: 5px; background-color: #838383; margin-right: 12px; } product .picPrevIndexSpan:last-child,[riot-tag="product"] .picPrevIndexSpan:last-child,[data-is="product"] .picPrevIndexSpan:last-child{ margin-right: 0px !important; } product .picIndexSpanSelected,[riot-tag="product"] .picIndexSpanSelected,[data-is="product"] .picIndexSpanSelected{ background-color: white !important; }', '', function(opts) {
 	        'use strict';
 	        this.mixin('dispatcher');
 
@@ -4302,6 +4402,7 @@ webpackJsonp([0,1],[
 
 	        self.on('loadProduct', function(data){
 	            self.update({product: data.course});
+	//            self.mount('banner', {imgs: self.product.banners})
 	        });
 
 	        self.on('addBespeak', function(res) {
@@ -4370,23 +4471,11 @@ webpackJsonp([0,1],[
 /* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('banner', '<div class="banner"> <img riot-src="{src}" width="100%" alt=""> </div>', 'banner .banner,[riot-tag="banner"] .banner,[data-is="banner"] .banner{ padding: 10px; background-color: white; margin-bottom: 10px; }', '', function(opts) {
-	        var banners = [];
-	        this.on('update', function(){
-	            banners = this.opts.banners;
-	            var mediaId = banners && banners[0] || '';
-	            if(mediaId){
-	                var src = __app.settings.api.url + '/file?media_id=' + mediaId;
-	                this.update({src: src})
-	            }
+	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('raw', '', '', '', function(opts) {
+	        var me = this;
+	        me.on('update', function(){
+	            me.root.innerHTML = me.opts.content || '';
 	        })
-	        var i = 1;
-	        setInterval(function(){
-	            var doc = document.querySelector('.banner img');
-	            doc.setAttribute('src', __app.settings.api.url + '/file?media_id=' +
-	self.banners[i%3]);
-	            i++;
-	        }, 3000);
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
@@ -4394,11 +4483,24 @@ webpackJsonp([0,1],[
 /* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('raw', '', '', '', function(opts) {
-	        var me = this;
-	        me.on('update', function(){
-	            me.root.innerHTML = me.opts.content || '';
-	        })
+	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('banner', '<div id="imgPreviewer"></div>', 'banner #imgPreviewer,[riot-tag="banner"] #imgPreviewer,[data-is="banner"] #imgPreviewer{ height: 200px !important; overflow: hidden !important; }', '', function(opts) {
+	        var self = this;
+	        self.len = this.opts.imgs.length;
+
+	        self.on('mount', function(){
+	            _.nextTick(function(){
+	                if(!self.opts.imgs.length){
+	                    return;
+	                }
+	                let imgs = self.opts.imgs.map(function(img){
+	                    return {
+	                        url: __app.settings.api.url + '/file?media_id=' + img,
+	                        meta: '600|400'
+	                    }
+	                });
+	                _.imgPreviewer($('#imgPreviewer'), imgs, {currentIndex: 0, msg: '111'});
+	            });
+	        });
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 

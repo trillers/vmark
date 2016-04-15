@@ -5,13 +5,6 @@ var jquery = require('jquery');
 jquery = require('../lib/jquery.cookie');
 util = require('./util');
 var page = require('./page');
-ws = require('./ws');
-ws.onOpen(function(){
-  console.info('websocket is ready.');
-});
-ws.onClose(function(){
-  window.location.reload();
-});
 ///*
 // * import global variables
 // */
@@ -22,6 +15,9 @@ require('./camera');
 //require('./jssdk');
 //console.log(wx);
 domain = require('../domain/index');
+
+require('bootstrap');
+require('summernote');
 
 /*
 * wechat js config

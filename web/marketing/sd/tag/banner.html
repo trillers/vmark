@@ -1,30 +1,28 @@
 <banner>
-    <div class="banner">
-        <img src="{src}" width="100%" alt="">
-    </div>
+    <div id="imgPreviewer"></div>
     <style scoped>
-        .banner {
-            padding: 10px;
-            background-color: white;
-            margin-bottom: 10px;
+        #imgPreviewer{
+            height: 200px !important;
+            overflow: hidden !important;
         }
     </style>
     <script>
-        var banners = [];
-        this.on('update', function(){
-            banners = this.opts.banners;
-            var mediaId = banners && banners[0] || '';
-            if(mediaId){
-                var src = __app.settings.api.url + '/file?media_id=' + mediaId;
-                this.update({src: src})
-            }
-        })
-        var i = 1;
-        setInterval(function(){
-            var doc = document.querySelector('.banner img');
-            doc.setAttribute('src', __app.settings.api.url + '/file?media_id=' +
-self.banners[i%3]);
-            i++;
-        }, 3000);
+        var self = this;
+        self.len = this.opts.imgs.length;
+
+        self.on('mount', function(){
+            _.nextTick(function(){
+                if(!self.opts.imgs.length){
+                    return;
+                }
+                let imgs = self.opts.imgs.map(function(img){
+                    return {
+                        url: __app.settings.api.url + '/file?media_id=' + img,
+                        meta: '600|400'
+                    }
+                });
+                _.imgPreviewer($('#imgPreviewer'), imgs, {currentIndex: 0, msg: '111'});
+            });
+        });
     </script>
 </banner>

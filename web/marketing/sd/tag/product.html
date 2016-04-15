@@ -1,9 +1,9 @@
-require('./banner.html');
 require('./raw.html');
 require('./banner.html');
 <product>
+    <div class="test"></div>
     <div class="container">
-        <banner banners="{product.banners}"></banner>
+        <banner each="{[product.name]}" imgs="{parent.product.banners}"></banner>
         <div class="header">
             <div class="title"><span>{product.name}</span></div>
             <div class="slogan"><span>{product.slogan}</span></div>
@@ -25,7 +25,7 @@ require('./banner.html');
             </div>
         </div>
         <div class="footer">
-            <div onclick="{routeTo}" style="width:30%" class="btn btn-default" onclick="{appointment}">
+            <div onclick="{routeTo}" style="width:30%" class="btn btn-default">
                 <div style="margin-top: 6px"><img src="/web/images/list.png" style="width: 24px"/></div>
                 <div style="font-size: 14px; margin-top: 3px">课程详情</div>
             </div>
@@ -159,6 +159,23 @@ require('./banner.html');
             text-align: center;
             z-index: 100;
         }
+        .imgPreviewer ul li{
+            float:left;
+        }
+        .picPrevIndexSpan {
+            display: inline-block;
+            border-radius: 50em;
+            width: 5px;
+            height: 5px;
+            background-color: #838383;
+            margin-right: 12px;
+        }
+        .picPrevIndexSpan:last-child {
+            margin-right: 0px  !important;
+        }
+        .picIndexSpanSelected {
+            background-color: white !important;
+        }
     </style>
     <script>
         'use strict';
@@ -172,6 +189,7 @@ require('./banner.html');
 
         self.on('loadProduct', function(data){
             self.update({product: data.course});
+//            self.mount('banner', {imgs: self.product.banners})
         });
 
         self.on('addBespeak', function(res) {

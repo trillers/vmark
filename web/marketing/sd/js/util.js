@@ -15,7 +15,7 @@ var util = {
         var currentIndex = options.currentIndex || 0, currentMargin = 0;
         var imglen = imgs.length;
         var winw = $container.outerWidth() + 'px';
-        var winh = $(window).height() + 'px';
+        var winh = $container.height() + 'px';
         var changeDis = parseInt(winw,10) * 0.3;
         var html = '<div class="imgPreviewer" style="position:absolute;z-index:44444444;top:0px;left:0px;width:'+ winw +';height:'+ winh +';overflow: hidden;background-color:black">'+
             '<ul class="imgPreviewerUl" style="overflow:hidden;width:'+ (imglen*100) +'%;margin:0px;padding: 0px;transition:all 0.2s ease-out;">';
@@ -24,18 +24,16 @@ var util = {
             imgWHRate = imgs[i].meta.split('|')[0]/imgs[i].meta.split('|')[1];
             imgHeight = (parseInt(winw,10)/imgWHRate);
             html+= '<li style="width:'+(100/imglen)+'%;height:'+winh+';float:left;line-height:'+ winh +'">'+
-                '<img src="http://'+ imgs[i].url +'" style="width:100%;height:'+ imgHeight +'px"/>'+
+                '<img src=' + imgs[i].url + ' style="width:100%;height:'+ imgHeight +'px"/>'+
                 '</li>';
         }
 
         html+= '</ul>'+
-            '<div style="background-color: rgba(0,0,0,0.4);width:100%;height:80px;line-height: 40px;color:white;position: absolute;bottom:0px;left: 0px;text-align: center"><div style="height:40px;width:100%;line-height: 40px">';
+            '<div style="width:100%;height:40px;line-height: 40px;color:white;position: absolute;bottom:0px;left: 0px;text-align: center"><div style="height:40px;width:100%;line-height: 40px">';
 
         for(i = 0; i<imglen; i++){
             html+='<span class="picPrevIndexSpan" id="picIndexSpan'+ i +'"></span>';
         }
-
-        html+='</div><p style="text-align:left;text-indent:15px;">'+options.msg+'</p></div></div>';
 
         $container.append(html);
 
@@ -56,19 +54,6 @@ var util = {
         document.querySelector('.imgPreviewerUl').addEventListener('touchstart', touchStart, false);
         document.querySelector('.imgPreviewerUl').addEventListener('touchmove', touchMove, false);
         document.querySelector('.imgPreviewerUl').addEventListener('touchend', touchEnd, false);
-        document.querySelector('.imgPreviewer').addEventListener('click', removeSelf, false);
-        function removeSelf(e){
-            $('.imgPreviewerUl').parent().remove();
-            $container.css({
-                height:'auto',
-                overflow:'auto'
-            });
-            $('body').css({
-                height:'auto',
-                overflow:'auto',
-                minHeight:'auto'
-            });
-        }
         function touchStart(e){
             e.preventDefault();
             e || (e = window.event);
@@ -101,7 +86,7 @@ var util = {
         function touchEnd(e){
             var endTime = (new Date()).getTime() - timer, distanceX = newPosX - startPosX, distanceY = newPosY - startPosY, swipeLeft = ((newPosX - startPosX) <0);
             if(( endTime < 100 && newPosX === 0 && newPosY === 0 ) || ( endTime < 100 ) && (Math.abs(distanceX) < 5 && Math.abs(distanceY < 5))){
-                removeSelf();
+                return;
             }
             if(Math.abs(distanceX) >= changeDis && swipeLeft){
                 if(currentIndex === (imglen-1)){
@@ -134,11 +119,41 @@ var util = {
             newPosX = 0; newPosY = 0;
         }
         function renderIndexSpan(index){
-            $(".picPrevIndexSpan").each(function(){
-                $(this).removeClass('picIndexSpanSelected');
+            $(".picPrevIndexSpan").forEach(function(o){
+                $(o).removeClass('picIndexSpanSelected');
             });
             $("#picIndexSpan"+index).addClass('picIndexSpanSelected');
         }
+        
+    },
+    assign: function(...args){
+        let cloneSingleValue = (t, s)=> {
+            let o = {};
+            for(var ps in s){
+                o[ps] = s[ps]
+            }
+            for(var pt in t){
+                o[pt] = t[pt]
+            }
+            return o;
+        };
+        return args.reduceRight((acc, curr)=>{
+            if(acc) return cloneSingleValue(curr, acc);
+        }, {});
+    },
+    mixin: function(...args){
+        let cloneSingleValue = (t, s)=> {
+            for(var p in s){
+                t[p] = s[p];
+            }
+            return t;
+        };
+        return args.reduceRight((acc, curr)=>{
+            if(acc) return cloneSingleValue(curr, acc);
+        }, {});
+    },
+    nextTick: function(fn){
+        return setTimeout(fn, 0);
     }
 };
 if(!window._){
