@@ -12,6 +12,13 @@ import * as fetch from './fetchMonkeyPatch';
         !Array.isArray(nodes) && (nodes = [].slice.apply(nodes));
         return nodes.length ===1 ? nodes[0] : nodes;
     };
+    jQuery.append = function appendHtml(el, str) {
+        var div = document.createElement('div');
+        div.innerHTML = str;
+        while (div.children.length > 0) {
+            el.appendChild(div.children[0]);
+        }
+    };
     for( var p in fetch){
         jQuery[p] = fetch[p];
     }

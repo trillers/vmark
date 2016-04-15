@@ -1,3 +1,4 @@
+require('./banner.html');
 require('./raw.html');
 <product>
     <div class="container">
@@ -31,7 +32,7 @@ require('./raw.html');
         </div>
     </div>
 
-    <div id="form" if="{formShow}" >
+    <div id="form" if="{formShow}">
         <div id="bg" onclick="{cancelAppointment}"></div>
         <div id="info">
             <div class="pop-window">
@@ -117,11 +118,9 @@ require('./raw.html');
             background-color: #ff5000;
             color: white;
         }
-
         .container{
             position: relative;
         }
-
         .container .header{
             padding: 10px;
             height: 100px;

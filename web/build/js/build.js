@@ -24,7 +24,6 @@ webpackJsonp([0,1],[
 
 	__webpack_require__(23);
 	__webpack_require__(24);
-	__webpack_require__(26);
 
 	window.app = _app.app;
 	window.actions = _index.actions;
@@ -48,12 +47,12 @@ webpackJsonp([0,1],[
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-	/* Riot v2.3.18, @license MIT */
+	/* Riot v2.3.17, @license MIT */
 
 	;(function (window, undefined) {
 	  'use strict';
 
-	  var riot = { version: 'v2.3.18', settings: {} },
+	  var riot = { version: 'v2.3.17', settings: {} },
 
 	  // be aware, internal usage
 	  // ATTENTION: prefix the global dynamic variables with `__`
@@ -84,6 +83,7 @@ webpackJsonp([0,1],[
 	  T_STRING = 'string',
 	      T_OBJECT = 'object',
 	      T_UNDEF = 'undefined',
+	      T_BOOL = 'boolean',
 	      T_FUNCTION = 'function',
 
 	  // special native tags that cannot be treated like the others
@@ -92,11 +92,7 @@ webpackJsonp([0,1],[
 
 
 	  // version# for IE 8-11, 0 for others
-	  IE_VERSION = (window && window.document || {}).documentMode | 0,
-
-
-	  // detect firefox to fix #1374
-	  FIREFOX = window && !!window.InstallTrigger;
+	  IE_VERSION = (window && window.document || {}).documentMode | 0;
 	  /* istanbul ignore next */
 	  riot.observable = function (el) {
 
@@ -236,7 +232,7 @@ webpackJsonp([0,1],[
 	     * @module riot-route
 	     */
 
-	    var RE_ORIGIN = /^.+?\/\/+[^\/]+/,
+	    var RE_ORIGIN = /^.+?\/+[^\/]+/,
 	        EVENT_LISTENER = 'EventListener',
 	        REMOVE_EVENT_LISTENER = 'remove' + EVENT_LISTENER,
 	        ADD_EVENT_LISTENER = 'add' + EVENT_LISTENER,
@@ -337,7 +333,7 @@ webpackJsonp([0,1],[
 	     * @returns {string} path from root
 	     */
 	    function getPathFromRoot(href) {
-	      return (href || loc.href)[REPLACE](RE_ORIGIN, '');
+	      return (href || loc.href || '')[REPLACE](RE_ORIGIN, '');
 	    }
 
 	    /**
@@ -346,7 +342,7 @@ webpackJsonp([0,1],[
 	     * @returns {string} path from base
 	     */
 	    function getPathFromBase(href) {
-	      return base[0] == '#' ? (href || loc.href || '').split(base)[1] || '' : (loc ? getPathFromRoot(href) : href || '')[REPLACE](base, '');
+	      return base[0] == '#' ? (href || loc.href || '').split(base)[1] || '' : getPathFromRoot(href)[REPLACE](base, '');
 	    }
 
 	    function emit(force) {
@@ -481,11 +477,10 @@ webpackJsonp([0,1],[
 	     */
 	    route.create = function () {
 	      var newSubRouter = new Router();
-	      // assign sub-router's main method
-	      var router = newSubRouter.m.bind(newSubRouter);
 	      // stop only this sub-router
-	      router.stop = newSubRouter.s.bind(newSubRouter);
-	      return router;
+	      newSubRouter.m.stop = newSubRouter.s.bind(newSubRouter);
+	      // return sub-router's main method
+	      return newSubRouter.m.bind(newSubRouter);
 	    };
 
 	    /**
@@ -573,7 +568,7 @@ webpackJsonp([0,1],[
 
 	  /**
 	   * The riot template engine
-	   * @version v2.3.22
+	   * @version v2.3.21
 	   */
 
 	  /**
@@ -659,9 +654,7 @@ webpackJsonp([0,1],[
 	            re.lastIndex = skipBraces(str, match[2], re.lastIndex);
 	            continue;
 	          }
-	          if (!match[3]) {
-	            continue;
-	          }
+	          if (!match[3]) continue;
 	        }
 
 	        if (!match[1]) {
@@ -679,11 +672,7 @@ webpackJsonp([0,1],[
 	      return parts;
 
 	      function unescapeStr(s) {
-	        if (tmpl || isexpr) {
-	          parts.push(s && s.replace(_bp[5], '$1'));
-	        } else {
-	          parts.push(s);
-	        }
+	        if (tmpl || isexpr) parts.push(s && s.replace(_bp[5], '$1'));else parts.push(s);
 	      }
 
 	      function skipBraces(s, ch, ix) {
@@ -705,8 +694,11 @@ webpackJsonp([0,1],[
 
 	    _brackets.loopKeys = function loopKeys(expr) {
 	      var m = expr.match(_cache[9]);
-
 	      return m ? { key: m[1], pos: m[2], val: _cache[0] + m[3].trim() + _cache[1] } : { val: expr.trim() };
+	    };
+
+	    _brackets.hasRaw = function (src) {
+	      return _cache[10].test(src);
 	    };
 
 	    _brackets.array = function array(pair) {
@@ -718,13 +710,13 @@ webpackJsonp([0,1],[
 	        _cache = _create(pair);
 	        _regex = pair === DEFAULT ? _loopback : _rewrite;
 	        _cache[9] = _regex(_pairs[9]);
+	        _cache[10] = _regex(_pairs[10]);
 	      }
 	      cachedBrackets = pair;
 	    }
 
 	    function _setSettings(o) {
 	      var b;
-
 	      o = o || {};
 	      b = o.brackets;
 	      Object.defineProperty(o, 'brackets', {
@@ -795,23 +787,20 @@ webpackJsonp([0,1],[
 	    }
 
 	    function _create(str) {
-	      var expr = _getTmpl(str);
 
+	      var expr = _getTmpl(str);
 	      if (expr.slice(0, 11) !== 'try{return ') expr = 'return ' + expr;
 
-	      return new Function('E', expr + ';'); //eslint-disable-line no-new-func
+	      return new Function('E', expr + ';');
 	    }
 
-	    var CH_IDEXPR = '⁗',
-	        RE_CSNAME = /^(?:(-?[_A-Za-z\xA0-\xFF][-\w\xA0-\xFF]*)|\u2057(\d+)~):/,
-	        RE_QBLOCK = RegExp(brackets.S_QBLOCKS, 'g'),
-	        RE_DQUOTE = /\u2057/g,
-	        RE_QBMARK = /\u2057(\d+)~/g;
+	    var RE_QBLOCK = RegExp(brackets.S_QBLOCKS, 'g'),
+	        RE_QBMARK = /\x01(\d+)~/g;
 
 	    function _getTmpl(str) {
 	      var qstr = [],
 	          expr,
-	          parts = brackets.split(str.replace(RE_DQUOTE, '"'), 1);
+	          parts = brackets.split(str.replace(/\u2057/g, '"'), 1);
 
 	      if (parts.length > 2 || parts[0]) {
 	        var i,
@@ -831,11 +820,10 @@ webpackJsonp([0,1],[
 	        expr = _parseExpr(parts[1], 0, qstr);
 	      }
 
-	      if (qstr[0]) {
-	        expr = expr.replace(RE_QBMARK, function (_, pos) {
-	          return qstr[pos].replace(/\r/g, '\\r').replace(/\n/g, '\\n');
-	        });
-	      }
+	      if (qstr[0]) expr = expr.replace(RE_QBMARK, function (_, pos) {
+	        return qstr[pos].replace(/\r/g, '\\r').replace(/\n/g, '\\n');
+	      });
+
 	      return expr;
 	    }
 
@@ -843,12 +831,15 @@ webpackJsonp([0,1],[
 	      '(': /[()]/g,
 	      '[': /[[\]]/g,
 	      '{': /[{}]/g
-	    };
+	    },
+	        CS_IDENT = /^(?:(-?[_A-Za-z\xA0-\xFF][-\w\xA0-\xFF]*)|\x01(\d+)~):/;
 
 	    function _parseExpr(expr, asText, qstr) {
 
+	      if (expr[0] === '=') expr = expr.slice(1);
+
 	      expr = expr.replace(RE_QBLOCK, function (s, div) {
-	        return s.length > 2 && !div ? CH_IDEXPR + (qstr.push(s) - 1) + '~' : s;
+	        return s.length > 2 && !div ? '\x01' + (qstr.push(s) - 1) + '~' : s;
 	      }).replace(/\s+/g, ' ').trim().replace(/\ ?([[\({},?\.:])\ ?/g, '$1');
 
 	      if (expr) {
@@ -856,7 +847,7 @@ webpackJsonp([0,1],[
 	            cnt = 0,
 	            match;
 
-	        while (expr && (match = expr.match(RE_CSNAME)) && !match.index) {
+	        while (expr && (match = expr.match(CS_IDENT)) && !match.index) {
 	          var key,
 	              jsb,
 	              re = /,|([[{(])|$/g;
@@ -890,8 +881,7 @@ webpackJsonp([0,1],[
 	    }
 
 	    // istanbul ignore next: not both
-	    var // eslint-disable-next-line max-len
-	    JS_CONTEXT = '"in this?this:' + ((typeof window === 'undefined' ? 'undefined' : _typeof(window)) !== 'object' ? 'global' : 'window') + ').',
+	    var JS_CONTEXT = '"in this?this:' + ((typeof window === 'undefined' ? 'undefined' : _typeof(window)) !== 'object' ? 'global' : 'window') + ').',
 	        JS_VARNAME = /[,{][$\w]+:|(^ *|[^$\w\.])(?!(?:typeof|true|false|null|undefined|in|instanceof|is(?:Finite|NaN)|void|NaN|new|Date|RegExp|Math)(?![$\w]))([$_A-Za-z][$\w]*)/g,
 	        JS_NOPROPS = /^(?=(\.[$\w]+))\1(?:[^.[(]|$)/;
 
@@ -932,7 +922,7 @@ webpackJsonp([0,1],[
 	      return s;
 	    };
 
-	    _tmpl.version = brackets.version = 'v2.3.22';
+	    _tmpl.version = brackets.version = 'v2.3.21';
 
 	    return _tmpl;
 	  }();
@@ -1247,13 +1237,15 @@ webpackJsonp([0,1],[
 	      if (isOption) {
 	        root.appendChild(frag);
 
-	        // #1374 FireFox bug in <option selected={expression}>
-	        if (FIREFOX && !root.multiple) {
-	          for (var n = 0; n < root.length; n++) {
-	            if (root[n].__riot1374) {
-	              root.selectedIndex = n; // clear other options
-	              delete root[n].__riot1374;
-	              break;
+	        // #1374 <select> <option selected={true}> </select>
+	        if (root.length) {
+	          var si,
+	              op = root.options;
+
+	          root.selectedIndex = si = -1;
+	          for (i = 0; i < op.length; i++) {
+	            if (op[i].selected = op[i].__selected) {
+	              if (si < 0) root.selectedIndex = si = i;
 	            }
 	          }
 	        }
@@ -1400,6 +1392,7 @@ webpackJsonp([0,1],[
 	        root = conf.root,
 	        tagName = root.tagName.toLowerCase(),
 	        attr = {},
+	        implAttr = {},
 	        propsInSyncWithParent = [],
 	        dom;
 
@@ -1599,6 +1592,12 @@ webpackJsonp([0,1],[
 	      // remove this tag instance from the global virtualDom variable
 	      if (~tagIndex) __virtualDom.splice(tagIndex, 1);
 
+	      if (this._virts) {
+	        each(this._virts, function (v) {
+	          if (v.parentNode) v.parentNode.removeChild(v);
+	        });
+	      }
+
 	      if (p) {
 
 	        if (parent) {
@@ -1613,17 +1612,9 @@ webpackJsonp([0,1],[
 	            ptag.tags[tagName] = undefined;
 	        } else while (el.firstChild) {
 	          el.removeChild(el.firstChild);
-	        }if (!keepRootTag) p.removeChild(el);else {
-	          // the riot-tag and the data-is attributes aren't needed anymore, remove them
-	          remAttr(p, RIOT_TAG_IS);
-	          remAttr(p, RIOT_TAG); // this will be removed in riot 3.0.0
-	        }
-	      }
-
-	      if (this._virts) {
-	        each(this._virts, function (v) {
-	          if (v.parentNode) v.parentNode.removeChild(v);
-	        });
+	        }if (!keepRootTag) p.removeChild(el);else
+	          // the riot-tag attribute isn't needed anymore, remove it
+	          remAttr(p, 'riot-tag');
 	      }
 
 	      self.trigger('unmount');
@@ -1730,9 +1721,8 @@ webpackJsonp([0,1],[
 
 	      if (expr.bool) {
 	        value = !!value;
-	      } else if (value == null) {
-	        value = '';
-	      }
+	        if (attrName === 'selected') dom.__selected = value; // #1374
+	      } else if (value == null) value = '';
 
 	      // #1638: regression of #1612, update the dom only if the value of the
 	      // expression was changed
@@ -1811,16 +1801,13 @@ webpackJsonp([0,1],[
 	          } else if (expr.bool) {
 	            dom[attrName] = value;
 	            if (value) setAttr(dom, attrName, attrName);
-	            if (FIREFOX && attrName === 'selected' && dom.tagName === 'OPTION') {
-	              dom.__riot1374 = value; // #1374
-	            }
 	          } else if (value === 0 || value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== T_OBJECT) {
-	              // <img src="{ expr }">
-	              if (startsWith(attrName, RIOT_PREFIX) && attrName != RIOT_TAG) {
-	                attrName = attrName.slice(RIOT_PREFIX.length);
-	              }
-	              setAttr(dom, attrName, value);
+	            // <img src="{ expr }">
+	            if (startsWith(attrName, RIOT_PREFIX) && attrName != RIOT_TAG) {
+	              attrName = attrName.slice(RIOT_PREFIX.length);
 	            }
+	            setAttr(dom, attrName, value);
+	          }
 	    });
 	  }
 	  /**
@@ -2004,7 +1991,7 @@ webpackJsonp([0,1],[
 	      value: value,
 	      enumerable: false,
 	      writable: false,
-	      configurable: true
+	      configurable: false
 	    }, options));
 	    return el;
 	  }
@@ -2395,7 +2382,6 @@ webpackJsonp([0,1],[
 	        if (tagName && riotTag !== tagName) {
 	          riotTag = tagName;
 	          setAttr(root, RIOT_TAG_IS, tagName);
-	          setAttr(root, RIOT_TAG, tagName); // this will be removed in riot 3.0.0
 	        }
 	        var tag = mountTo(root, riotTag || root.tagName.toLowerCase(), opts);
 
@@ -2464,11 +2450,6 @@ webpackJsonp([0,1],[
 	  };
 
 	  /**
-	   * Export the Virtual DOM
-	   */
-	  riot.vdom = __virtualDom;
-
-	  /**
 	   * Export the Tag constructor
 	   */
 	  riot.Tag = Tag;
@@ -2517,6 +2498,13 @@ webpackJsonp([0,1],[
 	        var nodes = document.querySelectorAll(selector);
 	        !Array.isArray(nodes) && (nodes = [].slice.apply(nodes));
 	        return nodes.length === 1 ? nodes[0] : nodes;
+	    };
+	    jQuery.append = function appendHtml(el, str) {
+	        var div = document.createElement('div');
+	        div.innerHTML = str;
+	        while (div.children.length > 0) {
+	            el.appendChild(div.children[0]);
+	        }
 	    };
 	    for (var p in fetch) {
 	        jQuery[p] = fetch[p];
@@ -4123,8 +4111,149 @@ webpackJsonp([0,1],[
 	        } else {
 	            throw new Error('error discount type');
 	        }
-	    }
+	    },
+	    imgPreviewer: function imgPreviewer($container, imgs, options) {
+	        var me = this;
+	        var i,
+	            len,
+	            $ul,
+	            imgWHRate,
+	            imgHeight,
+	            startPosX = 0,
+	            startPosY = 0,
+	            oldPosX = 0,
+	            oldPosY = 0,
+	            newPosX = 0,
+	            newPosY = 0,
+	            timer;
+	        var currentIndex = options.currentIndex || 0,
+	            currentMargin = 0;
+	        var imglen = imgs.length;
+	        var winw = $container.outerWidth() + 'px';
+	        var winh = $(window).height() + 'px';
+	        var changeDis = parseInt(winw, 10) * 0.3;
+	        var html = '<div class="imgPreviewer" style="position:absolute;z-index:44444444;top:0px;left:0px;width:' + winw + ';height:' + winh + ';overflow: hidden;background-color:black">' + '<ul class="imgPreviewerUl" style="overflow:hidden;width:' + imglen * 100 + '%;margin:0px;padding: 0px;transition:all 0.2s ease-out;">';
 
+	        for (i = 0; i < imglen; i++) {
+	            imgWHRate = imgs[i].meta.split('|')[0] / imgs[i].meta.split('|')[1];
+	            imgHeight = parseInt(winw, 10) / imgWHRate;
+	            html += '<li style="width:' + 100 / imglen + '%;height:' + winh + ';float:left;line-height:' + winh + '">' + '<img src="http://' + imgs[i].url + '" style="width:100%;height:' + imgHeight + 'px"/>' + '</li>';
+	        }
+
+	        html += '</ul>' + '<div style="background-color: rgba(0,0,0,0.4);width:100%;height:80px;line-height: 40px;color:white;position: absolute;bottom:0px;left: 0px;text-align: center"><div style="height:40px;width:100%;line-height: 40px">';
+
+	        for (i = 0; i < imglen; i++) {
+	            html += '<span class="picPrevIndexSpan" id="picIndexSpan' + i + '"></span>';
+	        }
+
+	        html += '</div><p style="text-align:left;text-indent:15px;">' + options.msg + '</p></div></div>';
+
+	        $container.append(html);
+
+	        renderIndexSpan(currentIndex);
+
+	        $container.css({
+	            height: winh,
+	            overflow: 'hidden'
+	        });
+
+	        $('body').css({
+	            height: winh,
+	            overflow: 'hidden',
+	            minHeight: winh
+	        });
+
+	        $ul = $('.imgPreviewerUl');
+	        document.querySelector('.imgPreviewerUl').addEventListener('touchstart', touchStart, false);
+	        document.querySelector('.imgPreviewerUl').addEventListener('touchmove', touchMove, false);
+	        document.querySelector('.imgPreviewerUl').addEventListener('touchend', touchEnd, false);
+	        document.querySelector('.imgPreviewer').addEventListener('click', removeSelf, false);
+	        function removeSelf(e) {
+	            $('.imgPreviewerUl').parent().remove();
+	            $container.css({
+	                height: 'auto',
+	                overflow: 'auto'
+	            });
+	            $('body').css({
+	                height: 'auto',
+	                overflow: 'auto',
+	                minHeight: 'auto'
+	            });
+	        }
+	        function touchStart(e) {
+	            e.preventDefault();
+	            e || (e = window.event);
+	            currentMargin = parseInt($ul.css('marginLeft'), 10);
+	            timer = new Date().getTime();
+	            startPosX = e.touches[0].pageX;
+	            startPosY = e.touches[0].pageY;
+	            oldPosX = e.touches[0].pageX;
+	            oldPosY = e.touches[0].pageY;
+	        }
+	        function touchMove(e) {
+	            e.preventDefault();
+	            var moveevent = e || window.event;
+	            newPosX = moveevent.touches[0].pageX;
+	            newPosY = moveevent.touches[0].pageY;
+	            if (newPosX > oldPosX && currentIndex === 0 || newPosX < oldPosX && currentIndex === imglen - 1) {
+	                return;
+	            }
+	            if (newPosX < oldPosX) {
+	                $ul.css({
+	                    'marginLeft': currentMargin - Math.abs(newPosX - startPosX) + 'px'
+	                });
+	            } else {
+	                $ul.css({
+	                    'marginLeft': currentMargin + Math.abs(newPosX - startPosX) + 'px'
+	                });
+	            }
+	            oldPosX = newPosX;
+	        }
+	        function touchEnd(e) {
+	            var endTime = new Date().getTime() - timer,
+	                distanceX = newPosX - startPosX,
+	                distanceY = newPosY - startPosY,
+	                swipeLeft = newPosX - startPosX < 0;
+	            if (endTime < 100 && newPosX === 0 && newPosY === 0 || endTime < 100 && Math.abs(distanceX) < 5 && Math.abs(distanceY < 5)) {
+	                removeSelf();
+	            }
+	            if (Math.abs(distanceX) >= changeDis && swipeLeft) {
+	                if (currentIndex === imglen - 1) {
+	                    $ul.css({
+	                        'marginLeft': '-' + currentIndex * parseInt(winw, 10) + 'px'
+	                    });
+	                    return;
+	                }
+	                currentIndex++;
+	                $ul.css({
+	                    'marginLeft': '-' + currentIndex * parseInt(winw, 10) + 'px'
+	                });
+	            } else if (Math.abs(distanceX) >= changeDis && !swipeLeft) {
+	                if (currentIndex === 0) {
+	                    $ul.css({
+	                        'marginLeft': '0px'
+	                    });
+	                    return;
+	                }
+	                currentIndex--;
+	                $ul.css({
+	                    'marginLeft': '-' + currentIndex * parseInt(winw, 10) + 'px'
+	                });
+	            } else {
+	                $ul.css({
+	                    'marginLeft': '-' + currentIndex * parseInt(winw, 10) + 'px'
+	                });
+	            }
+	            renderIndexSpan(currentIndex);
+	            newPosX = 0;newPosY = 0;
+	        }
+	        function renderIndexSpan(index) {
+	            $(".picPrevIndexSpan").each(function () {
+	                $(this).removeClass('picIndexSpanSelected');
+	            });
+	            $("#picIndexSpan" + index).addClass('picIndexSpanSelected');
+	        }
+	    }
 	};
 	if (!window._) {
 	    window._ = util;
@@ -4159,6 +4288,7 @@ webpackJsonp([0,1],[
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(riot) {__webpack_require__(25);
+	__webpack_require__(26);
 	riot.tag2('product', '<div class="container"> <banner banners="{product.banners}"></banner> <div class="header"> <div class="title"><span>{product.name}</span></div> <div class="slogan"><span>{product.slogan}</span></div> <div> <span class="main-color">会员价</span> <span><span style="margin-left: 10px" class="primary-color">¥ </span> <span class="primary-color h2">{_.getMemberPrice(product.listPrice, product.memberDiscountsType, product.memberDiscountsValue)}</span></span> <span class="secondary-color" style="margin-left: 10px;text-decoration:line-through">{product.listPrice}</span> </div> </div> <div class="body" style="min-height: 200px"> <div> <div> <b style="display: inline-block; width: 3px; height: 12px;background-color: #ff5000"></b> <span>课程详情</span> </div> <div style="margin-top: 10px"> <raw content="{product.details}"></raw> </div> </div> </div> <div class="footer"> <div onclick="{routeTo}" style="width:30%" class="btn btn-default" onclick="{appointment}"> <div style="margin-top: 6px"><img src="/web/images/list.png" style="width: 24px"></div> <div style="font-size: 14px; margin-top: 3px">课程详情</div> </div> <input style="width:70%" class="btn btn-primary" value="立刻预约" onclick="{appointment}"> </div> </div> <div id="form" if="{formShow}"> <div id="bg" onclick="{cancelAppointment}"></div> <div id="info"> <div class="pop-window"> <div> <p>请留下您的联系方式</p> <p>我们的课程顾问会尽快和您联系</p> <p>为您提供专业的建议和服务</p> </div> <div> <div style="position:relative;width: 220px;margin:0px auto"> <b style="background: #ff5000;width: 3px; height: 24px;position: absolute;left:10px;top:10px"></b> <input style="text-indent: 15px" class="text-input" name="telephone" type="text" placeholder="请输入电话号码"> </div> </div> <div> <input class="btn-rd btn-primary" type="button" value="确认提交" onclick="{onSubmit}"> </div> <div onclick="{cancelAppointment}" style="text-align:center;line-height: 32px;width :32px;height: 32px;position: absolute; top: -20px; right: 0px">X</div> </div> </div> </div>', 'product .pop-window,[riot-tag="product"] .pop-window,[data-is="product"] .pop-window{ position: relative; margin: 0px auto; height: 240px; width: 280px; background-color: white; border-radius: 5px; overflow: hidden; } product .pop-window >div,[riot-tag="product"] .pop-window >div,[data-is="product"] .pop-window >div{ margin-top: 20px } product .pop-window >div >p,[riot-tag="product"] .pop-window >div >p,[data-is="product"] .pop-window >div >p{ margin: 10px auto; font-size: 16px; } product .text-input,[riot-tag="product"] .text-input,[data-is="product"] .text-input{ background: #f1f1f1; border: none; width: 220px; height: 40px; font-size: 16px; border-radius: 5px; } product .btn-rd,[riot-tag="product"] .btn-rd,[data-is="product"] .btn-rd{ display: inline-block; width: 220px; height:40px; border:none; border-radius: 5px; text-align: center; font-size: 18px; } product .header >div,[riot-tag="product"] .header >div,[data-is="product"] .header >div{ margin-bottom: 15px; } product .header .title >span,[riot-tag="product"] .header .title >span,[data-is="product"] .header .title >span{ font-size: 24px; } product .header .slogan >span,[riot-tag="product"] .header .slogan >span,[data-is="product"] .header .slogan >span{ font-size: 16px; color: #ababab; } product .body,[riot-tag="product"] .body,[data-is="product"] .body{ padding: 10px } product .btn,[riot-tag="product"] .btn,[data-is="product"] .btn{ box-sizing: border-box; display: block; float: left; height:56px; border:none; text-align: center; font-size: 18px; } product .btn-default,[riot-tag="product"] .btn-default,[data-is="product"] .btn-default{ background-color: white; color: #ff5000; } product .btn-primary,[riot-tag="product"] .btn-primary,[data-is="product"] .btn-primary{ background-color: #ff5000; color: white; } product .container,[riot-tag="product"] .container,[data-is="product"] .container{ position: relative; } product .container .header,[riot-tag="product"] .container .header,[data-is="product"] .container .header{ padding: 10px; height: 100px; background-color: white; margin-bottom: 10px; } product .container .body,[riot-tag="product"] .container .body,[data-is="product"] .container .body{ height: 120px; background-color: white; margin-bottom: 10px; } product .container .footer,[riot-tag="product"] .container .footer,[data-is="product"] .container .footer{ background-color: white; width: 100%; height: 56px; position: fixed; bottom: 0px; } product #bg,[riot-tag="product"] #bg,[data-is="product"] #bg{ position: fixed; top: 0; left: 0; width: 100%; height: 100%; text-align: center; background: rgba(0, 0, 0, 0.7); z-index: 99; } product #info,[riot-tag="product"] #info,[data-is="product"] #info{ position: fixed; top: 160px; left: 0; width: 100%; height: 200px; text-align: center; z-index: 100; }', '', function(opts) {
 	        'use strict';
 	        this.mixin('dispatcher');
@@ -4239,11 +4369,23 @@ webpackJsonp([0,1],[
 /* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('raw', '', '', '', function(opts) {
-	        var me = this;
-	        me.on('update', function(){
-	            me.root.innerHTML = me.opts.content || '';
-	        })
+	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('banner', '<div class="banner"> <span>{opts.banners}</span> <img src="http://www.0739i.com.cn/data/attachment/portal/201603/09/120155zrcvtsvaj9ptaawt.jpg" width="100%" alt=""> </div>', 'banner .banner,[riot-tag="banner"] .banner,[data-is="banner"] .banner{ padding: 10px; background-color: white; margin-bottom: 10px; }', '', function(opts) {
+	        var self = this;
+	        self.on('mount', function(){
+	            console.log(self.opts)
+	        });
+	        self.on('update', function(){
+	            self.banners = self.opts.banners;
+	            console.error(self.opts);
+	        });
+
+	        var i = 0;
+	        setInterval(function(){
+	            var doc = document.querySelector('.banner img');
+	            doc.setAttribute('src', __app.settings.api.url + '/file?media_id=' +
+	self.banners[i%3]);
+	            i++;
+	        }, 3000);
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
@@ -4251,16 +4393,11 @@ webpackJsonp([0,1],[
 /* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('banner', '<div class="banner"> <img src="http://www.0739i.com.cn/data/attachment/portal/201603/09/120155zrcvtsvaj9ptaawt.jpg" width="100%" alt=""> </div>', 'banner .banner,[riot-tag="banner"] .banner,[data-is="banner"] .banner{ padding: 10px; background-color: white; margin-bottom: 10px; }', '', function(opts) {
-	        console.error(this.opts);
-	        var banners = this.opts.banners;
-	        var i = 0;
-	        setInterval(function(){
-	            var doc = document.querySelector('.banner img');
-	            doc.setAttribute('src', __app.settings.api.url + '/file?media_id=' +
-	banners[i%3]);
-	            i++;
-	        }, 3000);
+	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('raw', '', '', '', function(opts) {
+	        var me = this;
+	        me.on('update', function(){
+	            me.root.innerHTML = me.opts.content || '';
+	        })
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 

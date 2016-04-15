@@ -1,5 +1,6 @@
 <banner>
     <div class="banner">
+        <span>{opts.banners}</span>
         <img src="http://www.0739i.com.cn/data/attachment/portal/201603/09/120155zrcvtsvaj9ptaawt.jpg" width="100%" alt="">
     </div>
     <style scoped>
@@ -10,13 +11,20 @@
         }
     </style>
     <script>
-        console.error(this.opts);
-        var banners = this.opts.banners;
+        var self = this;
+        self.on('mount', function(){
+            console.log(self.opts)
+        });
+        self.on('update', function(){
+            self.banners = self.opts.banners;
+            console.error(self.opts);
+        });
+
         var i = 0;
         setInterval(function(){
             var doc = document.querySelector('.banner img');
             doc.setAttribute('src', __app.settings.api.url + '/file?media_id=' +
-banners[i%3]);
+self.banners[i%3]);
             i++;
         }, 3000);
     </script>
