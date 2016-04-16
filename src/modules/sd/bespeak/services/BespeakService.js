@@ -1,6 +1,7 @@
 var co = require('co');
 var cbUtil = require('../../../../framework/callback');
 var typeRegistry = require('../../../common/models/TypeRegistry');
+var Promise = require('bluebird');
 
 var Service = function(context){
     this.context = context;
@@ -135,6 +136,7 @@ Service.prototype.loadById = function(id, callback){
 Service.prototype.updateById = function(wechatId, id, json, callback){
     var Bespeak = this.context.models.Bespeak;
     var bespeakKv = this.context.kvs.bespeak;
+    var promise = Promise.resolve();
     if(typeof callback === 'undefined'){
         callback = json;
         json = id;
@@ -148,11 +150,13 @@ Service.prototype.updateById = function(wechatId, id, json, callback){
         if(typeof json.media === 'object'){
             json.media = json.media._id;
         }
-        console.log(this.context.services);
-        var loadedWechatSitePromise = this.context.services.tenantWechatSiteService.loadByIdAsync(json.media);
+        promise = this.context.services.tenantWechatSiteService.loadByIdAsync(json.media);
     }
-    loadedWechatSitePromise.then(function(doc){
-        bespeakKv.saveById(doc.originalId, id, json, function(err, result){
+    promise.then(function(doc){
+        if(!doc){
+            wechatId = doc.originalId;
+        }
+        bespeakKv.saveById(wechatId, id, json, function(err, result){
             if(err){
                 return callback(err);
             }

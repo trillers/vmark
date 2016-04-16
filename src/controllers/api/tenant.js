@@ -140,6 +140,9 @@ module.exports = function (router) {
                     {path: 'media'}
                 ]
             };
+            params.sort= {
+                crtOn: -1
+            };
             if(query.product){
                 if(typeof query.product != 'string'){
                     this.throw(new Error('load catalog expected a product id'));
@@ -435,17 +438,22 @@ module.exports = function (router) {
     router.get('/sd/customers', function*(){
         try{
             let tenantId = this.request.query.tenant;
+            let wechatId = this.request.query.wechatId;
             let options = {
                 page: {
                     no: this.request.query.no,
                     size: this.request.query.size
                 },
                 conditions: {
-                    org: tenantId,
-                    $or : [
-                        {type: MembershipType.Customer.value()},
-                        {type: MembershipType.Both.value()}
-                    ]
+                    $or: [
+                        {
+                            type: MembershipType.Customer.value()
+                        },
+                        {
+                            type: MembershipType.Both.value()
+                        }
+                    ],
+                    org: tenantId
                 },
                 populates: [
                     {path:'user', model: 'TenantUser'},
@@ -460,10 +468,25 @@ module.exports = function (router) {
                             model: 'WechatMedia'
                         }]
                     },
-                    {path: 'media'}
+                    {
+                        path: 'media',
+                        model: 'WechatMedia'
+                    }
                 ]
             };
+            if(wechatId){
+                options.populates.forEach(function(populate){
+                    if(populate.path === 'media'){
+                        populate['match'] = {
+                            originalId: wechatId
+                        }
+                    }
+                })
+            }
             let customers = yield context.services.membershipService.findAsync(options);
+            customers = customers.filter(function(customer){
+                return customer.media;
+            });
             this.body = {customers: customers, error: null};
         } catch (e){
             logger.error(e);
@@ -518,6 +541,7 @@ module.exports = function (router) {
     router.get('/sd/distributors', function*(){
         try{
             let tenantId = this.request.query.tenant;
+            let wechatId = this.request.query.wechatId;
             let options = {
                 page: {
                     no: this.request.query.no,
@@ -547,10 +571,25 @@ module.exports = function (router) {
                             model: 'WechatMedia'
                         }]
                     },
-                    {path: 'media'}
+                    {
+                        path: 'media',
+                        model: 'WechatMedia'
+                    }
                 ]
             };
+            if(wechatId){
+                options.populates.forEach(function(populate){
+                    if(populate.path === 'media'){
+                        populate['match'] = {
+                            originalId: wechatId
+                        }
+                    }
+                })
+            }
             let distributors = yield context.services.membershipService.findAsync(options);
+            distributors = distributors.filter(function(distributor){
+                return distributor.media;
+            });
             this.body = {distributors: distributors, error: null};
         } catch (e){
             logger.error(e);
