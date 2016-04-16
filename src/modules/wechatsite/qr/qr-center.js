@@ -66,7 +66,8 @@ sdProductType.onAccess(function(qr, openid, wechatId){
             }];
             yield wechatApi.sendNewsAsync(user.openid, articles);
         }catch (e){
-
+            console.error(e.message);
+            console.error(e.stack);
         }
     })
 });
