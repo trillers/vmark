@@ -142,7 +142,7 @@ Service.prototype.splitBill = function(distributor, product, finalPrice, level, 
                 console.log("*************")
                 console.log(distributor.upLine);
                 console.log(index);
-                recurSplitBill(distributor.upLine, ++index);
+                yield recurSplitBill(distributor.upLine, ++index);
             };
             yield recurSplitBill(distributor, index);
         }
