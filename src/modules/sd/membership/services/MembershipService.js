@@ -157,7 +157,7 @@ Service.prototype.addAccountBalance = function(distributorId, income, callback){
     var me = this;
     var membershipKv = this.context.kvs.membership;
     var Membership = this.context.models.Membership;
-    Membership.findByIdAndUpdate(distributorId, {accountBalance: {$inc: income}}, {new: true}, function(err, doc){
+    Membership.findByIdAndUpdate(distributorId, {$inc: {accountBalance: income}}, {new: true}, function(err, doc){
         if(err){
             me.context.logger.error('Failed to add account balance' + util.inspect(err));
             return callback(err)
