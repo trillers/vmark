@@ -57,12 +57,16 @@ sdProductType.onAccess(function(qr, openid, wechatId){
             var fetchedPoster = yield context.services.posterService.fetchAsync(myPoster, wechatId, user);
             yield wechatApi.sendImageAsync(user.openid, fetchedPoster.mediaId);
             yield wechatApi.sendTextAsync(user.openid, responseText);
-            const picUrl = settings.api.url + '/file?media_id=' + fetchedPoster.mediaId;
+            let newsImg = null;
+            if(product.banners){
+                newsImg = product.banners[0];
+            }
+            const picUrl = settings.api.url + '/file?media_id=' + newsImg;
             let articles = [{
                 picurl: picUrl,
                 description: product.slogan,
                 title: product.name,
-                url: 'http://' + path.join(settings.app.domain, '/sd/product?id=' + product._id + '&media=' + media._id)
+                url: 'http://' + path.join(settings.app.domain, '/sd/' + wechatId + '/product?id=' + product._id + '&media=' + media._id)
             }];
             yield wechatApi.sendNewsAsync(user.openid, articles);
         }catch (e){
@@ -132,7 +136,7 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
                 picurl: picUrl,
                 description: product.slogan,
                 title: product.name,
-                url: 'http://' + path.join(settings.app.domain, '/sd/product?id=' + product._id + '&media=' + media._id)
+                url: 'http://' + path.join(settings.app.domain, '/sd/' + wechatId + '/product?id=' + product._id + '&media=' + media._id)
             }];
             yield wechatApi.sendNewsAsync(user.openid, articles);
 
