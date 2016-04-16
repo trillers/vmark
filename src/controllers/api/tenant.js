@@ -361,9 +361,7 @@ module.exports = function (router) {
             if(distributor){
                 let distributors = [];
                 let recurPushDistributors = function(distributor){
-                    console.log(distributor);
-                    console.log(distributor.upLine);
-                    if(!distributor || !distributor.upLine){
+                    if(!distributor){
                         return;
                     }
                     if(typeof distributor.upLine === 'string'){
