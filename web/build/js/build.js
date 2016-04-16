@@ -3564,9 +3564,11 @@ webpackJsonp([0,1],[
 	            newPosX = 0;newPosY = 0;
 	        }
 	        function renderIndexSpan(index) {
-	            $(".picPrevIndexSpan").forEach(function (o) {
-	                $(o).removeClass('picIndexSpanSelected');
-	            });
+	            if ($(".picPrevIndexSpan").length) {
+	                $(".picPrevIndexSpan").forEach(function (o) {
+	                    $(o).removeClass('picIndexSpanSelected');
+	                });
+	            }
 	            $("#picIndexSpan" + index).addClass('picIndexSpanSelected');
 	        }
 	    },
