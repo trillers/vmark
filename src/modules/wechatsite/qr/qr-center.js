@@ -17,6 +17,8 @@ var participantPosterType =    qrTypeRegistry.newType('pap', {temp: true});
 sdProductType.onAccess(function(qr, openid, wechatId){
     co(function*(){
         try {
+            console.log("*********************");
+
             var wechatApi = (yield wechatApiCache.get(wechatId)).api;
             var user = yield tenantUserService.ensureTenantUserAsync(wechatId, openid);
             var media = yield context.services.tenantWechatSiteService.loadTenantWechatSiteByOriginalIdAsync(wechatId);
