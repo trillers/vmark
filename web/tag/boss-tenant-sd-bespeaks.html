@@ -54,6 +54,7 @@
                             </td>
                             <td>
                                 <input onclick="{parent.onOrderCreate}" data-toggle="modal" data-target="#orderModal" type="button" class="btn btn-default" value="成单"/>
+                                <input onclick="{parent.onOrderGiveUp}" data-toggle="modal" data-target="#modal" type="button" class="btn btn-default" value="弃单"/>
                             </td>
                         </tr>
 
@@ -101,6 +102,8 @@
         var self = nest.presentable(this);
         var findBespeaksAction = domain.action('findBespeaks');
         var createOrderAction = domain.action('createOrder');
+        var updateBespeakByIdAction = domain.action('updateBespeakById');
+
         self.bespeaks = [];
         self.currBespeak = {};
         self.filter = {
@@ -121,6 +124,34 @@
         self.onOrderCreate = function(e){
             self.finalPrice.value = "";
             self.currBespeak = e.item;
+        };
+        self.onOrderGiveUp = function(e){
+            self.currBespeak = e.item;
+            _.widget.confirm({
+                title: '操作确认',
+                content: '你确认要“销毁”该预约吗？',
+                callback: function(){
+                    self.currBespeak.lFlg = __app.enums.LifeFlag.names.Deleted;
+                    console.log(e.item);
+                    updateBespeakByIdAction.newInvocation({
+                        id: self.currBespeak._id,
+                        o: {
+                            media: self.currBespeak.media,
+                            lFlg: self.currBespeak.lFlg
+                        }
+                    }).onDone(function(res){
+                        if(res.error){
+                            alert('销毁预约失败');
+                            return;
+                        }
+                        self.currBespeak = null;
+                        self.bespeaks = self.bespeaks.filter(function(bespeak){
+                            return bespeak._id != res.bespeak._id;
+                        });
+                        self.update();
+                    }).execute();
+                }
+            });
         };
         self.onSearch = function(e){
             findBespeaksAction.newInvocation({

@@ -132,16 +132,35 @@ Service.prototype.loadById = function(id, callback){
     });
 };
 
-Service.prototype.updateById = function(id, json, callback){
+Service.prototype.updateById = function(wechatId, id, json, callback){
     var Bespeak = this.context.models.Bespeak;
     var bespeakKv = this.context.kvs.bespeak;
-    !json['_id'] && (json['_id'] = id);
-    bespeakKv.saveById(json, function(err, result){
-        if(err){
-            return callback(err);
+    if(typeof callback === 'undefined'){
+        callback = json;
+        json = id;
+        id = wechatId;
+        wechatId = undefined;
+    }
+    if(!wechatId){
+        if(!json.media){
+            return callback(new Error('update bespeak by id expected a wechat id or media id'));
         }
-        Bespeak.findByIdAndUpdate(id, json, {lean: true, new: true}).exec(callback);
-    })
+        if(typeof json.media === 'object'){
+            json.media = json.media._id;
+        }
+        console.log(this.context.services);
+        var loadedWechatSitePromise = this.context.services.tenantWechatSiteService.loadByIdAsync(json.media);
+    }
+    loadedWechatSitePromise.then(function(doc){
+        bespeakKv.saveById(doc.originalId, id, json, function(err, result){
+            if(err){
+                return callback(err);
+            }
+            Bespeak.findByIdAndUpdate(id, json, {lean: true, new: true}).exec(callback);
+        })
+    }).catch(function(err){
+        callback(err);
+    });
 };
 
 Service.prototype.removeById = function(wechatId, id, callback){

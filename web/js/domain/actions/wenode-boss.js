@@ -112,6 +112,10 @@ domain.action('findBespeaks').onExecute(function(data){
     apiFactory.get('/tenant/sd/bespeak?' + querystring).drive(this).send();
 });
 
+domain.action('updateBespeakById').onExecute(function(data){
+    apiFactory.put('/tenant/sd/bespeaks/_' + data.id).drive(this).send(data);
+});
+
 domain.action('findCatalogs').onExecute(function(data){
     var querystring = Object.keys(data.filter).map(function(k){
         return k + "=" + data.filter[k]

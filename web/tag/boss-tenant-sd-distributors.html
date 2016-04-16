@@ -88,9 +88,7 @@
         };
         self.on('mount', function(){
             findDistributorsByTenantIdAction.onDone(function(res){
-                console.log("~~~~~~~")
                 self.distributors= res.distributors;
-                console.log(self.distributors)
                 self.update();
             })
         });

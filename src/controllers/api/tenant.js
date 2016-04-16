@@ -236,6 +236,18 @@ module.exports = function (router) {
         }
     });
 
+    router.put('/sd/bespeaks/_:id', function*(){
+        try{
+            let id = this.params.id;
+            let bespeak = this.request.body.o;
+            let bespeakUpdated = yield context.services.bespeakService.updateByIdAsync(id, bespeak);
+            this.body = {error: null, bespeak: bespeakUpdated}
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e}
+        }
+    });
+
     router.get('/sd/orders', function*(){
         try{
             let tenantId = this.request.query.tenant;
