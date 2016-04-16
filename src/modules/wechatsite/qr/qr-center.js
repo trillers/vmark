@@ -54,7 +54,7 @@ sdProductType.onAccess(function(qr, openid, wechatId){
             let myPoster = {
                 product: product
             };
-            var fetchedPoster = context.services.posterService.fetchAsync(myPoster, wechatId, user);
+            var fetchedPoster = yield context.services.posterService.fetchAsync(myPoster, wechatId, user);
             yield wechatApi.sendImageAsync(user.openid, fetchedPoster.mediaId);
             yield wechatApi.sendTextAsync(user.openid, responseText);
             const picUrl = settings.api.url + '/file?media_id=' + fetchedPoster.mediaId;
