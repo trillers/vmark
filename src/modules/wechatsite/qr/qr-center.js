@@ -61,7 +61,11 @@ sdProductType.onAccess(function(qr, openid, wechatId){
             if(product.banners){
                 newsImg = product.banners[0];
             }
-            const picUrl = settings.api.url + '/file?media_id=' + newsImg;
+            var picUrl = settings.api.url + '/file?media_id=' + newsImg;
+
+            console.warn("**************");
+            console.warn(picUrl);
+
             let articles = [{
                 picurl: picUrl,
                 description: product.slogan,
