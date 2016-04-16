@@ -93,7 +93,7 @@ module.exports = function(app){
                 this.redirect('/tenant-recontent-'+auth.tenantId+'#adlink-index');
             }
             else{
-                this.redirect('/boss');
+                this.redirect('/boss/tenant/_' + auth.tenantId);
             }
         }
     });
@@ -103,5 +103,9 @@ module.exports = function(app){
         yield this.render('login-feedback', {});
     });
 
+    //permission deny page
+    router.get('/permission-deny', function *(){
+        yield this.render('error', {error: {message: '您没有访问该页面的权限,请联系管理员'}});
+    });
     app.use(router.routes());
 };
