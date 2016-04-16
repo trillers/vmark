@@ -20,7 +20,7 @@ sdProductType.onAccess(function(qr, openid, wechatId){
             console.log("*********************");
 
             var wechatApi = (yield wechatApiCache.get(wechatId)).api;
-            var user = yield tenantUserService.ensureTenantUserAsync(wechatId, openid);
+            var user = yield context.services.tenantUserService.ensureTenantUserAsync(wechatId, openid);
             var media = yield context.services.tenantWechatSiteService.loadTenantWechatSiteByOriginalIdAsync(wechatId);
             var memberships = yield context.services.membershipService.findAsync({conditions:{media: media._id, user: user._id}});
             var membership = memberships && memberships[0] || null;
