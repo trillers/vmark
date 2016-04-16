@@ -116,6 +116,9 @@ module.exports = function (router) {
             params.conditions = this.request.body.filter || {};
             params.conditions['tenant'] = tenant;
             params.conditions['lFlg'] = 'a';
+            params.populate = [{
+                path: 'qr'
+            }]
             params.sort = {
                 crtOn: -1
             };
@@ -197,9 +200,15 @@ module.exports = function (router) {
         try{
             let product = this.request.body.product;
             let media = this.request.body.media;
-            var poster = yield context.services.posterService.fetchAsync({product: product}, media.originalId, this.session.auth.user);
-            if(poster){
-                return this.body = {error: null, poster: poster}
+
+            let qrType = qrTypeRegistry.getQrType('sdp');
+            let qr = yield qrType.createQrAsync({wechatId: media.originalId, temp: true});
+            yield context.services.courseService.updateByIdAsync(product._id, {qr: qr._id});
+            qr.toJson();
+            product.qr = qr;
+
+            if(qr){
+                return this.body = {error: null, product: product}
             }
             else{
                 return this.body = {error: 'failed to get poster'};

@@ -28,7 +28,8 @@ var Model = function(domainBuilder){
             tenant:                {type: String, ref: 'Org', required: true},
             operator:              {type: String, ref: 'OrgMember'},
             updOn:                 {type: Date},
-            poster:                {type: String, ref: 'Poster'},
+            poster:                {type: String, ref: 'Poster'}, //file id
+            qr:                    {type: String, ref: 'QrCode'},
             banners:               [{type: String}]
         })
         .build();

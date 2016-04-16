@@ -69,4 +69,14 @@ Qr.prototype.invalid = function(callback){
 };
 Qr.prototype.invalidAsync = Promise.promisify(Qr.prototype.invalid);
 
+Qr.prototype.toJson = function(){
+    if(this.registry){
+        delete this['registry'];
+    }
+    if(this.typeObj){
+        delete this['typeObj'];
+    }
+    return this;
+};
+
 module.exports = Qr;
