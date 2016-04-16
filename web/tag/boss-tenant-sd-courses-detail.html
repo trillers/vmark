@@ -47,6 +47,16 @@
                                             <td>备注</td>
                                             <td>{course.desc}</td>
                                         </tr>
+                                        <tr>
+                                            <td><strong>焦点图</strong></td>
+                                            <td colspan="2">
+                                                <ul class="banners-container">
+                                                    <li each="{banner, i in course.banners}">
+                                                        <img riot-src="{banner && (__app.settings.api.url + '/file?media_id=' + banner)}"/>
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
                                     </table>
                                     <div class="row text-center">
                                         <div class="col-md-12 col-lg-12">
@@ -112,17 +122,6 @@
                                         <tr>
                                             <td><strong>分销海报背景</strong></td>
                                             <td colspan="2"><img style="width: 200px" riot-src="{course.poster &&__app.settings.api.url + '/file?media_id=' + course.poster}"/></td>
-                                        </tr>
-
-                                        <tr>
-                                            <td><strong>焦点图</strong></td>
-                                            <td colspan="2">
-                                                <ul class="banners-container">
-                                                    <li each="{banner, i in course.banners}">
-                                                        <img riot-src="{banner && (__app.settings.api.url + '/file?media_id=' + banner)}"/>
-                                                    </li>
-                                                </ul>
-                                            </td>
                                         </tr>
 
                                     </table>

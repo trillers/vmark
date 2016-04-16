@@ -224,12 +224,24 @@ module.exports = function (router) {
             let wechatsite = yield context.services.tenantWechatSiteService.loadByIdAsync(bespeak.media);
             yield context.services.membershipService.ensureSignUpAsync(wechatsite.originalId, bespeak.user._id);
             yield context.services.bespeakService.createAsync({
-                product: bespeak.product._id,
+                product: bespeak.product._id || bespeak.product,
                 media: bespeak.media,
                 user: bespeak.user._id,
                 telephone: bespeak.telephone
             });
             this.body = {error: null}
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e}
+        }
+    });
+
+    router.put('/sd/bespeaks/_:id', function*(){
+        try{
+            let id = this.params.id;
+            let bespeak = this.request.body.o;
+            let bespeakUpdated = yield context.services.bespeakService.updateByIdAsync(id, bespeak);
+            this.body = {error: null, bespeak: bespeakUpdated}
         }catch(e){
             logger.error(e);
             this.body = {error: e}
