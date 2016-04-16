@@ -10,6 +10,7 @@
     <script type="text/javascript">
         window.__app = {{ JSON.stringify(__app) }};
         window.__page = {{ JSON.stringify(__page) }};
+        window.__page.tenantId = {{ JSON.stringify(tenantId) }};
         window.prdOrNot =( __app.settings.env.NODE_ENV === "production" );
         var scripthook = document.createElement( "script" );
 

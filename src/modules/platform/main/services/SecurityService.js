@@ -65,7 +65,7 @@ var hasRole = function(posts, role) {
  *          name:         {type: String}// the nickname of the hosted wechat account
  *          headimgurl:   {type: String}// the headimgurl of the hosted wechat account
  *      },
- *      tenant: tenant id,
+ *      tenantId: tenant id,
  *      result: {type: String} result enum string for authentication, reference Service.prototype.authResults
  *  }
  */
