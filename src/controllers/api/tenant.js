@@ -329,26 +329,11 @@ module.exports = function (router) {
             let wechatId = tenantWechatSite.originalId;
             let distributor = null;
             order.org = tenantWechatSite.org;
-
-            console.log("order............")
-            console.log(order)
-            console.log("tenantWechatSite............")
-            console.log(tenantWechatSite)
             let userId = order.bespeak.user._id;
-            console.log("userId............")
-            console.log(userId)
-            console.log("wechatId............")
-            console.log(wechatId)
             let membership = yield context.services.membershipService.loadByUserIdAndWechatIdAsync(userId, wechatId);
-            console.log("membership............")
-            console.log(membership)
             let isDistributor = membership.type && (membership.type === 'd');
-            console.log("isDistributor............")
-            console.log(isDistributor)
             if(isDistributor){
                 distributor = yield context.services.membershipService.loadDistributorsChainByIdAsync(membership._id);
-                console.log("distributor............")
-                console.log(distributor)
                 yield context.services.membershipService.splitBillAsync(distributor, order.bespeak.product, order.finalPrice, 3);
             }
             let orderMeta = {
@@ -356,8 +341,6 @@ module.exports = function (router) {
                 org: order.org,
                 finalPrice: order.finalPrice
             };
-            console.log("orderMeta............")
-            console.log(orderMeta);
             if(distributor){
                 let distributors = [];
                 let recurPushDistributors = function(distributor){
@@ -369,14 +352,12 @@ module.exports = function (router) {
                     }else{
                         distributors.push(distributor.upLine._id);
                     }
-                    setTimeout(function(){
-                        recurPushDistributors(distributor.upLine);
-                    }, 5000)
+                    recurPushDistributors(distributor.upLine);
                 };
                 recurPushDistributors(distributor);
                 orderMeta['distributors'] = distributors;
             }
-            let orderPersisted = yield context.services.orderService.createAsync(wechatId, order);
+            let orderPersisted = yield context.services.orderService.createAsync(wechatId, orderMeta);
             yield context.services.bespeakService.removeByIdAsync(wechatId, order.bespeak._id);
 
             this.body = {order: orderPersisted, error: null};

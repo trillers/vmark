@@ -118,14 +118,10 @@ Service.prototype.splitBill = function(distributor, product, finalPrice, level, 
                 level = 3;
             }
             let recurSplitBill = function* (distributor, index){
-                console.log("distributor&&&&&&&&&&&&&&");
-                console.log(distributor);
                 if(!distributor || !distributor.upLine || index > level){
                     return callback(null);
                 }
                 let currentDistributor = distributor.upLine;
-                console.log("currentDistributor........")
-                console.log(currentDistributor);
                 let IncomeAmount = null;
                 let commissionType = product['upLine' + index + 'CommissionType'];
                 let commissionValue = product['upLine' + index + 'CommissionValue'];
@@ -136,12 +132,7 @@ Service.prototype.splitBill = function(distributor, product, finalPrice, level, 
                 }else{
                     throw new Error('unknown distributor strategy');
                 }
-                console.log("IncomeAmount........")
-                console.log(IncomeAmount);
                 yield me.addAccountBalanceAsync(currentDistributor._id, IncomeAmount);
-                console.log("*************")
-                console.log(distributor.upLine);
-                console.log(index);
                 yield recurSplitBill(distributor.upLine, ++index);
             };
             yield recurSplitBill(distributor, index);
