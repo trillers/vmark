@@ -63,9 +63,6 @@ sdProductType.onAccess(function(qr, openid, wechatId){
             }
             var picUrl = settings.api.url + '/file?media_id=' + newsImg;
 
-            console.warn("**************");
-            console.warn(picUrl);
-
             let articles = [{
                 picurl: picUrl,
                 description: product.slogan,
@@ -135,7 +132,14 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
             let fetchedPoster = yield context.services.posterService.fetchAsync(myPoster, wechatId, user);
             yield wechatApi.sendImageAsync(user.openid, fetchedPoster.mediaId);
             yield wechatApi.sendTextAsync(user.openid, responseText);
-            const picUrl = settings.api.url + '/file?media_id=' + fetchedPoster.mediaId;
+
+
+            let newsImg = null;
+            if(product.banners){
+                newsImg = product.banners[0];
+            }
+            var picUrl = settings.api.url + '/file?media_id=' + newsImg;
+
             let articles = [{
                 picurl: picUrl,
                 description: product.slogan,
