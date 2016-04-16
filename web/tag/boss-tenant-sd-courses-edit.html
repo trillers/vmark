@@ -403,7 +403,7 @@
             self.course.memberDiscountsValue = '';
         };
         var validateValue = function(val, kv, callback){
-            if(val.trim() < 0 || val.trim() > self.course.listPrice){
+            if(val.trim() < 0 || parseInt(val.trim(), 10) > parseInt(self.course.listPrice, 10)){
                 return self.validators.addToSet({
                     success: false,
                     field: kv.value,
