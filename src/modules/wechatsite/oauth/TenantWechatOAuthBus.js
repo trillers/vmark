@@ -38,6 +38,7 @@ Bus.prototype.authorize = function* (ctx){
     var routeName = ctx.query.route;
     var returnUrl = ctx.query.returnUrl;
     var wechatId = this._getWechatId(ctx);
+    console.error(returnUrl);
     //save return url
     //ctx.session && (ctx.session[this.returnUrlKey] = returnUrl);
     authentication.saveReturnUrl(ctx, wechatId, returnUrl);
