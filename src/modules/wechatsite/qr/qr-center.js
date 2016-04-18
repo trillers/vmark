@@ -18,7 +18,8 @@ sdProductType.onAccess(function(qr, openid, wechatId){
     co(function*(){
         try {
             var wechatApi = (yield wechatApiCache.get(wechatId)).api;
-            var user = yield context.services.tenantUserService.ensureTenantUserAsync(wechatId, openid);
+            var auth = yield context.services.tenantAuthenticationService.signupOnSubscriptionAsync(wechatId, openid);
+            var user = auth.user;
             var media = yield context.services.tenantWechatSiteService.loadTenantWechatSiteByOriginalIdAsync(wechatId);
             var memberships = yield context.services.membershipService.findAsync({conditions:{media: media._id, user: user._id}});
             var membership = memberships && memberships[0] || null;
@@ -79,8 +80,8 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
     co(function*(){
         try{
             var wechatApi = (yield wechatApiCache.get(wechatId)).api;
-            var tenantUserService = context.services.tenantUserService;
-            var user = yield tenantUserService.ensureTenantUserAsync(wechatId, openid);
+            var auth = yield context.services.tenantAuthenticationService.signupOnSubscriptionAsync(wechatId, openid);
+            var user = auth.user;
             var media = yield context.services.tenantWechatSiteService.loadTenantWechatSiteByOriginalIdAsync(wechatId);
             var memberships = yield context.services.membershipService.findAsync({conditions:{media: media._id, user: user._id}});
             var membership = memberships && memberships[0] || null;
@@ -164,7 +165,8 @@ activityType.onAccess(function(qr, openid, wechatId){
     co(function*(){
         try{
             var wechatApi = (yield wechatApiCache.get(wechatId)).api;
-            yield tenantUserService.ensureTenantUserAsync(wechatId, openid);
+            var auth = yield context.services.tenantAuthenticationService.signupOnSubscriptionAsync(wechatId, openid);
+            var user = auth.user;
             var res = yield powerActivityService.getActivityPoster(qr, wechatId, openid);
             wechatApi.sendText(openid, res.reply, function (err) {
                 if(err) logger.error(err);
@@ -187,8 +189,8 @@ activityPosterType.onAccess(function(qr, openid, wechatId){
     var logger = context.logger;
     co(function*(){
         try{
-            var tenantUserService = context.services.tenantUserService;
-            yield tenantUserService.ensureTenantUserAsync(wechatId, openid);
+            var auth = yield context.services.tenantAuthenticationService.signupOnSubscriptionAsync(wechatId, openid);
+            var user = auth.user;
             var powerActivityService = context.services.powerActivityService;
             yield powerActivityService.scanActivityPoster(qr, wechatId, openid);
         }
@@ -204,8 +206,8 @@ participantPosterType.onAccess(function(qr, openid, wechatId){
     var logger = context.logger;
     co(function*(){
         try{
-            var tenantUserService = context.services.tenantUserService;
-            yield tenantUserService.ensureTenantUserAsync(wechatId, openid);
+            var auth = yield context.services.tenantAuthenticationService.signupOnSubscriptionAsync(wechatId, openid);
+            var user = auth.user;
             var powerParticipantService = context.services.powerParticipantService;
             yield powerParticipantService.scanParticipantPoster(qr, wechatId, openid);
         }
