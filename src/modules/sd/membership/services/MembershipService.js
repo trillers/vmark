@@ -184,7 +184,7 @@ Service.prototype.checkoutByDistributorId = function(distributorId, tenantId, me
                 let responseText = "尊贵的经纪人 " + distributor.user.nickname + " : </br>" +
                     "客户 [ " + order.bespeak.user.nickname + " ] 购买了您分享的 " + order.bespeak.product.name + '</br>' +
                     "您此单收入 " + payment;
-                wechatApi.sendTextAsync(distributor.user.nickname, responseText);
+                wechatApi.sendTextAsync(distributor.user.openid, responseText);
             }
             done(null);
         }catch (e){
