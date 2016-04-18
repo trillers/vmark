@@ -171,18 +171,21 @@ Service.prototype.find = function (params, callback) {
         }
 
         if(params.populates) {
-            params.populates.forEach(i=>{
+            params.populates.forEach(function(i){
                 query.populate(i)
             })
         }
 
-        query.lean(true);
+        //query.lean(true);
         var docs = yield query.exec();
+        docs = docs.map(function(doc){
+            return doc.toObject({virtuals: true})
+        });
         var count = yield Order.count(params.conditions).exec();
         var data = {
             docs: docs,
             count: count
-        }
+        };
         if(callback) callback(null, data);
 
     }).catch(function(e){

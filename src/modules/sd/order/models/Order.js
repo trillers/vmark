@@ -20,9 +20,9 @@ var Model = function(domainBuilder){
 
     schema.virtual('status').get(function() {
             if(this.closingDistributors.length === this.distributors.length) {
-                return OrderStatus.unFinish.value();
+                return OrderStatus.finish.value();
             }
-            return OrderStatus.finish.value();
+            return OrderStatus.unFinish.value();
         })
         .set(function(status) {
             this.status = status;
