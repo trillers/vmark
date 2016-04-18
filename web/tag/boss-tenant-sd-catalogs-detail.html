@@ -268,7 +268,30 @@
 
         self.obtainQr = function(product){
             return function(e){
+                var qrTicket = null;
+                var qrUrl = null;
                 if(typeof self.catalog.media != 'object' || !product){
+                    return;
+                }
+                if(!product.poster){
+                    _.widget.showImg({
+                        title: '扫一扫获取课程海报',
+                        imgUrl: '',
+                        width: '300px',
+                        height: '300px',
+                        errorMsg: '该课程尚没有背景图片'
+                    });
+                    return;
+                }
+                if(product.qr && product.qr.ticket){
+                    qrTicket = product.qr.ticket || product.qr.ticket;
+                    qrUrl = 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=' + qrTicket;
+                    _.widget.showImg({
+                        title: '扫一扫获取课程海报',
+                        imgUrl: qrUrl,
+                        width: '300px',
+                        height: '300px'
+                    });
                     return;
                 }
                 fetchSdQrByProductAndWechatSiteAction.newInvocation({
@@ -276,26 +299,22 @@
                     media: self.catalog.media
                 }).onDone(function(res){
                     if(res.error){
-                        if(res.error.code === 801){
-                            _.widget.showImg({
-                                title: '扫一扫获取课程海报',
-                                imgUrl: '',
-                                width: '300px',
-                                height: '300px',
-                                errorMsg: '该课程尚没有背景图片'
-                            });
-                        }
+                        alert('获取二维码失败');
                         return;
-                    }else {
-                        var qrTicket = res.poster.ticket || res.poster.qr.ticket;
-                        var qrUrl = 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=' + qrTicket;
-                        _.widget.showImg({
-                            title: '扫一扫获取课程海报',
-                            imgUrl: qrUrl,
-                            width: '300px',
-                            height: '300px'
-                        });
                     }
+                    qrTicket = res.product.qr.ticket;
+                    qrUrl = 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=' + qrTicket;
+                    _.widget.showImg({
+                        title: '扫一扫获取课程海报',
+                        imgUrl: qrUrl,
+                        width: '300px',
+                        height: '300px'
+                    });
+                    self.catalog.products.forEach(function(product, i){
+                        if(res.product._id === product._id){
+                            self.catalog.products[i] = res.product;
+                        }
+                    })
                 }).execute();
             }
         };

@@ -75,7 +75,6 @@
         self.filter = {
             tenant: __page.tenantId
         };
-        console.log(__app.enums);
         self.on('open', function(){
             findCatalogsAction.newInvocation({
                 filter: self.filter
@@ -92,7 +91,6 @@
             findCatalogsAction.newInvocation({
                 filter: self.filter
             }).onDone(function(res){
-                console.warn(res);
                 if(res.error){
                     return alert("failed to search courses");
                 }

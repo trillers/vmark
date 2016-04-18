@@ -9,9 +9,73 @@ var wechatApiCache = require('../../tenant/wechat/api-cache');
 var path = require('path');
 
 var sdParticipantPosterType = qrTypeRegistry.newType('sdpp');
+var sdProductType = qrTypeRegistry.newType('sdp');
 var activityType =    qrTypeRegistry.newType('ac', {temp: true});
 var activityPosterType =    qrTypeRegistry.newType('acp', {temp: true});
 var participantPosterType =    qrTypeRegistry.newType('pap', {temp: true});
+
+sdProductType.onAccess(function(qr, openid, wechatId){
+    co(function*(){
+        try {
+            console.log("*********************");
+
+            var wechatApi = (yield wechatApiCache.get(wechatId)).api;
+            var user = yield context.services.tenantUserService.ensureTenantUserAsync(wechatId, openid);
+            var media = yield context.services.tenantWechatSiteService.loadTenantWechatSiteByOriginalIdAsync(wechatId);
+            var memberships = yield context.services.membershipService.findAsync({conditions:{media: media._id, user: user._id}});
+            var membership = memberships && memberships[0] || null;
+            var product = yield context.services.courseService.loadByQrCodeIdAsync(qr._id);
+            var responseText = '';
+
+            if(!membership){
+                membership = {
+                    org: media.org,
+                    media: media._id,
+                    type: MembershipType.Distributor.value(),
+                    user: user._id
+                };
+                yield context.services.membershipService.createAsync(membership);
+                responseText = '恭喜您成为经纪人,分享图片到朋友圈,获取丰厚回报';
+            }
+
+            else if(membership.type !== MembershipType.Distributor.value()){
+                let distributor = {
+                    type: MembershipType.Distributor.value()
+                };
+
+                yield context.services.membershipService.updateByIdAsync(membership._id, distributor);
+                responseText = '恭喜您成为经纪人,分享图片到朋友圈,获取丰厚回报';
+            }
+
+            else{
+                responseText = '您已经成为分销商';
+            }
+
+            let myPoster = {
+                product: product
+            };
+            var fetchedPoster = yield context.services.posterService.fetchAsync(myPoster, wechatId, user);
+            yield wechatApi.sendImageAsync(user.openid, fetchedPoster.mediaId);
+            yield wechatApi.sendTextAsync(user.openid, responseText);
+            let newsImg = null;
+            if(product.banners){
+                newsImg = product.banners[0];
+            }
+            var picUrl = settings.api.url + '/file?media_id=' + newsImg;
+
+            let articles = [{
+                picurl: picUrl,
+                description: product.slogan,
+                title: product.name,
+                url: 'http://' + path.join(settings.app.domain, '/sd/' + wechatId + '/product?id=' + product._id + '&media=' + media._id)
+            }];
+            yield wechatApi.sendNewsAsync(user.openid, articles);
+        }catch (e){
+            console.error(e.message);
+            console.error(e.stack);
+        }
+    })
+});
 
 sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
     co(function*(){
@@ -20,8 +84,7 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
             var tenantUserService = context.services.tenantUserService;
             var user = yield tenantUserService.ensureTenantUserAsync(wechatId, openid);
             var media = yield context.services.tenantWechatSiteService.loadTenantWechatSiteByOriginalIdAsync(wechatId);
-            var tenantUser = yield context.services.tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, user.openid);
-            var memberships = yield context.services.membershipService.findAsync({conditions:{media: media._id, user: tenantUser._id}});
+            var memberships = yield context.services.membershipService.findAsync({conditions:{media: media._id, user: user._id}});
             var membership = memberships && memberships[0] || null;
             var poster = yield context.services.posterService.loadByQrCodeIdAsync(qr._id);
             var product = yield context.services.courseService.loadByIdAsync(poster.product);
@@ -69,12 +132,19 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
             let fetchedPoster = yield context.services.posterService.fetchAsync(myPoster, wechatId, user);
             yield wechatApi.sendImageAsync(user.openid, fetchedPoster.mediaId);
             yield wechatApi.sendTextAsync(user.openid, responseText);
-            const picUrl = settings.api.url + '/file?media_id=' + fetchedPoster.mediaId;
+
+
+            let newsImg = null;
+            if(product.banners){
+                newsImg = product.banners[0];
+            }
+            var picUrl = settings.api.url + '/file?media_id=' + newsImg;
+
             let articles = [{
                 picurl: picUrl,
                 description: product.slogan,
                 title: product.name,
-                url: 'http://' + path.join(settings.app.domain, '/sd/product?id=' + product._id + '&media=' + media._id)
+                url: 'http://' + path.join(settings.app.domain, '/sd/' + wechatId + '/product?id=' + product._id + '&media=' + media._id)
             }];
             yield wechatApi.sendNewsAsync(user.openid, articles);
 

@@ -3582,9 +3582,11 @@ webpackJsonp([0,1],[
 	            newPosX = 0;newPosY = 0;
 	        }
 	        function renderIndexSpan(index) {
-	            $(".picPrevIndexSpan").forEach(function (o) {
-	                $(o).removeClass('picIndexSpanSelected');
-	            });
+	            if ($(".picPrevIndexSpan").length) {
+	                $(".picPrevIndexSpan").forEach(function (o) {
+	                    $(o).removeClass('picIndexSpanSelected');
+	                });
+	            }
 	            $("#picIndexSpan" + index).addClass('picIndexSpanSelected');
 	        }
 	    },
@@ -4510,7 +4512,7 @@ webpackJsonp([0,1],[
 	                if(!self.opts.imgs.length){
 	                    return;
 	                }
-	                let imgs = self.opts.imgs.map(function(img){
+	                var imgs = self.opts.imgs.map(function(img){
 	                    return {
 	                        url: __app.settings.api.url + '/file?media_id=' + img,
 	                        meta: '600|400'

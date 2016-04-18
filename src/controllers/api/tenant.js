@@ -116,6 +116,9 @@ module.exports = function (router) {
             params.conditions = this.request.body.filter || {};
             params.conditions['tenant'] = tenant;
             params.conditions['lFlg'] = 'a';
+            params.populate = [{
+                path: 'qr'
+            }]
             params.sort = {
                 crtOn: -1
             };
@@ -139,6 +142,9 @@ module.exports = function (router) {
                     {path: 'product'},
                     {path: 'media'}
                 ]
+            };
+            params.sort= {
+                crtOn: -1
             };
             if(query.product){
                 if(typeof query.product != 'string'){
@@ -194,9 +200,15 @@ module.exports = function (router) {
         try{
             let product = this.request.body.product;
             let media = this.request.body.media;
-            var poster = yield context.services.posterService.fetchAsync({product: product}, media.originalId, this.session.auth.user);
-            if(poster){
-                return this.body = {error: null, poster: poster}
+
+            let qrType = qrTypeRegistry.getQrType('sdp');
+            let qr = yield qrType.createQrAsync({wechatId: media.originalId, temp: true});
+            yield context.services.courseService.updateByIdAsync(product._id, {qr: qr._id});
+            qr.toJson();
+            product.qr = qr;
+
+            if(qr){
+                return this.body = {error: null, product: product}
             }
             else{
                 return this.body = {error: 'failed to get poster'};
@@ -317,10 +329,8 @@ module.exports = function (router) {
             let wechatId = tenantWechatSite.originalId;
             let distributor = null;
             order.org = tenantWechatSite.org;
-
             let userId = order.bespeak.user._id;
             let membership = yield context.services.membershipService.loadByUserIdAndWechatIdAsync(userId, wechatId);
-
             let isDistributor = membership.type && (membership.type === 'd');
             if(isDistributor){
                 distributor = yield context.services.membershipService.loadDistributorsChainByIdAsync(membership._id);
@@ -334,7 +344,7 @@ module.exports = function (router) {
             if(distributor){
                 let distributors = [];
                 let recurPushDistributors = function(distributor){
-                    if(!distributor.upLine){
+                    if(!distributor || !distributor.upLine){
                         return;
                     }
                     if(typeof distributor.upLine === 'string'){
@@ -347,7 +357,7 @@ module.exports = function (router) {
                 recurPushDistributors(distributor);
                 orderMeta['distributors'] = distributors;
             }
-            let orderPersisted = yield context.services.orderService.createAsync(wechatId, order);
+            let orderPersisted = yield context.services.orderService.createAsync(wechatId, orderMeta);
             yield context.services.bespeakService.removeByIdAsync(wechatId, order.bespeak._id);
 
             this.body = {order: orderPersisted, error: null};
@@ -435,17 +445,22 @@ module.exports = function (router) {
     router.get('/sd/customers', function*(){
         try{
             let tenantId = this.request.query.tenant;
+            let wechatId = this.request.query.wechatId;
             let options = {
                 page: {
                     no: this.request.query.no,
                     size: this.request.query.size
                 },
                 conditions: {
-                    org: tenantId,
-                    $or : [
-                        {type: MembershipType.Customer.value()},
-                        {type: MembershipType.Both.value()}
-                    ]
+                    $or: [
+                        {
+                            type: MembershipType.Customer.value()
+                        },
+                        {
+                            type: MembershipType.Both.value()
+                        }
+                    ],
+                    org: tenantId
                 },
                 populates: [
                     {path:'user', model: 'TenantUser'},
@@ -460,10 +475,25 @@ module.exports = function (router) {
                             model: 'WechatMedia'
                         }]
                     },
-                    {path: 'media'}
+                    {
+                        path: 'media',
+                        model: 'WechatMedia'
+                    }
                 ]
             };
+            if(wechatId){
+                options.populates.forEach(function(populate){
+                    if(populate.path === 'media'){
+                        populate['match'] = {
+                            originalId: wechatId
+                        }
+                    }
+                })
+            }
             let customers = yield context.services.membershipService.findAsync(options);
+            customers = customers.filter(function(customer){
+                return customer.media;
+            });
             this.body = {customers: customers, error: null};
         } catch (e){
             logger.error(e);
@@ -518,6 +548,7 @@ module.exports = function (router) {
     router.get('/sd/distributors', function*(){
         try{
             let tenantId = this.request.query.tenant;
+            let wechatId = this.request.query.wechatId;
             let options = {
                 page: {
                     no: this.request.query.no,
@@ -547,10 +578,25 @@ module.exports = function (router) {
                             model: 'WechatMedia'
                         }]
                     },
-                    {path: 'media'}
+                    {
+                        path: 'media',
+                        model: 'WechatMedia'
+                    }
                 ]
             };
+            if(wechatId){
+                options.populates.forEach(function(populate){
+                    if(populate.path === 'media'){
+                        populate['match'] = {
+                            originalId: wechatId
+                        }
+                    }
+                })
+            }
             let distributors = yield context.services.membershipService.findAsync(options);
+            distributors = distributors.filter(function(distributor){
+                return distributor.media;
+            });
             this.body = {distributors: distributors, error: null};
         } catch (e){
             logger.error(e);

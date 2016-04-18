@@ -48,6 +48,10 @@ Service.prototype.find = function (params, callback) {
         query.find(params.conditions);
     }
 
+    if (params.populate) {
+        query.populate(params.populate);
+    }
+
     query.lean(true);
     query.exec(function (err, docs) {
         if (err) {
@@ -59,6 +63,10 @@ Service.prototype.find = function (params, callback) {
     });
 };
 
+Service.prototype.loadByQrCodeId = function(qrId, callback){
+    var Course = this.context.models.Course;
+    Course.findOne({qr: qrId}, null, {lean: true}, callback)
+};
 
 Service.prototype.loadById = function(id, callback){
     var courseKv = this.context.kvs.course;
@@ -75,7 +83,6 @@ Service.prototype.loadById = function(id, callback){
 };
 
 Service.prototype.updateById = function(id, json, callback){
-    console.log(json);
     var Course = this.context.models.Course;
     var courseKv = this.context.kvs.course;
     !json['_id'] && (json['_id'] = id);
@@ -83,7 +90,12 @@ Service.prototype.updateById = function(id, json, callback){
         if(err){
             return callback(err);
         }
-        Course.findByIdAndUpdate(id, json, {lean: true, new: true}).exec(callback);
+        Course.findByIdAndUpdate(id, json, {lean: true, new: true}).exec(function(err, doc){
+            if(err){
+                return callback(err)
+            }
+            return callback(null, doc)
+        });
     })
 };
 

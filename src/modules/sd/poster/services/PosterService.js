@@ -41,6 +41,24 @@ Service.prototype.loadByProductIdAndWechatIdAndUserId = function(productId, wech
     });
 };
 
+Service.prototype.loadProductPoster = function(productId, wechatId){
+    var Poster = this.context.models.Poster;
+
+    var query = Poster.find({product: productId, user: userId});
+    query.populate({
+        path: 'qr',
+        match: {
+            wechatId: wechatId
+        }
+    }).exec(function(err, docs){
+        docs = docs.filter(function(doc){
+            return doc.qr
+        });
+        context.logger.info('Succeed to load poster by productId and wechatId' + util.inspect(docs));
+        callback(err, docs)
+    });
+};
+
 Service.prototype.fetch = function(posterRaw, wechatId, user, callback){
     co(function*(){
         try{

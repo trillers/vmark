@@ -12,12 +12,10 @@
                     <form class="form-inline">
                         <div class="col-md-12 col-lg-12">
                             <div class="form-group">
-                                <label for="coursesStatus">状态</label>
-                                <select id="coursesStatus" class="form-control" onchange="{onSelect}">
-                                    <option value="">全部状态</option>
-                                    <option value="{__app.enums.LiveStatus.names.Idle}">待上架</option>
-                                    <option value="{__app.enums.LiveStatus.names.GoLive}">已上架</option>
-                                    <option value="{__app.enums.LiveStatus.names.Sunset}">已下架</option>
+                                <label for="wechatsitesSelect">公众号</label>
+                                <select id="wechatsitesSelect" class="form-control" onchange="{onSelect}">
+                                    <option value="">全部</option>
+                                    <option each="{wechatsites}" value="{originalId}">{name}</option>
                                 </select>
                             </div>
                             <input onclick="{onSearch}" class="btn btn-primary" type="button" value="查询"/>
@@ -79,6 +77,7 @@
         var self = nest.presentable(this);
         var findCustomersByTenantIdAction = domain.action('findCustomersByTenantId');
         var findCustomersCountByTenantIdAction = domain.action('findCustomersCountByTenantId');
+        var loadAllTenantWechatSiteAction = domain.action('loadAllTenantWechatSite');
         self.customers = [];
         self.totalPage = 1;
         self.filter = {
@@ -93,6 +92,10 @@
             })
         });
         self.on('open', function(){
+            loadAllTenantWechatSiteAction.newInvocation(__page.tenantId)
+                .onDone(function(res){
+                    self.update({wechatsites: res});
+                }).execute();
             findCustomersCountByTenantIdAction.newInvocation({
                 tenant: __page.tenantId
             })
@@ -120,14 +123,14 @@
             });
         };
         self.onSelect = function(e){
-            var liveStatus = self.coursesStatus.value;
-            if(!liveStatus){
-                if(self.filter.hasOwnProperty('liveStatus')){
-                    delete self.filter['liveStatus'];
+            var wechatId = self.wechatsitesSelect.value;
+            if(!wechatId){
+                if(self.filter.hasOwnProperty('wechatId')){
+                    delete self.filter['wechatId'];
                 }
                 return;
             }
-            self.filter.liveStatus = liveStatus;
+            self.filter.wechatId = wechatId;
         };
         self.prevPage = function(e){
             var currPage = self.filter.no;

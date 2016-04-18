@@ -118,7 +118,7 @@ Service.prototype.splitBill = function(distributor, product, finalPrice, level, 
                 level = 3;
             }
             let recurSplitBill = function* (distributor, index){
-                if(!distributor.upLine || index > level){
+                if(!distributor || !distributor.upLine || index > level){
                     return callback(null);
                 }
                 let currentDistributor = distributor.upLine;
@@ -133,7 +133,7 @@ Service.prototype.splitBill = function(distributor, product, finalPrice, level, 
                     throw new Error('unknown distributor strategy');
                 }
                 yield me.addAccountBalanceAsync(currentDistributor._id, IncomeAmount);
-                recurSplitBill(distributor.upLine, ++index);
+                yield recurSplitBill(distributor.upLine, ++index);
             };
             yield recurSplitBill(distributor, index);
         }
@@ -148,20 +148,13 @@ Service.prototype.addAccountBalance = function(distributorId, income, callback){
     var me = this;
     var membershipKv = this.context.kvs.membership;
     var Membership = this.context.models.Membership;
-    Membership.findById(distributorId, function(err, doc){
+    Membership.findByIdAndUpdate(distributorId, {$inc: {accountBalance: income}}, {new: true}, function(err, doc){
         if(err){
             me.context.logger.error('Failed to add account balance' + util.inspect(err));
             return callback(err)
         }
-        doc.accountBalance += income;
-        doc.save(function(err, result){
-            if(err){
-                me.context.logger.error('Failed to add account balance' + util.inspect(err));
-                return callback(err)
-            }
-            var obj = result.toObject();
-            return membershipKv.saveById(obj._id, obj, callback);
-        })
+        var obj = doc.toObject();
+        return membershipKv.saveById(obj._id, obj, callback);
     });
 };
 

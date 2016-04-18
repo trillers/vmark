@@ -15,7 +15,7 @@
                 if(!self.opts.imgs.length){
                     return;
                 }
-                let imgs = self.opts.imgs.map(function(img){
+                var imgs = self.opts.imgs.map(function(img){
                     return {
                         url: __app.settings.api.url + '/file?media_id=' + img,
                         meta: '600|400'
