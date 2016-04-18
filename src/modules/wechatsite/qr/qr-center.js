@@ -132,7 +132,6 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
             yield wechatApi.sendImageAsync(user.openid, fetchedPoster.mediaId);
             yield wechatApi.sendTextAsync(user.openid, responseText);
 
-
             let newsImg = null;
             if(product.banners){
                 newsImg = product.banners[0];
