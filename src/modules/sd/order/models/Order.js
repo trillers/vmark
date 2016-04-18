@@ -14,8 +14,7 @@ var Model = function(domainBuilder){
             closingDistributors: [{type: String, ref: 'Membership'}],
             org: {type: String, ref: 'Org'},
             bespeak:      {type: String, ref: 'Bespeak'},
-            finalPrice:   {type: Number, required: true},
-            status: {type: String, enum: OrderStatus.valueList(), default: OrderStatus.unFinish.value(), required: true}
+            finalPrice:   {type: Number, required: true}
         })
         .build();
 
