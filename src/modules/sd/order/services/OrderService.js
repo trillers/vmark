@@ -50,7 +50,9 @@ Service.prototype.findByTenantId = function(tenantId, params, callback){
             return callback(err);
         }
         if(docs && docs.length){
-            docs = docs.filter(function(doc){return doc.product});
+            docs = docs.filter(function(doc){return doc.product}).map(function(doc){
+                return doc.toObject({virtuals: true})
+            });
         }
         callback(null, docs);
     })
@@ -61,7 +63,7 @@ Service.prototype.findByRelatedDistributor = function(distributorId, status, cal
     var Order = this.context.models.Order;
     var done = callback || function noop(){};
 
-    Order.find({status: status, distributors: {$all: [distributorId]}}, null, {lean: true})
+    Order.find({status: status, distributors: {$all: [distributorId]}}, null)
     .populate({
         path: 'bespeak',
         model: 'Bespeak',
@@ -75,7 +77,17 @@ Service.prototype.findByRelatedDistributor = function(distributorId, status, cal
                 model: 'TenantUser'
             }
         ]
-    }).exec(done)
+    }).exec(function(err, docs){
+        if(err){
+            return callback(err)
+        }
+        if(docs && docs){
+            docs.forEach(function(doc){
+                doc.toObject({virtuals: true})
+            });
+        }
+        callback(null, docs);
+    })
 };
 
 Service.prototype.finishByDistributorIdAndTenantIdAndMediaId = function(distributorId, tenantId, mediaId, callback){
@@ -110,6 +122,7 @@ Service.prototype.finishByDistributorIdAndTenantIdAndMediaId = function(distribu
                     promises.push(doc.save());
                 });
                 Promise.all(promises).then(function(err, doc){
+                    docs = docs.map(function(doc){ return doc.toObject({virtuals: true})})
                     callback(null, docs);
                 });
             }else{
@@ -140,6 +153,9 @@ Service.prototype.loadFullInfoById = function(id, callback){
             if(err){
                 me.context.logger.error(err);
                 return callback(err);
+            }
+            if(doc){
+                doc = doc.toObject({virtuals: true})
             }
             callback(null, doc);
         })
@@ -205,7 +221,9 @@ Service.prototype.loadById = function(id, callback){
         if(o){
             return callback(null, o);
         }
-        Order.findById(id, null, {lean: true}).exec(callback);
+        Order.findById(id, null).exec(function(err, doc){
+            callback(err, doc.toObject({virtuals: true}))
+        });
     });
 };
 
@@ -217,14 +235,19 @@ Service.prototype.updateById = function(id, json, callback){
         if(err){
             return callback(err);
         }
-        Order.findByIdAndUpdate(id, json, {lean: true, new: true}).exec(callback);
+        Order.findByIdAndUpdate(id, json, {new: true}).exec(function(err, doc){
+            if(doc){
+                doc = doc.toObject({virtuals: true});
+            }
+            callback(err, doc);
+        });
     })
 };
 
 Service.prototype.removeById = function(id, callback){
     var Order = this.context.models.Order;
     var orderKv = this.context.kvs.order;
-    Order.findByIdAndUpdate(id, {lFlg: 'd'}, {lean: true})
+    Order.findByIdAndUpdate(id, {lFlg: 'd'})
         .exec(function(err){
             if(err){
                 console.error(err);
