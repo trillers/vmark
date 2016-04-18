@@ -163,28 +163,51 @@ Service.prototype.checkoutByDistributorId = function(distributorId, tenantId, me
     var done = callback || function noop(){};
     co(function*(){
         try{
+            let responseText = "尊贵的经纪人 " + distributor.user.nickname + "\n" +
+                "客户 [ " + order.bespeak.user.nickname + " ] 购买了您分享的 " + order.bespeak.product.name;
             let distributor = yield me.loadUserInfoByIdAsync(distributorId);
+            console.log("distributor.........")
+            console.log(distributor);
             let orders = yield me.context.services.orderService.finishByDistributorIdAndTenantIdAndMediaIdAsync(distributorId, tenantId, media._id);
+            console.log("orders.........")
+            console.log(orders);
             yield me.updateByIdAsync(distributorId, {accountBalance: 0});
             let wechatApi = (yield wechatApiCache.get(media.originalId)).api;
+            console.log("wechatApi.........")
+            console.log(wechatApi);
             for(let i=0, len=orders.length; i<len; i++){
                 let order = yield me.context.services.orderService.loadFullInfoByIdAsync(orders[i]._id);
+                console.log("order.........")
+                console.log(order);
+                console.log("order.........")
+                console.log(order);
                 let payment = 0;
                 if(order.distributors){
                     let level = order.distributors.indexOf(distributorId) + 1;
                     let cmType = order.bespeak.product['upLine' + level + 'CommissionType'];
                     let cmValue = order.bespeak.product['upLine' + level + 'CommissionValue'];
-
+                    console.log("level.........")
+                    console.log(level);
+                    console.log("cmType.........")
+                    console.log(cmType);
+                    console.log("cmValue.........")
+                    console.log(cmValue);
                     if(cmType === CommissionType.Percent.value()){
                         payment = parseFloat(order.finalPrice, 10) * (parseFloat(cmValue, 10)/100);
                     }else{
                         payment = parseFloat(cmValue, 10);
                     }
+                    console.log("payment.........")
+                    console.log(payment);
+                    responseText = "尊贵的经纪人 " + distributor.user.nickname + "\n" +
+                        "客户 [ " + order.bespeak.user.nickname + " ] 购买了您分享的 " + order.bespeak.product.name + '\n' +
+                        "您此单收入 " + payment;
                 }
-                let responseText = "尊贵的经纪人 " + distributor.user.nickname + "\n" +
-                    "客户 [ " + order.bespeak.user.nickname + " ] 购买了您分享的 " + order.bespeak.product.name + '\n' +
-                    "您此单收入 " + payment;
-                wechatApi.sendTextAsync(distributor.user.openid, responseText);
+                console.log("responseText...............");
+                console.log("responseText");
+                console.log("openid...............");
+                console.log(distributor.user.openid);
+                yield wechatApi.sendTextAsync(distributor.user.openid, responseText);
             }
             done(null);
         }catch (e){
