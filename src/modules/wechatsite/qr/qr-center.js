@@ -17,8 +17,6 @@ var participantPosterType =    qrTypeRegistry.newType('pap', {temp: true});
 sdProductType.onAccess(function(qr, openid, wechatId){
     co(function*(){
         try {
-            console.log("*********************");
-
             var wechatApi = (yield wechatApiCache.get(wechatId)).api;
             var user = yield context.services.tenantUserService.ensureTenantUserAsync(wechatId, openid);
             var media = yield context.services.tenantWechatSiteService.loadTenantWechatSiteByOriginalIdAsync(wechatId);
@@ -146,6 +144,8 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
                 title: product.name,
                 url: 'http://' + path.join(settings.app.domain, '/sd/' + wechatId + '/product?id=' + product._id + '&media=' + media._id)
             }];
+            console.log("card info...............");
+            console.log(articles);
             yield wechatApi.sendNewsAsync(user.openid, articles);
 
         }catch (e){

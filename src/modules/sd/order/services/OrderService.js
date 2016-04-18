@@ -82,7 +82,7 @@ Service.prototype.finishByDistributorIdAndTenantIdAndMediaId = function(distribu
     var me = this;
     var Order = this.context.models.Order;
 
-    var query = Order.find({org: tenantId, distributors: { $all: [distributorId]}});
+    var query = Order.find({org: tenantId, status: OrderStatus.unFinish.value(), distributors: { $all: [distributorId]}});
     query
         .populate({
             path: 'bespeak',
