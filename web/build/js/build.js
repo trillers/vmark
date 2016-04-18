@@ -4411,10 +4411,10 @@ webpackJsonp([0,1],[
 	        });
 
 	        self.appointment = function(e){
-	            if(self.isAnonymous()){
+	//            if(self.isAnonymous()){
 	                return self.goToAuthorize();
-	            }
-	            self.update({formShow: true});
+	//            }
+	//            self.update({formShow: true});
 	        };
 
 	        self.cancelAppointment = function(e) {
@@ -4445,7 +4445,7 @@ webpackJsonp([0,1],[
 
 	        self.goToAuthorize = function(e){
 	            var getUserInfoUrl = '/auth/' + __page.user.wechatId + '/authorize?';
-	            getUserInfoUrl += 'route=get_user_info&returnUrl='+location.href;
+	            getUserInfoUrl += 'route=get_user_info&returnUrl='+ encodeURIComponent(location.href);
 	            location.href = getUserInfoUrl;
 	        };
 

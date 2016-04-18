@@ -5,6 +5,8 @@ var wechat = require('../../../wechat/common/api');
 var Kv = require('../kvs/TenantUser');
 var helper = require('../../../wechat/common/helper');
 var wechatApiCache = require('../../../tenant/wechat/api-cache');
+var typeRegistry = require('../../../common/models/TypeRegistry');
+var TenantUserStatus = typeRegistry.item('TenantUserStatus');
 
 var Service = function(context){
     this.context = context;
@@ -262,6 +264,7 @@ Service.prototype.ensureTenantUser = function(wechatId, openid, callback){
         var user = yield me.loadUserByWechatIdAndOpenidAsync(wechatId, openid);
         if(!user){
             user = yield me.createTenantUserByWechatIdAndOpenidAsync(wechatId, openid);
+            user = yield me.updateAsync({_id: user._id}, {status: TenantUserStatus.Subscribed.value()});
         }
         callback(null, user);
     }).catch(function(err){
