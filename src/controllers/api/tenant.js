@@ -344,7 +344,7 @@ module.exports = function (router) {
             if(distributor){
                 let distributors = [];
                 let recurPushDistributors = function(distributor){
-                    if(!distributor){
+                    if(!distributor || !distributor.upLine){
                         return;
                     }
                     if(typeof distributor.upLine === 'string'){
