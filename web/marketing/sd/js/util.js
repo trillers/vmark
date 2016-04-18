@@ -44,12 +44,6 @@ var util = {
             overflow:'hidden'
         });
 
-        $('body').css({
-            height:winh,
-            overflow:'hidden',
-            minHeight:winh
-        });
-
         $ul = $('.imgPreviewerUl');
         document.querySelector('.imgPreviewerUl').addEventListener('touchstart', touchStart, false);
         document.querySelector('.imgPreviewerUl').addEventListener('touchmove', touchMove, false);
