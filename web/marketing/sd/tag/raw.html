@@ -1,8 +1,17 @@
 <raw>
     <script>
         var me = this;
+
         me.on('update', function(){
             me.root.innerHTML = me.opts.content || '';
-        })
+            var bodyNode = me.parent.root.querySelector('.body');
+            var innerNode = me.parent.root.querySelector('.body >div');
+
+            if(bodyNode && innerNode){
+                _.nextTick(function(){
+                    bodyNode.style.height = parseInt($(innerNode).height(), 10) + 20 + "px";
+                });
+            }
+        });
     </script>
 </raw>

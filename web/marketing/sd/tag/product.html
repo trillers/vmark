@@ -13,10 +13,10 @@ require('./banner.html');
                 <span class="secondary-color" style="margin-left: 10px;text-decoration:line-through">{product.listPrice}</span>
             </div>
         </div>
-        <div class="body" style="min-height: 200px">
+        <div class="body">
             <div>
                 <div>
-                    <b style="display: inline-block; width: 3px; height: 12px;background-color: #ff5000"></b>
+                    <b></b>
                     <span>课程详情</span>
                 </div>
                 <div style="margin-top: 10px">
@@ -138,6 +138,12 @@ require('./banner.html');
             height: 56px;
             position: fixed;
             bottom: 0px;
+        }
+        .body{
+            min-height: 200px
+        }
+        .body b{
+            display: inline-block; width: 3px; height: 12px;background-color: #ff5000
         }
         #bg{
             position: fixed;
