@@ -14,20 +14,10 @@ var Model = function(domainBuilder){
             closingDistributors: [{type: String, ref: 'Membership'}],
             org: {type: String, ref: 'Org'},
             bespeak:      {type: String, ref: 'Bespeak'},
-            finalPrice:   {type: Number, required: true}
+            finalPrice:   {type: Number, required: true},
+            status: {type: String, enum: OrderStatus.valueList(), default: OrderStatus.unFinish.value(), required: true}
         })
         .build();
-
-    schema.virtual('status').get(function() {
-            if(this.closingDistributors.length === this.distributors.length) {
-                return OrderStatus.finish.value();
-            }
-            return OrderStatus.unFinish.value();
-        })
-        .set(function(status) {
-            this.status = status;
-        });
-
 
     return schema.model(true);
 };

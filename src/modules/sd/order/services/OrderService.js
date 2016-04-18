@@ -119,6 +119,9 @@ Service.prototype.finishByDistributorIdAndTenantIdAndMediaId = function(distribu
                 var promises = [];
                 docs.forEach(function(doc){
                     doc.closingDistributors.push(distributorId);
+                    if(doc.closingDistributors.length === doc.distributors.length){
+                        doc.status = OrderStatus.finish.value();
+                    }
                     promises.push(doc.save());
                 });
                 Promise.all(promises).then(function(err, doc){
