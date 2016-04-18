@@ -207,10 +207,10 @@ require('./banner.html');
         });
 
         self.appointment = function(e){
-//            if(self.isAnonymous()){
+            if(self.isAnonymous()){
                 return self.goToAuthorize();
-//            }
-//            self.update({formShow: true});
+            }
+            self.update({formShow: true});
         };
 
         self.cancelAppointment = function(e) {

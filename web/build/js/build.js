@@ -47,12 +47,12 @@ webpackJsonp([0,1],[
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-	/* Riot v2.3.17, @license MIT */
+	/* Riot v2.3.18, @license MIT */
 
 	;(function (window, undefined) {
 	  'use strict';
 
-	  var riot = { version: 'v2.3.17', settings: {} },
+	  var riot = { version: 'v2.3.18', settings: {} },
 
 	  // be aware, internal usage
 	  // ATTENTION: prefix the global dynamic variables with `__`
@@ -83,7 +83,6 @@ webpackJsonp([0,1],[
 	  T_STRING = 'string',
 	      T_OBJECT = 'object',
 	      T_UNDEF = 'undefined',
-	      T_BOOL = 'boolean',
 	      T_FUNCTION = 'function',
 
 	  // special native tags that cannot be treated like the others
@@ -92,7 +91,11 @@ webpackJsonp([0,1],[
 
 
 	  // version# for IE 8-11, 0 for others
-	  IE_VERSION = (window && window.document || {}).documentMode | 0;
+	  IE_VERSION = (window && window.document || {}).documentMode | 0,
+
+
+	  // detect firefox to fix #1374
+	  FIREFOX = window && !!window.InstallTrigger;
 	  /* istanbul ignore next */
 	  riot.observable = function (el) {
 
@@ -232,7 +235,7 @@ webpackJsonp([0,1],[
 	     * @module riot-route
 	     */
 
-	    var RE_ORIGIN = /^.+?\/+[^\/]+/,
+	    var RE_ORIGIN = /^.+?\/\/+[^\/]+/,
 	        EVENT_LISTENER = 'EventListener',
 	        REMOVE_EVENT_LISTENER = 'remove' + EVENT_LISTENER,
 	        ADD_EVENT_LISTENER = 'add' + EVENT_LISTENER,
@@ -333,7 +336,7 @@ webpackJsonp([0,1],[
 	     * @returns {string} path from root
 	     */
 	    function getPathFromRoot(href) {
-	      return (href || loc.href || '')[REPLACE](RE_ORIGIN, '');
+	      return (href || loc.href)[REPLACE](RE_ORIGIN, '');
 	    }
 
 	    /**
@@ -342,7 +345,7 @@ webpackJsonp([0,1],[
 	     * @returns {string} path from base
 	     */
 	    function getPathFromBase(href) {
-	      return base[0] == '#' ? (href || loc.href || '').split(base)[1] || '' : getPathFromRoot(href)[REPLACE](base, '');
+	      return base[0] == '#' ? (href || loc.href || '').split(base)[1] || '' : (loc ? getPathFromRoot(href) : href || '')[REPLACE](base, '');
 	    }
 
 	    function emit(force) {
@@ -477,10 +480,11 @@ webpackJsonp([0,1],[
 	     */
 	    route.create = function () {
 	      var newSubRouter = new Router();
+	      // assign sub-router's main method
+	      var router = newSubRouter.m.bind(newSubRouter);
 	      // stop only this sub-router
-	      newSubRouter.m.stop = newSubRouter.s.bind(newSubRouter);
-	      // return sub-router's main method
-	      return newSubRouter.m.bind(newSubRouter);
+	      router.stop = newSubRouter.s.bind(newSubRouter);
+	      return router;
 	    };
 
 	    /**
@@ -568,7 +572,7 @@ webpackJsonp([0,1],[
 
 	  /**
 	   * The riot template engine
-	   * @version v2.3.21
+	   * @version v2.3.22
 	   */
 
 	  /**
@@ -654,7 +658,9 @@ webpackJsonp([0,1],[
 	            re.lastIndex = skipBraces(str, match[2], re.lastIndex);
 	            continue;
 	          }
-	          if (!match[3]) continue;
+	          if (!match[3]) {
+	            continue;
+	          }
 	        }
 
 	        if (!match[1]) {
@@ -672,7 +678,11 @@ webpackJsonp([0,1],[
 	      return parts;
 
 	      function unescapeStr(s) {
-	        if (tmpl || isexpr) parts.push(s && s.replace(_bp[5], '$1'));else parts.push(s);
+	        if (tmpl || isexpr) {
+	          parts.push(s && s.replace(_bp[5], '$1'));
+	        } else {
+	          parts.push(s);
+	        }
 	      }
 
 	      function skipBraces(s, ch, ix) {
@@ -694,11 +704,8 @@ webpackJsonp([0,1],[
 
 	    _brackets.loopKeys = function loopKeys(expr) {
 	      var m = expr.match(_cache[9]);
-	      return m ? { key: m[1], pos: m[2], val: _cache[0] + m[3].trim() + _cache[1] } : { val: expr.trim() };
-	    };
 
-	    _brackets.hasRaw = function (src) {
-	      return _cache[10].test(src);
+	      return m ? { key: m[1], pos: m[2], val: _cache[0] + m[3].trim() + _cache[1] } : { val: expr.trim() };
 	    };
 
 	    _brackets.array = function array(pair) {
@@ -710,13 +717,13 @@ webpackJsonp([0,1],[
 	        _cache = _create(pair);
 	        _regex = pair === DEFAULT ? _loopback : _rewrite;
 	        _cache[9] = _regex(_pairs[9]);
-	        _cache[10] = _regex(_pairs[10]);
 	      }
 	      cachedBrackets = pair;
 	    }
 
 	    function _setSettings(o) {
 	      var b;
+
 	      o = o || {};
 	      b = o.brackets;
 	      Object.defineProperty(o, 'brackets', {
@@ -787,20 +794,23 @@ webpackJsonp([0,1],[
 	    }
 
 	    function _create(str) {
-
 	      var expr = _getTmpl(str);
+
 	      if (expr.slice(0, 11) !== 'try{return ') expr = 'return ' + expr;
 
-	      return new Function('E', expr + ';');
+	      return new Function('E', expr + ';'); //eslint-disable-line no-new-func
 	    }
 
-	    var RE_QBLOCK = RegExp(brackets.S_QBLOCKS, 'g'),
-	        RE_QBMARK = /\x01(\d+)~/g;
+	    var CH_IDEXPR = '⁗',
+	        RE_CSNAME = /^(?:(-?[_A-Za-z\xA0-\xFF][-\w\xA0-\xFF]*)|\u2057(\d+)~):/,
+	        RE_QBLOCK = RegExp(brackets.S_QBLOCKS, 'g'),
+	        RE_DQUOTE = /\u2057/g,
+	        RE_QBMARK = /\u2057(\d+)~/g;
 
 	    function _getTmpl(str) {
 	      var qstr = [],
 	          expr,
-	          parts = brackets.split(str.replace(/\u2057/g, '"'), 1);
+	          parts = brackets.split(str.replace(RE_DQUOTE, '"'), 1);
 
 	      if (parts.length > 2 || parts[0]) {
 	        var i,
@@ -820,10 +830,11 @@ webpackJsonp([0,1],[
 	        expr = _parseExpr(parts[1], 0, qstr);
 	      }
 
-	      if (qstr[0]) expr = expr.replace(RE_QBMARK, function (_, pos) {
-	        return qstr[pos].replace(/\r/g, '\\r').replace(/\n/g, '\\n');
-	      });
-
+	      if (qstr[0]) {
+	        expr = expr.replace(RE_QBMARK, function (_, pos) {
+	          return qstr[pos].replace(/\r/g, '\\r').replace(/\n/g, '\\n');
+	        });
+	      }
 	      return expr;
 	    }
 
@@ -831,15 +842,12 @@ webpackJsonp([0,1],[
 	      '(': /[()]/g,
 	      '[': /[[\]]/g,
 	      '{': /[{}]/g
-	    },
-	        CS_IDENT = /^(?:(-?[_A-Za-z\xA0-\xFF][-\w\xA0-\xFF]*)|\x01(\d+)~):/;
+	    };
 
 	    function _parseExpr(expr, asText, qstr) {
 
-	      if (expr[0] === '=') expr = expr.slice(1);
-
 	      expr = expr.replace(RE_QBLOCK, function (s, div) {
-	        return s.length > 2 && !div ? '\x01' + (qstr.push(s) - 1) + '~' : s;
+	        return s.length > 2 && !div ? CH_IDEXPR + (qstr.push(s) - 1) + '~' : s;
 	      }).replace(/\s+/g, ' ').trim().replace(/\ ?([[\({},?\.:])\ ?/g, '$1');
 
 	      if (expr) {
@@ -847,7 +855,7 @@ webpackJsonp([0,1],[
 	            cnt = 0,
 	            match;
 
-	        while (expr && (match = expr.match(CS_IDENT)) && !match.index) {
+	        while (expr && (match = expr.match(RE_CSNAME)) && !match.index) {
 	          var key,
 	              jsb,
 	              re = /,|([[{(])|$/g;
@@ -881,7 +889,8 @@ webpackJsonp([0,1],[
 	    }
 
 	    // istanbul ignore next: not both
-	    var JS_CONTEXT = '"in this?this:' + ((typeof window === 'undefined' ? 'undefined' : _typeof(window)) !== 'object' ? 'global' : 'window') + ').',
+	    var // eslint-disable-next-line max-len
+	    JS_CONTEXT = '"in this?this:' + ((typeof window === 'undefined' ? 'undefined' : _typeof(window)) !== 'object' ? 'global' : 'window') + ').',
 	        JS_VARNAME = /[,{][$\w]+:|(^ *|[^$\w\.])(?!(?:typeof|true|false|null|undefined|in|instanceof|is(?:Finite|NaN)|void|NaN|new|Date|RegExp|Math)(?![$\w]))([$_A-Za-z][$\w]*)/g,
 	        JS_NOPROPS = /^(?=(\.[$\w]+))\1(?:[^.[(]|$)/;
 
@@ -922,7 +931,7 @@ webpackJsonp([0,1],[
 	      return s;
 	    };
 
-	    _tmpl.version = brackets.version = 'v2.3.21';
+	    _tmpl.version = brackets.version = 'v2.3.22';
 
 	    return _tmpl;
 	  }();
@@ -1237,15 +1246,13 @@ webpackJsonp([0,1],[
 	      if (isOption) {
 	        root.appendChild(frag);
 
-	        // #1374 <select> <option selected={true}> </select>
-	        if (root.length) {
-	          var si,
-	              op = root.options;
-
-	          root.selectedIndex = si = -1;
-	          for (i = 0; i < op.length; i++) {
-	            if (op[i].selected = op[i].__selected) {
-	              if (si < 0) root.selectedIndex = si = i;
+	        // #1374 FireFox bug in <option selected={expression}>
+	        if (FIREFOX && !root.multiple) {
+	          for (var n = 0; n < root.length; n++) {
+	            if (root[n].__riot1374) {
+	              root.selectedIndex = n; // clear other options
+	              delete root[n].__riot1374;
+	              break;
 	            }
 	          }
 	        }
@@ -1392,7 +1399,6 @@ webpackJsonp([0,1],[
 	        root = conf.root,
 	        tagName = root.tagName.toLowerCase(),
 	        attr = {},
-	        implAttr = {},
 	        propsInSyncWithParent = [],
 	        dom;
 
@@ -1592,12 +1598,6 @@ webpackJsonp([0,1],[
 	      // remove this tag instance from the global virtualDom variable
 	      if (~tagIndex) __virtualDom.splice(tagIndex, 1);
 
-	      if (this._virts) {
-	        each(this._virts, function (v) {
-	          if (v.parentNode) v.parentNode.removeChild(v);
-	        });
-	      }
-
 	      if (p) {
 
 	        if (parent) {
@@ -1612,9 +1612,17 @@ webpackJsonp([0,1],[
 	            ptag.tags[tagName] = undefined;
 	        } else while (el.firstChild) {
 	          el.removeChild(el.firstChild);
-	        }if (!keepRootTag) p.removeChild(el);else
-	          // the riot-tag attribute isn't needed anymore, remove it
-	          remAttr(p, 'riot-tag');
+	        }if (!keepRootTag) p.removeChild(el);else {
+	          // the riot-tag and the data-is attributes aren't needed anymore, remove them
+	          remAttr(p, RIOT_TAG_IS);
+	          remAttr(p, RIOT_TAG); // this will be removed in riot 3.0.0
+	        }
+	      }
+
+	      if (this._virts) {
+	        each(this._virts, function (v) {
+	          if (v.parentNode) v.parentNode.removeChild(v);
+	        });
 	      }
 
 	      self.trigger('unmount');
@@ -1721,8 +1729,9 @@ webpackJsonp([0,1],[
 
 	      if (expr.bool) {
 	        value = !!value;
-	        if (attrName === 'selected') dom.__selected = value; // #1374
-	      } else if (value == null) value = '';
+	      } else if (value == null) {
+	        value = '';
+	      }
 
 	      // #1638: regression of #1612, update the dom only if the value of the
 	      // expression was changed
@@ -1801,13 +1810,16 @@ webpackJsonp([0,1],[
 	          } else if (expr.bool) {
 	            dom[attrName] = value;
 	            if (value) setAttr(dom, attrName, attrName);
-	          } else if (value === 0 || value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== T_OBJECT) {
-	            // <img src="{ expr }">
-	            if (startsWith(attrName, RIOT_PREFIX) && attrName != RIOT_TAG) {
-	              attrName = attrName.slice(RIOT_PREFIX.length);
+	            if (FIREFOX && attrName === 'selected' && dom.tagName === 'OPTION') {
+	              dom.__riot1374 = value; // #1374
 	            }
-	            setAttr(dom, attrName, value);
-	          }
+	          } else if (value === 0 || value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== T_OBJECT) {
+	              // <img src="{ expr }">
+	              if (startsWith(attrName, RIOT_PREFIX) && attrName != RIOT_TAG) {
+	                attrName = attrName.slice(RIOT_PREFIX.length);
+	              }
+	              setAttr(dom, attrName, value);
+	            }
 	    });
 	  }
 	  /**
@@ -1991,7 +2003,7 @@ webpackJsonp([0,1],[
 	      value: value,
 	      enumerable: false,
 	      writable: false,
-	      configurable: false
+	      configurable: true
 	    }, options));
 	    return el;
 	  }
@@ -2382,6 +2394,7 @@ webpackJsonp([0,1],[
 	        if (tagName && riotTag !== tagName) {
 	          riotTag = tagName;
 	          setAttr(root, RIOT_TAG_IS, tagName);
+	          setAttr(root, RIOT_TAG, tagName); // this will be removed in riot 3.0.0
 	        }
 	        var tag = mountTo(root, riotTag || root.tagName.toLowerCase(), opts);
 
@@ -2448,6 +2461,11 @@ webpackJsonp([0,1],[
 	      tag.update();
 	    });
 	  };
+
+	  /**
+	   * Export the Virtual DOM
+	   */
+	  riot.vdom = __virtualDom;
 
 	  /**
 	   * Export the Tag constructor
@@ -4411,10 +4429,10 @@ webpackJsonp([0,1],[
 	        });
 
 	        self.appointment = function(e){
-	//            if(self.isAnonymous()){
+	            if(self.isAnonymous()){
 	                return self.goToAuthorize();
-	//            }
-	//            self.update({formShow: true});
+	            }
+	            self.update({formShow: true});
 	        };
 
 	        self.cancelAppointment = function(e) {
