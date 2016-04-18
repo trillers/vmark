@@ -4490,7 +4490,6 @@ webpackJsonp([0,1],[
 
 	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('banner', '<div id="imgPreviewer"></div>', 'banner #imgPreviewer,[riot-tag="banner"] #imgPreviewer,[data-is="banner"] #imgPreviewer{ height: 200px !important; overflow: hidden !important; }', '', function(opts) {
 	        var self = this;
-	        self.len = this.opts.imgs.length;
 
 	        self.on('mount', function(){
 	            _.nextTick(function(){
