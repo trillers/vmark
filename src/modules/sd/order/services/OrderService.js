@@ -82,7 +82,13 @@ Service.prototype.finishByDistributorIdAndTenantIdAndMediaId = function(distribu
     var me = this;
     var Order = this.context.models.Order;
 
-    var query = Order.find({org: tenantId, status: OrderStatus.unFinish.value(), distributors: { $all: [distributorId]}});
+    var query = Order.find(
+        {
+            org: tenantId,
+            status: OrderStatus.unFinish.value(),
+            distributors: distributorId,
+            closingDistributors: { $nin: [distributorId]}
+        });
     query
         .populate({
             path: 'bespeak',
@@ -100,7 +106,7 @@ Service.prototype.finishByDistributorIdAndTenantIdAndMediaId = function(distribu
                 });
                 var promises = [];
                 docs.forEach(function(doc){
-                    doc.status = OrderStatus.finish.value();
+                    doc.closingDistributors.push(distributorId);
                     promises.push(doc.save());
                 });
                 Promise.all(promises).then(function(err, doc){
