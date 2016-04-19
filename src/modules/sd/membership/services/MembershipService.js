@@ -132,10 +132,6 @@ Service.prototype.splitBill = function(distributor, product, finalPrice, level, 
                 }else{
                     throw new Error('unknown distributor strategy');
                 }
-                console.log("currentDistributor*****************");
-                console.log(currentDistributor);
-                console.log("IncomeAmount*****************");
-                console.log(IncomeAmount);
                 yield me.addAccountBalanceAsync(currentDistributor._id, IncomeAmount);
                 yield recurSplitBill(distributor.upLine, ++index);
             };
@@ -152,9 +148,6 @@ Service.prototype.addAccountBalance = function(distributorId, income, callback){
     var me = this;
     var membershipKv = this.context.kvs.membership;
     var Membership = this.context.models.Membership;
-    console.log("income********************");
-    console.log(income);
-    console.log(typeof income);
     Membership.findByIdAndUpdate(distributorId, {$inc: {accountBalance: income}}, {new: true}, function(err, doc){
         if(err){
             me.context.logger.error('Failed to add account balance' + util.inspect(err));
@@ -172,47 +165,25 @@ Service.prototype.checkoutByDistributorId = function(distributorId, tenantId, me
         try{
             let responseText = "网络错误.";
             let distributor = yield me.loadUserInfoByIdAsync(distributorId);
-            console.log("distributor.........")
-            console.log(distributor);
             let orders = yield me.context.services.orderService.finishByDistributorIdAndTenantIdAndMediaIdAsync(distributorId, tenantId, media._id);
-            console.log("orders.........")
-            console.log(orders);
             yield me.updateByIdAsync(distributorId, {accountBalance: 0});
             let wechatApi = (yield wechatApiCache.get(media.originalId)).api;
-            console.log("wechatApi.........")
-            console.log(wechatApi);
             for(let i=0, len=orders.length; i<len; i++){
                 let order = yield me.context.services.orderService.loadFullInfoByIdAsync(orders[i]._id);
-                console.log("order.........")
-                console.log(order);
-                console.log("order.........")
-                console.log(order);
                 let payment = 0;
                 if(order.distributors){
                     let level = order.distributors.indexOf(distributorId) + 1;
                     let cmType = order.bespeak.product['upLine' + level + 'CommissionType'];
                     let cmValue = order.bespeak.product['upLine' + level + 'CommissionValue'];
-                    console.log("level.........")
-                    console.log(level);
-                    console.log("cmType.........")
-                    console.log(cmType);
-                    console.log("cmValue.........")
-                    console.log(cmValue);
                     if(cmType === CommissionType.Percent.value()){
                         payment = parseFloat(order.finalPrice, 10) * (parseFloat(cmValue, 10)/100);
                     }else{
                         payment = parseFloat(cmValue, 10);
                     }
-                    console.log("payment.........")
-                    console.log(payment);
                     responseText = "尊贵的经纪人 " + distributor.user.nickname + "\n" +
                         "客户 [ " + order.bespeak.user.nickname + " ] 购买了您分享的 " + order.bespeak.product.name + '\n' +
                         "您此单收入 " + payment;
                 }
-                console.log("responseText...............");
-                console.log("responseText");
-                console.log("openid...............");
-                console.log(distributor.user.openid);
                 yield wechatApi.sendTextAsync(distributor.user.openid, responseText);
             }
             done(null);
@@ -291,20 +262,11 @@ Service.prototype.loadDistributorsChainById = function(id, level, callback){
         });
 
     function recurPopulate(doc, index, len, callback){
-        console.log("begin doc.................")
-        console.log(doc)
         let curr = _.range(index).reduce(function(acc, curr){ return acc.upLine}, doc);
-        console.log("curr.................")
-        console.log(curr)
-        console.log("index.................")
-        console.log(index)
-        console.log("len.................")
-        console.log(len)
         if(!curr || index > len){
             return callback(null, doc);
         }
         let populateStr = _.range(index).map(function(){return 'upLine'}).join('.');
-        console.log(populateStr);
         Membership.populate(doc,
             {
                 path: populateStr,
@@ -313,8 +275,6 @@ Service.prototype.loadDistributorsChainById = function(id, level, callback){
             if(err){
                 return callback(err);
             }
-                console.log("doc.............");
-                console.log(doc);
             recurPopulate(doc, ++index, len, callback);
         });
     }
