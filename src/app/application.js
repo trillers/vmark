@@ -14,7 +14,7 @@ app.bindip =  process.env.BINDIP || settings.env.bindIp;
 
 app.use(logging.generatorFunc);
 app.use(views(path.join(__dirname, '../views'), { map: { html: 'swig' }}));
-app.use(koaBody({multipart:true, formidable:{keepExtensions: true, uploadDir: path.join(__dirname, '../../public/uploads')}}));
+app.use(koaBody({jsonLimit: '50mb', formLimit: '10mb', textLimit: '10mb', multipart:true, formidable:{keepExtensions: true, uploadDir: path.join(__dirname, '../../public/uploads')}}));
 
 //router
 require('../routes')(app);
