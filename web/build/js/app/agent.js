@@ -5,6 +5,13 @@ var jquery = require('jquery');
 jquery = require('../lib/jquery.cookie');
 util = require('./util');
 var page = require('./page');
+ws = require('./ws');
+ws.onOpen(function(){
+  console.info('websocket is ready.');
+});
+ws.onClose(function(){
+  window.location.reload();
+});
 ///*
 // * import global variables
 // */

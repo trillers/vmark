@@ -1727,6 +1727,7 @@ riot.tag('boss-tenant-sd-courses-edit-detail', '<div class="container" if="{!hid
         self.onEdit = function(){
             self.status = 'edit';
             setTimeout(function(){
+                console.log($('#richEditor'));
                 $('#richEditor').summernote({
                     height: 400,
                     minHeight: null,
@@ -1747,7 +1748,7 @@ riot.tag('boss-tenant-sd-courses-edit-detail', '<div class="container" if="{!hid
                     }
 
                 }).summernote('code', self.course.details || '');
-            }, 10);
+            }, 3000);
         };
         self.onSubmit = function(){
             self.course.details = $('#richEditor').summernote('code');

@@ -1,4 +1,4 @@
-module.exports=function(){riot.tag('accordion', '<nav> <ul class="nav nav-pills nav-stacked"> <li role="presentation" class="{active: useAsDefault}" each="{opts.navs}"> <a href="#{path}">{presentation}</a> </li> </ul> </nav>', 'accordion ul{ margin: 0px; padding: 0px; }', function(opts) {
+riot.tag('accordion', '<nav> <ul class="nav nav-pills nav-stacked"> <li role="presentation" class="{active: useAsDefault}" each="{opts.navs}"> <a href="#{path}">{presentation}</a> </li> </ul> </nav>', 'accordion ul{ margin: 0px; padding: 0px; }', function(opts) {
 
     
 });
@@ -4398,4 +4398,4 @@ riot.tag('view-group', '<div class="title_wrap"> <ul onclick="{clickNav}" class=
         }
     }.bind(this);
 
-});}
+});
