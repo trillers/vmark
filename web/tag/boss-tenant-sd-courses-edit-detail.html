@@ -112,7 +112,9 @@
         var uploadEditorImg = function(file){
             _.uploadImgFile(file, function(err, url){
                 if(!err) {
-                    $('#richEditor').summernote('insertImage', url);
+                    $('#richEditor').summernote('insertImage', url, function($img){
+                        $img.css('width', '100%');
+                    });
                 }else{
                     alert('上传图片失败');
                 }

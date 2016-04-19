@@ -8,22 +8,21 @@
                 <div class="row" style="text-align: center">
                     <h4>预约管理</h4>
                 </div>
-                <!--<div class="row">-->
-                    <!--<form class="form-inline">-->
-                        <!--<div class="col-md-6 col-lg-6">-->
-                            <!--<div class="form-group">-->
-                                <!--<label for="coursesStatus">状态</label>-->
-                                <!--<select id="coursesStatus" class="form-control" onchange="{onSelect}">-->
-                                    <!--<option value="">全部状态</option>-->
-                                    <!--<option value="{__app.enums.LiveStatus.names.Idle}">待上架</option>-->
-                                    <!--<option value="{__app.enums.LiveStatus.names.GoLive}">已上架</option>-->
-                                    <!--<option value="{__app.enums.LiveStatus.names.Sunset}">已下架</option>-->
-                                <!--</select>-->
-                            <!--</div>-->
-                            <!--<input onclick="{onSearch}" class="btn btn-primary" type="button" value="查询"/>-->
-                        <!--</div>-->
-                    <!--</form>-->
-                <!--</div>-->
+                <div class="row">
+                    <form class="form-inline">
+                        <div class="col-md-6 col-lg-6">
+                            <div class="form-group">
+                                <label for="bespeakStatus">状态</label>
+                                <select id="bespeakStatus" class="form-control" onchange="{onSelect}">
+                                    <option value="">全部状态</option>
+                                    <option selected value="{__app.enums.LifeFlag.names.Active}">待处理</option>
+                                    <option value="{__app.enums.LifeFlag.names.Deleted}">已处理</option>
+                                </select>
+                            </div>
+                            <input onclick="{onSearch}" class="btn btn-primary" type="button" value="查询"/>
+                        </div>
+                    </form>
+                </div>
                 <div class="row" style="margin-top: 10px">
                     <table class="table table-striped">
                         <thead>
@@ -32,6 +31,7 @@
                             <th>预约产品</th>
                             <th>日期</th>
                             <th>电话</th>
+                            <th>状态</th>
                             <th>成单</th>
                         </tr>
                         </thead>
@@ -53,8 +53,13 @@
                                 { telephone }
                             </td>
                             <td>
-                                <input onclick="{parent.onOrderCreate}" data-toggle="modal" data-target="#orderModal" type="button" class="btn btn-default" value="成单"/>
-                                <input onclick="{parent.onOrderGiveUp}" data-toggle="modal" data-target="#modal" type="button" class="btn btn-default" value="弃单"/>
+                                { lFlg === __app.enums.LifeFlag.names.Active ? '待处理': '已处理' }
+                            </td>
+                            <td>
+                                <div if="{lFlg === __app.enums.LifeFlag.names.Active}">
+                                    <input onclick="{parent.onOrderCreate}" data-toggle="modal" data-target="#orderModal" type="button" class="btn btn-default" value="成单"/>
+                                    <input onclick="{parent.onOrderGiveUp}" data-toggle="modal" data-target="#modal" type="button" class="btn btn-default" value="弃单"/>
+                                </div>
                             </td>
                         </tr>
 
@@ -107,7 +112,8 @@
         self.bespeaks = [];
         self.currBespeak = {};
         self.filter = {
-            tenant: __page.tenantId
+            tenant: __page.tenantId,
+            lFlg: 'a'
         };
         self.on('open', function(){
             findBespeaksAction.newInvocation({
@@ -183,14 +189,15 @@
             }).execute();
         };
         self.onSelect = function(e){
-            var liveStatus = self.coursesStatus.value;
+            var liveStatus = self.bespeakStatus.value;
+            console.log(liveStatus);
             if(!liveStatus){
-                if(self.filter.hasOwnProperty('liveStatus')){
-                    delete self.filter['liveStatus'];
+                if(self.filter.hasOwnProperty('lFlg')){
+                    delete self.filter['lFlg'];
                 }
                 return;
             }
-            self.filter.liveStatus = liveStatus;
+            self.filter.lFlg = liveStatus;
         }
     </script>
 </boss-tenant-sd-bespeaks>

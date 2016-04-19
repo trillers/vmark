@@ -86,15 +86,18 @@ gulp.task('cp-tenant',function(){
 gulp.task('replace-tenant', ['tags-tenant', 'cp-tenant'], function(cb){
     var prefix = "module.exports=function(){";
     var suffix = "}";
-    fs.readFileAsync('web/build/tmp/tagsOrigin.js', 'utf-8')
-        .then(function(data){
-            if( data && typeof data === "string" ){
-                fs.writeFile('web/build/js/app/tags.js', prefix + data + suffix, function(err){
-                    if (!err) {
-                        return cb();
-                    }
-                    cb(new Error("cmd tags build failed."));
-                });
-            }
-        })
+    setTimeout(function(){
+        fs.readFileAsync('web/build/tmp/tagsOrigin.js', 'utf-8')
+            .then(function(data){
+                if( data && typeof data === "string" ){
+                    fs.writeFile('web/build/js/app/tags.js', prefix + data + suffix, function(err){
+                        if (!err) {
+                            return cb();
+                        }
+                        cb(new Error("cmd tags build failed."));
+                    });
+                }
+            })
+    }, 1000)
+
 });

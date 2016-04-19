@@ -1,4 +1,6 @@
 <raw>
+    <style scoped>
+    </style>
     <script>
         var me = this;
 
@@ -8,9 +10,10 @@
             var innerNode = me.parent.root.querySelector('.body >div');
 
             if(bodyNode && innerNode){
-                _.nextTick(function(){
+                setTimeout(function(){
+                    console.log($(innerNode).height());
                     bodyNode.style.height = parseInt($(innerNode).height(), 10) + 20 + "px";
-                });
+                }, 200);
             }
         });
     </script>

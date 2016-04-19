@@ -371,7 +371,6 @@ module.exports = function (router) {
         try{
             let query = this.request.query;
             let tenantId = query.tenant;
-            query.lFlg = 'a';
             delete query['tenant'];
             let params = {
                 conditions: query
