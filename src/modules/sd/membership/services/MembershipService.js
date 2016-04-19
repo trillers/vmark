@@ -163,8 +163,7 @@ Service.prototype.checkoutByDistributorId = function(distributorId, tenantId, me
     var done = callback || function noop(){};
     co(function*(){
         try{
-            let responseText = "尊贵的经纪人 " + distributor.user.nickname + "\n" +
-                "客户 [ " + order.bespeak.user.nickname + " ] 购买了您分享的 " + order.bespeak.product.name;
+            let responseText = "网络错误.";
             let distributor = yield me.loadUserInfoByIdAsync(distributorId);
             console.log("distributor.........")
             console.log(distributor);

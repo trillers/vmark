@@ -132,7 +132,6 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
             yield wechatApi.sendImageAsync(user.openid, fetchedPoster.mediaId);
             yield wechatApi.sendTextAsync(user.openid, responseText);
 
-
             let newsImg = null;
             if(product.banners){
                 newsImg = product.banners[0];
@@ -145,8 +144,6 @@ sdParticipantPosterType.onAccess(function(qr, openid, wechatId){
                 title: product.name,
                 url: 'http://' + path.join(settings.app.domain, '/sd/' + wechatId + '/product?id=' + product._id + '&media=' + media._id)
             }];
-            console.log("card info...............");
-            console.log(articles);
             yield wechatApi.sendNewsAsync(user.openid, articles);
 
         }catch (e){
