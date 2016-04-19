@@ -3,7 +3,7 @@ var util = {
         if(type === 'c'){
             return listPrice - rate;
         }else if(type === 'p'){
-            var price = listPrice - listPrice*rate;
+            var price = listPrice - listPrice*rate/100;
             return Math.ceil(price);
         }else{
             throw new Error('error discount type');
