@@ -64,7 +64,7 @@
         <boss-tenant-power-add></boss-tenant-power-add>
         <boss-tenant-sd-orders></boss-tenant-sd-orders>
 
-        {% if __app.settings.env.NODE_ENV != "production" %}
+        {% if __app.settings.env.mode != "production" %}
 
         <script src="/web/tag/boss-tenant-topbar.html" type="riot/tag"></script>
         <script src="/web/tag/boss-tenant-sd.html" type="riot/tag"></script>
