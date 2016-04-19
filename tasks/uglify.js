@@ -1,7 +1,7 @@
 
 var gulp = require('gulp'),
     uglify = require('gulp-uglify'),
-    file = 'web/spm/build/spm/0.0.1/index.js';
+    file = 'test/test.js';
 
 gulp.task('uglify',function(){
     gulp.src(file)

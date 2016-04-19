@@ -237,7 +237,7 @@
         };
 
         self.onToggleSelectAll = function(){
-            let inputs =[].slice.apply(document.querySelectorAll('input[name="CourseCheckBox"]'));
+            var inputs =[].slice.apply(document.querySelectorAll('input[name="CourseCheckBox"]'));
             if(self.toggleInput.checked === false){
                 inputs.map(function(input){
                     input.checked = false;

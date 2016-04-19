@@ -14,7 +14,6 @@ $ = jQuery = jquery;
 require('./camera');
 domain = require('../domain/index');
 require('bootstrap');
-require('summernote');
 
 /*
 * wechat js config

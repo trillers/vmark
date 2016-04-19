@@ -5,7 +5,7 @@ var entryFileName = "boss-index";
 
 module.exports = {
     entry: {
-        index: '../../web/' + entryFileName + '.js'
+        index: path.join(__dirname, '../../web/build/js/app', entryFileName + '.js')
     },
     output: {
         path: path.join(__dirname , '/web/build/js'),
@@ -15,40 +15,12 @@ module.exports = {
         extensions: ['', '.js'],
         root: __dirname,
         alias: {
-            'sockjs': '/public/components/sockjs-client/dist/sockjs.min.js',
-            'jquery':'/public/components/cmd-jquery/jquery.js',
-            'zepto': '/public/components/cmd-zepto/zepto',
-            'isjs':'/web/js/app/is.js',
-            'util':'/web/js/app/util.js',
-            'seedriot':'/public/components/cmd-riot/riot+compiler.js'
+            sockjs: path.join(__dirname, '../../public/components/sockjs-client/dist/sockjs.min.js'),
+            jquery: path.join(__dirname, '../../public/components/cmd-jquery/jquery.min.js'),
+            seedriot: path.join(__dirname, '../../public/components/cmd-riot/riot.min.js'),
+            bootstrap: path.join(__dirname, '../../public/components/bootstrap/dist/js/bootstrap.min.js'),
+
         }
     },
-    module: {
-        preLoaders: [
-            {
-                test: /\.html$/,
-                loader: 'riotjs-loader',
-                query: {
-                    type: 'none'
-                }
-            }
-        ],
-        loaders: [{
-            test: /\.js$/,
-            exclude: path.resolve(__dirname, '../../../../public'),
-            loader: 'babel-loader',
-            query: {
-                presets: ['es2015']
-            }
-        }]
-    },
-    plugins: [commonsPlugin,
-        new webpack.ProvidePlugin({
-            riot: 'riot'
-        })
-    ],
-    //devServer: {
-    //    contentBase: './public'
-    //}
-    //webpack-dev-server --inline --hot
+    plugins: [commonsPlugin]
 };

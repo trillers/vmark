@@ -4511,7 +4511,7 @@ webpackJsonp([0,1],[
 
 	        self.on('mount', function(){
 	            _.nextTick(function(){
-	                if(!self.opts.imgs.length){
+	                if(!self.opts.imgs || !self.opts.imgs.length){
 	                    return;
 	                }
 	                var imgs = self.opts.imgs.map(function(img){

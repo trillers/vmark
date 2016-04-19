@@ -84,7 +84,7 @@
                 .execute();
         });
         self.catalogNameInputBlur = function(){
-            let catalogName = self.catalogNameInput.value.trim();
+            var catalogName = self.catalogNameInput.value.trim();
             if(!catalogName){
                 return self.validators.push({
                     success: false,

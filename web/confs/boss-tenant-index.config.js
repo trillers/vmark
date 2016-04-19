@@ -16,15 +16,20 @@ module.exports = {
         root: __dirname,
         alias: {
             sockjs: path.join(__dirname, '../../public/components/sockjs-client/dist/sockjs.min.js'),
-            jquery: path.join(__dirname, '../../public/components/cmd-jquery/jquery.js'),
-            zepto: path.join(__dirname, '../../public/components/cmd-zepto/zepto'),
-            isjs:path.join(__dirname, '../../web/js/app/is.js'),
-            util:path.join(__dirname, '../../web/js/app/util.js'),
+            jquery: path.join(__dirname, '../../public/components/cmd-jquery/jquery.min.js'),
             seedriot:path.join(__dirname, '../../public/components/cmd-riot/riot.min.js'),
-            wx: path.join(__dirname, '../../web/js/app/jssdk.js')
+            bootstrap: path.join(__dirname, '../../public/components/bootstrap/dist/js/bootstrap.min.js'),
+            summernote: path.join(__dirname, '../../node_modules/summernote/dist/summernote.min.js')
         }
     },
-    plugins: [commonsPlugin],
+    plugins: [commonsPlugin,
+        new webpack.DefinePlugin({
+            "require.specified": "require.resolve"
+        }),
+        //new webpack.DefinePlugin({
+        //    "CodeMirror": 'codemirror'
+        //})
+    ],
     //devServer: {
     //    contentBase: './public'
     //}
