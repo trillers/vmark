@@ -132,6 +132,10 @@ Service.prototype.splitBill = function(distributor, product, finalPrice, level, 
                 }else{
                     throw new Error('unknown distributor strategy');
                 }
+                console.log("currentDistributor*****************");
+                console.log(currentDistributor);
+                console.log("IncomeAmount*****************");
+                console.log(IncomeAmount);
                 yield me.addAccountBalanceAsync(currentDistributor._id, IncomeAmount);
                 yield recurSplitBill(distributor.upLine, ++index);
             };
@@ -148,6 +152,9 @@ Service.prototype.addAccountBalance = function(distributorId, income, callback){
     var me = this;
     var membershipKv = this.context.kvs.membership;
     var Membership = this.context.models.Membership;
+    console.log("income********************");
+    console.log(income);
+    console.log(typeof income);
     Membership.findByIdAndUpdate(distributorId, {$inc: {accountBalance: income}}, {new: true}, function(err, doc){
         if(err){
             me.context.logger.error('Failed to add account balance' + util.inspect(err));
@@ -284,11 +291,20 @@ Service.prototype.loadDistributorsChainById = function(id, level, callback){
         });
 
     function recurPopulate(doc, index, len, callback){
+        console.log("begin doc.................")
+        console.log(doc)
         let curr = _.range(index).reduce(function(acc, curr){ return acc.upLine}, doc);
-        if(!curr || index >= len){
+        console.log("curr.................")
+        console.log(curr)
+        console.log("index.................")
+        console.log(index)
+        console.log("len.................")
+        console.log(len)
+        if(!curr || index > len){
             return callback(null, doc);
         }
         let populateStr = _.range(index).map(function(){return 'upLine'}).join('.');
+        console.log(populateStr);
         Membership.populate(doc,
             {
                 path: populateStr,
@@ -297,6 +313,8 @@ Service.prototype.loadDistributorsChainById = function(id, level, callback){
             if(err){
                 return callback(err);
             }
+                console.log("doc.............");
+                console.log(doc);
             recurPopulate(doc, ++index, len, callback);
         });
     }

@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var path = require('path');
 var webpack = require('gulp-webpack');
+var uglify = require('gulp-uglify');
 var webpackConfig = require('../webpack.config');
 var sdPath = './web/marketing/sd';
 
@@ -11,5 +12,6 @@ gulp.task("webpack", function() {
     return gulp
         .src('./web/marketing/sd/js/*.js')
         .pipe(webpack(webpackConfig))
-        .pipe(gulp.dest('./web/build/js'));
+        .pipe(uglify())
+        .pipe(gulp.dest('./web/build/js'))
 });
