@@ -104,7 +104,7 @@ var drawSdParticipantPoster = function*(meta){
         yield drawImg(ctx, bgImg, imgPaths.bgImgPath, 0, 0, 600, 900);
         yield drawImg(ctx, user.headimgurl, imgPaths.headImgPath, 235, 160, 130, 130, 'headImg');
         yield drawImg(ctx, qrUrl, imgPaths.qrPath, 180, 495, 240, 240);
-        yield drawText(ctx, user.nickname, 300, 305, 600);
+        yield drawText(ctx, user.nickname, 300, 315, 600);
         //yield drawText(ctx, '长按图片识别二维码', 300, 850, 600);
         var mediaId = yield getPosterMediaId(wechatApi, imgPaths.posterPath, canvas);
         return  {mediaId: mediaId, fsPath: imgPaths.posterPath}
