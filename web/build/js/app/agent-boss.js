@@ -10,11 +10,11 @@ var page = require('./page');
 // */
 riot = require('seedriot');
 nest = require('./nest');
-$ = jquery;
+$ = jQuery = jquery;
 require('./camera');
-//require('./jssdk');
-//console.log(wx);
 domain = require('../domain/index');
+require('bootstrap');
+require('summernote');
 
 /*
 * wechat js config

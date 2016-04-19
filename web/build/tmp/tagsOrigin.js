@@ -1253,7 +1253,7 @@ riot.tag('boss-tenant-sd-catalogs-add', '<div if="{!hidden}" class="container" s
                 .execute();
         });
         self.catalogNameInputBlur = function(){
-            let catalogName = self.catalogNameInput.value.trim();
+            var catalogName = self.catalogNameInput.value.trim();
             if(!catalogName){
                 return self.validators.push({
                     success: false,
@@ -1319,7 +1319,7 @@ riot.tag('boss-tenant-sd-catalogs-detail', '<div if="{!hidden}" class="container
         };
 
         self.onToggleSelectAll = function(){
-            let inputs =[].slice.apply(document.querySelectorAll('input[name="CourseCheckBox"]'));
+            var inputs =[].slice.apply(document.querySelectorAll('input[name="CourseCheckBox"]'));
             if(self.toggleInput.checked === false){
                 inputs.map(function(input){
                     input.checked = false;
@@ -1492,7 +1492,7 @@ riot.tag('boss-tenant-sd-catalogs-edit', '<div if="{!hidden}" class="container" 
             self.validators = _.widget.validatify([]);
         });
         self.catalogNameInputBlur = function(){
-            let catalogName = self.catalogNameInput.value.trim();
+            var catalogName = self.catalogNameInput.value.trim();
             if(!catalogName){
                 return self.validators.addToSet({
                     success: false,
@@ -1583,7 +1583,7 @@ riot.tag('boss-tenant-sd-courses-add', '<div if="{!hidden}" class="container" st
             self.trigger('view-route-to');
         });
         self.courseNameInputBlur = function(){
-            let courseName = self.courseNameInput.value.trim();
+            var courseName = self.courseNameInput.value.trim();
             if(!courseName){
                 return self.validators.push({
                     success: false,
@@ -1603,7 +1603,7 @@ riot.tag('boss-tenant-sd-courses-add', '<div if="{!hidden}" class="container" st
             self.course.slogan = self.coursePromoteInput.value.trim();
         };
         self.courseMediaPriceInputBlur = function(){
-            let listPrice = self.courseMediaPriceInput.value.trim();
+            var listPrice = self.courseMediaPriceInput.value.trim();
             if(!listPrice){
                 return self.validators.push({
                     success: false,
@@ -1727,7 +1727,6 @@ riot.tag('boss-tenant-sd-courses-edit-detail', '<div class="container" if="{!hid
         self.onEdit = function(){
             self.status = 'edit';
             setTimeout(function(){
-                console.log($('#richEditor'));
                 $('#richEditor').summernote({
                     height: 400,
                     minHeight: null,
@@ -1748,7 +1747,7 @@ riot.tag('boss-tenant-sd-courses-edit-detail', '<div class="container" if="{!hid
                     }
 
                 }).summernote('code', self.course.details || '');
-            }, 3000);
+            }, 0);
         };
         self.onSubmit = function(){
             self.course.details = $('#richEditor').summernote('code');
@@ -1830,7 +1829,7 @@ riot.tag('boss-tenant-sd-courses-edit', '<div if="{!hidden}" class="container" s
             }, 100);
         });
         self.courseNameInputBlur = function(){
-            let courseName = self.courseNameInput.value.trim();
+            var courseName = self.courseNameInput.value.trim();
             if(!courseName){
                 return self.validators.addToSet({
                     success: false,
@@ -1851,7 +1850,7 @@ riot.tag('boss-tenant-sd-courses-edit', '<div if="{!hidden}" class="container" s
             self.course.slogan = self.coursePromoteInput.value.trim();
         };
         self.courseMediaPriceInputBlur = function(){
-            let listPrice = self.courseMediaPriceInput.value.trim();
+            var listPrice = self.courseMediaPriceInput.value.trim();
             if(!listPrice){
                 return self.validators.addToSet({
                     success: false,
@@ -4141,7 +4140,7 @@ riot.tag('tenants', '<div if="{!hidden}"> <div if="{tip}" class="alert {addClass
             self.tipInfo = "";
             var findTenants = domain.action('findTenants');
             var onFindTenants = function(res){
-                let ts = res.tenants;
+                var ts = res.tenants;
                 ts = ts.filter(function(t){return t.lFlg==='a'})
                         .concat(ts.filter(function(t){return t.lFlg==='i'}))
                         .concat(ts.filter(function(t){return t.lFlg==='d'}));

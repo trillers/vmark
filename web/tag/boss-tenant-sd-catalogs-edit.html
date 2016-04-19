@@ -98,7 +98,7 @@
             self.validators = _.widget.validatify([]);
         });
         self.catalogNameInputBlur = function(){
-            let catalogName = self.catalogNameInput.value.trim();
+            var catalogName = self.catalogNameInput.value.trim();
             if(!catalogName){
                 return self.validators.addToSet({
                     success: false,

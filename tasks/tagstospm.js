@@ -5,7 +5,7 @@ var gulp = require( 'gulp' ),
     Promise = require( 'bluebird' ),
     fs = Promise.promisifyAll(require( 'fs' )),
     prefix = "module.exports=function(){";
-suffix = "}";
+    suffix = "}";
 
 gulp.task('tagstospm', ['buildtags', 'spmcp'], function(cb){
     setTimeout(function(){

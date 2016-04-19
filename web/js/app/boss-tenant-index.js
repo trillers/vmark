@@ -3,12 +3,7 @@
  */
 var riot = require('seedriot');
 window.riot = riot;
-console.log(riot);
 require('./tags')();
-console.log("*************");
-setTimeout(function(){
-    console.log(riot.mount('boss-tenant'))
-}, 3000)
 
 var agent = require('./agent-boss').init();
 var util = require('./util');

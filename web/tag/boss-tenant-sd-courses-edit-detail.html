@@ -62,7 +62,6 @@
         self.onEdit = function(){
             self.status = 'edit';
             setTimeout(function(){
-                console.log($('#richEditor'));
                 $('#richEditor').summernote({
                     height: 400,
                     minHeight: null,
@@ -83,7 +82,7 @@
                     }
 
                 }).summernote('code', self.course.details || '');
-            }, 3000);
+            }, 0);
         };
         self.onSubmit = function(){
             self.course.details = $('#richEditor').summernote('code');

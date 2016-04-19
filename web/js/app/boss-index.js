@@ -2,8 +2,9 @@
  * SPA definition which is the single entry of our mobile site
  */
 var riot = require('seedriot');
+window.riot = riot;
 require('./tags')();
-var agent = require('./agent-boss').init();
+var agent = require('./agent-boss-tenants').init();
 var util = require('./util');
 
 var Spa = require('./spa');

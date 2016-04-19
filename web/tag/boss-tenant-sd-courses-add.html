@@ -84,7 +84,7 @@
             self.trigger('view-route-to');
         });
         self.courseNameInputBlur = function(){
-            let courseName = self.courseNameInput.value.trim();
+            var courseName = self.courseNameInput.value.trim();
             if(!courseName){
                 return self.validators.push({
                     success: false,
@@ -104,7 +104,7 @@
             self.course.slogan = self.coursePromoteInput.value.trim();
         };
         self.courseMediaPriceInputBlur = function(){
-            let listPrice = self.courseMediaPriceInput.value.trim();
+            var listPrice = self.courseMediaPriceInput.value.trim();
             if(!listPrice){
                 return self.validators.push({
                     success: false,
