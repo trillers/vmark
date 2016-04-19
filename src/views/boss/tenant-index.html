@@ -11,7 +11,7 @@
         window.__app = {{ JSON.stringify(__app) }};
         window.__page = {{ JSON.stringify(__page) }};
         window.__page.tenantId = {{ JSON.stringify(tenantId) }};
-        window.prdOrNot =( __app.settings.env.NODE_ENV === "production" );
+        window.prdOrNot =( __app.settings.env.mode === "production" );
         var scripthook = document.createElement( "script" );
 
 //        if(prdOrNot){
