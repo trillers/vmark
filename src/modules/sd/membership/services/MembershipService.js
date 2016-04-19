@@ -132,6 +132,10 @@ Service.prototype.splitBill = function(distributor, product, finalPrice, level, 
                 }else{
                     throw new Error('unknown distributor strategy');
                 }
+                console.log("currentDistributor*****************");
+                console.log(currentDistributor);
+                console.log("IncomeAmount*****************");
+                console.log(IncomeAmount);
                 yield me.addAccountBalanceAsync(currentDistributor._id, IncomeAmount);
                 yield recurSplitBill(distributor.upLine, ++index);
             };
@@ -148,6 +152,9 @@ Service.prototype.addAccountBalance = function(distributorId, income, callback){
     var me = this;
     var membershipKv = this.context.kvs.membership;
     var Membership = this.context.models.Membership;
+    console.log("income********************");
+    console.log(income);
+    console.log(typeof income);
     Membership.findByIdAndUpdate(distributorId, {$inc: {accountBalance: income}}, {new: true}, function(err, doc){
         if(err){
             me.context.logger.error('Failed to add account balance' + util.inspect(err));
