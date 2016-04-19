@@ -8,10 +8,10 @@
         window.__app = {{ JSON.stringify(__app) }};
         window.__page = {{ JSON.stringify(__page) }};
         window.__page.tenantId = {{ JSON.stringify(tenantId) }};
-        window.prdOrNot = ( __app.settings.env.NODE_ENV === "production" );
+        window.prdOrNot = ( __app.settings.env.mode === "production" );
     </script>
 
-    {% if __app.settings.env.NODE_ENV != "production" %}
+    {% if __app.settings.env.mode != "production" %}
     <script src="/public/components/seajs/dist/sea.js"></script>
     <script src="/public/components/seajs-wrap/dist/seajs-wrap.js"></script>
     <script src="/web/boss-tenant-index.js"></script>
@@ -64,7 +64,7 @@
         <boss-tenant-power-add></boss-tenant-power-add>
         <boss-tenant-sd-orders></boss-tenant-sd-orders>
 
-        {% if __app.settings.env.NODE_ENV != "production" %}
+        {% if __app.settings.env.mode != "production" %}
 
         <script src="/web/tag/boss-tenant-topbar.html" type="riot/tag"></script>
         <script src="/web/tag/boss-tenant-sd.html" type="riot/tag"></script>
