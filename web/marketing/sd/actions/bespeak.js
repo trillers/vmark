@@ -11,7 +11,7 @@ export var addBespeak = data => {
         .catch(e=> {
             console.warn(e)
         });
-}
+};
 
 
 

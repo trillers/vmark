@@ -4,7 +4,6 @@
 var riot = require('seedriot');
 var $ = require('jquery');
 var util = require('./util');
-var welcomediv = document.getElementById('welcome_pag');
 var _default_model = {
     name: 'thing',
     fetched: false,
@@ -344,7 +343,7 @@ var nest = {
 
         view.init = function(ctx){
             this.mount(ctx);
-            console.log();
+
             if(!this.tag){
                 throw new Error('tag is not set');
             }

@@ -422,11 +422,6 @@ module.exports = function (router) {
             let tenantId = this.request.body.tenant;
             let media = this.request.body.media;
 
-            console.log("begin to checkout...........")
-            console.log("distributorId..........." + distributorId)
-            console.log("tenantId..........." + tenantId)
-            console.log("media...........")
-            console.log(media)
             yield context.services.membershipService.checkoutByDistributorIdAsync(distributorId, tenantId, media);
             this.body = {error: null};
         }catch (e){

@@ -64,11 +64,6 @@ var proto = {
         var app = this;
         riot.route.parser(routeParser);
         riot.route(app._doRoute.bind(app));
-        this.on('init', function(){
-            //var hash = window.location.hash;
-            //hash || (hash = app.defaultHash)
-            //riot.route(hash);
-        });
 
         this.on('before-view-route-to', app._doBeforeViewRouteTo.bind(app));
         this.on('view-route-to', app._doViewRouteTo.bind(app));
