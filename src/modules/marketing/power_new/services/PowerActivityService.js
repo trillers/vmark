@@ -323,7 +323,7 @@ Service.prototype.scanActivityPoster = function*(qr, wechatId, openid){
         var user = yield tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, openid);
         activity = yield this.loadById(poster.activity);
         var status = yield this.getStatus(activity, user);
-        if(activity.type === ActivityType.Redpacket.value() || activity.type === ActivityType.Points.value()){
+        if(activity.type === ActivityType.RedPacket.value() || activity.type === ActivityType.Points.value()){
             yield this.scanRpAndPoActivityPoster(user, activity, status, wechatApi);
         }else if(activity.type === ActivityType.courses.value()){
             yield this.scanCoActivityPoster(user, activity, status, wechatApi);

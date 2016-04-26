@@ -239,7 +239,7 @@ Service.prototype.scanParticipantPoster = function*(qr, wechatId, openid){
         var poster = yield powerPosterService.loadByWechatIdAndSceneId(wechatId, qr.sceneId);
         var user = yield tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, openid);
         participant = yield this.loadById(poster.participant);
-        if(participant.activity.type === PowerType.Redpacket.value() || participant.activity.type === PowerType.Points.value()){
+        if(participant.activity.type === PowerType.RedPacket.value() || participant.activity.type === PowerType.Points.value()){
             yield this.scanRpAndPoParticipantPoster(user, participant, wechatApi);
         }else if(participant.activity.type === PowerType.courses.value()){
             yield this.scanCoParticipantPoster(user, participant, wechatApi);
