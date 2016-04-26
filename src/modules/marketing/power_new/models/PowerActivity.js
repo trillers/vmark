@@ -29,6 +29,7 @@ var Model = function(DomainBuilder){
             ,qrCode: {type: String, ref: 'QrCode'} //scan get activity post
             ,poster: {type: String, ref: 'PowerPoster'} //activity poster
             ,type: {type: String, enum: PowerType.valueList(), default: PowerType.RedPacket.value(), required: true}
+            ,courseUrl: {type: String}
         })
         .build();
     return schema.model(true);

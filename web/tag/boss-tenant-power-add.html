@@ -10,7 +10,7 @@
                         <li>
                             <span>活动公众号: </span>
                             <select id="selectMedia" >
-                                <option each="{wechatMedias}" value="{originalId}" selected="{patent.activity.wechatId = originalId}">{name}</option>
+                                <option each="{wechatMedias}" value="{originalId}" selected="{parent.activity.wechatId = originalId}">{name}</option>
                             </select>
                         </li>
                         <li id="type_select"><span>类型: </span>
@@ -39,9 +39,10 @@
                         <li if="{activity.type !== 'co'}"><span>活动规则:  </span><div id="rule"></div></li>
                         <li><span if="{activity.type !== 'co'}">分享标题自定义:  </span><span if="{activity.type === 'co'}">消息卡片标题:  </span><input class="form-control" type="text" name="shareTitle" value="{activity.shareTitle}"/></li>
                         <li><span if="{activity.type !== 'co'}">分享描述自定义:  </span><span if="{activity.type === 'co'}">消息卡片描述:  </span><input class="form-control" type="text" name="shareDesc" value="{activity.shareTitle}"/></li>
-                        <li if="{activity.type !== 'co'}"><span>基础奖励:  </span><input id="base_power" type="text" value="{activity.base_power}"/></li>
-                        <li if="{activity.type !== 'co'}"><span>好友助力单次奖励:  </span><input name="friend_help_min_power" type="text" value="{activity.friend_help_min_power}"/><span> 至 </span><input name="friend_help_max_power" type="text" value="{activity.friend_help_max_power}"/></li>
-                        <li><span if="{activity.type !== 'co'}">好友助力上限人数:  </span><span if="{activity.type === 'co'}">最低好友助力人数:  </span><input name="friend_help_count_limit" type="text" value="{activity.friend_help_count_limit}"/></li>
+                        <li if="{activity.type !== 'co'}"><span>基础奖励:  </span><input id="base_power" type="number" value="{activity.base_power}"/></li>
+                        <li if="{activity.type !== 'co'}"><span>好友助力单次奖励:  </span><input name="friend_help_min_power" type="number" value="{activity.friend_help_min_power}"/><span> 至 </span><input name="friend_help_max_power" type="number" value="{activity.friend_help_max_power}"/></li>
+                        <li><span if="{activity.type !== 'co'}">好友助力上限人数:  </span><span if="{activity.type === 'co'}">最低好友助力人数:  </span><input name="friend_help_count_limit" type="number" value="{activity.friend_help_count_limit}"/></li>
+                        <li if="{activity.type === 'co'}"><span>课程地址:  </span><input class="form-control" type="text" name="courseUrl" value="{activity.courseUrl}"/></li>
                         <li style="text-align: center; margin-top: 1em"><input class="btn btn-success" type="button"
                                                                                onclick="{submit}" value="提交"/></li>
                     </ul>
@@ -370,6 +371,7 @@
                 self.activity.desc = $('#desc').summernote('code') || self.co_desc.value;
             }else{
                 self.activity.desc = self.co_desc.value;
+                self.activity.courseUrl = self.courseUrl.value;
             }
             var allowSubmit = self.verify(self.activity);
             console.log(self.activity);

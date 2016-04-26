@@ -29,6 +29,7 @@ module.exports = function(router){
                 , desc: this.request.body.desc
                 , withPic: this.request.body.withPic
                 , posterBgImg: this.request.body.posterBgImg
+                , courseUrl: this.request.body.courseUrl
             }
             var data = yield powerActivityService.create(json);
             this.body = {success: true, data: data};
@@ -71,6 +72,7 @@ module.exports = function(router){
                 ,rule: this.request.body.rule
                 ,desc: this.request.body.desc
                 ,posterBgImg: this.request.body.posterBgImg
+                ,courseUrl: this.request.body.courseUrl
             }
             var data = yield powerActivityService.updateById(id, json);
             this.body = {success: true, data: data};

@@ -13,7 +13,7 @@ const _ = require('../js/util');
         if(!obj){
             return;
         }
-        let domApi = {
+        let polyfills = {
 
             append: function(str){
                 var me = this;
@@ -78,9 +78,9 @@ const _ = require('../js/util');
         };
         if(Array.isArray(obj)){
             obj.each = obj.forEach;
-            return obj.map(o=>_.mixin(o, domApi));
+            return obj.map(o=>_.mixin(o, polyfills));
         }
-        return _.mixin(obj, domApi);
+        return _.mixin(obj, polyfills);
     };
 
     let jQuery = selector => {

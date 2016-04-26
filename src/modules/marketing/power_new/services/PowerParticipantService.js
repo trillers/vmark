@@ -4,6 +4,7 @@ var _ = require('underscore');
 var myUtil = require('../../../../app/util');
 var PowerType = require('../../../common/models/TypeRegistry').item('PowerType');
 var wechatApiCache = require('../../../tenant/wechat/api-cache');
+var PosterType = require('../../../common/models/TypeRegistry').item('PosterType');
 
 var Service = function(context){
     this.context = context;
@@ -223,11 +224,9 @@ Service.prototype.help = function*(participant, user){
 /**
  * handle user scan participant poster
  * @params qr
+ * @params wechatId
  * @params openid
  *
- * return {
- *    reply: 'xxxxx', reply msg send to user
- * }
  * */
 Service.prototype.scanParticipantPoster = function*(qr, wechatId, openid){
     var logger = this.context.logger;
@@ -240,31 +239,11 @@ Service.prototype.scanParticipantPoster = function*(qr, wechatId, openid){
         var poster = yield powerPosterService.loadByWechatIdAndSceneId(wechatId, qr.sceneId);
         var user = yield tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, openid);
         participant = yield this.loadById(poster.participant);
-        var res = yield this.help(participant, user);
-        var reply = '';
-        if(res.limited){
-            reply = '<' + participant.user.nickname + '> 助力人数已达上限';
-        }else if(res.error){
-            reply = '助力<' + participant.user.nickname + '> 失败';
-        }else if(res.helped){
-            reply = '您已经助力过 <' + participant.user.nickname + '>';
-        }else {
-            if (participant.activity.type = PowerType.RedPacket.value()) {
-                reply = '<' + user.nickname + '> 您已成功为 \n<' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 红包,\n <' + participant.user.nickname + '> 目前总红包数: ' + res.total_power + ', 排名: ' + res.rank;
-            }else if(participant.activity.type = PowerType.Points.value()){
-                reply = '<' + user.nickname + '> 您已成功为 \n<' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 积分,\n <' + participant.user.nickname + '> 目前总积分: ' + res.total_power + ', 排名: ' + res.rank;
-            }
+        if(participant.activity.type === PowerType.Redpacket.value() || participant.activity.type === PowerType.Points.value()){
+            yield this.scanRpAndPoParticipantPoster(user, participant, wechatApi);
+        }else if(participant.activity.type === PowerType.courses.value()){
+            yield this.scanCoParticipantPoster(user, participant, wechatApi);
         }
-
-        yield wechatApi.sendTextAsync(openid, reply);
-        var articles = [
-            {
-                "title": participant.user.nickname + '  的活动主页，点击查看详情',
-                "description": participant.activity.shareDesc,
-                "url": participant.homePage,
-                "picurl": participant.activity.shareImg
-            }];
-        yield wechatApi.sendNewsAsync(openid, articles);
 
     }catch(e){
         logger.error('scan paticipant poster err: ' + e + ', qr: ' + qr._id + ', user openid: ' + openid);
@@ -273,6 +252,98 @@ Service.prototype.scanParticipantPoster = function*(qr, wechatId, openid){
             if(err) logger.error(err);
         });
     }
+}
+
+/**
+ * handle user scan redpacket and points power participant poster
+ * @params user
+ * @params participant
+ * @params wechatApi
+ * */
+Service.prototype.scanRpAndPoParticipantPoster = function*(user, participant, wechatApi){
+    var res = yield this.help(participant, user);
+    var reply = '';
+    if(res.limited){
+        reply = '<' + participant.user.nickname + '> 助力人数已达上限';
+    }else if(res.error){
+        reply = '助力<' + participant.user.nickname + '> 失败';
+    }else if(res.helped){
+        reply = '您已经助力过 <' + participant.user.nickname + '>';
+    }else {
+        if (participant.activity.type = PowerType.RedPacket.value()) {
+            reply = '<' + user.nickname + '> 您已成功为 \n<' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 红包,\n <' + participant.user.nickname + '> 目前总红包数: ' + res.total_power + ', 排名: ' + res.rank;
+        }else if(participant.activity.type = PowerType.Points.value()){
+            reply = '<' + user.nickname + '> 您已成功为 \n<' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 积分,\n <' + participant.user.nickname + '> 目前总积分: ' + res.total_power + ', 排名: ' + res.rank;
+        }
+    }
+
+    yield wechatApi.sendTextAsync(user.openid, reply);
+    var articles = [
+        {
+            "title": participant.user.nickname + '  的活动主页，点击查看详情',
+            "description": participant.activity.shareDesc,
+            "url": participant.homePage,
+            "picurl": participant.activity.shareImg
+        }];
+    yield wechatApi.sendNewsAsync(user.openid, articles);
+}
+
+/**
+ * handle user scan courses power participant poster
+ * @params user
+ * @params participant
+ * @params wechatApi
+ * */
+Service.prototype.scanCoParticipantPoster = function*(user, participant, wechatApi){
+    var kv = this.context.kvs.power;
+    var powerParticipantService = this.context.services.powerParticipantService;
+    var powerPosterService = this.context.services.powerPosterService;
+    var replyToUser = '', replyToParticipant = '';
+    var participantId = yield kv.getParticipantIdByUserIdAndActivityIdAsync(participant.activity._id, user.id);
+    if (participantId) {
+        replyToUser = '您已经支持过一个好友了,每人只能支持一人哟~~';
+        yield wechatApi.sendTextAsync(user.openid, replyToUser);
+        return;
+    }
+    yield kv.addHelpFriendToSetAsync(participant.id, user.openid);
+    var helpArr = yield kv.getHelpFriendsSetAsync(participant.id);
+
+    var participantJson = {
+        activity: participant.activity._id
+        , user: user._id
+        , help_friends: []
+    }
+    var data = yield powerParticipantService.create(participantJson);
+    var posterJson = {
+        user: user._id,
+        activity: participant.activity._id,
+        participant: data._id,
+        wechatId: wechatId,
+        posterBgImg: participant.activity.posterBgImg,
+        type: PosterType.participant.value()
+    }
+    var poster = yield powerPosterService.create(posterJson);
+    yield powerParticipantService.updateById(data._id, {poster: poster._id});
+
+    replyToUser = '您已成功参与活动: [' + participant.activity.name + ']\n'
+        + '活动说明: \n' + participant.activity.desc;
+    yield wechatApi.sendTextAsync(user.openid, replyToUser);
+    yield wechatApi.sendImageAsync(user.openid, poster.mediaId);
+    if (helpArr.length >= participant.activity.friend_help_count_limit) {
+        replyToParticipant = '恭喜你,你的好友 ' + user.nickname + ' 帮你获得了上课链接,点击下方卡片进入';
+        yield wechatApi.sendTextAsync(participant.user.openid, replyToParticipant);
+        var articles = [
+            {
+                "title": participant.activity.shareTitle ,
+                "description": participant.activity.shareDesc,
+                "url": participant.activity.courseUrl,
+                "picurl": participant.activity.shareImg
+            }];
+        yield wechatApi.sendNewsAsync(participant.user.openid, articles);
+    }
+    var num = participant.activity.friend_help_count_limit - helpArr.length;
+    replyToParticipant = '你的好友 ' + user.nickname + ' 帮你扫码啦,还需' + num + '位好友帮忙扫码就可获得免费课程链接了,继续加油哦~~';
+    yield wechatApi.sendTextAsync(participant.user.openid, replyToParticipant);
 }
 
 module.exports = Service;
