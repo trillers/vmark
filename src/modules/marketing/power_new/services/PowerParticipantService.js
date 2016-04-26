@@ -240,9 +240,9 @@ Service.prototype.scanParticipantPoster = function*(qr, wechatId, openid){
         var user = yield tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, openid);
         participant = yield this.loadById(poster.participant);
         if(participant.activity.type === PowerType.RedPacket.value() || participant.activity.type === PowerType.Points.value()){
-            yield this.scanRpAndPoParticipantPoster(user, participant, wechatApi);
+            yield this.scanRpAndPoParticipantPoster(user, participant, wechatId);
         }else if(participant.activity.type === PowerType.courses.value()){
-            yield this.scanCoParticipantPoster(user, participant, wechatApi);
+            yield this.scanCoParticipantPoster(user, participant, wechatId);
         }
 
     }catch(e){
@@ -258,9 +258,11 @@ Service.prototype.scanParticipantPoster = function*(qr, wechatId, openid){
  * handle user scan redpacket and points power participant poster
  * @params user
  * @params participant
- * @params wechatApi
+ * @params wechatId
  * */
-Service.prototype.scanRpAndPoParticipantPoster = function*(user, participant, wechatApi){
+Service.prototype.scanRpAndPoParticipantPoster = function*(user, participant, wechatId){
+    var wechatApi = (yield wechatApiCache.get(wechatId)).api;
+
     var res = yield this.help(participant, user);
     var reply = '';
     if(res.limited){
@@ -292,10 +294,11 @@ Service.prototype.scanRpAndPoParticipantPoster = function*(user, participant, we
  * handle user scan courses power participant poster
  * @params user
  * @params participant
- * @params wechatApi
+ * @params wechatId
  * */
-Service.prototype.scanCoParticipantPoster = function*(user, participant, wechatApi){
+Service.prototype.scanCoParticipantPoster = function*(user, participant, wechatId){
     var kv = this.context.kvs.power;
+    var wechatApi = (yield wechatApiCache.get(wechatId)).api;
     var powerParticipantService = this.context.services.powerParticipantService;
     var powerPosterService = this.context.services.powerPosterService;
     var replyToUser = '', replyToParticipant = '';

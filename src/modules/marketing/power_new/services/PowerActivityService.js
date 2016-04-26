@@ -324,9 +324,9 @@ Service.prototype.scanActivityPoster = function*(qr, wechatId, openid){
         activity = yield this.loadById(poster.activity);
         var status = yield this.getStatus(activity, user);
         if(activity.type === ActivityType.RedPacket.value() || activity.type === ActivityType.Points.value()){
-            yield this.scanRpAndPoActivityPoster(user, activity, status, wechatApi);
+            yield this.scanRpAndPoActivityPoster(user, activity, status, wechatId);
         }else if(activity.type === ActivityType.courses.value()){
-            yield this.scanCoActivityPoster(user, activity, status, wechatApi);
+            yield this.scanCoActivityPoster(user, activity, status, wechatId);
         }
 
     }catch(e){
@@ -343,10 +343,12 @@ Service.prototype.scanActivityPoster = function*(qr, wechatId, openid){
  * @params user
  * @params activity
  * @params status
- * @params wechatApi
+ * @params wechatId
  * */
-Service.prototype.scanRpAndPoActivityPoster = function*(user, activity, status, wechatApi){
+Service.prototype.scanRpAndPoActivityPoster = function*(user, activity, status, wechatId){
     var participant = null;
+    var wechatApi = (yield wechatApiCache.get(wechatId)).api;
+
     var powerParticipantService = this.context.services.powerParticipantService;
     var powerPosterService = this.context.services.powerPosterService;
     var reply = '', sendActivityCard = false, sendParticipantCard = false, posterMediaId = '';
@@ -437,9 +439,10 @@ Service.prototype.scanRpAndPoActivityPoster = function*(user, activity, status, 
  * @params user
  * @params activity
  * @params status
- * @params wechatApi
+ * @params wechatId
  * */
-Service.prototype.scanCoActivityPoster = function*(user, activity, status, wechatApi){
+Service.prototype.scanCoActivityPoster = function*(user, activity, status, wechatId){
+    var wechatApi = (yield wechatApiCache.get(wechatId)).api;
     var powerParticipantService = this.context.services.powerParticipantService;
     var powerPosterService = this.context.services.powerPosterService;
     var reply = '', posterMediaId = '';
