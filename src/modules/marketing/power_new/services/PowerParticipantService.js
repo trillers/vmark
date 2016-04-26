@@ -343,6 +343,7 @@ Service.prototype.scanCoParticipantPoster = function*(user, participant, wechatI
                 "picurl": participant.activity.shareImg
             }];
         yield wechatApi.sendNewsAsync(participant.user.openid, articles);
+        return;
     }
     var num = participant.activity.friend_help_count_limit - helpArr.length;
     replyToParticipant = '你的好友 ' + user.nickname + ' 帮你扫码啦,还需' + num + '位好友帮忙扫码就可获得免费课程链接了,继续加油哦~~';
