@@ -640,9 +640,16 @@ module.exports = function (router) {
             };
             let myOrders = yield context.services.orderService.filterAsync(params);
             var pricesObject = null;
-            if(membership.type){
+            console.warn("******************")
+            console.warn(membership);
+            if(membership.type === MembershipType.Distributor.value()
+                || membership.type === MembershipType.Both.value()){
                 let orders = yield context.services.orderService.findByRelatedDistributorAsync(membership._id);
+                console.warn("******************")
+                console.warn(orders);
                 pricesObject = context.services.orderService.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId(orders);
+                console.warn("******************")
+                console.warn(pricesObject);
             }
 
             let data = {
