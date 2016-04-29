@@ -5,6 +5,7 @@ var logger = require('../../../../app/logging').logger;
 var wechatApi = require('../../../wechat/common/api').api;
 var qrRegistry = require('../../../wechatsite/qr');
 var tenantAdminQrType = qrRegistry.getQrType('ta');
+var path = require('path');
 //var QrHandler = require('../../../qrchannel/common/QrHandler');
 //var handler = new QrHandler(false, 'ta', null);
 
@@ -13,7 +14,7 @@ module.exports = function (context) {
     try{
         tenantAdminQrType.createQr(function(err, qr){
             var url = wechatApi.showQRCodeURL(qr.ticket);
-            var qrCodePath = os.tmpdir() + openid + '.png';
+            var qrCodePath = path.join(os.tmpdir(), openid + '.png');
             request(url).pipe(fs.createWriteStream(qrCodePath)).on('close', function () {
                 wechatApi.uploadMedia(qrCodePath, 'image', function (err, data) {
                     if (err) {
