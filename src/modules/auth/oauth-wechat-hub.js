@@ -18,7 +18,7 @@ var hub = new Hub({
 });
 
 hub.errorHandler = function*(ctx, next){
-    yield ctx.render('error', {error: req.oauth.error});
+    yield ctx.render('error', {error: ctx.oauth.error});
 };
 
 module.exports = hub;
