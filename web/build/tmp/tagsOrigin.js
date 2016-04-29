@@ -491,7 +491,7 @@ riot.tag('alert', '<div class="alert-container" if="{opts.validators.length}"> <
         };
     
 });
-riot.tag('boss-tenant-power-add', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <alert validators="{validators}" clear="{clear}"></alert> <div class="col-md-10 col-md-offset-1"> <div class="jumbotron" style="height: auto; padding: 25px;"> <div id="addForm" class="panel" style="margin-top: 1em;"> <div style="padding-left: 20px; padding-bottom: 20px; padding-top: 15px"><a href="#power/list" style="font-size: 15px; text-decoration: none;">返回活动列表</a></div> <ul class="ul" style="text-align: left; padding-left: 2em"> <li><span>助力活动设置</span></li> <li> <span>活动公众号: </span> <select id="selectMedia" > <option each="{wechatMedias}" value="{originalId}" __selected="{patent.activity.wechatId = originalId}">{name}</option> </select> </li> <li id="type_select"><span>类型: </span> <label><input id="type_rp" name="activity_type" type="radio" value="rp" __checked="{activity.type === \'rp\'}">红包</label> <label><input id="type_po" name="activity_type" type="radio" value="po" __checked="{activity.type === \'po\'}">积分</label> </li> <li><span>启动图片助力: </span><input name="withPic" type="checkbox" __checked="{activity.withPic === \'true\'}" onclick="{toggleWithPic}"></li> <li id="poster" if="{activity.withPic === \'true\'}" style="clear: both; min-height: 26px;"><span style="float: left">海报背景图片: </span><input if="{!activity.posterBgImg}" id="posterBgImg" type="file" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadPosterBgImg}" style="width: 60px;"> <div if="{activity.posterBgImg}" class="posterBgImgCon"><i onclick="{deletePosterBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.posterBgImg}" alt=""></div> </li> <li><span>活动名称: </span><input name="activityName" type="text" value="{activity.name}"></li> <li class="bgImg" style="min-height: 26px"><span style="float: left">背景图片(3张): </span><input if="{activity.bgImg.length != 3}" id="bgImg" type="file" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadBgImg}" style="width: 60px;"> <div if="{activity.bgImg.length >= 1}" class="bgImgCon"><i onclick="{deleteBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.bgImg[0]}" alt=""></div> <div if="{activity.bgImg.length >= 2}" class="bgImgCon"><i onclick="{deleteBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.bgImg[1]}" alt=""></div> <div if="{activity.bgImg.length >= 3}" class="bgImgCon"><i onclick="{deleteBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.bgImg[2]}" alt=""></div> </li> <li style="clear: both; min-height: 26px"><span style="float: left">分享卡片图片: </span><input if="{!activity.shareImg}" id="shareImg" type="file" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadShareImg}" style="width: 60px;"> <div if="{activity.shareImg}" class="shareImgCon"><i onclick="{deleteShareImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.shareImg}" alt=""></div> </li> <li style="clear: both"><span>活动时间: </span><input id="startTime" type="date" value="{formatDate(activity.startTime)}"><span> 至 </span><input id="endTime" type="date" value="{formatDate(activity.endTime)}"> </li> <li><span>活动介绍: </span><div id="desc"></div></li> <li><span>活动规则: </span><div id="rule"></div></li> <li><span>分享标题自定义: </span><input class="form-control" type="text" name="shareTitle" value="{activity.shareTitle}"></li> <li><span>分享描述自定义: </span><input class="form-control" type="text" name="shareDesc" value="{activity.shareTitle}"></li> <li><span>基础奖励: </span><input id="base_power" type="text" value="{activity.base_power}"></li> <li><span>好友助力单次奖励: </span><input name="friend_help_min_power" type="text" value="{activity.friend_help_min_power}"><span> 至 </span><input name="friend_help_max_power" type="text" value="{activity.friend_help_max_power}"></li> <li><span>好友助力上限人数: </span><input name="friend_help_count_limit" type="text" value="{activity.friend_help_count_limit}"></li> <li style="text-align: center; margin-top: 1em"><input class="btn btn-success" type="button" onclick="{submit}" value="提交"></li> </ul> </div> </div> </div> </div> </div>', 'boss-tenant-power-add .ul {list-style-type: none; text-align: center; padding: 0} boss-tenant-power-add .ul li {margin-bottom: 20px;} boss-tenant-power-add .bgImg #bgImg {float: left; margin-left: 10px;} boss-tenant-power-add .bgImg .bgImgCon {margin-left: 10px; display: -webkit-inline-box; position: relative; border: solid 1px #E8E7E7;} boss-tenant-power-add .bgImgCon i{color: #EC3131; position: absolute; left: 58px; top: 2px; cursor: pointer;} boss-tenant-power-add .bgImgCon div{margin-left: 20px; float: left;} boss-tenant-power-add .bgImgCon img {width: 75px; height: 75px;} boss-tenant-power-add .shareImgCon img {width: 75px; height: 75px;} boss-tenant-power-add #shareImg{float: left; margin-left: 10px;} boss-tenant-power-add .shareImgCon i{color: #EC3131;position: absolute;left: 58px;top: 2px;cursor: pointer;} boss-tenant-power-add .shareImgCon{margin-left: 10px; display: -webkit-inline-box;position: relative; border: solid 1px #E8E7E7;} boss-tenant-power-add .posterBgImgCon img {width: 75px; height: 75px;} boss-tenant-power-add #posterBgImg{float: left; margin-left: 10px;} boss-tenant-power-add .posterBgImgCon i{color: #EC3131;position: absolute;left: 58px;top: 2px;cursor: pointer;} boss-tenant-power-add .posterBgImgCon{margin-left: 10px; display: -webkit-inline-box;position: relative; border: solid 1px #E8E7E7;}', function(opts) {
+riot.tag('boss-tenant-power-add', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <alert validators="{validators}" clear="{clear}"></alert> <div class="col-md-10 col-md-offset-1"> <div class="jumbotron" style="height: auto; padding: 25px;"> <div id="addForm" class="panel" style="margin-top: 1em;"> <div style="padding-left: 20px; padding-bottom: 20px; padding-top: 15px"><a href="#power/list" style="font-size: 15px; text-decoration: none;">返回活动列表</a></div> <ul class="ul" style="text-align: left; padding-left: 2em"> <li><span>助力活动设置</span></li> <li> <span>活动公众号: </span> <select id="selectMedia" > <option each="{wechatMedias}" value="{originalId}" __selected="{parent.activity.wechatId = originalId}">{name}</option> </select> </li> <li id="type_select"><span>类型: </span> <label><input id="type_rp" name="activity_type" type="radio" value="rp" __checked="{activity.type === \'rp\'}" onclick="{selectType}">红包</label> <label><input id="type_po" name="activity_type" type="radio" value="po" __checked="{activity.type === \'po\'}" onclick="{selectType}">积分</label> <label><input id="type_co" name="activity_type" type="radio" value="co" __checked="{activity.type === \'co\'}" onclick="{selectType}">课程助力</label> </li> <li if="{activity.type !== \'co\'}"><span>启动图片助力: </span><input name="withPic" type="checkbox" __checked="{activity.withPic === \'true\'}" onclick="{toggleWithPic}"></li> <li id="poster" if="{activity.withPic === \'true\' || activity.type === \'co\'}" style="clear: both; min-height: 26px;"><span style="float: left">海报背景图片: </span><input if="{!activity.posterBgImg}" id="posterBgImg" type="file" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadPosterBgImg}" style="width: 60px;"> <div if="{activity.posterBgImg}" class="posterBgImgCon"><i onclick="{deletePosterBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.posterBgImg}" alt=""></div> </li> <li><span>活动名称: </span><input name="activityName" type="text" value="{activity.name}"></li> <li if="{activity.type !== \'co\'}" class="bgImg" style="min-height: 26px"><span style="float: left">背景图片(3张): </span><input if="{activity.bgImg.length != 3}" id="bgImg" type="file" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadBgImg}" style="width: 60px;"> <div if="{activity.bgImg.length >= 1}" class="bgImgCon"><i onclick="{deleteBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.bgImg[0]}" alt=""></div> <div if="{activity.bgImg.length >= 2}" class="bgImgCon"><i onclick="{deleteBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.bgImg[1]}" alt=""></div> <div if="{activity.bgImg.length >= 3}" class="bgImgCon"><i onclick="{deleteBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.bgImg[2]}" alt=""></div> </li> <li style="clear: both; min-height: 26px"><span style="float: left" if="{activity.type !== \'co\'}">分享卡片图片: </span><span style="float: left" if="{activity.type === \'co\'}">消息卡片图片: </span><input if="{!activity.shareImg}" id="shareImg" type="file" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadShareImg}" style="width: 60px;"> <div if="{activity.shareImg}" class="shareImgCon"><i onclick="{deleteShareImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.shareImg}" alt=""></div> </li> <li style="clear: both"><span>活动时间: </span><input id="startTime" type="date" value="{formatDate(activity.startTime)}"><span> 至 </span><input id="endTime" type="date" value="{formatDate(activity.endTime)}"> </li> <li if="{activity.type !== \'co\'}"><span>活动介绍: </span><div id="desc"></div></li> <li if="{activity.type === \'co\'}"><span>活动介绍: </span><textarea class="form-control" name="co_desc" rows="10"></textarea></li> <li if="{activity.type !== \'co\'}"><span>活动规则: </span><div id="rule"></div></li> <li><span if="{activity.type !== \'co\'}">分享标题自定义: </span><span if="{activity.type === \'co\'}">消息卡片标题: </span><input class="form-control" type="text" name="shareTitle" value="{activity.shareTitle}"></li> <li><span if="{activity.type !== \'co\'}">分享描述自定义: </span><span if="{activity.type === \'co\'}">消息卡片描述: </span><input class="form-control" type="text" name="shareDesc" value="{activity.shareTitle}"></li> <li if="{activity.type !== \'co\'}"><span>基础奖励: </span><input id="base_power" type="number" value="{activity.base_power}"></li> <li if="{activity.type !== \'co\'}"><span>好友助力单次奖励: </span><input name="friend_help_min_power" type="number" value="{activity.friend_help_min_power}"><span> 至 </span><input name="friend_help_max_power" type="number" value="{activity.friend_help_max_power}"></li> <li><span if="{activity.type !== \'co\'}">好友助力上限人数: </span><span if="{activity.type === \'co\'}">最低好友助力人数: </span><input name="friend_help_count_limit" type="number" value="{activity.friend_help_count_limit}"></li> <li if="{activity.type === \'co\'}"><span>课程地址: </span><input class="form-control" type="text" name="courseUrl" value="{activity.courseUrl}"></li> <li style="text-align: center; margin-top: 1em"><input class="btn btn-success" type="button" onclick="{submit}" value="提交"></li> </ul> </div> </div> </div> </div> </div>', 'boss-tenant-power-add .ul {list-style-type: none; text-align: center; padding: 0} boss-tenant-power-add .ul li {margin-bottom: 20px;} boss-tenant-power-add .bgImg #bgImg {float: left; margin-left: 10px;} boss-tenant-power-add .bgImg .bgImgCon {margin-left: 10px; display: -webkit-inline-box; position: relative; border: solid 1px #E8E7E7;} boss-tenant-power-add .bgImgCon i{color: #EC3131; position: absolute; left: 58px; top: 2px; cursor: pointer;} boss-tenant-power-add .bgImgCon div{margin-left: 20px; float: left;} boss-tenant-power-add .bgImgCon img {width: 75px; height: 75px;} boss-tenant-power-add .shareImgCon img {width: 75px; height: 75px;} boss-tenant-power-add #shareImg{float: left; margin-left: 10px;} boss-tenant-power-add .shareImgCon i{color: #EC3131;position: absolute;left: 58px;top: 2px;cursor: pointer;} boss-tenant-power-add .shareImgCon{margin-left: 10px; display: -webkit-inline-box;position: relative; border: solid 1px #E8E7E7;} boss-tenant-power-add .posterBgImgCon img {width: 75px; height: 75px;} boss-tenant-power-add #posterBgImg{float: left; margin-left: 10px;} boss-tenant-power-add .posterBgImgCon i{color: #EC3131;position: absolute;left: 58px;top: 2px;cursor: pointer;} boss-tenant-power-add .posterBgImgCon{margin-left: 10px; display: -webkit-inline-box;position: relative; border: solid 1px #E8E7E7;}', function(opts) {
         "use strict"
         var self = nest.presentable(this);
         self.validators = [];
@@ -668,22 +668,30 @@ riot.tag('boss-tenant-power-add', '<div if="{!hidden}" class="container" style="
                 legal = false;
             }
             if(!data.shareDesc){
-                self.validators.push({
+                var msg = {
                     success: false,
                     field: '提示',
                     desc: '分享描述不能为空!'
-                });
+                };
+                if(data.type === 'co'){
+                    msg.desc = '消息卡片描述不能为空!';
+                }
+                self.validators.push(msg);
                 legal = false;
             }
             if(!data.shareTitle){
-                self.validators.push({
+                var msg = {
                     success: false,
                     field: '提示',
                     desc: '分享标题不能为空!'
-                });
+                };
+                if(data.type === 'co'){
+                    msg.desc = '消息卡片标题不能为空!';
+                }
+                self.validators.push(msg);
                 legal = false;
             }
-            if(data.withPic && !data.posterBgImg){
+            if((data.withPic && !data.posterBgImg) || (data.type === 'co' && !data.posterBgImg)){
                 self.validators.push({
                     success: false,
                     field: '提示',
@@ -693,15 +701,18 @@ riot.tag('boss-tenant-power-add', '<div if="{!hidden}" class="container" style="
             }
 
             if(!data.shareImg){
-                self.validators.push({
+                var msg = {
                     success: false,
                     field: '提示',
                     desc: '必须设置分享卡片图片!'
-                });
+                };
+                if(data.type === 'co'){
+                    msg.desc = '必须设置消息卡片图片!';
+                }
                 legal = false;
             }
 
-            if(!data.bgImg || data.bgImg.length < 1){
+            if(data.type !== 'co' && (!data.bgImg || data.bgImg.length < 1)){
                 self.validators.push({
                     success: false,
                     field: '提示',
@@ -726,7 +737,7 @@ riot.tag('boss-tenant-power-add', '<div if="{!hidden}" class="container" style="
                 });
                 legal = false;
             }
-            if(!data.base_power || !/^[0-9]+$/.test(data.base_power)) {
+            if(data.type !== 'co' && (!data.base_power || !/^[0-9]+$/.test(data.base_power))) {
                 self.validators.push({
                     success: false,
                     field: '提示',
@@ -735,14 +746,18 @@ riot.tag('boss-tenant-power-add', '<div if="{!hidden}" class="container" style="
                 legal = false;
             }
             if(!data.friend_help_count_limit || !/^[0-9]+$/.test(data.friend_help_count_limit)) {
-                self.validators.push({
+                var msg = {
                     success: false,
                     field: '提示',
                     desc: '好友助力上限必填且必须为数字!'
-                });
+                };
+                if(data.type === 'co'){
+                    msg.desc = '最低好友助力人数必填且必须为数字!';
+                }
+                self.validators.push(msg);
                 legal = false;
             }
-            if(!data.friend_help_max_power || !/^[0-9]+$/.test(data.friend_help_max_power)) {
+            if(data.type !== 'co' && (!data.friend_help_max_power || !/^[0-9]+$/.test(data.friend_help_max_power))) {
                 self.validators.push({
                     success: false,
                     field: '提示',
@@ -750,7 +765,7 @@ riot.tag('boss-tenant-power-add', '<div if="{!hidden}" class="container" style="
                 });
                 legal = false;
             }
-            if(!data.friend_help_min_power || !/^[0-9]+$/.test(data.friend_help_min_power)) {
+            if(data.type !== 'co' && (!data.friend_help_min_power || !/^[0-9]+$/.test(data.friend_help_min_power))) {
                 self.validators.push({
                     success: false,
                     field: '提示',
@@ -767,16 +782,23 @@ riot.tag('boss-tenant-power-add', '<div if="{!hidden}" class="container" style="
             self.activity.name = self.activityName.value;
             self.activity.shareTitle = self.shareTitle.value;
             self.activity.shareDesc = self.shareDesc.value;
-            self.activity.base_power = self.base_power.value;
-            self.activity.friend_help_count_limit = self.friend_help_count_limit.value;
             self.activity.startTime = self.startTime.value;
             self.activity.endTime = self.endTime.value;
-            self.activity.friend_help_min_power = self.friend_help_min_power.value;
-            self.activity.friend_help_max_power = self.friend_help_max_power.value;
+            self.activity.friend_help_count_limit = self.friend_help_count_limit.value;
             self.activity.wechatId = self.selectMedia.value;
-            self.activity.rule = $('#rule').summernote('code');
-            self.activity.desc = $('#desc').summernote('code');
+            if(self.activity.type !== 'co') {
+                self.activity.base_power = self.base_power.value;
+                self.activity.friend_help_min_power = self.friend_help_min_power.value;
+                self.activity.friend_help_max_power = self.friend_help_max_power.value;
+                self.activity.rule = $('#rule').summernote('code');
+                self.activity.desc = $('#desc').summernote('code') || self.co_desc.value;
+            }else{
+                self.activity.desc = self.co_desc.value;
+                self.activity.courseUrl = self.courseUrl.value;
+            }
             var allowSubmit = self.verify(self.activity);
+            console.log(self.activity);
+            debugger;
             if(allowSubmit){
                 addPowerActivity.newInvocation(self.activity).onDone(function(data){
                     self.activity = {
@@ -798,9 +820,14 @@ riot.tag('boss-tenant-power-add', '<div if="{!hidden}" class="container" style="
                 }
             });
         }
+
+        self.selectType = function(e){
+            self.activity.type = e.currentTarget.value;
+            return true;
+        }
     
 });
-riot.tag('boss-tenant-power-edit', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <alert validators="{validators}" clear="{clear}"></alert> <div class="col-md-10 col-md-offset-1"> <div class="jumbotron" style="height: auto; padding: 25px;"> <div id="addForm" class="panel" style="margin-top: 1em;"> <div style="padding-left: 20px; padding-bottom: 20px; padding-top: 15px"><a href="#power/list" style="font-size: 15px; text-decoration: none;">返回活动列表</a></div> <ul class="ul" style="text-align: left; padding-left: 2em"> <li><span>助力活动设置</span></li> <li> <span>活动公众号: </span> <select id="selectMedia" > <option each="{wechatMedias}" value="{originalId}" __selected="{parent.activity.wechatId === originalId}">{name}</option> </select> </li> <li id="type_select"><span>类型: </span> <label><input id="type_rp" name="activity_type" type="radio" value="rp" __checked="{activity.type === \'rp\'}">红包</label> <label><input id="type_po" name="activity_type" type="radio" value="po" __checked="{activity.type === \'po\'}">积分</label> </li> <li><span>启动图片助力: </span><input name="withPic" type="checkbox" __checked="{activity.withPic === \'true\'}" onclick="{toggleWithPic}"></li> <li id="poster" if="{activity.withPic === \'true\'}" style="clear: both; min-height: 26px;"><span style="float: left">海报背景图片: </span><input if="{!activity.posterBgImg}" id="posterBgImg" type="file" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadPosterBgImg}" style="width: 60px;"> <div if="{activity.posterBgImg}" class="posterBgImgCon"><i onclick="{deletePosterBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.posterBgImg}" alt=""></div> </li> <li><span>活动名称: </span><input name="activityName" type="text" value="{activity.name}"></li> <li class="bgImg" style="min-height: 26px"><span style="float: left">背景图片(3张): </span><input if="{activity.bgImg.length != 3}" id="bgImg" type="file" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadBgImg}" style="width: 60px;"> <div if="{activity.bgImg.length >= 1}" class="bgImgCon"><i onclick="{deleteBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.bgImg[0]}" alt=""></div> <div if="{activity.bgImg.length >= 2}" class="bgImgCon"><i onclick="{deleteBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.bgImg[1]}" alt=""></div> <div if="{activity.bgImg.length >= 3}" class="bgImgCon"><i onclick="{deleteBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.bgImg[2]}" alt=""></div> </li> <li style="clear: both; min-height: 26px"><span style="float: left">分享卡片图片: </span><input if="{!activity.shareImg}" id="shareImg" type="file" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadShareImg}" style="width: 60px;"> <div if="{activity.shareImg}" class="shareImgCon"><i onclick="{deleteShareImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.shareImg}" alt=""></div> </li> <li style="clear: both"><span>活动时间: </span><input id="startTime" type="date" value="{formatDate(activity.startTime)}"><span> 至 </span><input id="endTime" type="date" value="{formatDate(activity.endTime)}"> </li> <li><span>活动介绍: </span><div id="desc"></div></li> <li><span>活动规则: </span><div id="rule"></div></li> <li><span>分享标题自定义: </span><input class="form-control" type="text" name="shareTitle" value="{activity.shareTitle}"></li> <li><span>分享描述自定义: </span><input class="form-control" type="text" name="shareDesc" value="{activity.shareTitle}"></li> <li><span>基础奖励: </span><input id="base_power" type="text" value="{activity.base_power}"></li> <li><span>好友助力单次奖励: </span><input name="friend_help_min_power" type="text" value="{activity.friend_help_min_power}"><span> 至 </span><input name="friend_help_max_power" type="text" value="{activity.friend_help_max_power}"></li> <li><span>好友助力上限人数: </span><input name="friend_help_count_limit" type="text" value="{activity.friend_help_count_limit}"></li> <li style="text-align: center; margin-top: 1em"><input class="btn btn-success" type="button" onclick="{submit}" value="提交"></li> </ul> </div> </div> </div> </div> </div>', 'boss-tenant-power-edit .ul {list-style-type: none; text-align: center; padding: 0} boss-tenant-power-edit .ul li {margin-bottom: 20px;} boss-tenant-power-edit .bgImg #bgImg {float: left; margin-left: 10px;} boss-tenant-power-edit .bgImg .bgImgCon {margin-left: 10px; display: -webkit-inline-box; position: relative; border: solid 1px #E8E7E7;} boss-tenant-power-edit .bgImgCon i{color: #EC3131; position: absolute; left: 58px; top: 2px; cursor: pointer;} boss-tenant-power-edit .bgImgCon div{margin-left: 20px; float: left;} boss-tenant-power-edit .bgImgCon img {width: 75px; height: 75px;} boss-tenant-power-edit .shareImgCon img {width: 75px; height: 75px;} boss-tenant-power-edit #shareImg{float: left; margin-left: 10px;} boss-tenant-power-edit .shareImgCon i{color: #EC3131;position: absolute;left: 58px;top: 2px;cursor: pointer;} boss-tenant-power-edit .shareImgCon{margin-left: 10px; display: -webkit-inline-box;position: relative; border: solid 1px #E8E7E7;} boss-tenant-power-edit .posterBgImgCon img {width: 75px; height: 75px;} boss-tenant-power-edit #posterBgImg{float: left; margin-left: 10px;} boss-tenant-power-edit .posterBgImgCon i{color: #EC3131;position: absolute;left: 58px;top: 2px;cursor: pointer;} boss-tenant-power-edit .posterBgImgCon{margin-left: 10px; display: -webkit-inline-box;position: relative; border: solid 1px #E8E7E7;}', function(opts) {
+riot.tag('boss-tenant-power-edit', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <alert validators="{validators}" clear="{clear}"></alert> <div class="col-md-10 col-md-offset-1"> <div class="jumbotron" style="height: auto; padding: 25px;"> <div id="addForm" class="panel" style="margin-top: 1em;"> <div style="padding-left: 20px; padding-bottom: 20px; padding-top: 15px"><a href="#power/list" style="font-size: 15px; text-decoration: none;">返回活动列表</a></div> <ul class="ul" style="text-align: left; padding-left: 2em"> <li><span>助力活动设置</span></li> <li> <span>活动公众号: </span> <select id="selectMedia" > <option each="{wechatMedias}" value="{originalId}" __selected="{parent.activity.wechatId = originalId}">{name}</option> </select> </li> <li id="type_select"><span>类型: </span> <label><input id="type_rp" name="activity_type" type="radio" value="rp" __checked="{activity.type === \'rp\'}" onclick="{selectType}">红包</label> <label><input id="type_po" name="activity_type" type="radio" value="po" __checked="{activity.type === \'po\'}" onclick="{selectType}">积分</label> <label><input id="type_co" name="activity_type" type="radio" value="co" __checked="{activity.type === \'co\'}" onclick="{selectType}">课程助力</label> </li> <li if="{activity.type !== \'co\'}"><span>启动图片助力: </span><input name="withPic" type="checkbox" __checked="{activity.withPic === \'true\'}" onclick="{toggleWithPic}"></li> <li id="poster" if="{activity.withPic === \'true\' || activity.type === \'co\'}" style="clear: both; min-height: 26px;"><span style="float: left">海报背景图片: </span><input if="{!activity.posterBgImg}" id="posterBgImg" type="file" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadPosterBgImg}" style="width: 60px;"> <div if="{activity.posterBgImg}" class="posterBgImgCon"><i onclick="{deletePosterBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.posterBgImg}" alt=""></div> </li> <li><span>活动名称: </span><input name="activityName" type="text" value="{activity.name}"></li> <li if="{activity.type !== \'co\'}" class="bgImg" style="min-height: 26px"><span style="float: left">背景图片(3张): </span><input if="{activity.bgImg.length != 3}" id="bgImg" type="file" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadBgImg}" style="width: 60px;"> <div if="{activity.bgImg.length >= 1}" class="bgImgCon"><i onclick="{deleteBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.bgImg[0]}" alt=""></div> <div if="{activity.bgImg.length >= 2}" class="bgImgCon"><i onclick="{deleteBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.bgImg[1]}" alt=""></div> <div if="{activity.bgImg.length >= 3}" class="bgImgCon"><i onclick="{deleteBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.bgImg[2]}" alt=""></div> </li> <li style="clear: both; min-height: 26px"><span style="float: left" if="{activity.type !== \'co\'}">分享卡片图片: </span><span style="float: left" if="{activity.type === \'co\'}">消息卡片图片: </span><input if="{!activity.shareImg}" id="shareImg" type="file" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadShareImg}" style="width: 60px;"> <div if="{activity.shareImg}" class="shareImgCon"><i onclick="{deleteShareImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.shareImg}" alt=""></div> </li> <li style="clear: both"><span>活动时间: </span><input id="startTime" type="date" value="{formatDate(activity.startTime)}"><span> 至 </span><input id="endTime" type="date" value="{formatDate(activity.endTime)}"> </li> <li if="{activity.type !== \'co\'}"><span>活动介绍: </span><div id="desc"></div></li> <li if="{activity.type === \'co\'}"><span>活动介绍: </span><textarea class="form-control" name="co_desc" rows="10" value="{activity.desc}"></textarea></li> <li if="{activity.type !== \'co\'}"><span>活动规则: </span><div id="rule"></div></li> <li><span if="{activity.type !== \'co\'}">分享标题自定义: </span><span if="{activity.type === \'co\'}">消息卡片标题: </span><input class="form-control" type="text" name="shareTitle" value="{activity.shareTitle}"></li> <li><span if="{activity.type !== \'co\'}">分享描述自定义: </span><span if="{activity.type === \'co\'}">消息卡片描述: </span><input class="form-control" type="text" name="shareDesc" value="{activity.shareTitle}"></li> <li if="{activity.type !== \'co\'}"><span>基础奖励: </span><input id="base_power" type="number" value="{activity.base_power}"></li> <li if="{activity.type !== \'co\'}"><span>好友助力单次奖励: </span><input name="friend_help_min_power" type="number" value="{activity.friend_help_min_power}"><span> 至 </span><input name="friend_help_max_power" type="number" value="{activity.friend_help_max_power}"></li> <li><span if="{activity.type !== \'co\'}">好友助力上限人数: </span><span if="{activity.type === \'co\'}">最低好友助力人数: </span><input name="friend_help_count_limit" type="number" value="{activity.friend_help_count_limit}"></li> <li if="{activity.type === \'co\'}"><span>课程地址: </span><input class="form-control" type="text" name="courseUrl" value="{activity.courseUrl}"></li> <li style="text-align: center; margin-top: 1em"><input class="btn btn-success" type="button" onclick="{submit}" value="提交"></li> </ul> </div> </div> </div> </div> </div>', 'boss-tenant-power-edit .ul {list-style-type: none; text-align: center; padding: 0} boss-tenant-power-edit .ul li {margin-bottom: 20px;} boss-tenant-power-edit .bgImg #bgImg {float: left; margin-left: 10px;} boss-tenant-power-edit .bgImg .bgImgCon {margin-left: 10px; display: -webkit-inline-box; position: relative; border: solid 1px #E8E7E7;} boss-tenant-power-edit .bgImgCon i{color: #EC3131; position: absolute; left: 58px; top: 2px; cursor: pointer;} boss-tenant-power-edit .bgImgCon div{margin-left: 20px; float: left;} boss-tenant-power-edit .bgImgCon img {width: 75px; height: 75px;} boss-tenant-power-edit .shareImgCon img {width: 75px; height: 75px;} boss-tenant-power-edit #shareImg{float: left; margin-left: 10px;} boss-tenant-power-edit .shareImgCon i{color: #EC3131;position: absolute;left: 58px;top: 2px;cursor: pointer;} boss-tenant-power-edit .shareImgCon{margin-left: 10px; display: -webkit-inline-box;position: relative; border: solid 1px #E8E7E7;} boss-tenant-power-edit .posterBgImgCon img {width: 75px; height: 75px;} boss-tenant-power-edit #posterBgImg{float: left; margin-left: 10px;} boss-tenant-power-edit .posterBgImgCon i{color: #EC3131;position: absolute;left: 58px;top: 2px;cursor: pointer;} boss-tenant-power-edit .posterBgImgCon{margin-left: 10px; display: -webkit-inline-box;position: relative; border: solid 1px #E8E7E7;}', function(opts) {
         "use strict"
         var self = nest.presentable(this);
         self.validators = [];
@@ -978,22 +1005,30 @@ riot.tag('boss-tenant-power-edit', '<div if="{!hidden}" class="container" style=
                 legal = false;
             }
             if(!data.shareDesc){
-                self.validators.push({
+                var msg = {
                     success: false,
                     field: '提示',
                     desc: '分享描述不能为空!'
-                });
+                };
+                if(data.type === 'co'){
+                    msg.desc = '消息卡片描述不能为空!';
+                }
+                self.validators.push(msg);
                 legal = false;
             }
             if(!data.shareTitle){
-                self.validators.push({
+                var msg = {
                     success: false,
                     field: '提示',
                     desc: '分享标题不能为空!'
-                });
+                };
+                if(data.type === 'co'){
+                    msg.desc = '消息卡片标题不能为空!';
+                }
+                self.validators.push(msg);
                 legal = false;
             }
-            if(data.withPic && !data.posterBgImg){
+            if((data.withPic && !data.posterBgImg) || (data.type === 'co' && !data.posterBgImg)){
                 self.validators.push({
                     success: false,
                     field: '提示',
@@ -1003,15 +1038,18 @@ riot.tag('boss-tenant-power-edit', '<div if="{!hidden}" class="container" style=
             }
 
             if(!data.shareImg){
-                self.validators.push({
+                var msg = {
                     success: false,
                     field: '提示',
                     desc: '必须设置分享卡片图片!'
-                });
+                };
+                if(data.type === 'co'){
+                    msg.desc = '必须设置消息卡片图片!';
+                }
                 legal = false;
             }
 
-            if(!data.bgImg || data.bgImg.length < 1){
+            if(data.type !== 'co' && (!data.bgImg || data.bgImg.length < 1)){
                 self.validators.push({
                     success: false,
                     field: '提示',
@@ -1036,7 +1074,7 @@ riot.tag('boss-tenant-power-edit', '<div if="{!hidden}" class="container" style=
                 });
                 legal = false;
             }
-            if(!data.base_power || !/^[0-9]+$/.test(data.base_power)) {
+            if(data.type !== 'co' && (!data.base_power || !/^[0-9]+$/.test(data.base_power))) {
                 self.validators.push({
                     success: false,
                     field: '提示',
@@ -1045,14 +1083,18 @@ riot.tag('boss-tenant-power-edit', '<div if="{!hidden}" class="container" style=
                 legal = false;
             }
             if(!data.friend_help_count_limit || !/^[0-9]+$/.test(data.friend_help_count_limit)) {
-                self.validators.push({
+                var msg = {
                     success: false,
                     field: '提示',
                     desc: '好友助力上限必填且必须为数字!'
-                });
+                };
+                if(data.type === 'co'){
+                    msg.desc = '最低好友助力人数必填且必须为数字!';
+                }
+                self.validators.push(msg);
                 legal = false;
             }
-            if(!data.friend_help_max_power || !/^[0-9]+$/.test(data.friend_help_max_power)) {
+            if(data.type !== 'co' && (!data.friend_help_max_power || !/^[0-9]+$/.test(data.friend_help_max_power))) {
                 self.validators.push({
                     success: false,
                     field: '提示',
@@ -1060,7 +1102,7 @@ riot.tag('boss-tenant-power-edit', '<div if="{!hidden}" class="container" style=
                 });
                 legal = false;
             }
-            if(!data.friend_help_min_power || !/^[0-9]+$/.test(data.friend_help_min_power)) {
+            if(data.type !== 'co' && (!data.friend_help_min_power || !/^[0-9]+$/.test(data.friend_help_min_power))) {
                 self.validators.push({
                     success: false,
                     field: '提示',
@@ -1077,18 +1119,29 @@ riot.tag('boss-tenant-power-edit', '<div if="{!hidden}" class="container" style=
             self.activity.name = self.activityName.value;
             self.activity.shareTitle = self.shareTitle.value;
             self.activity.shareDesc = self.shareDesc.value;
-            self.activity.base_power = self.base_power.value;
-            self.activity.friend_help_count_limit = self.friend_help_count_limit.value;
             self.activity.startTime = self.startTime.value;
             self.activity.endTime = self.endTime.value;
-            self.activity.friend_help_min_power = self.friend_help_min_power.value;
-            self.activity.friend_help_max_power = self.friend_help_max_power.value;
+            self.activity.friend_help_count_limit = self.friend_help_count_limit.value;
             self.activity.wechatId = self.selectMedia.value;
-            self.activity.rule = $('#rule').summernote('code');
-            self.activity.desc = $('#desc').summernote('code');
+            if(self.activity.type !== 'co') {
+                self.activity.base_power = self.base_power.value;
+                self.activity.friend_help_min_power = self.friend_help_min_power.value;
+                self.activity.friend_help_max_power = self.friend_help_max_power.value;
+                self.activity.rule = $('#rule').summernote('code');
+                self.activity.desc = $('#desc').summernote('code') || self.co_desc.value;
+            }else{
+                self.activity.desc = self.co_desc.value;
+                self.activity.courseUrl = self.courseUrl.value;
+            }
             var allowSubmit = self.verify(self.activity);
+
             if(allowSubmit){
                 updatePowerActivity.newInvocation(self.activity).onDone(function(data){
+                    self.activity = {
+                        org: __page.tenantId,
+                        type: 'rp',
+                        bgImg: []
+                    }
                     riot.route('power/list');
                 }).execute();
             }
@@ -1103,9 +1156,14 @@ riot.tag('boss-tenant-power-edit', '<div if="{!hidden}" class="container" style=
                 }
             });
         }
+
+        self.selectType = function(e){
+            self.activity.type = e.currentTarget.value;
+            return true;
+        }
     
 });
-riot.tag('boss-tenant-power-list', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="col-md-10 col-md-offset-1"> <div class="jumbotron" style="height: auto; padding: 25px;"> <div id="powerList" class="panel" style="margin-top: 1em; padding: 0; min-height: 30em"> <div style="padding-left: 20px; padding-top: 10px;"><a id="add" href="#power/add" style="font-size: 15px; text-decoration: none; cursor: pointer">新增</a> </div> <ul class="ul" id="list"> <li> <strong class="col-md-2">活动名称</strong> <strong class="col-md-2">开始时间</strong> <strong class="col-md-2">结束时间</strong> <strong class="col-md-2">类型</strong> <strong class="col-md-2">海报二维码</strong> <strong class="col-md-2">操作</strong> </li> <li> <hr width="100%"> </li> <li class="actItem" each="{activityArr}"> <strong class="col-md-2"><a href="#power/edit/_{_id}">{name}</a></strong> <strong class="col-md-2">{_.date.format(new Date(startTime), \'yyyy-MM-dd\')}</strong> <strong class="col-md-2">{_.date.format(new Date(endTime), \'yyyy-MM-dd\')}</strong> <strong class="col-md-2">{__app.enums.PowerType.values[type]}</strong> <strong class="col-md-2 actionCon"> <a class="fa fa-qrcode fa-lg" data-toggle="modal" data-target="#showImg" onclick="{parent.showImg}"></a> </strong> <strong class="col-md-2 actionCon"><a href="{ __app.settings.app.url + \'/marketing/tenant/power/\' + wechatId + \'/activity?id=\' + _id }" target="_blank">查看</a><a href="{__app.settings.api.url + \'/marketing/tenant/power/exportParticipants?id=\' + _id }" target="_blank" >导出</a></strong> </li> </ul> </div> </div> </div> </div> </div>', 'boss-tenant-power-list .ul {list-style-type: none; text-align: center; padding: 0} boss-tenant-power-list .ul li {margin-bottom: 20px;} boss-tenant-power-list .actItem {height: 17px; overflow: hidden; margin-top: 2px;} boss-tenant-power-list li strong{ padding: 0 !important; margin: 0 !important; } boss-tenant-power-list .actionCon a{ margin-left: 10px; cursor: pointer; }', function(opts) {
+riot.tag('boss-tenant-power-list', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="col-md-10 col-md-offset-1"> <div class="jumbotron" style="height: auto; padding: 25px;"> <div id="powerList" class="panel" style="margin-top: 1em; padding: 0; min-height: 30em"> <div style="padding-left: 20px; padding-top: 10px;"><a id="add" href="#power/add" style="font-size: 15px; text-decoration: none; cursor: pointer">新增</a> </div> <ul class="ul" id="list"> <li> <strong class="col-md-2">活动名称</strong> <strong class="col-md-2">开始时间</strong> <strong class="col-md-2">结束时间</strong> <strong class="col-md-2">类型</strong> <strong class="col-md-2">海报二维码</strong> <strong class="col-md-2">操作</strong> </li> <li> <hr width="100%"> </li> <li class="actItem" each="{activityArr}"> <strong class="col-md-2"><a href="#power/edit/_{_id}">{name}</a></strong> <strong class="col-md-2">{_.date.format(new Date(startTime), \'yyyy-MM-dd\')}</strong> <strong class="col-md-2">{_.date.format(new Date(endTime), \'yyyy-MM-dd\')}</strong> <strong class="col-md-2">{__app.enums.PowerType.values[type]}</strong> <strong class="col-md-2 actionCon"> <a class="fa fa-qrcode fa-lg" data-toggle="modal" data-target="#showImg" onclick="{parent.showImg}"></a> </strong> <strong if="{type !== \'co\'}" class="col-md-2 actionCon"><a href="{ __app.settings.app.url + \'/marketing/tenant/power/\' + wechatId + \'/activity?id=\' + _id }" target="_blank">查看</a><a href="{__app.settings.api.url + \'/marketing/tenant/power/exportParticipants?id=\' + _id }" target="_blank" >导出</a></strong> <strong if="{type === \'co\'}" class="col-md-2 actionCon"><a href="javascript:void(0)">无</a></strong> </li> </ul> </div> </div> </div> </div> </div>', 'boss-tenant-power-list .ul {list-style-type: none; text-align: center; padding: 0} boss-tenant-power-list .ul li {margin-bottom: 20px;} boss-tenant-power-list .actItem {height: 17px; overflow: hidden; margin-top: 2px;} boss-tenant-power-list li strong{ padding: 0 !important; margin: 0 !important; } boss-tenant-power-list .actionCon a{ margin-left: 10px; cursor: pointer; }', function(opts) {
         "use strict"
         var self = nest.presentable(this);
         var loadPowerActivities = domain.action('loadPowerActivities');

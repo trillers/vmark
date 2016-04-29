@@ -27,7 +27,8 @@
                             <strong class="col-md-2 actionCon">
                                 <a class="fa fa-qrcode fa-lg" data-toggle="modal" data-target="#showImg" onclick="{parent.showImg}"></a>
                             </strong>
-                            <strong class="col-md-2 actionCon"><a href="{ __app.settings.app.url + '/marketing/tenant/power/' + wechatId + '/activity?id=' + _id }" target="_blank">查看</a><a href="{__app.settings.api.url + '/marketing/tenant/power/exportParticipants?id=' + _id }" target="_blank" >导出</a></strong>
+                            <strong if="{type !== 'co'}" class="col-md-2 actionCon"><a href="{ __app.settings.app.url + '/marketing/tenant/power/' + wechatId + '/activity?id=' + _id }" target="_blank">查看</a><a href="{__app.settings.api.url + '/marketing/tenant/power/exportParticipants?id=' + _id }" target="_blank" >导出</a></strong>
+                            <strong if="{type === 'co'}" class="col-md-2 actionCon"><a href="javascript:void(0)">无</a></strong>
                         </li>
 
                     </ul>
