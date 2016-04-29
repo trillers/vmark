@@ -13,5 +13,18 @@ export var addBespeak = data => {
         });
 };
 
+export var loadBespeakByUserId = id =>{
+    return $.get(baseUrl + '/tenant/sd/bespeak?user=' + id)
+        .then(res=> {
+            return {
+                name: 'loadBespeakByUserId',
+                res
+            }
+        })
+        .catch(e=>{
+            console.warn(e);
+        })
+};
+
 
 

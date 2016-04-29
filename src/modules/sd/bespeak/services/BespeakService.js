@@ -33,6 +33,20 @@ Service.prototype.create = function(json, callback){
 
 };
 
+Service.prototype.loadByUserIdAndMediaId = function(userId, mediaId, callback){
+    var Bespeak = this.context.models.Bespeak;
+    var query = Bespeak.find({user: userId, media: mediaId});
+    query.populate({path: 'user'})
+        .populate({path: 'media'})
+        .populate({path: 'product'})
+        .exec(function(err, docs){
+            if(err){
+                return callback(err)
+            }
+            return callback(null, docs)
+        })
+};
+
 Service.prototype.findByTenantId = function(tenantId, params, callback){
     var me = this;
     var Bespeak = this.context.models.Bespeak;

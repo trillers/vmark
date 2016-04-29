@@ -603,6 +603,62 @@ module.exports = function (router) {
         }
     });
 
+    router.get('/sd/membership/info', function*(){
+        try{
+            let userId = this.request.query.user;
+            let mediaId = this.request.query.media;
+            let memberships = yield context.services.membershipService.findByUserIdAndMediaIdAsync(userId, mediaId);
+            if(!memberships){
+                return this.body = {error: null, data: {}}
+            }
+            let membership = memberships[0];
+            let bespeaks = yield context.services.bespeakService.loadByUserIdAndMediaIdAsync(userId, mediaId);
+            if(bespeaks){
+                bespeaks = bespeaks.filter(function(b){
+                    return b.lFlg != 'd'
+                });
+            }
+            let params = {
+                populates: [{
+                    path: 'bespeak',
+                    model: 'Bespeak',
+                    match: {
+                        media: mediaId,
+                        user: userId
+                    },
+                    populate: [{
+                        path: 'user',
+                        model: 'TenantUser'
+                    },{
+                        path: 'product',
+                        model: 'Course'
+                    }]
+                }],
+                conditions: {
+                    status: 'uf'
+                }
+            };
+            let myOrders = yield context.services.orderService.filterAsync(params);
+            var pricesObject = null;
+            if(membership.type){
+                let orders = yield context.services.orderService.findByRelatedDistributorAsync(membership._id);
+                pricesObject = context.services.orderService.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId(orders);
+            }
+
+            let data = {
+                bespeaks: bespeaks,
+                orders: myOrders,
+                clearPrice: pricesObject.clear || 0,
+                unclearPrice: pricesObject.unclear || 0
+            };
+            this.body = {error: null, data: data}
+        }catch(e){
+            logger.error(e);
+            this.body = {error: e}
+        }
+
+    });
+
     router.post('/add-wechatsite', function*(){
         try{
             let json = this.request.body;

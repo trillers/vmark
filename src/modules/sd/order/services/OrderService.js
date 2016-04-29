@@ -1,3 +1,4 @@
+"use strict";
 var co = require('co');
 var cbUtil = require('../../../../framework/callback');
 var typeRegistry = require('../../../common/models/TypeRegistry');
@@ -59,11 +60,52 @@ Service.prototype.findByTenantId = function(tenantId, params, callback){
 
 };
 
+Service.prototype.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId = function(orders, distributorId){
+    if(!orders.length){
+        return {};
+    }
+    let prices = orders.filter(function(order){ return order.bespeak && order.bespeak.product }).map(function(order){
+        let product = order.bespeak.product;
+        var level = null;
+        var price = null;
+        var type = null;
+        if(order.closingDistributors && order.closingDistributors.indexOf(distributorId) > 0){
+            level = order.closingDistributors.indexOf(distributorId) + 1;
+            type = 'clear';
+        }else{
+            level = order.distributors.indexOf + 1;
+            type = 'unclear';
+        }
+        if(product['upLine' + level + 'CommissionType'] === 'c'){
+            price = product['upLine' + level + 'CommissionValue'];
+        }
+        else{
+            price = product.finalPrice * parseInt(product['upLine' + level + 'CommissionValue'], 10)/100;
+        }
+        return {
+            type: type,
+            price: price
+        }
+    });
+    let clearPrice = prices.filter(function(pair){ return pair === 'clear' }).reduce(function(acc, curr){ return acc + curr }, 0);
+    let unClearPrice = prices.filter(function(pair){ return pair === 'unclear' }).reduce(function(acc, curr){ return acc + curr }, 0);
+    return {
+        clear: clearPrice,
+        unclear: unClearPrice
+    }
+};
+
 Service.prototype.findByRelatedDistributor = function(distributorId, status, callback){
     var Order = this.context.models.Order;
-    var done = callback || function noop(){};
+    if(typeof callback === 'undefined'){
+        callback = status;
+        status = undefined;
+    }
+    var params = {distributors: {$all: [distributorId]}};
 
-    Order.find({status: status, distributors: {$all: [distributorId]}}, null)
+    status && (params['status'] = status);
+
+    Order.find(params, null)
     .populate({
         path: 'bespeak',
         model: 'Bespeak',
@@ -162,6 +204,51 @@ Service.prototype.loadFullInfoById = function(id, callback){
             }
             callback(null, doc);
         })
+};
+
+Service.prototype.filter = function (params, callback) {
+    var Order = this.context.models.Order;
+    var logger = this.context.logger;
+    co(function*(){
+        var query = Order.find();
+
+        if (params.options) {
+            query.setOptions(params.options);
+        }
+
+        if (params.sort) {
+            query.sort(params.sort);
+        }
+
+        if (params.page) {
+            var skip = (params.page.no - 1) * params.page.size;
+            var limit = params.page.size;
+            if (skip) query.skip(skip);
+            if (limit) query.limit(limit);
+        }
+
+        if (params.conditions) {
+            query.find(params.conditions);
+        }
+
+        if(params.populates) {
+            params.populates.forEach(function(i){
+                query.populate(i)
+            })
+        }
+
+        //query.lean(true);
+        var docs = yield query.exec();
+        docs = docs.filter(function(doc){
+            return doc.bespeak;
+        });
+        if(callback) callback(null, docs);
+
+    }).catch(function(e){
+        logger.error('find orders error: ' + e);
+        logger.error(e.stack);
+        if(callback) callback(e, null);
+    })
 };
 
 Service.prototype.find = function (params, callback) {

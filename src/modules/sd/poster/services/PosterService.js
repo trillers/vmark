@@ -5,7 +5,6 @@ var posterBrush = require('../../../marketing/poster');
 var _ = require('underscore');
 var co = require('co');
 var context = require('../../../../context/context');
-var Promise = require('bluebird');
 var settings = require('@private/vmark-settings');
 var path = require('path');
 var util = require('util');

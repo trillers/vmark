@@ -7,8 +7,8 @@ import * as AppStore from '../store/AppStore';
 import {mixins} from '../mixins/index';
 import {util} from './util';
 
-require('../tag/catalog-index.html');
-require('../tag/product.html');
+require('../tag/catalog-app.html');
+require('../tag/product-app.html');
 
 window.app = app;
 window.actions = actions;
@@ -17,9 +17,10 @@ Object.keys(mixins).forEach(key => {
     riot.mixin(key, mixins[key]);
 });
 
-let tags = riot.mount('*');
+let entry = riot.mount('*')[0];
 
-tags.forEach(tag=>{
-    app.views[tag.name] = tag;
-});
+app.entry = entry;
+
+app.init();
+
 

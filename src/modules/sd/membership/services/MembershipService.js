@@ -194,6 +194,21 @@ Service.prototype.checkoutByDistributorId = function(distributorId, tenantId, me
     });
 };
 
+Service.prototype.findByUserIdAndMediaId = function(userId, mediaId, callback){
+    var membershipKv = this.context.kvs.membership;
+    var Membership = this.context.models.Membership;
+    Membership.find({user: userId, media: mediaId})
+        .exec(function(err, docs){
+            if(err){
+                return callback(err)
+            }
+            if(!docs.length){
+                return callback(null, null)
+            }
+            callback(null, docs);
+        })
+};
+
 Service.prototype.loadByUserIdAndWechatId = function(userId, wechatId, callback){
     var membershipKv = this.context.kvs.membership;
     var Membership = this.context.models.Membership;

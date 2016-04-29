@@ -1,5 +1,5 @@
 <catalog-index>
-    <div>
+    <div if="{!hidden}">
         <div if="{!catalog || !catalog.products || !catalog.products.length}">
         </div>
         <div if="{catalog.products && catalog.products.length}">
@@ -95,13 +95,18 @@
     <script>
         var self = this;
         self.mixin('dispatcher');
-
+        self.mixin('viewify');
         self.on('mount', function(){
             self.on('loadCatalogById', function(res) {
                 self.update({catalog: res.catalog});
+                self.trigger('ready');
             });
-            self.dispatch(actions.loadCatalogById(self.opts.id));
+
         });
+
+        self.on('open', function(){
+            self.dispatch(actions.loadCatalogById(self.opts.id));
+        })
 
         self.routeTo = function(e){
             window.location = __app.settings.app.url + "/sd/" + __page.user.wechatId + "/product?id=" + e.item._id + '&media=' + self.catalog.media._id + '&catalog=' + self.catalog._id;

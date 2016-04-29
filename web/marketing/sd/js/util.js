@@ -122,6 +122,46 @@ var util = {
         }
 
     },
+    format: function(date, fmt){
+        var o = {
+            "M+" : date.getMonth()+1,
+            "d+" : date.getDate(),
+            "h+" : date.getHours(),
+            "m+" : date.getMinutes(),
+            "s+" : date.getSeconds(),
+            "q+" : Math.floor((date.getMonth()+3)/3),
+            "S"  : date.getMilliseconds()
+        };
+        if(/(y+)/.test(fmt))
+            fmt=fmt.replace(RegExp.$1, (date.getFullYear()+"").substr(4 - RegExp.$1.length));
+        for(var k in o)
+            if(new RegExp("("+ k +")").test(fmt))
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+        return fmt;
+    },
+    querystring: {
+        parse: function(search){
+            let o = {};
+            search.replace(/\?/g, '').split('&').map(pair=>o[pair.split('=')[0]] = pair.split('=')[1]);
+            return o;
+        },
+        stringify: function(o){
+            return Object.keys(o).reduce((acc, curr)=>acc + curr + '=' + o[curr] + '&', '?').slice(0, -1);
+        }
+    },
+    values: function(o){
+        return Object.keys(o).map(k=>o[k]);
+    },
+    object: function(ks, vs){
+        var o = {};
+        if(!Array.isArray(ks) || !Array.isArray(vs) || ks.length != vs.length){
+            return o;
+        }
+        ks.forEach((k, index)=>{
+            o[k] = vs[index]
+        });
+        return o;
+    },
     assign: function(...args){
         let cloneSingleValue = (t, s)=> {
             let o = {};
