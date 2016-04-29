@@ -5,7 +5,7 @@
         <div if="{catalog.products && catalog.products.length}">
             <ul class="catalog-card">
                 <li each="{catalog.products}" onclick="{parent.routeTo}">
-                    <div style="background-image:url('{__app.settings.api.url + '/file?media_id=' + poster}')">
+                    <div style="background-image:url('{__app.settings.api.url + '/file?media_id=' + banners[0]}')">
                         <!--<img riot-src="{poster &&__app.settings.api.url + '/file?media_id=' + poster}"/>-->
                     </div>
                     <div class="right-panel">

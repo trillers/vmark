@@ -153,7 +153,7 @@ require('./personal.html');
         self.on('mount', function(opts){
             self.on('loadProduct', function(data){
                 self.product =  data.course;
-                self.update({product: data.course});
+                self.update();
             });
             self.dispatch(actions.productActions.loadProduct(self.opts.id));
         });

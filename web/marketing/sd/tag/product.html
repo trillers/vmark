@@ -3,7 +3,7 @@ require('./banner.html');
 
 <product>
     <div class="container" if="{!hidden}">
-        <banner each="{[opts.product.name]}" imgs="{parent.opts.product.banners}"></banner>
+        <banner each="{[opts.product]}" imgs="{parent.opts.product.banners}"></banner>
         <div class="header">
             <div class="title"><span>{opts.product.name}</span></div>
             <div class="slogan"><span>{opts.product.slogan}</span></div>
@@ -107,7 +107,9 @@ require('./banner.html');
         self.on('open', function(ctx){
             self.parent.trigger('menu', 0);
             self.trigger('ready');
+            console.log(self.opts.product);
         });
+
 
     </script>
 </product>
