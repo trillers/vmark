@@ -33,7 +33,7 @@ Kv.prototype.setTenantWechatSite = function(json, callback){
             err,
             'Fail to set tenant wechat site ' + json._id + ': ' + err,
             'Succeed to set tenant wechat site ' + json._id);
-        cbUtil.handleOk(callback, err, result);
+        cbUtil.handleOk(callback, err, result, json);
     });
 };
 

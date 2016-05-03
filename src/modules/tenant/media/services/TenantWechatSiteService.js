@@ -2,6 +2,7 @@ var util = require('util');
 var settings = require('@private/vmark-settings');
 var WechatMediaType = require('../../../common/models/TypeRegistry').item('WechatMediaType');
 var WechatMediaService = require('../../../media/services/WechatMediaService');
+var cbUtil = require('../../../../framework/callback');
 var myUtil = require('../../../../app/util');
 
 var Service = function (context) {
@@ -11,8 +12,7 @@ var Service = function (context) {
 util.inherits(Service, WechatMediaService);
 
 Service.prototype.createTenantWechatSite = function (json, callback) {
-    var me = this;
-    var logger = this.context.logger;
+    var WechatMedia = this.context.models.WechatMedia;
     var tenantWechatSiteKv = this.context.kvs.tenantWechatSite;
 
     var tenantWechatSite = {
@@ -28,25 +28,40 @@ Service.prototype.createTenantWechatSite = function (json, callback) {
         , token: myUtil.generateRandomString(20)
         , email: json.email
     };
-    me.create(tenantWechatSite, function (err, wechatSite) {
-        if (err) {
-            logger.error('Fail to create tenant wechat site: ' + err);
-            if (callback) callback(err);
-            return;
-        }
+    var media = new WechatMedia(tenantWechatSite);
+    media.save(function (err, result, affected) {
+        cbUtil.logCallback(
+            err,
+            'Fail to save tenant wechat media: ' + err,
+            'Succeed to save tenant wechat media');
 
-        tenantWechatSiteKv.setTenantWechatSite(wechatSite, function (err) {
-            if (err) {
-                logger.error('Fail to create tenant wechat site: ' + err);
-                if (callback) callback(err);
-            }
-            else {
-                if (callback) callback(null, wechatSite);
-            }
-        });
+        cbUtil.handleAffected(function(err, doc){
+            var obj = doc.toObject({virtuals: true});
+            tenantWechatSiteKv.setTenantWechatSite(obj, function(err, obj){
+                if(callback) callback(err, obj);
+            });
+        }, err, result, affected);
     });
 
 };
+
+Service.prototype.updateTenantWechatSiteById = function(id, json, callback){
+    var tenantWechatSiteKv = this.context.kvs.tenantWechatSite;
+    var WechatMedia = this.context.models.WechatMedia;
+    WechatMedia.findByIdAndUpdate(id, json, {new: true}, function (err, result) {
+        cbUtil.logCallback(
+            err,
+            'Fail to update tenat wechat media by id: ' + id + ' err: ' + err,
+            'Succeed to save teant wechat media by id: ' + id);
+
+        cbUtil.handleSingleValue(function(err, doc){
+            var obj = doc.toObject({virtuals: true});
+            tenantWechatSiteKv.setTenantWechatSite(obj, function(err, obj){
+                if(callback) callback(err, obj);
+            });
+        }, err, result);
+    });
+}
 
 Service.prototype.loadAllTenantWechatSite = function (org, callback) {
     var WechatMedia = this.context.models.WechatMedia;
