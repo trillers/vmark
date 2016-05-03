@@ -86,6 +86,10 @@ Service.prototype.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId =
                 price = parseFloat(product['upLine' + level + 'CommissionValue'], 10);
             }
             else{
+                console.log("$$$$$$$$$$$$$$$$$$$")
+                console.log(parseFloat(product.finalPrice, 10));
+                console.log("$$$$$$$$$$$$$$$$$$$")
+                console.log(parseFloat(product['upLine' + level + 'CommissionValue'], 10)/100);
                 price = parseFloat(product.finalPrice, 10) * (parseFloat(product['upLine' + level + 'CommissionValue'], 10)/100);
             }
             console.log("price ***************");
