@@ -278,10 +278,15 @@ Service.prototype.loadDistributorsChainById = function(id, level, callback){
 
     function recurPopulate(doc, index, len, callback){
         let curr = _.range(index).reduce(function(acc, curr){ return acc.upLine}, doc);
+        console.log("**************")
+        console.log(index)
+        console.log(len);
+        console.log(curr);
         if(!curr || index > len){
             return callback(null, doc);
         }
         let populateStr = _.range(index).map(function(){return 'upLine'}).join('.');
+        console.log(populateStr);
         Membership.populate(doc,
             {
                 path: populateStr,

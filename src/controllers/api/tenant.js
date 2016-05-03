@@ -347,9 +347,7 @@ module.exports = function (router) {
                     if(!distributor || !distributor.upLine){
                         return;
                     }
-                    if(typeof distributor.upLine === 'string'){
-                        distributors.push(distributor.upLine);
-                    }else if(typeof distributor.upLine === 'object'){
+                    if(typeof distributor.upLine === 'object'){
                         distributors.push(distributor.upLine._id);
                     }
                     recurPushDistributors(distributor.upLine);
@@ -633,23 +631,14 @@ module.exports = function (router) {
                         path: 'product',
                         model: 'Course'
                     }]
-                }],
-                conditions: {
-                    status: 'uf'
-                }
+                }]
             };
             let myOrders = yield context.services.orderService.filterAsync(params);
             var pricesObject = null;
-            console.warn("******************")
-            console.warn(membership);
             if(membership.type === MembershipType.Distributor.value()
                 || membership.type === MembershipType.Both.value()){
                 let orders = yield context.services.orderService.findByRelatedDistributorAsync(membership._id);
-                console.warn("******************")
-                console.warn(orders);
-                pricesObject = context.services.orderService.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId(orders);
-                console.warn("******************")
-                console.warn(pricesObject);
+                pricesObject = context.services.orderService.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId(orders, membership._id);
             }
 
             let data = {

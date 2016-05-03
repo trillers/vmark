@@ -9,6 +9,7 @@ var downLineId = null;
 
 before(function(done){
     contextLoader.check(function(){
+
         setTimeout(function(){
             done();
         }, 2000)
@@ -26,12 +27,44 @@ describe('MembershipService', function(){
             type:      MembershipType.Distributor.value()
         };
         service.create(distributor, function(err, doc){
-            console.log(err);
-            console.log(doc);
-            assert.ok(!err);
-            assert.ok(doc._id);
-            membershipId = doc._id;
-            done();
+            var distributor = {
+                user:      'srplQ',
+                org:       'kvsCe',
+                media:     'td5ua',
+                type:      MembershipType.Distributor.value()
+            }
+            distributor.upLine = doc._id;
+            service.create(distributor, function(err, doc){
+
+                var distributor = {
+                    user:      'srplQ',
+                    org:       'kvsCe',
+                    media:     'td5ua',
+                    type:      MembershipType.Distributor.value()
+                }
+                distributor.upLine = doc._id;
+                service.create(distributor, function(err, doc){
+
+                    var distributor = {
+                        user:      'srplQ',
+                        org:       'kvsCe',
+                        media:     'td5ua',
+                        type:      MembershipType.Distributor.value()
+                    }
+                    distributor.upLine = doc._id;
+                    service.create(distributor, function(err, doc){
+                        console.log(err);
+                        console.log(doc);
+                        assert.ok(!err);
+                        assert.ok(doc._id);
+                        membershipId = doc._id;
+                        done();
+                    })
+
+                })
+
+            })
+
         });
     });
 
@@ -69,7 +102,7 @@ describe('MembershipService', function(){
     it('#loadDistributorsChainById', function(done){
         var service = context.services.membershipService;
         service.loadDistributorsChainById(downLineId, function(err, doc){
-            console.warn(doc);
+            console.warn(doc.upLine.upLine.upLine.upLine);
             assert.ok(!err);
             done();
         });
@@ -77,12 +110,12 @@ describe('MembershipService', function(){
 });
 
 after(function(done){
-    var service = context.services.membershipService;
-    service.delById(membershipId, function(err){
-        assert.ok(!err);
-        service.delById(downLineId, function(err){
-            assert.ok(!err);
-            done();
-        })
-    })
+    //var service = context.services.membershipService;
+    //service.delById(membershipId, function(err){
+    //    assert.ok(!err);
+    //    service.delById(downLineId, function(err){
+    //        assert.ok(!err);
+    //        done();
+    //    })
+    //})
 });

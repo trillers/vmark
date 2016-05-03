@@ -31,7 +31,7 @@ Cache.prototype.get = function* (wechatId, loadedInfo){
             var config = {
                 token: info.token,
                 appid: info.appId,
-                //encodingAESKey: info.encodingAESKey
+                encodingAESKey: info.encodingAESKey
             };
             if(info.encodingAESKey){
                 config['encodingAESKey'] = info.encodingAESKey
