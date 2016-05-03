@@ -90,7 +90,7 @@ Service.prototype.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId =
             }
     });
     let clearPrice = prices.filter(function(pair){ return pair.type === 'clear' }).reduce(function(acc, curr){ return acc + curr }, 0);
-    let unClearPrice = prices.filter(function(pair){ return pair.type === 'unclear' }).reduce(function(acc, curr){ return acc + curr }, 0);
+    let unClearPrice = prices.filter(function(pair){ return pair.type === 'unclear' }).reduce(function(acc, curr){ return acc + curr.price }, 0);
     return {
         clear: clearPrice,
         unclear: unClearPrice
