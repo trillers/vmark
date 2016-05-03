@@ -638,14 +638,18 @@ module.exports = function (router) {
             if(membership.type === MembershipType.Distributor.value()
                 || membership.type === MembershipType.Both.value()){
                 let orders = yield context.services.orderService.findByRelatedDistributorAsync(membership._id);
+                console.log("orders ********************");
+                console.log(orders);
                 pricesObject = context.services.orderService.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId(orders, membership._id);
+                console.log("pricesObject ********************");
+                console.log(pricesObject);
             }
 
             let data = {
                 bespeaks: bespeaks,
                 orders: myOrders,
-                clearPrice: pricesObject.clear || 0,
-                unclearPrice: pricesObject.unclear || 0
+                clearPrice: pricesObject && pricesObject.clear || 0,
+                unclearPrice: pricesObject && pricesObject.unclear || 0
             };
             this.body = {error: null, data: data}
         }catch(e){

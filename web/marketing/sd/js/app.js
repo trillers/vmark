@@ -55,8 +55,10 @@ app._parseRoute = function(){
     })
 };
 
-app.registerRoute = function({path, name}, container){
-    app.routesMap[path] = container.tags[name];
+app.registerRoute = function({path, name, before}, container){
+    app.routesMap[path] = {
+        before,
+        tag: container.tags[name]};
     return this;
 };
 
@@ -70,29 +72,39 @@ app._doRoute = function(){
             }
             let path = hints[0];
             let request = {};
-            let {tag, params} = me._getMetaDataFromRouteMap(path);
-            if(!tag){
+            let {route, params} = me._getMetaDataFromRouteMap(path);
+
+            if(!route){
                 return recursiveHints(hints.slice(1));
             }
+            let tag = route.tag;
             isFounded = true;
             request.params = params;
             request.query = req.query;
             let ctx = {
                 request
             };
-            if(tag.hasOwnProperty('hidden') && tag.hidden){
-                tag.one('ready', ()=>{
-                    app._routeTo(tag);
-                    recursiveHints(hints.slice(1));
-                });
-                tag.trigger('open', ctx);
+            if(route.before){
+                route.before.apply(tag, [done]);
                 return;
             }
-            recursiveHints(hints.slice(1));
+            done();
+            function done(){
+                if(tag.hasOwnProperty('hidden') && tag.hidden){
+                    tag.one('ready', ()=>{
+                        app._routeTo(tag);
+                        recursiveHints(hints.slice(1));
+                    });
+                    tag.trigger('open', ctx);
+                    return;
+                }
+                recursiveHints(hints.slice(1));
+            }
         }
         recursiveHints(req.hints);
         if(!isFounded){
             let url = app.defaultRoute.path;
+
             let paramsParts = url.match(/_[a-zA-Z0-9:]+/g);
             if(paramsParts && paramsParts.length){
                 paramsParts.map(part=>{
@@ -124,12 +136,12 @@ app._getMetaDataFromRouteMap = function(routeKey){
     let keys = Object.keys(this.routesMap);
     for(let i=0, len=keys.length; i<len; i++){
         let k = keys[i];
-        let tag = this.routesMap[k];
+        let route = this.routesMap[k];
         if(toPattern(k) === toPattern(routeKey)){
             let paramKeys = (extractParams(k) || []).map(i=>i.slice(2));
             let paramValues = (extractParams(routeKey) || []).map(i=>i.slice(1));
             return {
-                tag,
+                route,
                 params: _.object(paramKeys, paramValues)
             };
         }

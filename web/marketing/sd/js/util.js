@@ -10,6 +10,9 @@ var util = {
         }
     },
     imgPreviewer: function($container, imgs, options){
+        if(!$container || !$container.length){
+            return;
+        }
         var me = this;
         var i, len, $ul, imgWHRate, imgHeight, startPosX = 0,startPosY = 0, oldPosX = 0, oldPosY = 0, newPosX = 0, newPosY = 0, timer;
         var currentIndex = options.currentIndex || 0, currentMargin = 0;
