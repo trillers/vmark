@@ -71,7 +71,7 @@ Service.prototype.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId =
             var level = null;
             var price = null;
             var type = null;
-            if(order.closingDistributors && order.closingDistributors.indexOf(distributorId) > 0){
+            if(order.closingDistributors && order.closingDistributors.indexOf(distributorId) >= 0){
                 level = order.closingDistributors.indexOf(distributorId) + 1;
                 type = 'clear';
             }else{
