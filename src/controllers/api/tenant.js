@@ -633,10 +633,7 @@ module.exports = function (router) {
                         path: 'product',
                         model: 'Course'
                     }]
-                }],
-                conditions: {
-                    status: 'uf'
-                }
+                }]
             };
             let myOrders = yield context.services.orderService.filterAsync(params);
             var pricesObject = null;
