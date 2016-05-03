@@ -68,16 +68,12 @@ Service.prototype.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId =
         .filter(function(order){ return order.bespeak && order.bespeak.product })
         .map(function(order){
             let product = order.bespeak.product;
-            var level = null;
+            var level = order.distributors.indexOf(distributorId) + 1;
             var price = null;
             var type = null;
             if(order.closingDistributors && order.closingDistributors.length && order.closingDistributors.indexOf(distributorId) >= 0){
-                level = order.closingDistributors.indexOf(distributorId) + 1;
                 type = 'clear';
-                console.log("level ***************");
-                console.log(level);
             }else{
-                level = order.distributors.indexOf(distributorId) + 1;
                 type = 'unclear';
             }
             if(product['upLine' + level + 'CommissionType'] === 'c'){
