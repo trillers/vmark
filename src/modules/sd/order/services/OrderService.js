@@ -78,14 +78,16 @@ Service.prototype.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId =
                 level = order.distributors.indexOf + 1;
                 type = 'unclear';
             }
+            console.log("@@@@@@@@@@@@@@@@");
+            console.log(level)
+            console.log(product['upLine' + level + 'CommissionType'])
             if(product['upLine' + level + 'CommissionType'] === 'c'){
                 price = parseInt(product['upLine' + level + 'CommissionValue'], 10);
             }
             else{
                 price = product.finalPrice * parseInt(product['upLine' + level + 'CommissionValue'], 10)/100;
             }
-            console.log("@@@@@@@@@@@@@@@@");
-            console.log(price)
+
             return {
                 type: type,
                 price: price
