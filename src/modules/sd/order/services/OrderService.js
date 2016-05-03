@@ -64,31 +64,33 @@ Service.prototype.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId =
     if(!orders.length){
         return {};
     }
-    let prices = orders.filter(function(order){ return order.bespeak && order.bespeak.product }).map(function(order){
-        let product = order.bespeak.product;
-        var level = null;
-        var price = null;
-        var type = null;
-        if(order.closingDistributors && order.closingDistributors.indexOf(distributorId) > 0){
-            level = order.closingDistributors.indexOf(distributorId) + 1;
-            type = 'clear';
-        }else{
-            level = order.distributors.indexOf + 1;
-            type = 'unclear';
-        }
-        if(product['upLine' + level + 'CommissionType'] === 'c'){
-            price = product['upLine' + level + 'CommissionValue'];
-        }
-        else{
-            price = product.finalPrice * parseInt(product['upLine' + level + 'CommissionValue'], 10)/100;
-        }
-        return {
-            type: type,
-            price: price
-        }
+    let prices = orders
+        .filter(function(order){ return order.bespeak && order.bespeak.product })
+        .map(function(order){
+            let product = order.bespeak.product;
+            var level = null;
+            var price = null;
+            var type = null;
+            if(order.closingDistributors && order.closingDistributors.indexOf(distributorId) > 0){
+                level = order.closingDistributors.indexOf(distributorId) + 1;
+                type = 'clear';
+            }else{
+                level = order.distributors.indexOf + 1;
+                type = 'unclear';
+            }
+            if(product['upLine' + level + 'CommissionType'] === 'c'){
+                price = product['upLine' + level + 'CommissionValue'];
+            }
+            else{
+                price = product.finalPrice * parseInt(product['upLine' + level + 'CommissionValue'], 10)/100;
+            }
+            return {
+                type: type,
+                price: price
+            }
     });
-    let clearPrice = prices.filter(function(pair){ return pair === 'clear' }).reduce(function(acc, curr){ return acc + curr }, 0);
-    let unClearPrice = prices.filter(function(pair){ return pair === 'unclear' }).reduce(function(acc, curr){ return acc + curr }, 0);
+    let clearPrice = prices.filter(function(pair){ return pair.type === 'clear' }).reduce(function(acc, curr){ return acc + curr }, 0);
+    let unClearPrice = prices.filter(function(pair){ return pair.type === 'unclear' }).reduce(function(acc, curr){ return acc + curr }, 0);
     return {
         clear: clearPrice,
         unclear: unClearPrice
