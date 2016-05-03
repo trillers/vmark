@@ -75,7 +75,7 @@ Service.prototype.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId =
                 level = order.closingDistributors.indexOf(distributorId) + 1;
                 type = 'clear';
             }else{
-                level = order.distributors.indexOf + 1;
+                level = order.distributors.indexOf(distributorId) + 1;
                 type = 'unclear';
             }
             console.log("@@@@@@@@@@@@@@@@");
