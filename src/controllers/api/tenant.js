@@ -701,7 +701,7 @@ module.exports = function (router) {
             }
             let tenantWechatSiteService = context.services.tenantWechatSiteService;
 
-            let wechatSiteUpdated = yield tenantWechatSiteService.updateByIdAsync(this.params.id, this.request.body);
+            let wechatSiteUpdated = yield tenantWechatSiteService.updateTenantWechatSiteByIdAsync(this.params.id, this.request.body);
             this.body = {error: null};
         }catch(e){
             context.logger.error(e);
