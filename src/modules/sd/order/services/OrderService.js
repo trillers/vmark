@@ -71,9 +71,11 @@ Service.prototype.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId =
             var level = null;
             var price = null;
             var type = null;
-            if(order.closingDistributors && order.closingDistributors.indexOf(distributorId) >= 0){
+            if(order.closingDistributors && order.closingDistributors.length && order.closingDistributors.indexOf(distributorId) >= 0){
                 level = order.closingDistributors.indexOf(distributorId) + 1;
                 type = 'clear';
+                console.log("level ***************");
+                console.log(level);
             }else{
                 level = order.distributors.indexOf(distributorId) + 1;
                 type = 'unclear';
@@ -84,6 +86,9 @@ Service.prototype.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId =
             else{
                 price = parseFloat(order.finalPrice, 10) * (parseFloat(product['upLine' + level + 'CommissionValue'], 10)/100);
             }
+            console.log("price ***************");
+            console.log(price);
+
             return {
                 type: type,
                 price: price
