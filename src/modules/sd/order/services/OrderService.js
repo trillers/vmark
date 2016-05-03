@@ -120,7 +120,8 @@ Service.prototype.findByRelatedDistributor = function(distributorId, status, cal
         populate: [
             {
                 path: 'product',
-                model: 'Course'
+                model: 'Course',
+                select: 'upLine1CommissionType upLine2CommissionType upLine3CommissionType upLine1CommissionValue upLine2CommissionValue upLine3CommissionValue'
             },
             {
                 path: 'user',
