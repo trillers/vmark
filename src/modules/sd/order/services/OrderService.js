@@ -79,17 +79,19 @@ Service.prototype.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId =
                 type = 'unclear';
             }
             if(product['upLine' + level + 'CommissionType'] === 'c'){
-                price = product['upLine' + level + 'CommissionValue'];
+                price = parseInt(product['upLine' + level + 'CommissionValue'], 10);
             }
             else{
                 price = product.finalPrice * parseInt(product['upLine' + level + 'CommissionValue'], 10)/100;
             }
+            console.log("@@@@@@@@@@@@@@@@");
+            console.log(price)
             return {
                 type: type,
                 price: price
             }
     });
-    let clearPrice = prices.filter(function(pair){ return pair.type === 'clear' }).reduce(function(acc, curr){ return acc + curr }, 0);
+    let clearPrice = prices.filter(function(pair){ return pair.type === 'clear' }).reduce(function(acc, curr){ return acc + curr.price }, 0);
     let unClearPrice = prices.filter(function(pair){ return pair.type === 'unclear' }).reduce(function(acc, curr){ return acc + curr.price }, 0);
     return {
         clear: clearPrice,
