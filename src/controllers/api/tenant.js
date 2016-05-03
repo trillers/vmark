@@ -347,9 +347,7 @@ module.exports = function (router) {
                     if(!distributor || !distributor.upLine){
                         return;
                     }
-                    if(typeof distributor.upLine === 'string'){
-                        distributors.push(distributor.upLine);
-                    }else if(typeof distributor.upLine === 'object'){
+                    if(typeof distributor.upLine === 'object'){
                         distributors.push(distributor.upLine._id);
                     }
                     recurPushDistributors(distributor.upLine);

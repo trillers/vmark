@@ -71,9 +71,6 @@ Service.prototype.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId =
             var level = null;
             var price = null;
             var type = null;
-            console.log(order.closingDistributors);
-            console.log(order.distributors);
-            console.log(distributorId);
             if(order.closingDistributors && order.closingDistributors.indexOf(distributorId) >= 0){
                 level = order.closingDistributors.indexOf(distributorId) + 1;
                 type = 'clear';
@@ -81,9 +78,6 @@ Service.prototype.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId =
                 level = order.distributors.indexOf(distributorId) + 1;
                 type = 'unclear';
             }
-            console.log("@@@@@@@@@@@@@@@@");
-            console.log(level)
-            console.log(product['upLine' + level + 'CommissionType'])
             if(product['upLine' + level + 'CommissionType'] === 'c'){
                 price = parseInt(product['upLine' + level + 'CommissionValue'], 10);
             }
@@ -95,7 +89,7 @@ Service.prototype.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId =
                 type: type,
                 price: price
             }
-    });
+        });
     let clearPrice = prices.filter(function(pair){ return pair.type === 'clear' }).reduce(function(acc, curr){ return acc + curr.price }, 0);
     let unClearPrice = prices.filter(function(pair){ return pair.type === 'unclear' }).reduce(function(acc, curr){ return acc + curr.price }, 0);
     return {
