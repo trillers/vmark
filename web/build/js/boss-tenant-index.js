@@ -1617,7 +1617,7 @@ webpackJsonp([0,1],[
 	    
 	});
 	riot.tag('boss-tenant-sd-catalogs-add', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd/catalogs"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div class="row" style="text-align: center"> <h4>新建课程目录</h4> </div> <alert validators="{validators}" clear="{clear}"></alert> <div class="row"> <div class="panel panel-default"> <div class="panel-heading">基本信息</div> <div class="panel-body"> <form class="form-horizontal"> <div class="form-group text-left"> <label for="catalogNameInput" class="col-sm-2 control-label text-left">课程目录名称</label> <div class="col-sm-10 {has-error: !catalogNameInput.value.trim()} has-feedback"> <input onblur="{catalogNameInputBlur}" type="text" class="form-control " id="catalogNameInput"> </div> </div> <div class="form-group"> <label for="catalogWechatsiteInput" class="col-sm-2 control-label">公众号</label> <div class="col-sm-10"> <select class="form-control" id="catalogWechatsiteInput" style="width: 200px"> <option each="{wechatsites}" value="{_id}">{name}</option> </select> </div> </div> <div class="form-group"> <label class="col-sm-2 control-label">上/下架状态</label> <div class="col-sm-10" style="height: 32px;line-height: 32px"> <span>待上架</span> </div> </div> <div class="form-group"> <label class="col-sm-2 control-label">创建时间</label> <div class="col-sm-10"> <span>{_.date.format(new Date(), \'yyyy-MM-dd hh点mm分\') }</span> </div> </div> <div class="form-group"> <label for="catalogDescInput" class="col-sm-2 control-label">备注</label> <div class="col-sm-10"> <textarea onblur="{catalogDescInputBlur}" type="password" class="form-control" id="catalogDescInput"></textarea> </div> </div> </form> </div> </div> </div> <div class="row" style="margin-top: 10px"> <div class="col-md-12 col-lg-12 text-center"> <input __disabled="{!courseMediaPriceInput.value.trim() || !courseNameInput.value.trim()}" onclick="{onSubmit}" type="button" class="btn btn-primary" value="保存"> <a href="#sd/catalogs" class="btn btn-default">取消</a> </div> </div> </div> </div> </div>', '.form-horizontal .control-label{ text-align: left !important; }', function(opts) {
-	        "use strict"
+	        "use strict";
 	        var self = nest.presentable(this);
 	        var loadAllTenantWechatSiteAction = domain.action('loadAllTenantWechatSite');
 	        var createCatalogAction = domain.action('createCatalog');
@@ -5785,7 +5785,7 @@ webpackJsonp([0,1],[
 	        view.equalRoute = function(targetView){
 	            var currentRoute = this.context && this.context.req.query.route;
 	            var targetRoute = targetView && targetView.context.req.query.route;
-	            return currentRoute = currentRoute;
+	            return targetRoute === currentRoute;
 	        };
 	        return view;
 	    },

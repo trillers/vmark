@@ -644,8 +644,8 @@ module.exports = function (router) {
             let data = {
                 bespeaks: bespeaks,
                 orders: myOrders,
-                clearPrice: pricesObject.clear || 0,
-                unclearPrice: pricesObject.unclear || 0
+                clearPrice: pricesObject && pricesObject.clear || 0,
+                unclearPrice: pricesObject && pricesObject.unclear || 0
             };
             this.body = {error: null, data: data}
         }catch(e){

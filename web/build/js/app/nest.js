@@ -406,7 +406,7 @@ var nest = {
         view.equalRoute = function(targetView){
             var currentRoute = this.context && this.context.req.query.route;
             var targetRoute = targetView && targetView.context.req.query.route;
-            return currentRoute = currentRoute;
+            return targetRoute === currentRoute;
         };
         return view;
     },

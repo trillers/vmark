@@ -68,23 +68,20 @@ Service.prototype.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId =
         .filter(function(order){ return order.bespeak && order.bespeak.product })
         .map(function(order){
             let product = order.bespeak.product;
-            var level = null;
+            var level = order.distributors.indexOf(distributorId) + 1;
             var price = null;
             var type = null;
-            if(order.closingDistributors && order.closingDistributors.indexOf(distributorId) >= 0){
-                level = order.closingDistributors.indexOf(distributorId) + 1;
+            if(order.closingDistributors && order.closingDistributors.length && order.closingDistributors.indexOf(distributorId) >= 0){
                 type = 'clear';
             }else{
-                level = order.distributors.indexOf(distributorId) + 1;
                 type = 'unclear';
             }
             if(product['upLine' + level + 'CommissionType'] === 'c'){
-                price = parseInt(product['upLine' + level + 'CommissionValue'], 10);
+                price = parseFloat(product['upLine' + level + 'CommissionValue'], 10);
             }
             else{
-                price = product.finalPrice * parseInt(product['upLine' + level + 'CommissionValue'], 10)/100;
+                price = parseFloat(order.finalPrice, 10) * (parseFloat(product['upLine' + level + 'CommissionValue'], 10)/100);
             }
-
             return {
                 type: type,
                 price: price
@@ -115,7 +112,8 @@ Service.prototype.findByRelatedDistributor = function(distributorId, status, cal
         populate: [
             {
                 path: 'product',
-                model: 'Course'
+                model: 'Course',
+                select: 'upLine1CommissionType upLine2CommissionType upLine3CommissionType upLine1CommissionValue upLine2CommissionValue upLine3CommissionValue'
             },
             {
                 path: 'user',
