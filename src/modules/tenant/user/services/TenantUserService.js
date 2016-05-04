@@ -193,9 +193,6 @@ Service.prototype.update = function(conditions, update, callback){
     var logger = this.context.logger;
     var TenantUser = this.context.models.TenantUser;
     var kv = this.context.kvs.tenantUser;
-    console.error('*************');
-    console.error(conditions);
-    console.error(update);
     TenantUser.findOneAndUpdate(conditions, update, {new: true}, function(err, doc){
         console.error(doc);
         cbUtil.logCallback(
