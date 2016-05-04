@@ -293,7 +293,8 @@ Service.prototype.signupOnSubscription = function(wechatId, openid, callback){
             yield openidToIdKv.setAsync(wechatId, openid, userId);
             yield atToOpenidKv.setAsync(wechatId, wechatSiteUser.at, openid);
             yield otToOpenidKv.setAsync(wechatId, wechatSiteUser.ot, openid);
-
+            console.error('#########################');
+            console.log(callback.toString());
             if(callback) callback(null, {
                 user: user,
                 wechatSiteUser: wechatSiteUser,
