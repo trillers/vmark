@@ -1,0 +1,13 @@
+<nest2>
+    <div if="{!hidden}">
+        内嵌页二
+    </div>
+    <script>
+        var self = this;
+        this.mixin('viewify');
+        this.on('open', function(ctx){
+            console.warn(ctx);
+            self.trigger('ready');
+        })
+    </script>
+</nest2>

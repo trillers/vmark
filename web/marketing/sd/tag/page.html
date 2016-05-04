@@ -1,0 +1,44 @@
+<page>
+    <div>
+        <table>
+            <thead>
+            <th>
+            <td>编号</td>
+            <td>姓名</td>
+            </th>
+            </thead>
+            <tbody>
+            <tr each="{opts.employees.slice((pageNo-1)*2, (pageNo-1)*2+2)}">
+                <td>{id}</td>
+                <td>{name}</td>
+            </tr>
+            </tbody>
+        </table>
+        <input type="button" value="上一页" onclick="{onClick(1)}"/>
+        <input type="button" value="下一页" onclick="{onClick(0)}"/>
+    </div>
+
+    <script>
+        var self = this;
+        self.pageNo = 1;
+        self.mixin('viewify');
+        self.onClick = function(i){
+            return function(e){
+                if(i===1){
+                    if(self.pageNo === 1){
+                        return;
+                    }
+                    self.pageNo -= 1;
+                }else{
+                    self.pageNo += 1;
+                }
+                riot.route('//test/_11111/nest1/p/_' + self.pageNo);
+            }
+        };
+        self.on('open', function(ctx){
+            console.log('[child] receive open event');
+            self.pageNo = parseInt(ctx.request.params.id, 10);
+            self.trigger('ready');
+        })
+    </script>
+</page>

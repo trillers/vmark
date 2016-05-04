@@ -1,0 +1,50 @@
+require('./page.html');
+
+<nest1>
+    <div if="{!hidden}">
+        内嵌页一
+        <page employees="{employees}"></page>
+
+    </div>
+    <script>
+        var self = this;
+        this.mixin('viewify');
+        self.mixin('router');
+        self.routeConfig([
+            {
+                path: '/p/_:id',
+                name: 'page'
+            }
+        ]);
+
+        self.employees = [
+            {
+                id: '1',
+                name: 'rick'
+            },
+            {
+                id: '2',
+                name: 'jack'
+            },
+            {
+                id: '3',
+                name: 'sam'
+            },
+            {
+                id: '4',
+                name: 'juice'
+            },
+            {
+                id: '5',
+                name: 'june'
+            },
+            {
+                id: '6',
+                name: 'judy'
+            }
+        ];
+        this.on('open', function(ctx){
+            self.trigger('ready');
+        })
+    </script>
+</nest1>
