@@ -68,32 +68,20 @@ Service.prototype.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId =
         .filter(function(order){ return order.bespeak && order.bespeak.product })
         .map(function(order){
             let product = order.bespeak.product;
-            var level = null;
+            var level = order.distributors.indexOf(distributorId) + 1;
             var price = null;
             var type = null;
-            console.log("order ***************");
-            console.log(order);
             if(order.closingDistributors && order.closingDistributors.indexOf(distributorId) >= 0){
-                level = order.closingDistributors.indexOf(distributorId) + 1;
                 type = 'clear';
             }else{
-                level = order.distributors.indexOf(distributorId) + 1;
                 type = 'unclear';
             }
-            console.log("level ***************");
-            console.log(level);
             if(product['upLine' + level + 'CommissionType'] === 'c'){
                 price = parseFloat(product['upLine' + level + 'CommissionValue'], 10);
             }
             else{
-                console.log("$$$$$$$$$$$$$$$$$$$")
-                console.log(parseFloat(order.finalPrice, 10));
-                console.log("$$$$$$$$$$$$$$$$$$$")
-                console.log(parseFloat(product['upLine' + level + 'CommissionValue'], 10)/100);
                 price = parseFloat(order.finalPrice, 10) * (parseFloat(product['upLine' + level + 'CommissionValue'], 10)/100);
             }
-            console.log("price ***************");
-            console.log(price);
             return {
                 type: type,
                 price: price

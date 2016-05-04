@@ -638,11 +638,7 @@ module.exports = function (router) {
             if(membership.type === MembershipType.Distributor.value()
                 || membership.type === MembershipType.Both.value()){
                 let orders = yield context.services.orderService.findByRelatedDistributorAsync(membership._id);
-                console.log("orders ********************");
-                console.log(orders);
                 pricesObject = context.services.orderService.getClearPriceAndUnclearPriceOfOrdersByOrdersAndDistributorId(orders, membership._id);
-                console.log("pricesObject ********************");
-                console.log(pricesObject);
             }
 
             let data = {

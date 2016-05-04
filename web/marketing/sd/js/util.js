@@ -10,7 +10,7 @@ var util = {
         }
     },
     imgPreviewer: function($container, imgs, options){
-        if(!$container || !$container.length){
+        if(!$container || (Array.isArray($container) && !$container.length)){
             return;
         }
         var me = this;
