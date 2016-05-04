@@ -215,6 +215,7 @@ Service.prototype.signupOnSubscription = function(wechatId, openid, callback){
     var otToOpenidKv = this.context.kvs.teOtToOpenid;
 
     co(function*(){
+        console.error('start auth******');
         var userInfo = null;
         var wechatSiteUser = null;
         var user = null;
@@ -231,6 +232,9 @@ Service.prototype.signupOnSubscription = function(wechatId, openid, callback){
             var wechatApi = yield wechatApiCache.get(wechatId);
             userInfo = yield helper.getUserInfoAsync(wechatApi.api, openid, languages.zh_CN);
 
+            console.error(wechatSiteUser);
+            console.error(user);
+            console.error(userInfo);
             /*
              * Ensure user created or updated
              */
@@ -266,7 +270,7 @@ Service.prototype.signupOnSubscription = function(wechatId, openid, callback){
              * Ensure wechat site user created or updated
              */
             if(wechatSiteUser){
-                wechatSiteUserId = wechatSiteUser._id;
+                var wechatSiteUserId = wechatSiteUser._id;
                 helper.copyUserInfo(wechatSiteUser, userInfo);
                 wechatSiteUser.user = userId;
                 wechatSiteUser.status = status;

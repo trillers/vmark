@@ -215,9 +215,12 @@ Service.prototype.update = function(conditions, update, callback){
                     }
                     catch(e){
                         logger.error('Fail to parse posts: ' + posts);
-                        result.posts = [];
+                        obj.posts = [];
                     }
                 }
+                console.error('**********');
+                console.error(callback);
+                console.log(obj);
                 if(callback) callback(err, obj);
             });
         }, err, doc);
