@@ -84,10 +84,11 @@ Service.prototype.updateTenantWechatSiteUserById = function(id, update, callback
             return;
         }
         var media = yield mediaKv.loadByIdAsync(user.host);
+        console.error(media);
         user.wechatId = media.originalId;
         yield kv.saveByWechatIdAndOpenidAsync(user);
         if(callback) callback(null, user);
-    }).catch(Error, function(err){
+    }).catch(function(err){
         logger.error('Fail to update tenant wechat site user by id ' + id + ': ' + err);
         logger.error(err.stack);
         if(callback) callback(err);
