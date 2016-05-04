@@ -146,6 +146,10 @@ Service.prototype.loadAll = function*(tenantId){
         var filter = {lFlg: 'a'};
         if (tenantId) {
             filter.org = tenantId;
+        }else{
+            filter.org = {$exists: false};
+            filter.withPic = false;
+            filter.qrCode = {$exists: false};
         }
 
         var docs = yield PowerActivity.find(filter).populate({path: 'qrCode'}).lean().exec();
