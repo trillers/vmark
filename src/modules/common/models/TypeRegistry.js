@@ -93,6 +93,9 @@ registry
     .addChild('Anonymous','a', '匿名')
     .addChild('Registered','r', '已注册')
     .addChild('Verified','v', '已验证')
+    .addChild('BaseInfo','b', '基础')
+    .addChild('UserInfo','u', '用户')
+    .addChild('Subscribed','s', '关注')
 
     .up().item('TenantUserStatus', 'TenantUserStatus', '租户用户状态')
     .addChild('BaseInfo','b', '基础')

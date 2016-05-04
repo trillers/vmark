@@ -70,7 +70,6 @@ Service.prototype.create = function(mediaUserJson, callback){
     var kv = this.context.kvs.wechatMediaUser;
     mediaUserJson.at = agentToken.generate(mediaUserJson.openid);
     mediaUserJson.ot = openToken.generate(mediaUserJson.openid);
-
     var mediaUser = new WechatMediaUser(mediaUserJson);
     mediaUser.save(function (err, result, affected) {
         cbUtil.logCallback(

@@ -10,7 +10,10 @@ var AuthLevel = require('../services/AuthLevel');
 var generate = function(level){
     return function* (next) {
         var auth = authentication.getAuthentication(this);
+        console.error(auth);
         var authLevel = AuthLevel.get(auth);
+        console.error(authLevel);
+        console.error(level);
         if (authLevel>=level) {
             yield next;
             return;

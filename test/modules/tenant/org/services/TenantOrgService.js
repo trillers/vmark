@@ -11,7 +11,7 @@ before(function(done){
 });
 
 describe('TenantOrgService', function(){
-    describe('createPersonalTenant', function(){
+    describe.only('createPersonalTenant', function(){
         it('Succeed to create a personal tenant', function(done){
             var service = context.services.tenantOrgService;
             var org = {

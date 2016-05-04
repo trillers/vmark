@@ -1,7 +1,7 @@
 var WechatMediaUserType = require('../../common/models/TypeRegistry').item('WechatMediaUserType');
 var WechatMediaUserContactType = require('../../common/models/TypeRegistry').item('WechatMediaUserContactType');
 var typeRegistry = require('../../common/models/TypeRegistry');
-var UserStatus = typeRegistry.item('TenantUserStatus');
+var UserStatus = typeRegistry.item('UserStatus');
 
 var Model = function(domainBuilder){
     var schema = domainBuilder
