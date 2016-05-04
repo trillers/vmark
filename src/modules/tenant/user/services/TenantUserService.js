@@ -218,9 +218,6 @@ Service.prototype.update = function(conditions, update, callback){
                         obj.posts = [];
                     }
                 }
-                console.error('**********');
-                console.error(callback);
-                console.log(obj);
                 if(callback) callback(err, obj);
             });
         }, err, doc);

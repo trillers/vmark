@@ -215,7 +215,6 @@ Service.prototype.signupOnSubscription = function(wechatId, openid, callback){
     var otToOpenidKv = this.context.kvs.teOtToOpenid;
 
     co(function*(){
-        console.error('start auth******');
         var userInfo = null;
         var wechatSiteUser = null;
         var user = null;
@@ -232,9 +231,6 @@ Service.prototype.signupOnSubscription = function(wechatId, openid, callback){
             var wechatApi = yield wechatApiCache.get(wechatId);
             userInfo = yield helper.getUserInfoAsync(wechatApi.api, openid, languages.zh_CN);
 
-            console.error(wechatSiteUser);
-            console.error(user);
-            console.error(userInfo);
             /*
              * Ensure user created or updated
              */
@@ -277,7 +273,6 @@ Service.prototype.signupOnSubscription = function(wechatId, openid, callback){
                 wechatSiteUser._id && (delete wechatSiteUser._id);
                 wechatSiteUser.wechatId = wechatId;
                 wechatSiteUser = yield wechatSiteUserService.updateTenantWechatSiteUserByIdAsync(wechatSiteUserId, wechatSiteUser);
-                console.error(wechatSiteUser);
             }
             else{
                 var createWechatSiteUserJson = {};
@@ -298,8 +293,6 @@ Service.prototype.signupOnSubscription = function(wechatId, openid, callback){
             yield openidToIdKv.setAsync(wechatId, openid, userId);
             yield atToOpenidKv.setAsync(wechatId, wechatSiteUser.at, openid);
             yield otToOpenidKv.setAsync(wechatId, wechatSiteUser.ot, openid);
-            console.error('#########################');
-            console.log(callback.toString());
             if(callback) callback(null, {
                 user: user,
                 wechatSiteUser: wechatSiteUser,
