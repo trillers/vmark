@@ -193,13 +193,18 @@ Service.prototype.update = function(conditions, update, callback){
     var logger = this.context.logger;
     var TenantUser = this.context.models.TenantUser;
     var kv = this.context.kvs.tenantUser;
+    console.error('*************');
+    console.error(conditions);
+    console.error(update);
     TenantUser.findOneAndUpdate(conditions, update, {new: true}, function(err, doc){
+        console.error(doc);
         cbUtil.logCallback(
             err,
             'Fail to update tenant user: ' + err,
             'Succeed to update tenant user');
 
         cbUtil.handleSingleValue(function(err, doc){
+            console.error(doc);
             var obj = doc.toObject({virtuals: true});
             kv.saveById(obj.wechatId, obj.id, obj, function(err, obj){
                 if(err){
