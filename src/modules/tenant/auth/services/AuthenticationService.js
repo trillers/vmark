@@ -277,6 +277,7 @@ Service.prototype.signupOnSubscription = function(wechatId, openid, callback){
                 wechatSiteUser._id && (delete wechatSiteUser._id);
                 wechatSiteUser.wechatId = wechatId;
                 wechatSiteUser = yield wechatSiteUserService.updateTenantWechatSiteUserByIdAsync(wechatSiteUserId, wechatSiteUser);
+                console.error(wechatSiteUser);
             }
             else{
                 var createWechatSiteUserJson = {};
