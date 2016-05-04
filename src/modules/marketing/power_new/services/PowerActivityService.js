@@ -276,7 +276,9 @@ Service.prototype.getActivityPoster = function*(qr, wechatId, openid){
         var tenantUserService = this.context.services.tenantUserService;
 
         var activity = yield powerActivityService.loadByQrCodeIdAndWechatId(qr._id, wechatId);
+        console.error(activity);
         var user = yield tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, openid);
+        console.error(user);
         var mediaId = '';
         if(!activity.poster){
             var posterJson = {

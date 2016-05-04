@@ -164,7 +164,9 @@ activityType.onAccess(function(qr, openid, wechatId){
             var wechatApi = (yield wechatApiCache.get(wechatId)).api;
             var auth = yield context.services.tenantAuthenticationService.signupOnSubscriptionAsync(wechatId, openid);
             var user = auth.user;
+            console.error(user);
             var res = yield powerActivityService.getActivityPoster(qr, wechatId, openid);
+            console.error(res);
             console.error('&&&&&&&&&&&&&&');
             wechatApi.sendText(openid, res.reply, function (err) {
                 if(err) logger.error(err);
