@@ -56,13 +56,15 @@ Service.prototype.updateById = function*(id, update){
     try{
         var oldDoc = yield PowerActivity.findById(id).lean().exec();
         var posterQrCodeUrl = '';
+
         if(!oldDoc.withPic && update.withPic){
+            var powerPosterService = this.context.services.powerPosterService;
             var qrType = qrTypeRegistry.getQrType('ac');
             var qr = yield qrType.createQrAsync({wechatId: update.wechatId});
             update.qrCode = qr._id;
             var posterJson = {
-                activity: obj._id,
-                posterBgImg: obj.posterBgImg,
+                activity: oldDoc._id,
+                posterBgImg: update.posterBgImg,
                 type: PosterType.activity.value(),
                 wechatId: update.wechatId
             }
@@ -78,6 +80,7 @@ Service.prototype.updateById = function*(id, update){
         return doc;
     }catch(err){
         logger.error('failed update power, err: ' + err);
+        logger.error(err.stack);
         return null;
     }
 }
@@ -163,7 +166,7 @@ Service.prototype.loadAll = function*(tenantId){
         logger.info('success load all power ');
         return docs;
     }catch(e){
-        console.error(e);
+        console.error(e.stack);
         return [];
     }
 }

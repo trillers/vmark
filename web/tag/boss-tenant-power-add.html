@@ -18,8 +18,8 @@
                             <label><input id="type_po" name="activity_type" type="radio" value="po" checked="{activity.type === 'po'}" onclick="{selectType}"/>积分</label>
                             <label><input id="type_co" name="activity_type" type="radio" value="co" checked="{activity.type === 'co'}" onclick="{selectType}"/>课程助力</label>
                         </li>
-                        <li if="{activity.type !== 'co'}"><span>启动图片助力:  </span><input name="withPic" type="checkbox" checked="{activity.withPic}" onclick="{toggleWithPic}"></li>
-                        <li id="poster" if="{activity.withPic || activity.type === 'co'}" style="clear: both; min-height: 26px;"><span style="float: left">海报背景图片:  </span><input if="{!activity.posterBgImg}" id="posterBgImg" type="file" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadPosterBgImg}" style="width: 60px;"/>
+                        <li if="{activity.type !== 'co'}"><span>启动图片助力:  </span><input name="withPic" type="checkbox" checked="{activity.withPic === 'true'}" onclick="{toggleWithPic}"></li>
+                        <li id="poster" if="{activity.withPic === 'true' || activity.type === 'co'}" style="clear: both; min-height: 26px;"><span style="float: left">海报背景图片:  </span><input if="{!activity.posterBgImg}" id="posterBgImg" type="file" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadPosterBgImg}" style="width: 60px;"/>
                             <div if="{activity.posterBgImg}" class="posterBgImgCon"><i onclick="{deletePosterBgImg}" class="glyphicon glyphicon-remove"></i><img src="{activity.posterBgImg}" alt=""/></div>
                         </li>
                         <li><span>活动名称:  </span><input name="activityName" type="text" value="{activity.name}"/></li>
@@ -38,7 +38,7 @@
                         <li if="{activity.type === 'co'}"><span>活动介绍:  </span><textarea class="form-control" name="co_desc" rows="10"></textarea></li>
                         <li if="{activity.type !== 'co'}"><span>活动规则:  </span><div id="rule"></div></li>
                         <li><span if="{activity.type !== 'co'}">分享标题自定义:  </span><span if="{activity.type === 'co'}">消息卡片标题:  </span><input class="form-control" type="text" name="shareTitle" value="{activity.shareTitle}"/></li>
-                        <li><span if="{activity.type !== 'co'}">分享描述自定义:  </span><span if="{activity.type === 'co'}">消息卡片描述:  </span><input class="form-control" type="text" name="shareDesc" value="{activity.shareTitle}"/></li>
+                        <li><span if="{activity.type !== 'co'}">分享描述自定义:  </span><span if="{activity.type === 'co'}">消息卡片描述:  </span><input class="form-control" type="text" name="shareDesc" value="{activity.shareDesc}"/></li>
                         <li if="{activity.type !== 'co'}"><span>基础奖励:  </span><input id="base_power" type="number" value="{activity.base_power}"/></li>
                         <li if="{activity.type !== 'co'}"><span>好友助力单次奖励:  </span><input name="friend_help_min_power" type="number" value="{activity.friend_help_min_power}"/><span> 至 </span><input name="friend_help_max_power" type="number" value="{activity.friend_help_max_power}"/></li>
                         <li><span if="{activity.type !== 'co'}">好友助力上限人数:  </span><span if="{activity.type === 'co'}">最低好友助力人数:  </span><input name="friend_help_count_limit" type="number" value="{activity.friend_help_count_limit}"/></li>
@@ -78,7 +78,8 @@
         self.activity = {
             org: __page.tenantId,
             type: 'rp',
-            bgImg: []
+            bgImg: [],
+            withPic: false
         }
         self.on('open', function(ctx){
             self.trigger('ready', false);
@@ -227,9 +228,9 @@
 
         self.toggleWithPic = function(e){
             if($(e.currentTarget).is(':checked')){
-                self.activity.withPic = true;
+                self.activity.withPic = 'true';
             }else{
-                self.activity.withPic = false;
+                self.activity.withPic = 'false';
             }
             return true;
         }
@@ -372,10 +373,9 @@
             }else{
                 self.activity.desc = self.co_desc.value;
                 self.activity.courseUrl = self.courseUrl.value;
+                self.activity.withPic = 'true';
             }
             var allowSubmit = self.verify(self.activity);
-            console.log(self.activity);
-            debugger;
             if(allowSubmit){
                 addPowerActivity.newInvocation(self.activity).onDone(function(data){
                     self.activity = {

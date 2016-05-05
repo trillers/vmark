@@ -27,7 +27,7 @@ module.exports = function(router){
                 , friend_help_max_power: this.request.body.friend_help_max_power || 0
                 , rule: this.request.body.rule
                 , desc: this.request.body.desc
-                , withPic: this.request.body.withPic
+                , withPic: this.request.body.withPic === 'true' ? true : false
                 , posterBgImg: this.request.body.posterBgImg
                 , courseUrl: this.request.body.courseUrl
             }
@@ -57,7 +57,7 @@ module.exports = function(router){
                 org: this.request.body.org
                 ,wechatId: this.request.body.wechatId
                 ,type: this.request.body.type
-                ,withPic: this.request.body.withPic
+                ,withPic: this.request.body.withPic === 'true' ? true : false
                 ,name: this.request.body.name
                 ,shareTitle: this.request.body.shareTitle
                 ,shareDesc: this.request.body.shareDesc

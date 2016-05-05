@@ -38,7 +38,7 @@
                         <li if="{activity.type === 'co'}"><span>活动介绍:  </span><textarea class="form-control" name="co_desc" rows="10" value="{activity.desc}"></textarea></li>
                         <li if="{activity.type !== 'co'}"><span>活动规则:  </span><div id="rule"></div></li>
                         <li><span if="{activity.type !== 'co'}">分享标题自定义:  </span><span if="{activity.type === 'co'}">消息卡片标题:  </span><input class="form-control" type="text" name="shareTitle" value="{activity.shareTitle}"/></li>
-                        <li><span if="{activity.type !== 'co'}">分享描述自定义:  </span><span if="{activity.type === 'co'}">消息卡片描述:  </span><input class="form-control" type="text" name="shareDesc" value="{activity.shareTitle}"/></li>
+                        <li><span if="{activity.type !== 'co'}">分享描述自定义:  </span><span if="{activity.type === 'co'}">消息卡片描述:  </span><input class="form-control" type="text" name="shareDesc" value="{activity.shareDesc}"/></li>
                         <li if="{activity.type !== 'co'}"><span>基础奖励:  </span><input id="base_power" type="number" value="{activity.base_power}"/></li>
                         <li if="{activity.type !== 'co'}"><span>好友助力单次奖励:  </span><input name="friend_help_min_power" type="number" value="{activity.friend_help_min_power}"/><span> 至 </span><input name="friend_help_max_power" type="number" value="{activity.friend_help_max_power}"/></li>
                         <li><span if="{activity.type !== 'co'}">好友助力上限人数:  </span><span if="{activity.type === 'co'}">最低好友助力人数:  </span><input name="friend_help_count_limit" type="number" value="{activity.friend_help_count_limit}"/></li>
@@ -228,9 +228,9 @@
 
         self.toggleWithPic = function(e){
             if($(e.currentTarget).is(':checked')){
-                self.activity.withPic = true;
+                self.activity.withPic = 'true';
             }else{
-                self.activity.withPic = false;
+                self.activity.withPic = 'false';
             }
             return true;
         }
@@ -373,6 +373,7 @@
             }else{
                 self.activity.desc = self.co_desc.value;
                 self.activity.courseUrl = self.courseUrl.value;
+                self.activity.withPic = 'true';
             }
             var allowSubmit = self.verify(self.activity);
 
