@@ -1,0 +1,386 @@
+<boss-tenant-sd-catalogs-detail>
+    <div if="{!hidden}" class="container" style="margin-top: 0px">
+        <div class="row">
+            <div class="col-md-3 col-lg-3">
+                <boss-tenant-sd-left path="sd/catalogs"></boss-tenant-sd-left>
+            </div>
+            <div class="col-md-9 col-lg-9">
+                <div>
+                    <div class="row" style="text-align: center">
+                        <a href="#sd/catalogs" style="position: absolute; left: 0px; top: 10px">返回课程目录列表</a>
+                        <h4>{catalog.name}</h4>
+                    </div>
+                    <alert validators="{validators.raw()}" clear="{clear}"></alert>
+
+                    <div class="row">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <div>
+                                    <table class="table table-narrow">
+                                        <tr>
+                                            <td>所属公众号</td>
+                                            <td>{catalog.media.name}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>租户类型</td>
+                                            <td>{__app.enums.PartyType.values[catalog.tenant.type]}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>状态</td>
+                                            <td>{__app.enums.LifeFlag.values[catalog.lFlg]}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>创建时间</td>
+                                            <td>{_.date.format(new Date(catalog.crtOn), 'yyyy-MM-dd hh点mm分')}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>备注</td>
+                                            <td>{catalog.desc}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>微站URL</td>
+                                            <td><span>{__app.settings.app.url + "/sd/" + catalog.media.originalId + "/catalog?id=" + catalog._id}</span></td>
+                                        </tr>
+                                    </table>
+                                    <div class="row text-center" style="margin-top: 20px; margin-bottom: 20px">
+                                        <div class="col-md-12 col-lg-12">
+                                            <a href="#sd/catalogs/edit/_{catalog._id}" class="btn btn-default">修改</a>
+                                            <input if="{catalog.lFlg === __app.enums.LifeFlag.names.Active}" onclick="{onInactive}" data-toggle="modal" data-target="#modal" value="锁定" type="button" class="btn btn-default"/>
+                                            <input if="{catalog.lFlg === __app.enums.LifeFlag.names.Inactive}" onclick="{onActive}" data-toggle="modal" data-target="#modal" value="激活" type="button" class="btn btn-default"/>
+                                            <input onclick="{onDelete}" data-toggle="modal" data-target="#modal" value="删除" type="button" class="btn btn-default"/>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top: 20px; margin-bottom: 20px">
+                                        <div class="col-md-12 col-lg-12">
+                                            <h4 class="text-left">课程目录</h4>
+                                            <hr/>
+                                            <div class="text-right">
+                                                <input onclick="{onAddProduct}" type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" value="添加"/>
+                                            </div>
+                                            <div>
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>名称</th>
+                                                        <th>状态</th>
+                                                        <th>上/下架时间</th>
+                                                        <th>创建时间</th>
+                                                        <th>备注</th>
+                                                        <th>二维码</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                    <tr each="{populateProducts(catalog.products)}">
+                                                        <td>
+                                                            {name}
+                                                        </td>
+                                                        <td>
+                                                            { __app.enums.LiveStatus.values[liveStatus] }
+                                                        </td>
+                                                        <td>
+                                                            { actionTime && _.date.format(new Date(actionTime), 'yyyy-MM-dd hh点mm分') || '空'}
+                                                        </td>
+                                                        <td>
+                                                            {_.date.format(new Date(crtOn), 'yyyy-MM-dd hh点mm分')}
+                                                        </td>
+                                                        <td>
+                                                            { desc }
+                                                        </td>
+                                                        <td>
+                                                            <i class="fa fa-qrcode fa-lg" aria-hidden="true" data-toggle="modal" data-target="#showImg" onclick="{parent.obtainQr(this)}"></i>
+                                                        </td>
+                                                    </tr>
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div id="myModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title">选择课程</h4>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input id="toggleInput" type="checkbox" onclick="{onToggleSelectAll}">
+                                                </label>
+                                            </div>
+                                        </th>
+                                        <th>名称</th>
+                                        <th>状态</th>
+                                        <th>上/下架时间</th>
+                                        <th>创建时间</th>
+                                        <th>备注</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    <tr each="{courses}">
+                                        <td>
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input name="CourseCheckBox" type="checkbox" checked="{parent.isChecked(_id)}" value="{_id}">
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {name}
+                                        </td>
+                                        <td>
+                                            { __app.enums.LiveStatus.values[liveStatus] }
+                                        </td>
+                                        <td>
+                                            { actionTime && _.date.format(new Date(actionTime), 'yyyy-MM-dd hh点mm分') || '空'}
+                                        </td>
+                                        <td>
+                                            {_.date.format(new Date(crtOn), 'yyyy-MM-dd hh点mm分')}
+                                        </td>
+                                        <td>
+                                            { desc }
+                                        </td>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                                <button onclick="{onSubmitCourses}" data-dismiss="modal" type="button" class="btn btn-primary">确认</button>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal-dialog -->
+                </div>
+
+            </div><!-- right end -->
+
+
+
+        </div>
+    </div>
+    </div>
+    <style scoped>
+        .form-horizontal .control-label{
+            text-align: left !important;
+        }
+        .vcenter {
+            vertical-align: middle;
+        }
+        .table-narrow tr td{
+            border: none !important;
+            width: 30% !important;
+        }
+        .my-table{
+            width: 100%;
+        }
+        .my-table td{
+            width: 33.33333%;
+        }
+        .panel-default {
+            border-top: none;
+            border-color: #ddd;
+        }
+    </style>
+    <script>
+        "use strict"
+        var self = nest.presentable(this);
+        var loadCatalogByIdAction = domain.action('loadCatalogById');
+        var findCoursesAction = domain.action('findCourses');
+        var updateCatalogByIdAction = domain.action('updateCatalogById');
+        var fetchSdQrByProductAndWechatSiteAction = domain.action('fetchSdQrByProductAndWechatSite');
+
+        self.on('open', function(ctx){
+            var catalogId = ctx.req.paramList[0];
+            loadCatalogByIdAction.newInvocation({
+                id: catalogId
+            }).onDone(function(res){
+                self.catalog = res.catalog;
+                findCoursesAction.newInvocation({
+                    tenant: __page.tenantId
+                }).onDone(function(res){
+                    self.courses = res.courses;
+                    self.trigger('ready', false);
+                    self.trigger('view-route-to');
+                }).execute();
+            }).execute();
+        });
+        self.on('mount', function(){
+            self.validators = _.widget.validatify([]);
+        });
+
+        self.isChecked = function(id){
+            return self.catalog.products.map(function(product){return product._id}).indexOf(id)>=0;
+        };
+
+        self.populateProducts = function(products){
+            return products.map(function(product){
+                return self.courses.filter(function(course){
+                    return course._id === product._id;
+                })[0]
+            });
+        };
+
+        self.onToggleSelectAll = function(){
+            var inputs =[].slice.apply(document.querySelectorAll('input[name="CourseCheckBox"]'));
+            if(self.toggleInput.checked === false){
+                inputs.map(function(input){
+                    input.checked = false;
+                });
+            }else{
+                inputs.map(function(input){
+                    input.checked = true;
+                });
+            }
+            return true;
+        };
+
+        self.onInactive = function(e){
+            _.widget.confirm({
+                title: '操作确认',
+                content: '你确认要“锁定”该课程目录吗？',
+                callback: function(){
+                    self.catalog.lFlg = __app.enums.LifeFlag.names.Inactive;
+                    updateCatalogByIdAction.newInvocation({
+                        id: self.catalog._id,
+                        o: self.catalog
+                    }).onDone(function(res){
+                        self.update();
+                    }).execute();
+                }
+            });
+        };
+
+        self.obtainQr = function(product){
+            return function(e){
+                var qrTicket = null;
+                var qrUrl = null;
+                if(typeof self.catalog.media != 'object' || !product){
+                    return;
+                }
+                if(!product.poster){
+                    _.widget.showImg({
+                        title: '扫一扫获取课程海报',
+                        imgUrl: '',
+                        width: '300px',
+                        height: '300px',
+                        errorMsg: '该课程尚没有背景图片'
+                    });
+                    return;
+                }
+                if(product.qr && product.qr.ticket){
+                    qrTicket = product.qr.ticket || product.qr.ticket;
+                    qrUrl = 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=' + qrTicket;
+                    _.widget.showImg({
+                        title: '扫一扫获取课程海报',
+                        imgUrl: qrUrl,
+                        width: '300px',
+                        height: '300px'
+                    });
+                    return;
+                }
+                fetchSdQrByProductAndWechatSiteAction.newInvocation({
+                    product: _.toObjectFromRiot(product),
+                    media: self.catalog.media
+                }).onDone(function(res){
+                    if(res.error){
+                        alert('获取二维码失败');
+                        return;
+                    }
+                    qrTicket = res.product.qr.ticket;
+                    qrUrl = 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=' + qrTicket;
+                    _.widget.showImg({
+                        title: '扫一扫获取课程海报',
+                        imgUrl: qrUrl,
+                        width: '300px',
+                        height: '300px'
+                    });
+                    self.catalog.products.forEach(function(product, i){
+                        if(res.product._id === product._id){
+                            self.catalog.products[i] = res.product;
+                        }
+                    })
+                }).execute();
+            }
+        };
+
+        self.onActive = function(){
+            _.widget.confirm({
+                title: '操作确认',
+                content: '你确认要“锁定”该课程目录吗？',
+                callback: function(){
+                    self.catalog.lFlg = __app.enums.LifeFlag.names.Active;
+                    updateCatalogByIdAction.newInvocation({
+                        id: self.catalog._id,
+                        o: self.catalog
+                    }).onDone(function(res){
+                        self.update();
+                    }).execute();
+                }
+            });
+        };
+
+
+
+        self.onDelete = function(){
+            _.widget.confirm({
+                title: '操作确认',
+                content: '你确认要“删除”该课程目录吗？',
+                callback: function(){
+                    self.catalog.lFlg = __app.enums.LifeFlag.names.Deleted;
+                    updateCatalogByIdAction.newInvocation({
+                        id: self.catalog._id,
+                        o: self.catalog
+                    }).onDone(function(res){
+                        if(!res.error){
+                            riot.route('sd/catalogs');
+                        }
+                    }).execute();
+                }
+            });
+        };
+
+        self.onSubmitCourses = function(){
+            var checkedArr = document.querySelectorAll('input[name="CourseCheckBox"]:checked');
+            var ids = [];
+            self.catalog.products = [].slice.apply(checkedArr).map(function(input) {
+                ids.push(input.value);
+                return self.courses.filter(function(course){
+                    return course._id === input.value
+                })[0]
+            });
+
+            var catalogMeta = {};
+            catalogMeta._id = self.catalog._id;
+            catalogMeta.products = ids;
+
+            updateCatalogByIdAction.newInvocation({
+                id: self.catalog._id,
+                o: catalogMeta
+            }).onDone(function(res){
+                if(res.error){
+                    alert("保存课程失败");
+                }
+            }).execute();
+        };
+
+        self.onAddProduct = function(){
+            self.toggleInput.checked = false;
+        };
+    </script>
+</boss-tenant-sd-catalogs-detail>

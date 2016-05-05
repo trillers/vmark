@@ -1,0 +1,225 @@
+<personal>
+    <div class="personal-container" if="{!hidden}">
+        <div class="personal-header">
+            <div>
+                <div>
+                    <img src="{__page.user.headimgurl}" style="width: 100%;"/>
+                </div>
+                <p>{__page.user.nickname}</p>
+            </div>
+            <div>
+                <ul>
+                    <li>
+                        <div>全部收入:(元)</div>
+                        <div><span>{parseInt(clearPrice, 10) + parseInt(unclearPrice, 10) || 0}</span></div>
+                    </li>
+                    <li>
+                        <div>已结款:(元)</div>
+                        <div><span>{clearPrice || 0}</span></div>
+                    </li>
+                    <li>
+                        <div>未结款:(元)</div>
+                        <div><span>{unclearPrice || 0}</span></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="personal-content">
+            <div><b></b><span>我的预约</span></div>
+            <div>
+                <ul>
+                    <li each="{bespeaks}">
+                        <div>
+                            <div>客户</div>
+                            <div>{user.nickname}</div>
+                        </div>
+                        <div>
+                            <div>课程</div>
+                            <div>{product.name}</div>
+                        </div>
+                        <div>
+                            <div>日期</div>
+                            <div>{_.format(new Date(crtOn), 'yyyy-MM-dd hh点mm分')}</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="personal-content">
+            <div><b></b><span>我的订单</span></div>
+            <div>
+                <ul>
+                    <li each="{orders}">
+                        <div>
+                            <div>客户</div>
+                            <div>{bespeak.user.nickname}</div>
+                        </div>
+                        <div>
+                            <div>课程</div>
+                            <div>{bespeak.product.name}</div>
+                        </div>
+                        <div>
+                            <div>成交价</div>
+                            <div>{finalPrice}</div>
+                        </div>
+                        <div>
+                            <div>日期</div>
+                            <div>{_.format(new Date(crtOn), 'yyyy-MM-dd hh点mm分')}</div>
+                        </div>
+                        <div>
+                            <div>状态</div>
+                            <div>{status === 'f' ? '已结算' : '未结算'}</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <style scoped type="less">
+        @primary: #ff5101;
+        @secondary: #f1f3f2;
+
+        .ul(){
+            margin: 0px;
+            padding: 0px;
+            li{
+                list-style-type: none;
+            }
+        }
+        .border-radius (@radius) {
+            border-radius: @radius;
+            -moz-border-radius: @radius;
+            -webkit-border-radius: @radius;
+        }
+        .personal-container{
+            margin-bottom: 80px;
+            .personal-header{
+                width:100%;
+                &:first-child{
+                    >div{
+                        &:first-child{
+                            div{
+                                width: 80px;
+                                height: 80px;
+                                background: black;
+                                margin: 0px auto;
+                                margin-top: 10px;
+                                .border-radius(50em);
+                                border: 2px solid white;
+                            }
+                            p{
+                                text-align: center;
+                                color: white;
+                                line-height: 10px;
+                            }
+                            overflow: hidden;
+                            height: 132px;
+                            background: @primary;
+                        }
+                    }
+                    div{
+                        ul{
+                            overflow: hidden;
+                            margin: 0px;
+                            padding: 0px;
+                            li{
+                                &:last-child{
+                                    border-right: none;
+                                }
+                                width: 33.3333333%;
+                                float: left;
+                                list-style:none;
+                                text-align: center;
+                                border-right: 1px solid #ddd;
+                                box-sizing: border-box;
+                                height: 72px;
+                                >div{
+                                    height: 36px;
+                                    line-height: 36px;
+                                    span{
+                                        color: @primary;
+                                        font-size: 24px;
+                                    }
+                                }
+                            }
+                        }
+                        background: white;
+                        overflow: hidden;
+                        height: 72px;
+                        line-height: 72px;
+                    }
+                }
+            }
+
+            .personal-content{
+                margin-top: 20px;
+                >div{
+                    margin-left: 10px;
+                    margin-right: 10px;
+                    b{
+                        display: inline-block;
+                        width: 4px;
+                        height: 14px;
+                        background: @primary;
+                    }
+                    span{
+                        display: inline-block;
+                        margin-left: 10px;
+                    }
+                }
+                ul{
+                    .ul;
+                    margin-top: 10px;
+                    li{
+                        margin-top: 10px;
+                        background: white;
+                        padding: 10px;
+                        >div{
+                            overflow: hidden;
+                            >div{
+                                line-height: 26px;
+                                &:first-child{
+                                    width: 30%;
+                                    color: #999999;
+                                    float: left;
+                                }
+                                &:last-child{
+                                    width: 70%;
+                                    float: right;
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+    </style>
+    <script>
+        'use strict';
+        var self = this;
+        this.mixin('dispatcher');
+        this.mixin('viewify');
+
+        this.on('mount', function(){
+            self.on('loadPersonalInfoByUserId', function(res){
+                self.clearPrice = res.data.clearPrice;
+                self.unclearPrice = res.data.unclearPrice;
+                self.bespeaks = res.data.bespeaks;
+                self.orders = res.data.orders;
+                self.update();
+            })
+        });
+        this.on('open', function(ctx){
+            var querystring = _.querystring.parse(window.location.search);
+            self.dispatch(actions.loadPersonalInfoByUserId(__page.user.id, querystring.media));
+            self.trigger('ready');
+            self.parent.trigger('menu', 1);
+        })
+
+
+
+    </script>
+</personal>

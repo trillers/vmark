@@ -6,6 +6,9 @@ util.extend = function(obj, source) {
     }
     return obj;
 };
+util.isGenerator = function(fn){
+    return typeof fn === 'function' && fn.constructor.name === 'GeneratorFunction';
+};
 util.extendAll = function(target, source){
     for (var prop in source) {
         if(typeof source[prop]=='object'){
@@ -59,6 +62,20 @@ util.genOneToOneId = function(str1, str2) {
 }
 
 /**
+ * generate random string
+ * @param num //limit random string length
+ * **/
+util.generateRandomString = function(num){
+    var chars = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z', 'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
+    var res = "";
+    for (var i = 0; i < num; i++) {
+        var id = Math.floor(Math.random() * 62);
+        res += chars[id];
+    }
+    return res;
+}
+
+/**
  * generate token by input param
  * @param str
  * **/
@@ -90,5 +107,7 @@ module.exports = {
     appendLine: util.appendLine,
     genOneToOneId: util.genOneToOneId,
     generateToken: util.generateToken,
-    random: util.random
+    random: util.random,
+    generateRandomString: util.generateRandomString,
+    isGenerator: util.isGenerator
 };

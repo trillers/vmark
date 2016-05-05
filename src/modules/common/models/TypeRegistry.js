@@ -40,6 +40,15 @@ registry
     .addChild('Logged','logged', '已启动')
     .addChild('Exited','exited', '已停止')
 
+    .up().item('LiveStatus', 'LiveStatus', '上下架状态')
+    .addChild('Idle','i', '待上架')
+    .addChild('GoLive','g', '已上架')
+    .addChild('Sunset','s', '已下架')
+
+    .up().item('CommissionType', 'commissionType', '佣金类型')
+    .addChild('Percent','p', '比率')
+    .addChild('Cash','c', '现金')
+
     .up().item('WechatBotStatus', 'WechatBotStatus', '状态') //助手号状态
     .addChild('Starting','starting', '启动中')
     .addChild('Logging','logging', '登录中')
@@ -76,17 +85,47 @@ registry
     .addChild('Dark','dark', '深色')
     .addChild('Light','light', '浅色')
 
+    .up().item('OrderStatus', 'OrderStatus', '订单状态')
+    .addChild('finish','f', '已结算')
+    .addChild('unFinish','uf', '未结算')
+
     .up().item('UserStatus', 'UserStatus', '用户状态')
     .addChild('Anonymous','a', '匿名')
     .addChild('Registered','r', '已注册')
     .addChild('Verified','v', '已验证')
+    .addChild('BaseInfo','b', '基础')
+    .addChild('UserInfo','u', '用户')
+    .addChild('Subscribed','s', '关注')
+
+    .up().item('TenantUserStatus', 'TenantUserStatus', '租户用户状态')
+    .addChild('BaseInfo','b', '基础')
+    .addChild('UserInfo','u', '用户')
+    .addChild('Subscribed','s', '关注')
+
+    .up().item('MembershipType', 'MembershipType', '分销会员类型')
+    .addChild('Distributor','d', '分销商')
+    .addChild('Customer','c', '客户')
+    .addChild('Both','s', '分销商/客户')
 
     .up().item('UserType', 'UserType', '用户类型')
     .addChild('Admin','a', '系统管理员')
     .addChild('Tenant','t', '租户')
     .addChild('Customer','c', '终端用户') /*参与活动用户等*/
 
+    .up().item('PosterType', 'PosterType', '海报类型')
+    .addChild('sdActivity','sdap', '分销活动海报')
+    .addChild('sdParticipant','sdpp', '分销参与海报')
+    .addChild('activity','acp', '活动')
+    .addChild('participant','pap', '参与者')
+
     .up().item('PowerType', 'PowerType', '助力活动类型')
     .addChild('RedPacket','rp', '红包助力')
     .addChild('Points','po', '积分助力')
+    .addChild('courses','co', '课程助力')
+
+    .up().item('WechatSiteType', 'WechatSiteType', '公众号类型')
+    .addChild('VerifyOfficialAccount','voa', '认证服务号')
+    .addChild('VerifySubscriptionAccount','vsa', '认证订阅号')
+    .addChild('OfficialAccount','oa', '服务号')
+    .addChild('SubscriptionAccount','sa', '认证订阅号')
 module.exports = registry;

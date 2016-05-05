@@ -1,30 +1,4401 @@
-module.exports=function(){var riot=require('seedriot');riot.tag("activity-createsuccess",'<div if="{!hidden}" id="createsuccess_document" class="activity-createsuccess"> <div><img riot-src="/{env==\'production\'?\'public\':\'web\'}/images/c_01.png"></div> <div><img riot-src="/{env==\'production\'?\'public\':\'web\'}/images/c_02.png"></div> <div class="t-c"> 提示 </div> <div class="t-c" > 已发布的活动可以在“我的活动”中查看和管理。 </div> <div class="footer_placeholder clear"></div> <div class="footer"> <div onclick="{homepage}"></div> <div class="button but2" style="width:36%;" onclick="{jumpActivitypPage}">查看活动</div> <div class="button but2" style="width:36%;" onclick="{jumpNewPage}">发布活动</div> </div> </div>',function(){var i=nest.presentable(this);i.env=__app.settings.env.NODE_ENV;var t=nest.modelable({},{url:__app.settings.api.url+"/pa/"});t._id=this._id=this.opts._id,t.on("fetch",function(t){console.info("activity is fetched"),i.item=t,i.picshow=util.calcImageUrl(i.item),i.update(),s()}),this.showFootterNav=function(i){$(i.target).toggleClass("footer_navs_but_hover");var t=$(i.target).attr("class");t.indexOf("footer_navs_but_hover")<0?$(".footer_navs_wary").slideUp(200):$(".footer_navs_wary").slideDown(200),i.stopPropagation()}.bind(this);var e=function(i){this.trigger("ready",!1),this.update(),this.trigger("ready",!0),this.trigger("view-route-to"),console.log(i),console.log(this._id),this._id=i||this._id,t.set("_id",this._id),t.fetch({action:"open"})}.bind(i),o=function(){this.trigger("ready",!1),t.fetch(this._id,{action:"refresh"})}.bind(i);this.on("open",function(i){console.log(i),console.info("tag activities is opening"),e(i),$(window).scrollTop("0px")}),this.on("mount",function(){console.info("tag activities is mounted")}),this.on("refresh",function(){console.info("tag activity is refreshing"),o()}),this.homepage=function(){riot.route("activity/index")}.bind(this),this.jumpNewPage=function(){riot.route("activity/new")}.bind(this),this.jumpActivitypPage=function(){riot.route("activity/_"+t._id)}.bind(this);var s=function(){var e=util.sharepic(i.item);$("#createsuccess_document").off("click").on("click",function(){$(".footer_navs_wary").slideUp(),$(".footer_navs_but").removeClass("footer_navs_but_hover")}),wx.ready(function(){var o={title:i.item.name,desc:i.item.desc,link:__page.holder().getBaseUrl()+"/index#activity/_"+t._id,imgUrl:e};wx.onMenuShareAppMessage(o);var s={title:i.item.name,desc:i.item.desc,link:__page.holder().getBaseUrl()+"/index#activity/_"+t._id,imgUrl:e,success:function(){_czc.push(["_trackEvent",util.getDc().PA.NAME+"("+util.getDc().PA.ACTION.VIEW+")",i.item.name||"",util.convertToValue(i.item.tags.type).join(",")||""])}};wx.onMenuShareTimeline(s)})};$(window).scrollTop("0px")});
-riot.tag("activity-detail",'<div class="view" if="{!hidden}" id="detail_document"> <mask-loading show="{mask}"></mask-loading> <div class="view" if="{!mask}"> <div if="{debug}"> <a href="#activity/index">返回</a> <a onclick="{refresh}" href="">刷新</a> <a href="#debug/index">调试</a> </div> <div class="activity-detail-banner"> <img riot-src="{picshow}"> <div> <p class="font-size_{status1 ? status1 : \'\'}">{statusName}</p> <span><i>{num ? num :\'0\'}</i></span>人 </div> </div> <div class="activity-detail-title"> <div> <div>{item.name.length > 28 ? item.name.substring(0, 28)+\'...\':item.name}</div> <ul><li each="{name,i in item.tags.type || []}">{__app.enums.TypeTags.values[name]}</li></ul> </div> <div onclick="{likeActivity}"> <img riot-src="/{env==\'production\'?\'public\':\'web\'}/images/{isActivityLike ? \'x_1\':\'x_2\'}.png" class="vertical"> <span class="likesum">{likes}</span> </div> </div> <div class="activity-detail-basic-info"> <div> <div><img riot-src="/{env==\'production\'?\'public\':\'web\'}/images/1_04.png"></div> <div> <p>活动时间</p> <p>{timeString}</p> <p>报名截止 {closingTimeString}</p> </div> </div> <div> <div><img riot-src="/{env==\'production\'?\'public\':\'web\'}/images/1_05.png"></div> <div> <p>活动地点</p> <p>{item.place}</p> </div> </div> <div> <div><img riot-src="/{env==\'production\'?\'public\':\'web\'}/images/1_06.png"></div> <div> <p>发起人</p> <p><img riot-src="{initiatorHeadUrl}" width="32" class="imgradius vertical"> <span id="initiatorNameinitiatorContacts"></span></p> </div> </div> <p class=" immediately" if="{status1==\'a\'}">我要报名</p> </div> <div class="acrivity_Introduction_nav"> <div class="activity_title"> <span></span> 活动介绍 </div> </div> <div id="ac_detail" class="activity-detail-introduce">  </div> <div class="activity-detail-nav" onclick="{operationNav}">  <div class="{(currentIndex == 2) ? \'checked\' : \'\'}" alt="2">队友</div> <div class="{(currentIndex == 1) ? \'checked\' : \'\'}" alt="1">咨询</div> <div class="{(currentIndex == 3) ? \'checked\' : \'\'}" alt="3" id="random_notes_div1">随记</div> </div> <div class="clear"></div> <div class="activity-detail-applications" id="applications" if="{currentIndex==2}"> <div if="{applicShow === true}" > <div if="{isinitiator == false}"> <applications-item class="no_border" each="{applic}" tag="{this}"></applications-item> </div> <div if="{isinitiator == true}"> <div if="{sms_send == 0}"> <applications-item-initiator class="no_border" each="{applic}" tag="{this}"></applications-item-initiator> </div> <div if="{sms_send == 1}"> <form> <div class="check_all" onclick="{allSelect}"><p if="{selectbut == true}">全选</p><p if="{selectbut == false}">取消全选</p></div> <applications-item-initiator-sms class="no_border" each="{applic}" tag="{this}"></applications-item-initiator-sms> </form> </div> </div> </div> <div class="no-content" if="{applicShow === false}"> 没人报名，赶快去抢沙发吧~~~ </div>  </div> <div class="activity-detail-communication" if="{currentIndex==1}"> <div if="{cmtShow === true}"> <communication-index class="no_border" each="{comments}" tag="{this}"></communication-index> </div> <div class="no-content" if="{cmtShow === false}"> 没有内容，你来发表第一条吧~~~ </div> </div> <div class="activity-detail-randomnotes" if="{currentIndex==3}"> <randomnotes-item class="no_border" each="{randomNotes}" tag="{this}"></randomnotes-item> <div class="no-content" if="{randomNoteShow === false}"> 空空如也，你也来晒晒图吧~~~ </div> </div> <div class="activity-detail-recommend-title"> <div> <span></span> 相关推荐 </div> </div> <div> <activity-recommend-item each="{items}" curritem="{this}"></activity-recommend-item> </div> <div class="clear"></div> <div class="two_dimension_botder-top"></div> <div class="two_dimension"> <img riot-src="/{env==\'production\'?\'public\':\'web\'}/images/two_dimension.png"> </div> <div class="clear"></div> <div class="serv t-c" id="detail_serv"> <p>使用过程中如有任何疑问请咨询客服</p> <p class="m_top10_media p2"><img riot-src="/{env==\'production\'?\'public\':\'web\'}/images/1_19.png"> 客服电话：400-680-9072</p> </div>  <div class="apply_wary activity-detail-apply"> <img src="/web/images/bmwhole.png" class="applyclosebtn_img"> <div id="applyclosebtn" onclick="{closeApplyLayer}" ></div> <div> <p if="{fieldIfExist(\'displayName\')}"><span class="vertical set_line_height26">姓名: </span><input type="text" class="userinfo" name="displayName" value="{contact.displayName}" id="displayName" placeholder="" onclick="{preventEvent}"></p> <p if="{fieldIfExist(\'phone\')}"><span class="vertical set_line_height26">手机: </span><input type="tel" class="userinfo" name="phone" id="phone" placeholder="" value="{contact.phone}" onclick="{preventEvent}"></p> <div if="{fieldIfExist(\'gender\')}"> <span class="vertical">性别: </span> <div class="{(contact.gender && contact.gender == \'1\') ? \'sex right1 checked\' : \'sex right1\'}" onclick="{sexSelect}" value="1">女</div> <div class="{(contact.gender && contact.gender == \'1\') ? \'sex right2\' : \'sex right2 checked\'}" onclick="{sexSelect}" value="0">男</div> <input name="gender" type="hidden" id="gender" value="{contact.gender || 0}"> </div> <div class="date_of_birth" if="{fieldIfExist(\'birthday\')}"> <span class="vertical">出生日期:</span> <input type="text" id="birthdayTxt" value="" readonly="readonly" class="userinfo textw1" style="width:70%;"> <input id="birthday" onchange="{birthdayChange}" onclick="{birthdayClick}" onblur="{birthdayBlur}" name="birthday" style="display: inline-block;margin-top:0px;width:70%;" type="date"> <p>请选择 </p> </div> <p if="{fieldIfExist(\'IDCard\')}"><span class="vertical set_line_height26">身份证: </span><input type="text" class="userinfo" name="IDCard" id="IDCard" placeholder="" value="{contact.IDCard}" onclick="{preventEvent}" style="width:75%;"></p> <p if="{fieldIfExist(\'company\')}"><span class="vertical set_line_height26">单位: </span><input type="text" class="userinfo" name="company" id="company" placeholder="" value="{contact.company}" onclick="{preventEvent}"></p> <p if="{fieldIfExist(\'position\')}"><span class="vertical set_line_height26">职位: </span><input type="text" class="userinfo" name="position" id="position" placeholder="" value="{contact.position}" onclick="{preventEvent}"></p> <p if="{fieldIfExist(\'business\')}"><span class="vertical set_line_height26">行业: </span><input type="text" class="userinfo" name="business" id="business" placeholder="" value="{contact.business}" onclick="{preventEvent}"></p> <p if="{fieldIfExist(\'school\')}"><span class="vertical set_line_height26">学校: </span><input type="text" class="userinfo" name="school" id="school" placeholder="" value="{contact.school}" onclick="{preventEvent}"></p> <p if="{fieldIfExist(\'discipline\')}"><span class="vertical set_line_height26">专业: </span><input type="text" class="userinfo" name="discipline" id="discipline" placeholder="" value="{contact.discipline}" onclick="{preventEvent}"></p> <p if="{fieldIfExist(\'class\')}"><span class="vertical set_line_height26">班级: </span><input type="text" class="userinfo" name="class" id="class" placeholder="" value="{contact.class}" onclick="{preventEvent}"></p> <div class="number_of_people"> <span class="vertical">人数: </span> <div value="+" class="add" id="add1" >+</div> <input type="text" class="sum_info" value="1" name="num" id="num" readonly><div value="-" class="minus" id="minus1" >-</div> </div> <input name="applicant" type="hidden" id="applicant" value="" class="userinfo"> <div class="message" if="{fieldIfExist(\'desc\')}"> <table class=""> <tr> <td valign="top" width="35"><span >备注: </span></td> <td valign="top"> <textarea name="desc" id="desc" placeholder="" class="textarea1" onclick="{preventEvent}" rows="2" ></textarea></td> </tr> </table> </div> <p class="presentation">以上信息仅活动发起人可见，不会透露给其他人</p> <div id="applyaddbtn" >提 交</div> </div> <div class="applysubbtn"></div> </div> <div class="body_shadow display_none"></div>  <div class="footer_placeholder clear"></div> <div class="footer" name="btnbox"> <div onclick="{returnPage}"></div> <div class="but1 star_undo button {isActivityStar ? \'star\':\'\'}" onclick="{activityStar}" if="{menu(status1,isinitiator,currentIndex,num).actions.star()}"></div> <div class="recall_but1 button but1" if="{menu(status1,isinitiator,currentIndex,num).actions.recall()}">撤回</div> <div class="button but1" onclick="{editpa}" if="{menu(status1,isinitiator,currentIndex,num).actions.modify()}">修改</div>  <div class="button but1_export" if="{menu(status1,isinitiator,currentIndex,num).actions.export() && sms_send == 0}" onclick="{showSendmail}">导出名单</div> <div class="button but1" onclick="{cancelSend}" if="{menu(status1,isinitiator,currentIndex,num).actions.smsSend() && sms_send == 1}">取消</div> <div class="button butmasstexting" if="{menu(status1,isinitiator,currentIndex,num).actions.massTexting() && sms_send == 0}" onclick="{addSend}">群发短信</div> <a href="#" onclick="javascript:var errorarr = []; errorarr.push(\'请选择要发送的队友\'); util.tipssuccess(0, errorarr[errorarr.length-1], 1);return false;" class="send" if="{menu(status1,isinitiator,currentIndex,num).actions.smsSend() && sms_send == 1}"><div class="button but2">发送</div></a>  <div class="immediately button but2 {(menu(status1,isinitiator,currentIndex,num).len==0) ? \'randomnote\' : \'\'} {(menu(status1,isinitiator,currentIndex,num).len==3) ? \'butmasstexting_width1\' : \'\'} {(menu(status1,isinitiator,currentIndex,num).len==1) ? \'publish_width1\' : \'\'}" if="{menu(status1,isinitiator,currentIndex,sms_send).actions.application()}">我要报名</div>  <div class="release_but1 button but2" if="{menu(status1,isinitiator,currentIndex,num).actions.modify()}">立即发布</div>  <div class="button randomnote" onclick="{addRandomNote}" if="{menu(status1,isinitiator,currentIndex,num).actions.randomNote()}">添加随记</div>  <div class="button publish {(menu(status1,isinitiator,currentIndex,num).len==2) ? \'publish_width1\' : \'\'} {(menu(status1,isinitiator,currentIndex,num).len==3) ? \'publish_width1\' : \'\'} {(menu(status1,isinitiator,currentIndex,num).len == 4) ? \'butmasstexting_width1\' : \'\'}" onclick="{showattention_by_publish}" if="{menu(status1,isinitiator,currentIndex,num).actions.publish()}">发布活动</div>  <div class="interflow_footer" if="{menu(status1,isinitiator,currentIndex,consult).actions.comment()}"> <input type="text" name="interflow_content" id="interflow_content" placeholder="说说你的想法..." onclick="{interruptedBubbling}" value=""> <span onclick="{addComment}">发送</span> </div> <div class="interflow_footer" if="{menu(status1,isinitiator,currentIndex,consult).actions.replyComments()}"> <input type="text" name="interflow_reply" id="interflow_reply" placeholder="" onclick="{interruptedBubbling}"> <span onclick="{replyComment}">发送</span> </div> </div> </div> <div class="body_shadow_pull display_none" onclick="{hideBodyShadowAll_detail}"></div> <div class="wechat-concern display_none"> <img riot-src="/{env==\'production\'?\'public\':\'web\'}/images/closebtn2.png" class="closebtn2" onclick="{hideBodyShadowAll_detail}"> <p class="t-c inde_font">关注“快乐种子”后，可以接收活动<br>提醒和使用其他更多服务！</p> <div if="{!fromButtonClick}"> <div class="but_left fl t-c" onclick="{openWxhref}">关注，支持一下</div> <div class="but_right fl t-c" onclick="{hideBodyShadowAll_detail}">残忍拒绝:(</div> </div> <button class="atten_but border_radius" onclick="{openWxhref}" if="{fromButtonClick}">立即关注</button> </div> <div class="together display_none together_detail" id="clickXHidden" onclick="{hideBodyShadowAll_detail}"> <img src="/public/images/shareInfo1.png" class="together_img"> </div> <div class="sendmail"> <input type="email" name="mailboxName" value="{contact.email}" id="mailboxName" placeholder="请输入您的邮箱"> <div onclick="{exportmail}">发送到邮箱</div> <div onclick="{hideBodyShadowAll_detail}">取消</div> </div> </div>',"activity-detail { } activity-detail input{ background:transparent; } activity-detail .typetagsul{ } activity-detail .typetagsul li{ float: left;line-height:18px; } activity-detail .imgPreviewer ul li{ float:left; }",function(){function t(){var t,i,e,n=p.guest,a=p.randomNotes;for(t=0,i=a.length;i>t;t+=1)if(a[t]._id===n){e=a[t],e&&e.pics&&e.pics.length>0&&util.wedgt.imgPreviewer($("#wary"),e.pics,{msg:e.desc});break}}function i(){if(p.randomNotes[0]){var t=p.randomNotes[0];wx.ready(function(){var i,e,n,a,s=t,o=p;if(p.shareinfo_detail(),s&&s.pics[0]&&s.pics[0]){var c={};c.images=[],c.images[0]={meta:s.pics[0].meta,url:s.pics[0].url},i="http://"+util.sharepic(c)}else i="/public/images/pabanner.png";e={title:'我在参加"'+o.item.name+'"活动,给小伙伴直播一下~~~~',desc:s.desc||o.item.name,link:__page.holder().getBaseUrl()+"/index#activity/_"+o._id+"?guest="+t._id,imgUrl:i},n=Object.create(e),n.success=function(){_czc.push(["_trackEvent",util.getDc().PA.NAME+"("+util.getDc().PA.ACTION.SHARE+")",o.item.name||"",util.convertToValue(o.item.tags.type).join(",")||"",0])},a=Object.create(e),a.success=function(){_czc.push(["_trackEvent",util.getDc().PA.NAME+"("+util.getDc().PA.ACTION.SHARE+")",o.item.name||"",util.convertToValue(o.item.tags.type).join(",")||"",0])},wx.onMenuShareAppMessage(n),wx.onMenuShareTimeline(a)})}}function e(){$(".body_shadow").hide(),$(".apply_wary").hide()}function n(){$("#num").attr("value",1),document.getElementById("desc")&&(document.getElementById("desc").value="")}function a(){for(var t={},i=p.applicationFields,e=0;e<i.length;e++)t[i[e].name]=document.getElementById(i[e].name).value;return t.applicant=p.userId,t.num=document.getElementById("num").value,t}function s(){for(var t=a(),i=[],e=util.validator(),n=Object.keys(t),s=0;s<n.length;s++)switch(n[s]){case"displayName":e.empty(t.displayName)&&i.push("请输入姓名！");break;case"phone":e.empty(t.phone)&&i.push("请输入电话号码！");break;case"birthday":e.empty(t.birthday)&&i.push("请输入出生日期！");break;case"IDCard":e.empty(t.IDCard)&&i.push("请输入身份证号码！");break;case"company":e.empty(t.company)&&i.push("请输入单位名称！");break;case"position":e.empty(t.position)&&i.push("请输入职位名称！");break;case"business":e.empty(t.business)&&i.push("请输入行业名称！");break;case"school":e.empty(t.school)&&i.push("请输入学校！");break;case"class":e.empty(t.class)&&i.push("请输入班级！");break;case"discipline":e.empty(t.discipline)&&i.push("请输入专业名称！")}return i.length>0?(i.pop(),!1):(h.execute({id:p.id,temp:t}),void 0)}function o(){p.subscribe||void 0==util.getCookie("showAttentionPrompt")&&(showattention_detail(),util.setCookie("showAttentionPrompt","true",1))}function c(){$(".body_shadow_pull").hide(),$(".wechat-concern").hide(),$(".together_detail").hide(),$(".sendmail").hide()}function l(t){var i="add"+t,e="minus"+t,n="num";$("#"+i).off("click"),$("#"+i).click(function(){var t=Number($("#"+n).attr("value"));$("#"+n).attr("value",++t),console.info("+="+t)}),$("#"+e).off("click"),$("#"+e).click(function(){var t=Number($("#"+n).attr("value"));t>1?$("#"+n).attr("value",--t):$("#"+n).attr("value",t),console.info("-="+t)})}function r(){$("#interflow_content").blur(),$("#interflow_reply").blur(),$(".communication-index").parent().removeClass("com_wary_background_color"),p.consult=0,p.update()}function d(t){v.execute(p.id,t)}var u=this.app=this.opts.app,p=nest.presentable(this),m=domain.action("sendMailActivities"),h=domain.action("applyActivity"),v=domain.action("modifyStatusActivities"),f=domain.action("loadContact"),g=domain.action("replyActivity"),_=domain.action("applicantLoadMore");p.env=__app.settings.env.NODE_ENV,p.debug=__app.settings.env.debug,p.menu=function(t,i,e,n){var a=this,s=0,t=util.events._valueToKey(__app.enums.ProductActivityStatus.names)[t],o=__page.browser.Android;a.actions={publish:function(){return("Ready"===t||"Completed"===t||"Acting"==t||"Reviewing"===t||"Draft"==t||"Cancelled"==t&&!i)&&(0==e||2==e)},randomNote:function(){return 3==e},comment:function(){return 1==e&&0==n},replyComments:function(){return 1==e&&1==n},modify:function(){return("Draft"==t||"Cancelled"==t)&&i&&(0==e||2==e)},recall:function(){return"Applying"==t&&i&&0==n&&(0==e||2==e)},application:function(){return"Applying"==t&&(0==e||2==e)&&0==n},star:function(){return("Ready"===t||"Completed"===t||"Acting"==t||"Applying"==t)&&(!i||n>0)&&(0==e||2==e&&!i)},massTexting:function(){return"Draft"!=t&&o&&i&&2==e&&n>0},"export":function(){return"Draft"!=t&&i&&2==e&&n>0},smsSend:function(){return"Draft"!=t&&o&&i&&2==e&&n>0}};for(var c in a.actions)a.actions[c]()&&s++;return{len:s,actions:a.actions}};var y="";y=null==__page.user.displayName?"":"匿名"==__page.user.displayName?"":__page.user.displayName,p.contact={displayName:y},p.dName=y,p.subscribe=!0,p.wxhref=util.getWxhref(),p.fromButtonClick=!1;var b=domain.action("likeActivity"),w=domain.action("starActivity"),k=domain.action("commentActivity"),x=nest.modelable({},{url:__app.settings.api.url+"/pa/"}),I={sort:{priorityRank:-1,statusrank:1,startTime:1},page:{size:5,no:1},conditions:{status:{$in:["a","re","ac","co"]},reviewStatus:{$in:["t","d"]},"tags.type":{},privateFlag:!1}};__page.tenant&&(I.conditions.tenantId=__page.tenant);var A=this.collection=nest.collectable({},{url:__app.settings.api.url+"/pa/find",filter:I});__page.tenant&&(I.conditions.tenantId=__page.tenant),A.on("fetch",function(t){for(var i=t.length,e=!1,n=0;i>n;n++)if(t[n]._id==p._id){t.splice(n,1),e=!0;break}e||t.pop(),p.update({items:t})}),p.footershow=!0,x._id=this._id=this.opts._id,x.on("fetch",function(n){console.info("activity is fetched"),p.item=n,p.num=z(n),p.highlightsArray=O(n.desc.split("\n")),p.applic=j(n.applications),p.randomNotes=n.randomNotes?n.randomNotes:"",p.cmt=n.comments,p.status1=n.status,p.reviewStatus=n.reviewStatus,p.applicShow=p.applic.length?!0:!1,p.applicLoadMoreShow=n.applications.length>10?!0:!1,p.randomNoteShow=p.randomNotes.length?!0:!1,p.cmtShow=p.cmt.length?!0:!1,p.id=n._id,p._comments=n.comments,N(),p.userId=window.__page.user.id,p.replyTo="",p.replyToName="",p.initiator=n.initiator,p.picshow=util.calcImageUrl(p.item),p.startTime=util.dateFormat(new Date(n.startTime),"yyyy/MM/dd"),p.startTime_Week=util.getDateWeek(new Date(n.startTime)),p.endTime=util.dateFormat(new Date(n.endTime),"yyyy/MM/dd"),p.endTime_Week=util.getDateWeek(new Date(n.endTime)),p.closingTime=util.dateFormat(new Date(n.closingTime),"yyyy/MM/dd"),p.closingTime_Week=util.getDateWeek(new Date(n.closingTime)),p.timeString=p.endTime==p.startTime?p.startTime+" "+p.startTime_Week:p.startTime+" "+p.startTime_Week+" - "+p.endTime+" "+p.endTime_Week,p.closingTimeString=p.closingTime+" "+p.closingTime_Week,p.likes=n.meta.likes,p.stars=n.meta.stars,p.applicationFields=n.applicationFields,p.isinitiator=p.userId==p.initiator?!0:!1,p.currentIndex=2,p.consult=0,p.sms_send=0,p.isActivityLike=__page.user.meta.pa.likes[p.id],p.isActivityStar=__page.user.meta.pa.stars[p.id],p.statusName="r"==p.reviewStatus?__app.enums.ReviewStatus.values[p.reviewStatus]:__app.enums.ProductActivityStatus.values[p.status1],p.selectbut=!0,p.initiatorNameinitiatorContact=p.item.initiatorName+" "+p.item.initiatorContact,p.initiatorHeadUrl=p.item.userforHeadUrl.headImgUrl?p.item.userforHeadUrl.headImgUrl:"/public/images/head.png",p.update(),p.trigger("ready",!0),p.trigger("view-route-to"),J(util.replaceImgTemplate(n.desc)),$("#initiatorNameinitiatorContacts").text(p.initiatorNameinitiatorContact),R(),K(),H(),"true"===p.shareflag&&i(),p.guest?(p.currentIndex=3,p.update(),"true"!=p.guest&&t()):$(window).scrollTop(0),o(),console.log("cookie "+util.getCookie("applicants")),e()});var T={page:{size:10,no:1},finish:!1};this.applicantFetch=function(){0==T.finish&&_.execute(p.id,T)}.bind(this);var S=function(t){t.length>=T.page.size?(T.page.no++,T.finish=!1):T.finish=!0,p.update({applic:j(t)})};p.fieldIfExist=function(t){for(var i=!1,e=0,n=p.applicationFields.length;n>e;e++)if(p.applicationFields[e].name==t){i=!0;break}return i},this.editpa=function(){riot.route("activity/edit/_"+p.id)}.bind(this),this.exportmail=function(){var t=this._id,i=$("#mailboxName").val().trim(),e=p.item.name,n=/^.+@.+\..{2,3}$/;return n.test(i)?(m.execute({id:t,mailboxName:i,name:e}),void 0):util.tipssuccess(1,"邮箱格式错误",1)}.bind(this);var N=function(){var t=p._comments.length;p.comments=[];for(var i=0;t>i;i++)"r"!=p._comments[i].reviewStatus&&p.comments.push(p._comments[i])},D=function(t){this.trigger("ready",!1),p.shareflag=t.share,p.guest=t.guest||null,this._id=t.id||this._id,x.set("_id",this._id),x.fetch({action:"open"}),A.fetch()}.bind(p),C=function(){this.trigger("ready",!1),x.fetch(this._id,{action:"refresh"})}.bind(p),E=function(t){p.isActivityLike||(t>p.likes?(_czc.push(["_trackEvent",util.getDc().PA.NAME+"("+util.getDc().PA.ACTION.COLLECT+")",p.item.name||"",util.convertToValue(p.item.tags.type).join(",")||"",t.result]),p.isActivityLike=!0,__page.user.meta.pa.likes[p.id]=(new Date).getTime()):(p.isActivityLike=!1,delete __page.user.meta.pa.likes[p.id]),p.likes=t,p.update())},M=function(t){t>p.stars?(_czc.push(["_trackEvent",util.getDc().PA.NAME+"("+util.getDc().PA.ACTION.LIKES+")",p.item.name||"",util.convertToValue(p.item.tags.type).join(",")||"",t]),p.isActivityStar=!0,util.tipssuccess(0,"收藏成功!",1),__page.user.meta.pa.stars[p.id]=(new Date).getTime()):(p.isActivityStar=!1,delete __page.user.meta.pa.stars[p.id]),p.stars=t,p.update()},P=function(t){$("#interflow_content").val(""),$("#interflow_content").attr("placeholder","说说你的想法..."),p.comments=t,p.cmtShow=p.comments.length?!0:!1,p.update()},B=function(t){$("#interflow_content").val(""),$("#interflow_content").attr("placeholder","说说你的想法..."),p.comments=t,p.cmtShow=p.comments.length?!0:!1,p.update()},U=function(){util.tipssuccess(0,"邮件已发送！",1),c()},F=function(t){_czc.push(["_trackEvent",util.getDc().PA.NAME+"("+util.getDc().PA.ACTION.APPLICATE+")",p.item.name||"",util.convertToValue(p.item.tags.type).join(",")||"",t.length]),util.tipssuccess(0,"报名成功",1),p.applic=j(t),p.applicShow=p.applic.length?!0:!1;for(var i=0,a=0;a<p.applic.length;a++)i+=p.applic[a].num;p.num=i,p.update(),e(),n()},W=function(){var t=this.inputs[1];"recall"==t&&util.tipssuccess(0,"撤回成功!",1),"recall"==t?x.fetch():riot.route("activity/createsuccess/_"+p.id)},L=function(){var t=this.inputs[1],i=[];"recall"==t?i.push("撤回失败!"):"publish"==t&&i.push("发布失败!"),util.tipssuccess(1,i[i.length-1],1),i.pop()};this.on("mount",function(){console.info("tag activity is mounted"),b.onDone(E),w.onDone(M),g.onDone(P),k.onDone(B),m.onDone(U),h.onDone(F),_.onDone(S),v.onDone(W),v.onFail(L)}),this.on("unmount",function(){console.info("tag activity is mounted"),b.offDone(E),w.offDone(M),g.offDone(P),k.offDone(B),m.offDone(U),h.offDone(F),_.offDone(S),v.offDone(W),v.offFail(L)}),this.on("leave",function(){util.wedgt.imgPreviewer.refresh($("#wary"))}),this.on("open",function(t){console.info("tag activity is opening"),x&&x.fetched()&&H(),D(t)}),this.on("leave",function(){p.mask=!0,p.update()}),this.on("reenter",function(){p.mask=!1,p.update()}),this.on("refresh",function(){console.info("tag activity is refreshing"),C()}),this.on("show",function(t){t&&__page.holder().setTitle(p.item.name),$(window).scrollTop("0px")}),this.refresh=function(){C()}.bind(this);var z=function(t){for(var i=0,e=0;e<t.applications.length;e++)i+=t.applications[e].num;return i},O=function(t){for(var i=0;i<t.length;i++)t[i]&&(t[i]=t[i].replace(/ /g,"&nbsp;"));return t},j=function(t){for(var i=0,e=t.length;e>i;i++)t[i].birthday&&(t[i].birthday=util.dateFormat(new Date(t[i].birthday),"yyyy/MM/dd")),t[i].gender&&(t[i].gender="0"==t[i].gender?"男":"女");return t},R=function(){$(".img_home").click(function(){$(".home_gy").removeClass("home_gy_set1"),$(".home_gy").addClass("home_gy_set")}),$(".home_close").click(function(){$(".home_gy").removeClass("home_gy_set"),$(".home_gy").addClass("home_gy_set1")}),l(1),$(".recall_but1").off("click").on("click",function(){d("recall")}),$(".release_but1").off("click").on("click",function(){d("publish")}),$(".immediately").off("click").on("click",function(){p.fromButtonClick=!0,p.update(),p.subscribe?(Q(),q()):showattention_detail()}),$(".body_shadow").off("click").on("click",function(){}),$("#applyaddbtn").off("click"),$("#applyaddbtn").on("click",function(){s()})},H=function(){var t=util.sharepic(p.item);wx.ready(function(){wx.onMenuShareAppMessage({title:p.item.name,desc:util.htmlParser.parse(p.item.desc),link:__page.holder().getBaseUrl()+"/#activity/_"+x._id,imgUrl:t,type:"",dataUrl:"",success:function(){_czc.push(["_trackEvent",util.getDc().PA.NAME+"("+util.getDc().PA.ACTION.SHARE+")",p.item.name||"",util.convertToValue(p.item.tags.type).join(",")||"",0])},cancel:function(){}}),wx.onMenuShareTimeline({title:p.item.name,link:__page.holder().getBaseUrl()+"/index#activity/_"+x._id,imgUrl:t,success:function(){_czc.push(["_trackEvent",util.getDc().PA.NAME+"("+util.getDc().PA.ACTION.SHARE+")",p.item.name||"",util.convertToValue(p.item.tags.type).join(",")||"",1])},cancel:function(){}})})};this.operationNav=function(t){p.currentIndex=$(t.target).attr("alt"),p.update()}.bind(this),this.showFootterNav=function(t){$(t.target).toggleClass("footer_navs_but_hover");var i=$(t.target).attr("class");i.indexOf("footer_navs_but_hover")<0?$(".footer_navs_wary").slideUp(100):$(".footer_navs_wary").slideDown(100),t.stopPropagation()}.bind(this),this.showattention_by_publish=function(){p.fromButtonClick=!0,p.subscribe?riot.route("activity/new"):showattention_detail()}.bind(this),this.showattention_detail=function(){var t=$(window).scrollTop(),i=$(window).height(),e=$("body").height(),n=$(".wechat-concern").height()-100,a=i>e?i:e,s=t+i/2-n/2-100;$(".body_shadow_pull").show().css("height",a+"px").css("z-index","699"),$(".wechat-concern").show().css("top",s+"px")}.bind(this);var V=function(){var t=$(window).scrollTop(),i=$(window).height(),e=$("body").height(),n=i>e?i:e;$(".together_detail").show().css("top",t+"px").css("z-index","700"),$(".body_shadow_pull").show().css("height",n+"px").css("z-index","699")};p.shareinfo_detail=V,this.hideBodyShadowAll_detail=function(){$(".body_shadow_pull").hide(),$(".wechat-concern").hide(),$(".together_detail").hide(),$(".sendmail").hide()}.bind(this),this.openWxhref=function(){$(".body_shadow_pull").hide(),$(".wechat-concern").hide(),util.setCookie("attentionUrl","activity/_"+p.id,1),window.location=p.wxhref}.bind(this),this.preventEvent=function(t){t.stopPropagation()}.bind(this),this.likeActivity=function(){p.isActivityLike?util.tipssuccess(0,"已点赞！",1):b.execute(p.id)}.bind(this),this.activityStar=function(){w.execute(p.id)}.bind(this);var q=function(){var t=$(window).scrollTop(),i=$(window).height(),e=$("body").height(),n=$(".apply_wary").height()-100,a=$(".apply_wary").height(),s=i>e?i:e,o=t+i/2-n/2-20;a>i&&(o=10,$(window).scrollTop("0px")),$(".body_shadow").show().css("height",s+"px"),$(".body_shadow_pull").hide(),$(".attention_wary").hide(),$(".apply_wary").show().css("top",o+"px")};this.sexSelect=function(t){$(".sex").removeClass("checked"),$("#gender").val($(t.target).attr("value")),$(t.target).addClass("checked")}.bind(this),this.closeApplyLayer=function(){e(),n()}.bind(this),this.addRandomNote=function(){util.setCookie("detailId",p.id,30),riot.route("activity/add-randomnotes")}.bind(this),this.returnPage=function(){riot.route(u.history.length>0?u.history.pop():"activity/index")}.bind(this),this.changeHeight=function(t){var i=($(t.target)[0].value,$(t.target).width()),e=14*$(t.target)[0].value.length,n=Math.floor(e/i);if(console.log("length: "+$(t.target)[0].value.length),console.log("textWidth: "+i),console.log("infoWidth: "+e),console.log("infoWidth % textWidth: "+n),n>=1){n++;var a=32*n,s=40*n;$(t.target).height(a),$(".footer").height(s),$(".footer_placeholder").height(s),console.log("inputHeight:"+a),console.log("footerHeight:"+s),console.log(n)}}.bind(this),this.showSendmail=function(){Q();var t=$(window).height(),i=$("body").height(),e=t>i?t:i;$(".body_shadow_pull").show().css("height",e+"px").css("z-index","699"),$(".sendmail").show()}.bind(this);var K=function(){$("#detail_document").off("click").on("click",function(){$(".footer_navs_wary").slideUp(),$(".footer_navs_but").removeClass("footer_navs_but_hover"),r()})};this._resetFooterStyle=function(){r()}.bind(this),this._MassTextingURL=function(){for(var t="",i=$(".activity-detail-applications .add_info_checked"),e=$(".send"),n=0,a=i.length;a>n;n++){var s=i[n];t=0==n?$(s).attr("phone"):t+";"+$(s).attr("phone")}""!=t?(e.attr("href","sms:"+t),e.attr("onclick","")):(e.attr("href","#"),e.attr("onclick","javascript:var errorarr = []; errorarr.push('请选择要发送的队友');  util.tipssuccess(0, errorarr[errorarr.length-1], 1);return false;"))}.bind(this),this.allSelect=function(){p.selectbut?($(".add_info_checkbox_div1").addClass("add_info_checked"),p.selectbut=!1):($(".add_info_checkbox_div1").removeClass("add_info_checked"),p.selectbut=!0),p.update(),this._MassTextingURL()}.bind(this),this.cancelSend=function(){var t=$(".send");p.sms_send=0,$(".add_info_checkbox_div1").removeClass("add_info_checked"),p.selectbut=!0,p.update(),t.attr("href","#"),t.attr("onclick","javascript:var errorarr = []; errorarr.push('请选择要发送的队友');  util.tipssuccess(0, errorarr[errorarr.length-1], 1);return false;")}.bind(this),this.addSend=function(){p.sms_send=1,p.update()}.bind(this),this.interruptedBubbling=function(t){t.stopPropagation()}.bind(this),this.addComment=function(){var t={comment:"",commenter:"",commenterName:"",replyTo:"",replyToName:""};t.comment=document.getElementById("interflow_content").value,t.commenter=p.userId;var i=[],n=util.validator();return n.empty(t.comment)?(util.tipssuccess(1,i[i.length-1],1),!1):(k.execute({id:p.id,data:t}),e(),!0)}.bind(this),this.replyComment=function(){var t={comment:"",commenter:"",commenterName:"",replyTo:"",replyToName:""};t.comment=document.getElementById("interflow_reply").value;var i=[],e=util.validator();if(e.empty(t.comment)&&i.push("请输入回复内容！"),i.length>0)return util.tipssuccess(1,i[i.length-1],1),void 0;var n=":"+t.comment;return t.comment=n,t.commenter=p.userId,t.replyTo=p.replyTo,t.replyToName=p.replyToName,g.execute({id:p.id,data:t}),!0}.bind(this);var X=p.newdate=new Date(__page.servertime);p.on("toabsolute",function(){p.btnbox.style.position="absolute",p.btnbox.style.bottom="0px"}),p.on("tofixed",function(){p.btnbox.style.position="fixed",p.btnbox.style.bottom="0px"});var G=navigator.userAgent;G.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)&&(this.brithdayClick=function(){p.trigger("toabsolute")}.bind(this),this.birthdayBlur=function(){p.trigger("tofixed")}.bind(this)),this.birthdayChange=function(){var t=document.querySelector("#birthday"),i=document.querySelector("#birthdayTxt");return""==t.value&&util.getBrowser().android===!1?(t.value=X,i.value=util.dateFormat(X,"yyyy/MM/dd"),!1):(i.value=util.dateFormat(new Date(t.value),"yyyy/MM/dd"),void 0)}.bind(this);var J=function(t){$("#ac_detail").html(t)},Q=function(){var t=f.newInvocation(__page.user.id);t.onDone(function(t){if(t&&t.contact&&(p.contact=t.contact,p.update(),document.querySelector("#birthday")&&p.contact.birthday)){var i=document.querySelector("#birthday"),e=document.querySelector("#birthdayTxt");i.value=util.dateFormat(new Date(p.contact.birthday),"yyyy-MM-dd"),e.value=util.dateFormat(new Date(p.contact.birthday),"yyyy-MM-dd")}}).execute()}});
-riot.tag("activity-edit",' <div id="addactbody" if="{!hidden}"> <div class="activity-new-statement"> <p>提醒：活动内容包含违法、反动信息或者冒用他人/组织的名 义发布活动，平台有权删除其活动并提交公安机关处理</p> <img riot-src="/{env}/images/closebtn3.png" class="closebtn3" onclick="{closeStatement}"> </div> <form id="actform"> <div class="activity-new-basic-info"> <section> <div class="secleft"><img riot-src="/{env}/images/new1.png"></div> <div class="secright"> <input type="text" onfocus="{inputonfocus}" onblur="{inputonblur}" name="name" value="" placeholder=""> </div> </section> <section class="tag-type"> <div class="secleft"><p class="p1"><img riot-src="/{env}/images/new2.png"></p> <p class="p2" onclick="{showSelectType}">类型标签</p></div> <div class="secright"> <ul> <li each="{name,i in typetags}" data="{name}" class="{tagdefault:true,checked:parent.currtypetags.indexOf(name)>=0} {(i==3||i==7)?\'no_m_left\':\'\'}" onclick="{parent.selecttags}"> <i>{__app.enums.TypeTags.values[name]}</i> </li> </ul> </div> </section> <section class="activity-time"> <div class="secleft"><img riot-src="/{env}/images/new3.png"></div> <div class="secright"> <div class="fl div_left">活动时间</div> <div class="fl div_right"> <div id="startTimebtn" class="datediv"> <input type="text" id="startTimetxt" value="00/00" readonly="readonly"> <input id="startTime" onchange="{startchange}" onclick="{dateclick}" onblur="{dateblur}" name="startTime" style="display: inline-block;margin-top:0px;" type="date"> </div> <i style="display:block;position:absolute;top:20px;left:43%;width:20px;height:1px;border-top:1px solid #ccc"></i> <div id="endTimebtn" class="datedivright"> <input type="text" id="endTimetxt" value="00/00" readonly="readonly"> <input id="endTime" onchange="{endchange}" onclick="{dateclick}" onblur="{dateblur}" name="endTime" style="display: inline-block;margin-top:0px" type="date"> </div> </div> </div> </section> <section> <div class="secleft"><img riot-src="/{env}/images/new4.png"></div> <div class="secright"> <div></div> <input type="text" onfocus="{inputonfocus}" onblur="{inputonblur}" name="place" value="" placeholder=""> </div> </section> <section class="initiator"> <div class="secleft"><img riot-src="/{env}/images/new5.png"></div> <div class="secright"> <div class="fl div_left">发起人</div> <div class="fl div_right"> <div style="width:30%;float: left;line-height: 35px;"><input type="text" onfocus="{inputonfocus}" style="font-size:14px;" onblur="{inputonblur}" name="initiatorName" placeholder="姓名"></div> <div style="width:70%;float:right;position:relative;line-height: 35px;"><span class="borderleft"></span><input type="text" onfocus="{inputonfocus}" onblur="{inputonblur}" style="font-size:14px;" name="initiatorContact" placeholder="联系方式"></div> </div> </div> </section> <section class="deadline"> <div class="secleft"><img riot-src="/{env}/images/new6.png"></div> <div class="secright"> <div class="fl div_left">报名截止</div> <div class="fl div_right"> <div class="datediv datediv360"> <input id="closingTimebtn" type="text" attr="closingTime" value="00/00" readonly="readonly"> <input id="closingTime" onchange="{closingchange}" onclick="{dateclick}" onblur="{dateblur}" name="closingTime" style="display: inline-block;" type="date"> </div> </div> </div> </section> </div> <div class="activity-new-activity-introduction-title"> <div class="activity_title"> <span></span> 活动介绍 </div> </div> <div> <div id="editor"></div>               </div> <div class="banner" onclick="{uploadimg}" if="{test}" style="position: relative"> <div style="position: absolute;bottom:10px;right:10px;width:24px;height:24px;z-index: 100;"> <img style="width:24px;height:24px" riot-src="/{env}/images/5.0.8.png"> </div> <img style="width: 100%;" riot-src="{picshow}" class="imgsetwidth"> </div> <div class="banner" onclick="{uploadimg}" if="{!test}" style="position: relative"> <div style="position: absolute;bottom:10px;right:10px;width:24px;height:24px;z-index: 100;"> <img style="width:24px;height:24px" riot-src="/{env}/images/5.0.8.png"> </div> <img id="banner" style="width: 100%;" riot-src="{imgsrc}"> </div> <div class="activity-new-more-options-title activity-new-more-options-title-checked" onclick="{moreOptions}"> <div class="activity_title"> <span></span> 更多选项 </div> </div> <div class="options activity-new-more-options" > <div class="new_hint_div1_div2"> <p>只允许被邀请的朋友参与</p> <div class="but_wary" id="but_wary"> <p id="but_radius"></p> </div> </div> <div class="user_options"> <div class="new_hint_div1_div3"> <p>报名填写项</p> </div> <ul onclick="{userOptions}"> <li each="{name,i in appFieldNameArr}" data="{name}" class="{parent.fieldIfSel(name) ? \'checked\' : \'\'}">{__page.appFields[name].title}</li> </ul> </div> </div> <div class="clear"></div> <div class="activity-new-presentation"> <div> <p class="new_hint_p1">提示:</p> <p class="new_hint_p2">请确认活动内容后再发布!因为一旦发布并且有用户报名后,活动就不允许取消和修改了。</p> </div> </div> <div class="clear"></div> <div class="serv t-c"> <p>使用过程中如有任何疑问请咨询客服</p> <p class="m_top10_media p2"><img riot-src="/{env}/images/1_19.png"> 客服电话：400-680-9072</p> </div> <div class="footer_placeholder"></div> <div class="footer" name="btnbox"> <div onclick="{homepage}"></div> <div class="button but1" style="width:27%;" onclick="{submitdraft}">保存草稿</div> <div class="button but2" style="width:45%;" onclick="{publishpa}">立即发布</div> </div> </form> </div>',function(){var t=nest.presentable(this);t.env="production"==__app.settings.env.NODE_ENV?"public":"web",console.log("env="+t.env);var i={localIds:[],fileNames:[],serverIds:[],refresh:function(){this.localIds=[],this.serverIds=[],this.fileNames=[]}},e=domain.action("multiImgUpload"),a=new util.wedgt.WcEditor({modules:{Bold:!0,Color:!0,Img:!0,TextAlign:!0},container:"editor"}),s=[],n=[],o=[],l={localIds:[],serverIds:[],refresh:function(){this.localIds=[],this.serverIds=[]}},d=this.model=nest.modelable({},{url:__app.settings.api.url+"/pa/"}),r=this.imgmodel=nest.modelable({},{url:__app.settings.api.url+"/img/"}),c=this.startTimetxt,u=this.startTime,v=this.endTimetxt,p=this.endTime,m=this.closingTimebtn,g=this.closingTime,h=this.name,f=this.place,b=__page.user.id,y=this.initiatorName,_=this.initiatorContact,w=(this.actform,this.btnbox),x=new Date(__page.servertime);t.appFields=__page.appFields,t.appFieldNameArr=Object.keys(t.appFields);var I=__app.enums.TypeTags.values;delete I.ex,delete I.tn,t.typetags=Object.keys(I),t.actobj={txtareastr:"【活动说明】</br></br>【活动日程】</br>【费用说明】自行消费</br>【集合时间】</br>【集合地点】</br>【交通方式】</br>【报名说明】</br>1、直接系统报名，报名名单中显示用户名字即报名成功；</br>2、本活动不限名额。/本活动限x人，以报名先后确认名额。</br>【温馨提示】</br>1、</br>2、</br>",initPage:function(i){c.value=i&&i.startTime&&util.dateFormat(new Date(i.startTime),"MM/dd")||util.dateFormat(x,"MM/dd"),v.value=i&&i.endTime&&util.dateFormat(new Date(i.endTime),"MM/dd")||util.dateFormat(x,"MM/dd"),m.value=i&&i.closingTime&&util.dateFormat(new Date(i.closingTime),"MM/dd")||util.dateFormat(x,"MM/dd"),h.value=i&&i.name||"",u.value=i&&i.startTime&&util.dateFormat(new Date(i.startTime),"yyyy-MM-dd")||util.dateFormat(x,"yyyy-MM-dd"),p.value=i&&i.endTime&&util.dateFormat(new Date(i.endTime),"yyyy-MM-dd")||util.dateFormat(x,"yyyy-MM-dd"),g.value=i&&i.closingTime&&util.dateFormat(new Date(i.closingTime),"yyyy-MM-dd")||util.dateFormat(x,"yyyy-MM-dd"),f.value=i&&i.place||"",b=__page.user.id,y.value=i&&i.initiatorName||"",_.value=i&&i.initiatorContact||"",t.currtypetags=i&&i.tags.type||[],t.applicationFields=i&&i.applicationFields||[],t.acDesc=util.replaceImgTemplate(i.desc),n=i.introImgs},getJsondata:function(){var i={name:h.value.trim(),startTime:u.value||x,endTime:p.value||x,place:f.value.trim(),initiator:__page.user.id,initiatorName:y.value.trim(),initiatorContact:_.value.trim(),closingTime:g.value.trim()||x,pics:[],desc:a.getContentHtml()&&util.events.htmlToTemplate(a.getContentHtml())||t.actobj.txtareastr,applicationFields:q()};return i.tags={region:"",custom:"",type:t.currtypetags||[]},i},validatefield:function(i){var e=[];return T.empty(i.name)&&e.push("活动名称不能为空"),t.currtypetags.length<=0&&e.push("请选择类型"),T.empty(i.place)&&e.push("活动地点不能为空"),T.empty(i.initiatorName)&&e.push("请填写发起人姓名"),T.empty(i.initiatorContact)&&e.push("请填写发起人联系方式"),util.compareDate(util.dateFormat(x,"yyyy-MM-dd"),u.value)&&e.push("开始时间不能早于今天"),util.compareDate(u.value,p.value)&&e.push("结束时间不能早于开始时间"),util.compareDate(g.value,u.value)&&e.push("截止时间不能晚于开始时间"),e},submitform:function(t){var l=this;i.refresh(),s=[],o=[];var r=$(util.events._wrapdiv(a.getContentHtml()));r.find("img").each(function(t){for(var e=!1,t=0,a=n.length;a>t;t++){var s=$(this).attr("fileName");if(n[t].name===s){o.push(n[t]),e=!0;break}}e||(i.localIds.push($(this).attr("localid")),i.fileNames.push($(this).attr("fileName")))}),i.localIds.length>0?l._upload4Wx(i.localIds,i.serverIds,function(a){if(a)return util.tipssuccess(1,"上传图片失败",0);for(var n,r=0,c=i.localIds.length;c>r;r++)n={localId:i.localIds[r],name:i.fileNames[r],mediaId:i.serverIds[r]},s.push(n);var u=e.newInvocation({imgArr:s});u.onDone(function(i){for(var e,a=i,s=0,n=a.length;n>s;s++)e={id:a[s]._id,name:a[s].name,mediaId:a[s].mediaId,localId:a[s].localId},o.push(e);d.set("introImgs",o),l._uploadPaObj(t)}).onFail(function(){alert("multiImgUpload fail")}).execute()}):l._uploadPaObj(t)},_uploadPaObj:function(i){l.localIds.length>0?wx.uploadImage({localId:l.localIds[0],success:function(e){var a={name:util.getFileName(),mediaId:e.serverId};r.set("myobj",a),r.save(),r.off("save").on("save",function(a){var s=[{id:a._id,mediaId:e.serverId,name:a.name}];i.images=s,i.pics[0]="/public/images/pabanner.png",i&&i.status&&"d"==i.status?d.set("query",{action:"draft"}):(t.update(),d.set("query",{action:"publish"})),i&&i.status&&delete i.status,d.set("myobj",i),d.set("privateFlag",k),d.save()})},fail:function(t){console.error(JSON.stringify(t))}}):(i&&i.status&&"d"==i.status?d.set("query",{action:"draft"}):d.set("query",{action:"publish"}),i&&i.status&&delete i.status,i.pics=["/public/images/pabanner.png"],d.set("myobj",i),d.set("privateFlag",k),d.save())},_upload4Wx:function(t,i,e){function a(){wx.uploadImage({localId:t[n],success:function(t){return i.push(t.serverId),n++,s-1>=n?(a(),void 0):e?e():void 0},fail:function(t){e(JSON.stringify(t)),console.error(JSON.stringify(t))}})}var s=t.length,n=0;a()}};var T=util.validator();d.on("save",function(t){"publish"==d.query.action&&riot.route("activity/createsuccess/_"+t._id),"draft"==d.query.action&&(d&&d.query&&delete d.query,util.tipssuccess(0,"保存成功"),t&&t.introImgs&&(n=t.introImgs))}),d.on("save-error",function(){util.tipssuccess(1,"保存失败")}),d.on("error",function(){util.tipssuccess(1,"保存失败")}),this.selecttags=function(i){var e=i.item,a=t.currtypetags.indexOf(e.name);return a>=0?t.currtypetags.splice(a,1):t.currtypetags.push(e.name)}.bind(this),this.startchange=function(){return""==u.value&&util.getBrowser().android===!1?(u.value=x,c.value=util.dateFormat(x,"MM/dd"),!1):(c.value=util.dateFormatstr(u.value),(!p||p.value<u.value)&&(p.value=u.value,t.endchange()),(!g||g.value>u.value)&&(g.value=u.value,t.closingchange()),void 0)}.bind(this),this.endchange=function(){return""==p.value&&util.getBrowser().android===!1?(p.value=x,v.value=util.dateFormat(x,"MM/dd"),!1):(v.value=util.dateFormatstr(p.value),void 0)}.bind(this),this.closingchange=function(){return""==g.value&&util.getBrowser().android===!1?(g.value=x,m.value=util.dateFormat(x,"MM/dd"),!1):(m.value=util.dateFormatstr(g.value),void 0)}.bind(this),this.publishpa=function(){var i=t.actobj.getJsondata();console.log("initiator="+i.initiator),i.status="o";var e=t.actobj.validatefield(i);return e.length>0?(util.tipssuccess(1,e[0],1),void 0):(t.actobj.submitform(i),void 0)}.bind(this),this.submitdraft=function(){var i=t.actobj.getJsondata();i.status="d";var e=t.actobj.validatefield(i);return e.length>0?(util.tipssuccess(1,e[0],1),void 0):(t.actobj.submitform(i),void 0)}.bind(this),this.moreOptions=function(){$(".options").slideToggle(),$(".activity-new-more-options-title").toggleClass("activity-new-more-options-title-checked")}.bind(this);var F,M,k=!1,C=function(){var t=document.getElementById("but_wary");t.addEventListener("touchstart",j,!1),t.addEventListener("touchmove",N,!1),t.addEventListener("touchend",O,!1)},j=function(t){t.preventDefault();var t=t||window.event;F=t.touches[0].pageX},N=function(t){t.preventDefault();var t=t||window.event;M=t.touches[0].pageX},O=function(){M>F?($(".but_wary").addClass("but_right"),$(".but_wary").removeClass("but_left"),k=!0):F>M&&($(".but_wary").addClass("but_left"),$(".but_wary").removeClass("but_right"),k=!1),F=0,M=0};t.on("toabsolute",function(){w.style.position="absolute",w.style.bottom="0px"}),t.on("tofixed",function(){w.style.position="fixed",w.style.bottom="0px"}),this.inputonfocus=function(){t.trigger("toabsolute")}.bind(this),this.inputonblur=function(){t.trigger("tofixed")}.bind(this),this.descfocus=function(){t.trigger("toabsolute")}.bind(this),this.descblur=function(){t.trigger("tofixed")}.bind(this);var D=navigator.userAgent;D.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)&&(this.dateclick=function(){t.trigger("toabsolute")}.bind(this),this.dateblur=function(){t.trigger("tofixed")}.bind(this)),this.showSelectType=function(){var t=$(".tag-type").attr("class");t.indexOf("animation-show")>0?$(".tag-type").removeClass("animation-show").addClass("animation-hide"):$(".tag-type").removeClass("animation-hide").addClass("animation-show")}.bind(this);var S=function(i){this.trigger("ready",!1),d.set("_id",i||t.opts._id),d.fetch({action:"open"})}.bind(t);d.on("fetch",function(i){t.fecthjson=i,t.actobj.initPage(t.fecthjson),t.picshow=util.calcImageUrl(t.fecthjson),t.trigger("ready",!0),t.trigger("view-route-to"),a.init(),a.reset(),B(t.acDesc),$("#contentdiv").on("focus",function(){t.trigger("toabsolute")}),$("#contentdiv").on("blur",function(){t.trigger("tofixed")}),a.off("chooseImgBegin").on("chooseImgBegin",function(){wx.chooseImage({success:function(t){a.trigger("chooseImgComplete",t.localIds[0])}})}),t.update(),C()}),this.on("mount",function(){console.info("tag activities is mounted")}),this.on("open",function(i){console.info("tag activities is opening"),S(i),t.test=!0,wx.ready(function(){t.uploadimg=function(){wx.chooseImage({success:function(i){l.refresh(),l.localIds[0]=i.localIds[0],t.test=!1,t.update();var e=$("#banner");e.attr("src",i.localIds[0])}})},t.update()})});var q=function(){for(var i=[],e=$(".user_options .checked"),a=0;a<e.length;a++)i.push(t.appFields[$(e[a]).attr("data")]);return i};this.userOptions=function(t){"姓名"!=t.target.outerText&&"手机"!=t.target.outerText&&$(t.target).toggleClass("checked")}.bind(this),t.fieldIfSel=function(i){for(var e=!1,a=0,s=t.applicationFields.length;s>a;a++)if(t.applicationFields[a].name==i){e=!0;break}return e},this.homepage=function(){riot.route("activity/index")}.bind(this);var B=function(t){$("#contentdiv").html(t)}});
-riot.tag("activity-filter",'<div class="activity-filter_placeholder"></div> <div class="activity-filter"> <div onclick="{parent.clickIndexNav}"> <div class="{opts.curritem.activity_filter == 1 ? \'checked\': \'\'} {opts.curritem.label_screening_select_the_conditions == true ? \'select_the_conditions\':\'\'}" alt="1" id="label_screeningId">类型筛选</div> <div class="{opts.curritem.activity_filter == 2 ? \'checked\': \'\'} {opts.curritem.date_select_the_conditions == true ? \'select_the_conditions\':\'\'}" alt="2" id="sel_date">时间筛选</div> <div class="{opts.curritem.activity_filter == 3 ? \'checked\': \'\'} {opts.curritem.sort_select_the_conditions == true ? \'select_the_conditions\':\'\'}" alt="3" id="sel_sort">排序</div> <a href="#activity/search"><img riot-src="/{env}/images/search_bj.png"></a> </div> <div class="label_screening select_pub {opts.curritem.activity_filter == 1 ? \'label_screening_animation\': \'\'} {opts.curritem.activity_filter == \'reset\' ? \'animation_reset\': \'\'}"> <ul onclick="{parent.select_type}" value="label_screening_select_the_conditions"> <li value="ca" class="set-checked-ca">校园活动</li> <li value="fa" class="set-checked-fa">亲子少儿</li> <li value="ch" class="set-checked-ch">讲座</li> <li value="tr" class="set-checked-tr">出游</li> <li value="of" class="set-checked-of">体育户外</li> <li value="pt" class="set-checked-pt">聚会派对</li> <li value="tb" class="set-checked-tb">团队建设</li> <li value="oa" class="set-checked-oa">其他活动</li> </ul> <div class="clear"></div> <div class="label_button"> <div class="label_button_div"> <button class="confirm_but1 border_radius fl" onclick="{parent.setAllType}"><img riot-src="/{env}/images/but_s1.png" class="vertical"> <span class="vertical" >全部</span></button> <button class="confirm_but2 border_radius fr" onclick="{parent.typeSelectObj}"><img riot-src="/{env}/images/but_s2.png" class="vertical"> <span class="vertical" >筛选</span></button> </div> </div> </div> <div class="select_info select_pub time_screen {opts.curritem.activity_filter == 2 ? \'time_screen_animation\': \'\'} {opts.curritem.activity_filter == \'reset\' ? \'animation_reset\': \'\'}"> <ul class="ul_sel_date" alt="sel_date" onclick="{parent.select_type}"> <li class="checked initial_checked" value="0">全部</li> <li value="1">最近三天</li> <li value="2">本周</li> <li value="3">下周</li> <li value="4">本月</li> <li value="5">下月</li> </ul> </div> <div class="select_info select_pub sort {opts.curritem.activity_filter == 3 ? \'sort_animation\': \'\'} {opts.curritem.activity_filter == \'reset\' ? \'animation_reset\': \'\'}"> <ul class="ul_sel_sort" alt="sel_sort" onclick="{parent.select_type}" value="sort_select_the_conditions"> <li class="checked initial_sort" value="acquiesce">默认（开始时间）</li> <li value="newest" class="set-checked-newest">最新（创建时间）</li> <li value="popularity" class="set-checked-popularity">人气</li> </ul> </div> </div>',function(){var e=nest.presentable(this);e.env="production"==__app.settings.env.NODE_ENV?"public":"web"});
-riot.tag("activity-index",'<div if="{!hidden}"> <mask-loading show="{mask}"></mask-loading> <div if="{!mask}"> <div class="activity-index-filter"> <input type="text" placeholder="搜索感兴趣的活动" readonly="readonly" onclick="{resultSearch}"> </div> <div class="activity-index-scroll"> <ul> <li><a href="#activity/_dMxAsS"><img riot-src="/{env}/images/banner.jpg"></a></li> </ul> </div> <div class="activity-index-type"> <div> <div class="fl" value="newest" onclick="{pageResult}"> <img riot-src="/{env}/images/new_act.png" value="newest"> 最新活动 </div> <div class="fr" value="popularity" onclick="{pageResult}"> <img riot-src="/{env}/images/hot_act.png" value="popularity"> 最热活动 </div> </div> <div> <ul onclick="{pageResult}"> <li value="ca"><img riot-src="/{env}/images/type_img_1.png" value="ca">校园活动</li> <li value="fa"><img riot-src="/{env}/images/type_img_2.png" value="fa">亲子少儿</li> <li value="ch"><img riot-src="/{env}/images/type_img_3.png" value="ch">讲座</li> <li value="tr"><img riot-src="/{env}/images/type_img_4.png" value="tr">出游</li> <li value="of"><img riot-src="/{env}/images/type_img_5.png" value="of">体育户外</li> <li value="pt"><img riot-src="/{env}/images/type_img_6.png" value="pt">聚会派对</li> <li value="tb"><img riot-src="/{env}/images/type_img_7.png" value="tb">团队建设</li> <li value="oa"><img riot-src="/{env}/images/type_img_8.png" value="oa">其他活动</li> </ul> </div> </div> <div class="activity-index-recommend"> <div> <p>精彩推荐</p> <p onclick="{listAll}">全部活动</p> </div> <div class="clear"></div> <div> <activity-recommend-item each="{items}" curritem="{this}"></activity-recommend-item> </div> <div onclick="{listAll}"><p>查看全部活动</p></div> </div> <div class="footer_placeholder"></div> <div class="footer-index setleft"> <div> <a href="#activity/index"><i class="current"><img riot-src="/{env}/images/footer_nav_activity2.png"><br>活动</i></a> <a href="#travel/index"><i><img riot-src="/{env}/images/footer_nav_travel1.png"><br>场所</i></a> <a href="#mine/index"><i><img riot-src="/{env}/images/footer_nav_mine1.png"><br>我的</i></a> </div> <div> <i onclick="{showattention}">发布活动</i> </div> </div> <div class="body_shadow display_none" onclick="{hideBodyShadowAllHandler}"></div> <div class="wechat-concern display_none"> <img riot-src="/{env}/images/closebtn2.png" onclick="{hidewechat_concern}"> <p>关注“快乐种子”后，可以接收活动<br>提醒和使用其他更多服务！</p> <div if="{!fromButtonClick}"> <div onclick="{openWxhref}">关注，支持一下</div> <div onclick="{hidewechat_concern}">残忍拒绝:(</div> </div> <button onclick="{openWxhref}" if="{fromButtonClick}">立即关注</button> </div> </div> </div>',function(){function i(){$(".wechat-concern").hide(),$(".body_shadow").hide()}this.app=this.opts.app;var e=nest.presentable(this);e.env="production"==__app.settings.env.NODE_ENV?"public":"web",e.wxhref=util.getWxhref(),e.subscribe=1==__page.user.wx_subscribe?!0:!1;var t={sort:{priorityRank:-1,statusrank:1,startTime:1},page:{size:4,no:1},conditions:{status:{$in:["a","re","ac","co"]},reviewStatus:{$in:["t","d"]},"tags.type":{},privateFlag:!1}};__page.tenant&&(t.conditions.tenantId=__page.tenant);var n=this.collection=nest.collectable({},{url:__app.settings.api.url+"/pa/find",filter:t});n.on("fetch",function(i){console.info("activities is fetched"),e.items=i,e.update(),e.trigger("ready",!0),e.trigger("view-route-to"),s(),$(window).scrollTop("0px"),n.trigger("fetched"),$(".activity-index-scroll").simslider()}),n.on("append",function(){console.info("activities is append"),e.trigger("ready",!0)});{var o=function(i){this.trigger("ready",!1),this.filter=i||this.filter,void 0==n.fetched()||e.items&&0==e.items.length?n.fetch({filter:this.filter}):(e.update(),e.trigger("ready",!0),e.trigger("view-route-to")),$(window).scrollTop("0px")}.bind(e),a=function(){e.item=[],e.appended_list=[],t.page.size=10,t.page.no=1,this.trigger("ready",!1),setTimeout(function(){$("#pullDown").hide(),n.fetch({filter:this.filter})},500)}.bind(e);(function(){this.trigger("ready",!1),n.append({filter:this.filter})}).bind(e)}this.on("mount",function(){console.info("tag activities is mounted")}),this.on("unmount",function(){console.info("tag activities is unmounted")}),this.on("open",function(i){console.info("tag activities is opening"),s(),o(i)}),this.on("leave",function(){e.mask=!0,e.update()}),this.on("reenter",function(){e.mask=!1,e.update()}),this.on("refresh",function(){console.info("tag activities is refreshing"),a()}),this.on("show",function(i){i&&__page.holder().setTitle("活动"),$(window).scrollTop(__page.holder().getTop())}),this.listAll=function(){riot.route("activity/list?filter=all")}.bind(this),this.pageResult=function(i){var e=$(i.target).attr("value");riot.route("activity/list?filter="+e)}.bind(this),this.showattention=function(){if(e.fromButtonClick=!0,e.subscribe)riot.route("activity/new");else{var i=$(window).scrollTop(),t=$(window).height(),n=$("body").height(),o=$(".wechat-concern").height()-100,a=t>n?t:n,s=i+t/2-o/2-100;$(".body_shadow").show().css("height",a+"px").css("z-index","699"),$(".wechat-concern").show().css("top",s+"px")}}.bind(this),this.hideBodyShadowAllHandler=function(){i()}.bind(this),this.hidewechat_concern=function(){i()}.bind(this),this.resultSearch=function(){riot.route("activity/search")}.bind(this),this.refresh=function(){a()}.bind(this),this.openWxhref=function(){util.setCookie("attentionUrl","activity/index",1),i(),window.location=e.wxhref}.bind(this);var s=function(){wx.onMenuShareAppMessage({title:"快乐种子",desc:"欢迎关注快乐种子，更多精彩活动等你参加！",link:__page.holder().getBaseUrl()+"/index#activity/index",imgUrl:__page.holder().getBaseUrl()+"/public/images/logo.png",type:"",dataUrl:"",success:function(){_czc.push(["_trackEvent",util.getDc().PA.NAME+"("+util.getDc().PA.ACTION.SHARE+")","首页","",0])},cancel:function(){}}),wx.onMenuShareTimeline({title:"快乐种子",link:__page.holder().getBaseUrl()+"/index#activity/index",imgUrl:__page.holder().getBaseUrl()+"/public/images/logo.png",success:function(){_czc.push(["_trackEvent",util.getDc().PA.NAME+"("+util.getDc().PA.ACTION.SHARE+")","首页","",1])},cancel:function(){}})}});
-riot.tag("activity-item",'<div class="screen"> <a href="#" onclick="{showPaDetail}"><img riot-src="{picshow}" class="activity-cover-img img1"></a> <div class="type-bar {status_background_color}">{statuszw}</div> <div class="top-bar"> <p><img riot-src="/{env}/images/item2.png" width="15" class="vertical"> <span class="vertical" >{this.opts.curritem.meta.apps || 0}</span></p> <p><img riot-src="{likes_imgsrc}" width="15"> <span class="vertical" >{this.opts.curritem.meta.likes || 0}</span></p> </div> <div class="bottom-bar"> <div> <p>{name.length > 15 ? name.substring(0, 15)+\'...\':name}</p> <p> <span></span>{startTimes_Week} {place.length > 12 ? place.substring(0, 12)+\'...\':place} </p> </div> </div> <div class="shadow"></div> </div>',function(){var t=this.opts.curritem;this.statuszw=__app.enums.ProductActivityStatus.values[t.status],"r"==t.reviewStatus&&(this.statuszw=__app.enums.ReviewStatus.values[t.reviewStatus]),this.num=t.meta.apps;var e=this;e.env="production"==__app.settings.env.NODE_ENV?"public":"web",e.picshow=util.calcImageUrl(t),e.likes=t.meta.likes||0,e.startTimes=util.dateFormat(new Date(t.startTime),"MM/dd"),e.Week=util.getDateWeek(new Date(t.startTime)),e.startTimes_Week=e.startTimes+" "+e.Week,e.reviewStatus=t.reviewStatus?t.reviewStatus:"",e.likes_imgsrc=__page.user.meta.pa.likes[t._id]?"/"+e.env+"/images/item1_like.png":"/"+e.env+"/images/item1.png",e.status_background_color=util.events._valueToKey(__app.enums.ProductActivityStatus.names)[t.status],this.showPaDetail=function(s){s.preventDefault(),_czc.push(["_trackEvent",util.getDc().PA.NAME+"("+util.getDc().PA.ACTION.VIEW+")",e.parent.name||"",util.convertToValue(e.parent.tags.type).join(",")||""]),riot.route("activity/_"+t._id)}.bind(this),this.on("update",function(){this.likes_imgsrc=__page.user.meta.pa.likes[t._id]?"/"+e.env+"/images/item1_like.png":"/"+e.env+"/images/item1.png"})});
-riot.tag("activity-list",'<div if="{!hidden}"> <mask-loading show="{mask}"></mask-loading> <div if="{!mask}"> <activity-filter curritem="{this}"></activity-filter> <div class="clear">&nbsp</div> <div id="pullDown" class="loading" style="display: none"> <span class="pullDownIcon"></span><span class="pullDownLabel">正在刷新列表...</span> </div> <div class="activity-list" id="scroll_body"> <activity-item class="activity-item" each="{items}" curritem="{this}"></activity-item> <activity-item class="activity-item" each="{appended_list}" curritem="{this}"></activity-item> </div> <div id="pullUp"> <span class="pullUpIcon"></span><span class="pullUpLabel">上拉加载更多活动...</span> </div>  <wechat-menu if="{!subscribe}"></wechat-menu> <div id="noResult" class="noResult"> <p><img riot-src="/{env}/images/c_02.png" style="width: 35%"></p> <p class="m_top10">抱歉，没有找到相关活动</p> </div>  <div class="footer_placeholder"></div> <div class="footer setleft"> <div onclick="{returnPage}"></div> <div class="button publish" onclick="{showattention}">发布活动</div> </div> <div class="body_shadow display_none" onclick="{hideBodyShadowAllHandler}"></div> <div class="wechat-concern display_none"> <img riot-src="/{env}/images/closebtn2.png" onclick="{hidewechat_concern}"> <p>关注“快乐种子”后，可以接收活动<br>提醒和使用其他更多服务！</p> <div if="{!fromButtonClick}"> <div onclick="{openWxhref}">关注，支持一下</div> <div onclick="{hidewechat_concern}">残忍拒绝:(</div> </div> <button onclick="{openWxhref}" if="{fromButtonClick}">立即关注</button> </div> </div> </div>',function(){function t(){var t=$(window).height(),e=$("body").height(),i=t>e?t:e;$(".body_shadow").show().css("height",i+"px").css("z-index","500")}function e(){$(".wechat-concern").hide(),i()}function i(){$(".body_shadow").hide(),l.activity_filter="reset",l.update()}function n(){if(!l.subscribe&&void 0==util.getCookie("showAttentionPrompt")){var t=$(window).scrollTop(),e=$(window).height(),i=$("body").height(),n=$(".wechat-concern").height()-100,s=e>i?e:i,o=t+e/2-n/2-100;$(".body_shadow").show().css("height",s+"px").css("z-index","699"),$(".wechat-concern").show().css("top",o+"px"),util.setCookie("showAttentionPrompt","true",1)}}function s(){var t=Math.round(360*$("#wary").width()/640);$(".img1").css("height",t+"px")}function o(t){void 0!=t&&(t.forEach(function(t){l.items.push(t)}),console.log("self.items "+l.items.length))}function a(t){console.log(t),0==t.length?document.getElementById("pullUp").style.display="none":(document.getElementById("pullUp").style.display="block",_.className="",_.querySelector(".pullUpLabel").innerHTML="上拉加载更多活动...")}this.app=this.opts.app;var c,l=nest.presentable(this),r=domain.action("likeActivity"),d=domain.action("applyActivity"),h=!1;l.env="production"==__app.settings.env.NODE_ENV?"public":"web",l.subscribe=1==__page.user.wx_subscribe?!0:!1,l.wxhref=util.getWxhref(),l.fromButtonClick=!1,l.activity_filter=0,l.label_screening_select_the_conditions=!1,l.date_select_the_conditions=!1,l.sort_select_the_conditions=!1;var p={sort:{priorityRank:-1,statusrank:1,startTime:1},page:{size:10,no:1},conditions:{status:{$in:["a","re","ac","co"]},reviewStatus:{$in:["t","d"]},"tags.type":{},privateFlag:!1}};__page.tenant&&(p.conditions.tenantId=__page.tenant);var u,g,_,f=this.collection=nest.collectable({},{url:__app.settings.api.url+"/pa/find",filter:p}),v=0,m=0,w=!1,y=!0;f.on("fetch",function(t){if(console.info("activities is fetched"),l.items=t,y=l.items.length%10==0?!0:!1,l.update(),l.trigger("ready",!0),l.trigger("view-route-to"),_=document.getElementById("pullUp"),g=$("#noResult"),u=document.getElementById("scroll_body"),a(t),0!=t.length?(t.length>3?$("#pullUp").show():$("#pullUp").hide(),g.hide()):($("#pullUp").hide(),g.show()),console.log("---------------------"),console.log(l.sort_select_the_conditions),U(),E(),C(),n(),$(window).scrollTop("0px"),c&&h){$(".activity-filter .checked").removeClass("checked"),$(".set-checked-"+c).addClass("checked");var e=$(".set-checked-"+c).parent().attr("value");l.label_screening_select_the_conditions=!1,l.date_select_the_conditions=!1,l.sort_select_the_conditions=!1,l[e]=!0,l.update(),"sort_select_the_conditions"!=e&&$(".initial_sort").addClass("checked"),$(".initial_checked").addClass("checked")}f.trigger("fetched")}),f.on("fetched",function(){w=!0}),f.on("append",function(t){console.info("activities is append"),o(l.appended_list),l.appended_list=t,console.log(l.appended_list),y=0==l.appended_list.length?!1:l.appended_list.length%10==0?!0:!1,l.update({appended_list:t}),a(t),l.trigger("ready",!0),E()});var b=function(t){this.trigger("ready",!1),this.filter=t||this.filter;var e=t.filter;if(e){var i=new Array;h=!0,i.push(e),$(".activity-filter .checked").removeClass("checked"),c=e,"all"===e?(p.sort={priorityRank:-1,statusrank:1,startTime:1},p.conditions={status:{$in:["a","re","ac","co"]},"tags.type":{},privateFlag:!1}):"newest"===e||"popularity"===e?(p.conditions={status:{$in:["a","re","ac","co"]},"tags.type":{},privateFlag:!1},p.sort="newest"==e?{crtOn:-1}:{"meta.likes":-1}):p.conditions={status:{$in:["a","re","ac","co"]},"tags.type":{$in:i},privateFlag:!1}}void 0==f.fetched()||l.items&&0==l.items.length||e?f.fetch({filter:this.filter}):(l.update(),l.trigger("ready",!0),l.trigger("view-route-to"))}.bind(l),k=function(){l.item=[],l.appended_list=[],p.page.size=10,p.page.no=1,this.trigger("ready",!1),setTimeout(function(){$("#pullDown").hide(),f.fetch({filter:this.filter})},500)}.bind(l),x=function(){this.trigger("ready",!1),f.append({filter:this.filter})}.bind(l),D=function(t){l.items=l.items.concat(l.appended_list);for(var e=0;e<l.items.length;e++)if(l.items[e]._id==this.inputs[0]){l.appended_list=[],l.items[e].meta.likes=t,l.update();break}},T=function(t){l.items=l.items.concat(l.appended_list);for(var e=0;e<l.items.length;e++)if(l.items[e]._id==this.inputs[0].id){l.appended_list=[];for(var i=0,n=0;n<t.length;n++)i+=t[n].num;l.items[e].meta.apps=i,l.update();break}};this.on("mount",function(){console.info("tag activities is mounted"),r.onDone(D),d.onDone(T)}),this.on("unmount",function(){console.info("tag activities is unmounted"),r.offDone(D),d.offDone(T)}),this.on("open",function(t){console.info("tag activities is opening"),C(),b(t),E()}),this.on("leave",function(){l.mask=!0,l.update()}),this.on("reenter",function(){l.mask=!1,l.update()}),this.on("refresh",function(){console.info("tag activities is refreshing"),k()}),this.on("show",function(t){t&&__page.holder().setTitle("活动"),$(window).scrollTop(__page.holder().getTop())}),this.refresh=function(){k()}.bind(this);this.returnPage=function(){riot.route("activity/index")}.bind(this),this.showFootterNav=function(t){$(t.target).toggleClass("footer_navs_but_hover");var e=$(t.target).attr("class");e.indexOf("footer_navs_but_hover")<0?$(".footer_navs_wary").slideUp(200):$(".footer_navs_wary").slideDown(200),t.stopPropagation()}.bind(this),this.clickIndexNav=function(e){{var n=$(e.target).attr("alt")||"",s=$(e.target).attr("class");$(".select_the_conditions")}s.indexOf("checked")<0?(l.activity_filter=n,l.update(),t()):(l.activity_filter="reset",l.update(),i())}.bind(this),this.select_type=function(t){var i=$(t.target).attr("value"),n=$(t.target).text(),s=$(t.target).parent().attr("alt");if($("#"+s).text(n),$("#"+s).addClass("select_the_conditions"),h=!1,"sel_date"==s){$(".ul_sel_date li").removeClass("checked");var o;switch(i){case"0":o={},$("#"+s).text("时间筛选"),$("#"+s).removeClass("select_the_conditions");break;case"1":o={$gte:util.getLastDayStartDate(),$lte:util.getLastDayEndDate()};break;case"2":o={$gte:util.getWeekStartDate(),$lte:util.getWeekEndDate()};break;case"3":o={$gte:util.getNextWeekStartDate(),$lte:util.getNextWeekEndDate()};break;case"4":o={$gte:util.getMonthStartDate(),$lte:util.getMonthEndDate()};break;case"5":o={$gte:util.getNextMonthStartDate(),$lte:util.getNextMonthEndDate()};break;default:console.log("no match!!!")}p.conditions.startTime=o,k(),l.date_select_the_conditions=0!=i?!0:!1,e()}else"sel_sort"==s&&($(".ul_sel_sort li").removeClass("checked"),"acquiesce"==i?($("#"+s).text("排序"),$("#"+s).removeClass("select_the_conditions"),p.sort={priorityRank:-1,statusrank:1,startTime:1},l.sort_select_the_conditions=!1):"newest"==i?($("#"+s).text("最新"),p.sort="newest"==i?{crtOn:-1}:{"meta.apps":-1},l.sort_select_the_conditions=!0):(p.sort="newest"==i?{crtOn:-1}:{"meta.likes":-1},l.sort_select_the_conditions=!0),e(),k());$(t.target).toggleClass("checked")}.bind(this),this.typeSelectObj=function(){var t=$(".label_screening .checked");if(h=!1,t.length>0){for(var i=[],n=0;n<t.length;n++)i.push($(t[n]).attr("value"));p.conditions={status:{$in:["a","re","ac","co"]},"tags.type":{$in:i},privateFlag:!1},__page.tenant&&(p.conditions.tenantId=__page.tenant),k();var s=function(){l.label_screening_select_the_conditions=!0,e(),f.off("fetch",s)};f.off("fetch",s).on("fetch",s)}}.bind(this),this.setAllType=function(){h=!1,$(".label_screening li").removeClass("checked"),p.conditions={status:{$in:["a","re","ac","co"]},"tags.type":{},privateFlag:!1},__page.tenant&&(p.conditions.tenantId=__page.tenant),l.label_screening_select_the_conditions=!1,k(),e()}.bind(this),this.hidewechat_concern=function(){e()}.bind(this),this.hideBodyShadowAllHandler=function(){e()}.bind(this),this.openWxhref=function(){util.setCookie("attentionUrl","activity/index",1),e(),window.location=l.wxhref}.bind(this),this.showattention=function(){if(l.fromButtonClick=!0,l.subscribe)riot.route("activity/new");else{var t=$(window).scrollTop(),e=$(window).height(),i=$("body").height(),n=$(".wechat-concern").height()-100,s=e>i?e:i,o=t+e/2-n/2-100;$(".body_shadow").show().css("height",s+"px").css("z-index","699"),$(".wechat-concern").show().css("top",o+"px")}}.bind(this);var E=function(){s()},U=function(){function t(t){var t=t||window.event;switch(t.type){case"touchstart":console.log("touchstart"),v=t.targetTouches[0].screenY;break;case"touchcancel":case"touchend":console.log("touchend"),_.className.match("flip")&&(_.className="loading",_.querySelector(".pullUpLabel").innerHTML="加载中...",1==y?(y=!1,p.page.no++,x()):document.getElementById("pullUp").style.display="none");break;case"touchmove":console.log("touchmove");var e=t.targetTouches[0],i=!1;"IMG"==$(e.target)[0].tagName&&$(e.target).attr("class").indexOf("activity-cover-img")>-1&&e.pageY>45&&(i=!0),m=e.screenY,m-v>0&&i&&0===$(window).scrollTop()&&w&&(w=!1,$("#pullDown").show(),k());var n=parseFloat($(window).height())+parseFloat($(window).scrollTop());__page.holder().saveTop($(window).scrollTop()),$(document).height()-25<=n&&$(document).height()<=n?_.className.match("flip")||(_.className="flip",_.querySelector(".pullUpLabel").innerHTML="松开加载更多活动..."):$(document).height()-50<=n&&$(document).height()-25>=n&&_.className.match("flip")&&(_.className="",_.querySelector(".pullUpLabel").innerHTML="上拉加载更多活动...")}}u.addEventListener("touchstart",t,!1),u.addEventListener("touchmove",t,!1),u.addEventListener("touchend",t,!1),u.addEventListener("touchcancel",t,!1),$(window).resize(function(){s()})},C=function(){wx.onMenuShareAppMessage({title:"快乐种子",desc:"欢迎关注快乐种子，更多精彩活动等你参加！",link:__page.holder().getBaseUrl()+"/index#activity/index",imgUrl:__page.holder().getBaseUrl()+"/public/images/logo.png",type:"",dataUrl:"",success:function(){_czc.push(["_trackEvent",util.getDc().PA.NAME+"("+util.getDc().PA.ACTION.SHARE+")","首页","",0])},cancel:function(){}}),wx.onMenuShareTimeline({title:"快乐种子",link:__page.holder().getBaseUrl()+"/index#activity/index",imgUrl:__page.holder().getBaseUrl()+"/public/images/logo.png",success:function(){_czc.push(["_trackEvent",util.getDc().PA.NAME+"("+util.getDc().PA.ACTION.SHARE+")","首页","",1])},cancel:function(){}})}});
-riot.tag("activity-menu",' <div class="footer_navs_wary display_none"> <a href="#activity/index" class="nav1">活动</a> <a href="#travel/index" class="nav2">场所</a> <a href="#mine/index" class="nav3">我的</a> <a href="{wxhref}" class="nav4" if="{!subscribe}">关注快乐种子</a> </div>',function(){self=this,self.subscribe=1==__page.user.wx_subscribe?!0:!1;var e=function(){return"production"==__app.settings.env.NODE_ENV?"public":"web"};self.wxhref=util.getWxhref(),self.env=e(),console.log("env="+self.env)});
-riot.tag("activity-new",' <div id="addactbody" if="{!hidden}"> <div class="activity-new-statement"> <p>提醒：活动内容包含违法、反动信息或者冒用他人/组织的名义发布活动，平台有权删除其活动并提交公安机关处理</p> <img riot-src="/{env}/images/closebtn3.png" class="closebtn3" onclick="{closeStatement}"> </div> <form id="actform"> <div class="activity-new-basic-info"> <section> <div class="secleft"><img riot-src="/{env}/images/new1.png"></div> <div class="secright"> <input type="text" onfocus="{inputonfocus}" onblur="{inputonblur}" name="name" value="" placeholder="活动名称"> </div> </section> <section class="tag-type"> <div class="secleft"><p class="p1"><img riot-src="/{env}/images/new2.png"></p> <p class="p2" onclick="{showSelectType}">类型标签</p></div> <div class="secright"> <ul> <li each="{name,i in typetags}" data="{name}" class="{tagdefault:true,checked:parent.currtypetags.indexOf(name)>=0} {(i==3||i==7)?\'no_m_left\':\'\'}" onclick="{parent.selecttags}"> <i>{__app.enums.TypeTags.values[name]}</i> </li> </ul> </div> </section> <section class="activity-time"> <div class="secleft"><img riot-src="/{env}/images/new3.png"></div> <div class="secright"> <div class="fl div_left">活动时间</div> <div class="fl div_right"> <div id="startTimebtn" class="datediv"> <input type="text" id="startTimetxt" value="00/00" readonly="readonly"> <input id="startTime" onchange="{startchange}" onclick="{dateclick}" onblur="{dateblur}" name="startTime" style="display: inline-block;margin-top:0px;" type="date"> </div> <i></i> <div id="endTimebtn" class="datedivright"> <input type="text" id="endTimetxt" value="00/00" readonly="readonly"> <input id="endTime" onchange="{endchange}" onclick="{dateclick}" onblur="{dateblur}" name="endTime" style="display: inline-block;margin-top:0px" type="date"> </div> </div> </div> </section> <section> <div class="secleft"><img riot-src="/{env}/images/new4.png"></div> <div class="secright"> <div></div> <input type="text" onfocus="{inputonfocus}" onblur="{inputonblur}" name="place" value="" placeholder="活动地点"> </div> </section> <section class="initiator"> <div class="secleft"><img riot-src="/{env}/images/new5.png"></div> <div class="secright"> <div class="fl div_left">发起人</div> <div class="fl div_right"> <div><input type="text" id="displayName" onfocus="{inputonfocus}" onblur="{inputonblur}" name="initiatorName" placeholder="姓名" value="{__page.user.displayName}"></div> <div><span class="borderleft"></span><input type="text" onfocus="{inputonfocus}" id="phone" onblur="{inputonblur}" name="initiatorContact" placeholder="联系方式"></div> </div> </div> </section> <section class="deadline"> <div class="secleft"><img riot-src="/{env}/images/new6.png"></div> <div class="secright"> <div class="fl div_left">报名截止</div> <div class="fl div_right"> <div class="datediv datediv360"> <input id="closingTimebtn" type="text" attr="closingTime" value="00/00" readonly="readonly"> <input id="closingTime" onchange="{closingchange}" onclick="{dateclick}" onblur="{dateblur}" name="closingTime" style="display: inline-block;margin-left:0;" type="date"> </div> </div> </div> </section> </div> <div class="activity-new-activity-introduction-title"> <div class="activity_title"> <span></span> 活动介绍 </div> </div> <div id="editor"></div>        <div class="banner" onclick="{uploadimg}" if="{test}" style="position: relative"> <img style="width: 100%" riot-src="/{env}/images/pabannershow.png"> </div> <div class="banner" onclick="{uploadimg}" if="{!test}" style="position: relative"> <div style="position: absolute;bottom:10px;right:10px;width:24px;height:24px;z-index: 100;"> <img style="width:24px;height:24px" riot-src="/{env}/images/5.0.8.png"> </div> <img id="banner" style="width: 100%;" riot-src="{imgsrc}"> </div> <div class="activity-new-more-options-title activity-new-more-options-title-checked" onclick="{moreOptions}"> <div class="activity_title"> <span></span> 更多选项 </div> </div> <div class="options activity-new-more-options"> <div class="new_hint_div1_div2"> <p>只允许被邀请的朋友参与</p> <div class="but_wary" id="but_wary"> <p id="but_radius"></p> </div> </div> <div class="user_options"> <div class="new_hint_div1_div3"> <p>报名填写项</p> </div> <ul onclick="{userOptions}"> <li each="{name,i in appFieldNameArr}" data="{name}" class="{i < 2 || name == \'desc\' ? \'checked\':\'\'}">{__page.appFields[name].title}</li> </ul> </div> </div> <div class="clear"></div> <div class="activity-new-presentation"> <div> <p class="new_hint_p1">提示:</p> <p class="new_hint_p2">请确认活动内容后再发布!因为一旦发布并且有用户报名后,活动就不允许取消和修改了。</p> </div> </div> <div class="clear"></div> <div class="serv t-c"> <p>使用过程中如有任何疑问请咨询客服</p> <p class="m_top10_media p2"><img riot-src="/{env}/images/1_19.png"> 客服电话：400-680-9072</p> </div> <div class="footer_placeholder"></div> <div class="footer" name="btnbox"> <div onclick="{homepage}"></div> <div class="button but1" style="width:27%;" onclick="{submitdraft}">保存草稿</div> <div class="button but2" style="width:45%;" onclick="{publishpa}">立即发布</div> </div> </form> </div>',function(){var t=nest.presentable(this);t.env="production"==__app.settings.env.NODE_ENV?"public":"web";var e={localIds:[],fileNames:[],serverIds:[],refresh:function(){this.localIds=[],this.serverIds=[],this.fileNames=[]}},i=domain.action("loadContact"),a=domain.action("multiImgUpload"),s=domain.action("judgeIfTenantMember"),n=new util.wedgt.WcEditor({modules:{Bold:!0,Color:!0,Img:!0,TextAlign:!0},container:"editor"}),o=[],l=null,d=[],r={localIds:[],serverIds:[],refresh:function(){this.localIds=[],this.serverIds=[]}},c=this.imgmodel=nest.modelable({},{url:__app.settings.api.url+"/img/"}),u=this.model=nest.modelable({},{url:__app.settings.api.url+"/pa/"}),v=this.startTimetxt,p=this.startTime,m=this.endTimetxt,g=this.endTime,h=this.closingTimebtn,f=this.closingTime,b=this.name,y=this.place,_=__page.user.id,w=this.initiatorName,x=this.initiatorContact,I=(this.desc,this.actform,this.btnbox),T=new Date(__page.servertime);t.appFields=__page.appFields,t.appFieldNameArr=Object.keys(t.appFields);var k=__app.enums.TypeTags.values;delete k.ex,delete k.tn,t.typetags=Object.keys(k),t.test=!0,t.actobj={txtareastr:"【活动主题】</br></br> 【活动日程】</br>   8：00 在xx集合；</br>【费用说明】</br>【报名说明】</br>    1、直接系统报名，队友名单中显示用户名字即报名成功；</br>    2、本活动不限名额。</br>【温馨提示】",initPage:function(){v.value=util.dateFormat(T,"MM/dd"),m.value=util.dateFormat(T,"MM/dd"),h.value=util.dateFormat(T,"MM/dd"),b.value="",p.value=util.dateFormat(T,"yyyy-MM-dd"),g.value=util.dateFormat(T,"yyyy-MM-dd"),f.value=util.dateFormat(T,"yyyy-MM-dd"),y.value="",_=__page.user.id,w.value=__page.user.displayName,x.value="",n.setContentHtml(this.txtareastr);var t=i.newInvocation(__page.user.id);t.onDone(function(t){t.contact&&($("#displayName").val(t.contact.displayName),$("#phone").val(t.contact.phone))}).execute(),o=[],r.refresh(),e.refresh(),j(),P(),M=!1,$(".but_wary").addClass("but_left"),$(".but_wary").removeClass("but_right")},getJsondata:function(){var e={name:b.value.trim(),startTime:p.value||T,endTime:g.value||T,place:y.value.trim(),initiator:__page.user.id,initiatorName:w.value.trim(),initiatorContact:x.value.trim(),closingTime:f.value.trim()||T,pics:[],desc:n.getContentHtml()&&util.events.htmlToTemplate(n.getContentHtml())||t.actobj.txtareastr,applicationFields:E()};return e.tags={region:"",custom:"",type:t.currtypetags||[]},e},validatefield:function(e){console.log(C);var i=[];return C.empty(e.name)&&i.push("活动名称不能为空"),t.currtypetags.length<=0&&i.push("请选择类型"),C.empty(e.place)&&i.push("活动地点不能为空"),C.empty(e.initiatorName)&&i.push("请填写发起人姓名"),C.empty(e.initiatorContact)&&i.push("请填写发起人联系方式"),util.compareDate(util.dateFormat(T,"yyyy-MM-dd"),p.value)&&i.push("开始时间不能早于今天"),util.compareDate(p.value,g.value)&&i.push("结束时间不能早于开始时间"),util.compareDate(f.value,p.value)&&i.push("截止时间不能晚于开始时间"),i},submitform:function(t){var i=this;e.refresh(),o=[],d=[];var s=$(util.events._wrapdiv(n.getContentHtml()));null!=l?s.find("img").each(function(t){for(var i=!1,t=0,a=l.length;a>t;t++){var s=$(this).attr("fileName");if(l[t].name===s){d.push(l[t]),i=!0;break}}i||(e.localIds.push($(this).attr("localid")),e.fileNames.push($(this).attr("fileName")))}):s.find("img").each(function(){e.localIds.push($(this).attr("localid")),e.fileNames.push($(this).attr("fileName"))}),e.localIds.length>0?i._upload4Wx(e.localIds,e.serverIds,function(s){if(s)return util.tipssuccess(1,"上传图片失败",0);for(var n,l=0,r=e.localIds.length;r>l;l++)n={localId:e.localIds[l],name:e.fileNames[l],mediaId:e.serverIds[l]},o.push(n);var c=a.newInvocation({imgArr:o});c.onDone(function(e){for(var a,s=e,n=0,o=s.length;o>n;n++)a={id:s[n]._id,name:s[n].name,mediaId:s[n].mediaId,localId:s[n].localId},d.push(a);u.set("introImgs",d),i._uploadPaObj(t)}).onFail(function(){alert("multiImgUpload fail")}).execute()}):i._uploadPaObj(t)},_uploadPaObj:function(e){r.localIds.length>0?wx.uploadImage({localId:r.localIds[0],success:function(i){var a={name:util.getFileName(),mediaId:i.serverId};c.set("myobj",a),c.save(),c.off("save").on("save",function(a){var s=[{id:a._id,mediaId:i.serverId,name:a.name}];e.images=s,e.pics[0]="/public/images/pabanner.png",e&&e.status&&"d"==e.status?u.set("query",{action:"draft"}):(t.update(),u.set("query",{action:"publish"})),e&&e.status&&delete e.status,u.set("myobj",e),u.set("privateFlag",M),u.save()})},fail:function(t){console.error(JSON.stringify(t))}}):(e&&e.status&&"d"==e.status?u.set("query",{action:"draft"}):u.set("query",{action:"publish"}),e&&e.status&&delete e.status,e.pics=["/public/images/pabanner.png"],u.set("myobj",e),u.set("privateFlag",M),u.save())},_upload4Wx:function(t,e,i){function a(){wx.uploadImage({localId:t[n],success:function(t){return e.push(t.serverId),n++,s-1>=n?(setTimeout(a,500),void 0):i?i():void 0},fail:function(t){i(JSON.stringify(t)),console.error(JSON.stringify(t))}})}var s=t.length,n=0;a()}},this.homepage=function(){riot.route("activity/index")}.bind(this);var C=util.validator();u.on("save",function(e){u.set("_id",e._id),"publish"==u.query.action&&(_czc.push(["_trackEvent",util.getDc().PA.NAME+"("+util.getDc().PA.ACTION.PUBLISH+")",e.name||"",util.convertToValue(t.currtypetags).join(",")||""]),riot.route("#activity/createsuccess/_"+e._id)),"draft"==u.query.action&&(u&&u.query&&delete u.query,util.tipssuccess(0,"保存成功"),e&&e.introImgs&&(l=e.introImgs))}),u.on("save-error",function(){util.tipssuccess(1,"保存失败")}),u.on("error",function(){util.tipssuccess(1,"保存失败")}),this.selecttags=function(e){var i=e.item,a=t.currtypetags.indexOf(i.name);return a>=0?t.currtypetags.splice(a,1):t.currtypetags.push(i.name)}.bind(this),this.startchange=function(){return""==p.value&&util.getBrowser().android===!1?(p.value=T,v.value=util.dateFormat(T,"MM/dd"),!1):(v.value=util.dateFormatstr(p.value),(!g||g.value<p.value)&&(g.value=p.value,t.endchange()),(!f||f.value>p.value)&&(f.value=p.value,t.closingchange()),void 0)}.bind(this),this.endchange=function(){return""==g.value&&util.getBrowser().android===!1?(g.value=T,m.value=util.dateFormat(T,"MM/dd"),!1):(m.value=util.dateFormatstr(g.value),void 0)}.bind(this),this.closingchange=function(){return""==f.value&&util.getBrowser().android===!1?(f.value=T,h.value=util.dateFormat(T,"MM/dd"),!1):(h.value=util.dateFormatstr(f.value),void 0)}.bind(this),this.publishpa=function(){var e=t.actobj.getJsondata();console.log("initiator="+e.initiator),e.status="o";var i=t.actobj.validatefield(e);if(i.length>0)return util.tipssuccess(1,i[0],1),void 0;if(__page.tenant&&__page.user.wx_openid){var a={};a.tenantId=__page.tenant,a.wx_openid=__page.user.wx_openid;var n=s.newInvocation(a);n.onDone(function(i){i&&(e.tenantId=__page.tenant),t.actobj.submitform(e)}).onFail(function(){util.tipssuccess(1,"用户授权失败",1)}).execute()}else t.actobj.submitform(e)}.bind(this),this.submitdraft=function(){var e=t.actobj.getJsondata();e.status="d";var i=t.actobj.validatefield(e);if(i.length>0)return util.tipssuccess(1,i[0],1),void 0;if(__page.tenant&&__page.user.wx_openid){var a={};a.tenantId=__page.tenant,a.wx_openid=__page.user.wx_openid;var n=s.newInvocation(a);n.onDone(function(i){i&&(e.tenantId=__page.tenant),t.actobj.submitform(e)}).onFail(function(){util.tipssuccess(1,"用户授权失败",1)}).execute()}else t.actobj.submitform(e)}.bind(this),this.moreOptions=function(){$(".options").slideToggle(),$(".activity-new-more-options-title").toggleClass("activity-new-more-options-title-checked")}.bind(this),this.userOptions=function(t){"姓名"!=t.target.outerText&&"手机"!=t.target.outerText&&$(t.target).toggleClass("checked")}.bind(this);var F,N,M=!1,j=function(){var t=document.getElementById("but_wary");t.addEventListener("touchstart",O,!1),t.addEventListener("touchmove",D,!1),t.addEventListener("touchend",S,!1)},O=function(t){t.preventDefault();var t=t||window.event;F=t.touches[0].pageX},D=function(t){t.preventDefault();var t=t||window.event;N=t.touches[0].pageX},S=function(){N>F?($(".but_wary").addClass("but_right"),$(".but_wary").removeClass("but_left"),M=!0):F>N&&($(".but_wary").addClass("but_left"),$(".but_wary").removeClass("but_right"),M=!1),F=0,N=0},P=function(){var t=util.getCookie("noSetatementShow");t&&$(".activity-new-statement").hide()};t.on("toabsolute",function(){I.style.position="absolute",I.style.bottom="0px"}),t.on("tofixed",function(){I.style.position="fixed",I.style.bottom="0px"}),this.inputonfocus=function(){t.trigger("toabsolute")}.bind(this),this.inputonblur=function(){t.trigger("tofixed")}.bind(this),this.descfocus=function(){t.trigger("toabsolute")}.bind(this),this.descblur=function(){t.trigger("tofixed")}.bind(this);var q=navigator.userAgent;q.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)&&(this.dateclick=function(){t.trigger("toabsolute")}.bind(this),this.dateblur=function(){t.trigger("tofixed")}.bind(this)),this.showFootterNav=function(t){$(t.target).toggleClass("footer_navs_but_hover");var e=$(t.target).attr("class");e.indexOf("footer_navs_but_hover")<0?$(".footer_navs_wary").slideUp(200):$(".footer_navs_wary").slideDown(200),t.stopPropagation()}.bind(this),this.showSelectType=function(){var t=$(".tag-type").attr("class");t.indexOf("animation-show")>0?$(".tag-type").removeClass("animation-show").addClass("animation-hide"):$(".tag-type").removeClass("animation-hide").addClass("animation-show")}.bind(this),this.closeStatement=function(){$(".activity-new-statement").addClass("close_transition"),util.setCookie("noSetatementShow","true","7")}.bind(this);var A=function(){this.trigger("ready",!1),this.update(),this.trigger("ready",!0),this.trigger("view-route-to"),$("#textareadiv").one("click",function(){util.setCookie("ReadedPushlishTips","true",30),$("#textareatips").remove()}),n.init(),n.reset(),$("#contentdiv").on("focus",function(){t.trigger("toabsolute")}),$("#contentdiv").on("blur",function(){t.trigger("tofixed")}),n.off("chooseImgBegin").on("chooseImgBegin",function(){wx.chooseImage({success:function(t){n.trigger("chooseImgComplete",t.localIds[0])}})})}.bind(t);this.on("mount",function(){console.info("tag activities is mounted")}),this.on("show",function(t){t&&__page.holder().setTitle("发布活动"),$(window).scrollTop(__page.holder().getTop())}),this.on("open",function(e){A(e),t.test=!0,t.actobj.initPage(),u&&u._id&&delete u._id,u&&u.query&&delete u.query,t.currtypetags=[],wx.ready(function(){t.uploadimg=function(){wx.chooseImage({success:function(e){r.refresh(),r.localIds[0]=e.localIds[0],t.test=!1,t.update();var i=$("#banner");i.attr("src",e.localIds[0])}})},t.update()}),$(window).scrollTop("0px")});var E=function(){for(var e=[],i=$(".user_options .checked"),a=0;a<i.length;a++)e.push(t.appFields[$(i[a]).attr("data")]);return e}});
-riot.tag("activity-recommend-item",'<div class="activity-recommend-item" onclick="{showPaDetail}"> <div> <img riot-src="{picshow}"> </div> <div> <p>{name.length > 24 ? name.substring(0, 24)+\'...\':name}</p> <p>{startTimes} {place.length > 8 ? place.substring(0, 8)+\'...\':place}</p> <p>{num}人报名 {likes}人点赞</p> </div> </div>',function(){var t=this.opts.curritem,e=this;e.num=t.meta.apps,e.picshow=util.calcImageUrl(t),e.likes=t.meta.likes||0,e.startTimes=util.dateFormat(new Date(t.startTime),"MM/dd"),e.Week=util.getDateWeek(new Date(t.startTime)),e.startTimes_Week=e.startTimes+" "+e.Week,e.name=t.name,this.showPaDetail=function(i){i.preventDefault(),_czc.push(["_trackEvent",util.getDc().PA.NAME+"("+util.getDc().PA.ACTION.VIEW+")",e.parent.name||"",util.convertToValue(e.parent.tags.type).join(",")||""]),riot.route("activity/_"+t._id)}.bind(this)});
-riot.tag("activity-search",'<div if="{!hidden}"> <mask-loading show="{mask}"></mask-loading> <div id="scroll_body" if="{!mask}"> <mask-loading show = "{!ready}"></mask-loading> <div class="search"> <input type="text" name="name" id="search_info" placeholder="输入活动名搜索"><input type="button" onclick="{search}" value="搜索"> </div> <div class="search_placeholder"></div> <div id="pullDown" class="loading" style="display: none"> <span class="pullDownIcon"></span><span class="pullDownLabel">正在刷新列表...</span> </div> <div class="activity-list"> <activity-item class="activity-item" each="{items}" curritem="{this}"></activity-item> <activity-item class="activity-item" each="{appended_list}" curritem="{this}"></activity-item> </div> <div id="pullUp" style="display: none"> <span class="pullUpIcon"></span><span class="pullUpLabel">上拉加载更多活动...</span> </div> <div id="noResult" style="display: none;text-align:center;padding-top:80px;font-size:14px;color:#666;"> <p><img riot-src="/{env}/images/c_02.png" style="width: 35%"></p> <p class="m_top10">抱歉，没有找到相关活动</p> </div>  <div class="footer_placeholder"></div> <div class="footer" name="btnbox"> <div onclick="{homepage}"></div> <div class="button publish" onclick="{showattention_by_publish}">发布活动</div> </div> </div> </div>',function(){function e(){var e=Math.round(360*$("#wary").width()/640);$(".img1").css("height",e+"px")}function t(e){void 0!=e&&(e.forEach(function(e){n.items.push(e)}),console.log("self.items "+n.items.length))}function i(e){console.log(e),0==e.length?document.getElementById("pullUp").style.display="none":(document.getElementById("pullUp").style.display="block",c.className="",c.querySelector(".pullUpLabel").innerHTML="上拉加载更多活动...")}this.app=this.opts.app;var n=nest.presentable(this);n.env="production"==__app.settings.env.NODE_ENV?"public":"web",console.log("env="+n.env);var o=this.name,s={sort:{priorityRank:-1,rank:-1},page:{size:10,no:1},conditions:{status:{$in:["a","re","ac","co"]},reviewStatus:{$in:["t","d"]},privateFlag:!1}};__page.tenant&&(s.conditions.tenantId=__page.tenant);var a,l,c,d=this.collection=nest.collectable({},{url:__app.settings.api.url+"/pa/find",filter:s}),r=domain.action("likeActivity"),p=domain.action("applyActivity"),u=0,h=0,g=!1,m=!0;d.on("fetch",function(e){console.info("activities is fetched"),n.items=e,n.appended_list=[],m=n.items.length%10==0?!0:!1,n.update(),n.trigger("ready",!0),n.trigger("view-route-to"),c=document.getElementById("pullUp"),l=$("#noResult"),a=document.getElementById("scroll_body"),i(e),0!=e.length?(e.length>3?$("#pullUp").show():$("#pullUp").hide(),l.hide()):($("#pullUp").hide(),l.show()),U(),k(),b(),$(window).scrollTop("0px"),c.className="",d.trigger("fetched")}),d.on("fetched",function(){g=!0}),d.on("append",function(e){console.info("activities is append"),t(n.appended_list),n.appended_list=e,m=0==n.appended_list.length?!1:n.appended_list.length%10==0?!0:!1,n.update({appended_list:e}),n.trigger("ready",!0),i(e)});var v=function(e){this.trigger("ready",!1),this.filter=e||this.filter,d.fetch({filter:this.filter})}.bind(n),f=function(){this.trigger("ready",!1),d.append({filter:this.filter})}.bind(n),y=function(){return s.keyword=o.value.trim(),s.page.no=1,0==s.keyword.length?(util.tipssuccess(1,"搜索内容不能为空",1),setTimeout(function(){$("#pullDown").hide()},300),void 0):(setTimeout(function(){$("#pullDown").hide(),n.trigger("ready",!1),v()},500),void 0)};this.search=function(){return s.keyword=o.value.trim(),s.page.no=1,0==s.keyword.length?(util.tipssuccess(1,"搜索内容不能为空",1),void 0):($("#pullDown").hide(),n.trigger("ready",!1),v(),void 0)}.bind(this);var _=function(e){n.items=n.items.concat(n.appended_list);for(var t=0;t<n.items.length;t++)if(n.items[t]._id==this.inputs[0]){n.appended_list=[],n.items[t].meta.likes=e,n.update();break}},w=function(e){n.items=n.items.concat(n.appended_list);for(var t=0;t<n.items.length;t++)if(n.items[t]._id==this.inputs[0].id){n.appended_list=[];for(var i=0,o=0;o<e.length;o++)i+=e[o].num;n.items[t].meta.apps=i,n.update();break}};this.on("mount",function(){console.info("tag activities is mounted"),r.onDone(_),p.onDone(w)}),this.on("unmount",function(){console.info("tag activities is unmounted"),r.offDone(_),p.offDone(w)}),this.on("open",function(){console.info("tag activities is opening"),this.trigger("ready",!1),this.update(),this.trigger("ready",!0),n.trigger("view-route-to"),document.getElementById("search_info").focus()}),this.on("leave",function(){n.mask=!0,n.update()}),this.on("reenter",function(){n.mask=!1,n.update()}),this.on("show",function(e){n.trigger("ready",!0),e&&__page.holder().setTitle("搜索"),$(window).scrollTop(__page.holder().getTop())});var b=function(){$(document).on("click",function(){$(".footer_navs_wary").slideUp(),$(".footer_navs_but").removeClass("footer_navs_but_hover")})},k=function(){e()};this.homepage=function(){riot.route("activity/index")}.bind(this),this.showattention_by_publish=function(){riot.route("activity/new")}.bind(this);var U=function(){function t(e){var e=e||window.event;switch(e.type){case"touchstart":console.log("touchstart"),u=e.targetTouches[0].screenY;break;case"touchcancel":case"touchend":console.log("touchend"),c.className.match("flip")&&(c.className="loading",c.querySelector(".pullUpLabel").innerHTML="加载中...",1==m?(m=!1,s.page.no++,f()):document.getElementById("pullUp").style.display="none");break;case"touchmove":console.log("touchmove");var t=e.targetTouches[0],i=!1;"IMG"==$(t.target)[0].tagName&&$(t.target).attr("class").indexOf("activity-cover-img")>-1&&t.pageY>45&&(i=!0),h=t.screenY,h-u>0&&i&&0===$(window).scrollTop()&&g&&(g=!1,$("#pullDown").show(),y());var n=parseFloat($(window).height())+parseFloat($(window).scrollTop());__page.holder().saveTop($(window).scrollTop()),$(document).height()-25<=n&&$(document).height()<=n?c.className.match("flip")||(c.className="flip",c.querySelector(".pullUpLabel").innerHTML="松开加载更多活动..."):$(document).height()-50<=n&&$(document).height()-25>=n&&c.className.match("flip")&&(c.className="",c.querySelector(".pullUpLabel").innerHTML="上拉加载更多活动...")}}a.addEventListener("touchstart",t,!1),a.addEventListener("touchmove",t,!1),a.addEventListener("touchend",t,!1),a.addEventListener("touchcancel",t,!1),$(window).resize(function(){e()}),wx.ready(function(){wx.onMenuShareAppMessage({title:"快乐种子",desc:"欢迎关注快乐种子，更多精彩活动等你参加！",link:__page.holder().getBaseUrl()+"/index#activity/index",imgUrl:__page.holder().getBaseUrl()+"/public/images/logo.png",type:"",dataUrl:"",success:function(){},cancel:function(){}}),wx.onMenuShareTimeline({title:"快乐种子",link:__page.holder().getBaseUrl()+"/index#activity/index",imgUrl:__page.holder().getBaseUrl()+"/public/images/logo.png",success:function(){},cancel:function(){}})})}});
-riot.tag("add-randomnotes",'<div if="{!hidden}" class="add-randomnotes"> <textarea name="desc" onfocus="{inputonfocus}" onblur="{inputonblur}" placeholder="写点想说的话吧..."></textarea> <div class="random_img_wary"> <ul> <li each="{name, i in localIds}"> <img id="thumbnail" riot-src="{name}"> <div class="delete_img_button" ><span></span></div> <span onclick="{ parent.removeImg }" class="delete_img_click_area" ></span> </li> </ul> <div id="filePicker" class="random_img_but">+</div> </div> <div class="clear"></div> <div onclick="{shareOrNotToggle}"> <div class="{checked:!shareOrNot}" onclick="{ return; }"></div> <span class="vertical"> 分享到朋友圈或者朋友</span> </div> <div class="footer" name="btnbox"> <div onclick="{submitdraft}"></div> <div class="button randomnote" onclick="{sendNote}">发送</div> </div> </div>',"add-randomnotes ul li{ position:relative;overflow: hidden;float: left; }",function(){function i(i){var t={desc:"",pics:[],initiator:"",initiatorName:""};return t.desc=r.value.trim(),t.initiator=window.__page.user.id,t.pics="undefined"!=typeof i?i:[],s.execute({id:l,data:t}),!0}var t=nest.presentable(this),e=[],o=[];t.localIds=e,t.shareOrNot=!0,t.env="production"==__app.settings.env.NODE_ENV?"public":"web";var n=this.img_model=nest.modelable({},{url:__app.settings.api.url+"/img/"}),a=(this.model=nest.modelable({},{url:__app.settings.api.url+"/pa/"}),domain.action("multiupimgs4rnActivity")),s=domain.action("createRnActivity"),r=this.desc,l=util.getCookie("detailId");this.sendNote=function(){return t.localIds.length<=0&&""===r.value.trim()?(util.tipssuccess(1,"内容为空"),void 0):(util.forbidOperation_cp(),util.uploadtips("show","上传中,请稍后.."),p(e),void 0)}.bind(this),this.removeImg=function(i){t.localIds.splice(i.item.i,1)}.bind(this),this.shareOrNotToggle=function(){return t.shareOrNot?(t.shareOrNot=null,void 0):(t.shareOrNot=!0,void 0)}.bind(this);var d=function(){this.trigger("ready",!1),this.update(),this.trigger("ready",!0),this.trigger("view-route-to"),v()}.bind(t),c=function(){util.uploadtips("hide"),util.removeforbidOperation_cp(),t.shareOrNot?riot.route("activity/_"+l+"?share=true&guest=true"):riot.route("activity/_"+l+"?guest=true")},u=function(){util.uploadtips("hide"),util.tipssuccess(1,"失败,请查看您的网络"),util.removeforbidOperation_cp()};this.on("mount",function(){console.info("tag activities is mounted"),s.onDone(c),s.onFail(u)}),this.on("unmount",function(){console.info("tag activities is unmounted"),s.offDone(c),s.offFail(u)}),this.on("show",function(i){i&&__page.holder().setTitle("添加随记"),$(window).scrollTop(__page.holder().getTop())}),this.on("open",function(i){d(i),t.shareOrNot=!0,t.desc.value="",e=[],o=[],t.localIds=e,t.update(),wx.ready(function(){$("#filePicker").off("click").on("click",function(){wx.chooseImage({success:function(i){t.localIds=t.localIds.concat(i.localIds).slice(0,9),e=t.localIds,t.update()}})})}),$(window).scrollTop("0px")}),this.submitdraft=function(){riot.route("activity/_"+l)}.bind(this),this.showFootterNav=function(i){$(i.target).toggleClass("footer_navs_but_hover");var t=$(i.target).attr("class");t.indexOf("footer_navs_but_hover")<0?$(".footer_navs_wary").slideUp(200):$(".footer_navs_wary").slideDown(200),i.stopPropagation()}.bind(this);var v=function(){$(document).on("click",function(){$(".footer_navs_wary").slideUp(),$(".footer_navs_but").removeClass("footer_navs_but_hover")})},p=function(e){if(e.length<=0)return i();var s=e.pop();wx.uploadImage({localId:s,success:function(s){var r={name:util.getFileName(),mediaId:s.serverId};n.set("randomNotePic",r),n.save(),n.off("save").on("save",function(n){var s=a.newInvocation({id:l,resid:n._id});s.onDone(function(n){o.unshift(n),e.length>0?(t.update(),p(e)):i(o)}).onFail(function(){alert("upload note pic fail")}).execute()})}})}});
-riot.tag("applications-item-initiator-sms",'<div class="applications-item" onclick="{checkboxSelect}"> <div class="div1"> <div> <div class="add_info_checkbox_div1" phone="{phone}" ></div> <img riot-src="{headImg}" width="24" class="imgradius"> {applicantName} </div> <div> <table class=""> <tr> <td class=" td1">{_displayName}</td> <td class=" td2">{num}人</td> </tr> </table> </div> </div> </div>',function(){var a=this,i=function(){return"production"==__app.settings.env.NODE_ENV?"public":"web"};a.env=i(),console.log("env="+a.env);var e=this.opts.tag.parent;a.tag=this.opts.tag,a.initiator=e.initiator,a.userId=e.userId,a.smsImg="/"+a.env+"/images/sms.png",a.telImg="/"+a.env+"/images/tel.png",a.appFields=__page.appFields,a.appFieldNameArr=Object.keys(a.appFields),a.moreOption=!1;for(var t=[],n=!1,l=0,p=a.appFieldNameArr.length;p>l;l++)"displayName"==a.appFieldNameArr[l]||"phone"==a.appFieldNameArr[l]?t.push(l):a.tag[a.appFieldNameArr[l]]&&!n&&(a.moreOption=!0,n=!0);for(var l=0,p=t.length;p>l;l++)a.appFieldNameArr.splice(t[l],1),t[l+1]=t[l+1]-1;var r=function(){var i=!1;return i=null==a.initiator?!1:null==a.userId?!1:a.initiator==a.userId?!0:!1};a.isNitiator=r();var s=function(){if(null==a.tag.applicant){var i="/"+a.env+"/images/head.png";return console.log("headImg="+i),i}if(null==a.tag.applicant.headImgUrl){var i="/"+a.env+"/images/head.png";return console.log("headImg="+i),i}return a.tag.applicant.headImgUrl};a.headImg=s();var d=function(){return 1==a.isNitiator?null!=a.tag.displayName?a.tag.displayName+"/"+a.tag.phone:a.tag.phone:""};a._displayName=d();var o=function(){return null==a.tag.applicant?"匿名":null==a.tag.applicant.displayName?"匿名":a.tag.applicant.displayName};a.applicantName=o(),this.checkboxSelect=function(a){$(a.currentTarget).find(".add_info_checkbox_div1").toggleClass("add_info_checked"),e._MassTextingURL()}.bind(this)});
-riot.tag("applications-item-initiator",'<div class="applications-item" > <div class="div1"> <div onclick="{toggleMoreInfo}"><img riot-src="{headImg}" width="24" class="head-portrait"> {applicantName}</div> <div onclick="{toggleMoreInfo}"> <table> <tr> <td class="td1">{_displayName}</td> <td>{num}人</td> </tr> </table> </div> </div> <div class="clear"></div> <div class="div2 app_user_info"> <div if="{moreOption}"> <table class=""> <tr each = "{name, i in appFieldNameArr}" if="{parent[name]}"> <td class=" td1" valign="top">{parent.appFields[name].title}：</td> <td class=" td2">{parent[name]}</td> </tr> </table> </div> <div class="sms-tel"> <a href="sms:{phone}"><img riot-src="{smsImg}" class="vertical"> <span class="vertical">发短信</span></a> <a href="tel:{phone}"><img riot-src="{telImg}" class="vertical"> <span class="vertical">打电话</span> </a> </div> </div> </div>',function(){var a=this,i=function(){return"production"==__app.settings.env.NODE_ENV?"public":"web"};a.env=i(),console.log("env="+a.env);var t=this.opts.tag.parent;a.tag=this.opts.tag,a.initiator=t.initiator,a.userId=t.userId,a.smsImg="/"+a.env+"/images/sms.png",a.telImg="/"+a.env+"/images/tel.png",a.appFields=__page.appFields,a.appFieldNameArr=Object.keys(a.appFields),a.moreOption=!1;for(var e=[],n=!1,r=0,l=a.appFieldNameArr.length;l>r;r++)"displayName"==a.appFieldNameArr[r]||"phone"==a.appFieldNameArr[r]?e.push(r):a.tag[a.appFieldNameArr[r]]&&!n&&(a.moreOption=!0,n=!0);for(var r=0,l=e.length;l>r;r++)a.appFieldNameArr.splice(e[r],1),e[r+1]=e[r+1]-1;var p=function(){var i=!1;return i=null==a.initiator?!1:null==a.userId?!1:a.initiator==a.userId?!0:!1};a.isNitiator=p();var s=function(){if(null==a.tag.applicant){var i="/"+a.env+"/images/head.png";return console.log("headImg="+i),i}if(null==a.tag.applicant.headImgUrl){var i="/"+a.env+"/images/head.png";return console.log("headImg="+i),i}return a.tag.applicant.headImgUrl};a.headImg=s();var d=function(){return 1==a.isNitiator?null!=a.tag.displayName?a.tag.displayName+"/"+a.tag.phone:a.tag.phone:""};a._displayName=d();var o=function(){return null==a.tag.applicant?"匿名":null==a.tag.applicant.displayName?"匿名":a.tag.applicant.displayName};a.applicantName=o(),this.toggleMoreInfo=function(a){$(a.currentTarget).parent().parent().find(".app_user_info").toggle()}.bind(this)});
-riot.tag("applications-item",'<div class="applications-item"> <div class="div1"> <div><img riot-src="{headImg}" width="24" class="head-portrait"> {applicantName}</div> <div style="text-align:right;"> {num}人 </div> </div> </div>',function(){var a=this,i=function(){return"production"==__app.settings.env.NODE_ENV?"public":"web"};a.env=i(),console.log("env="+a.env);var t=this.opts.tag.parent;a.tag=this.opts.tag,a.initiator=t.initiator,a.userId=t.userId;var n=function(){var i=!1;return i=null==a.initiator?!1:null==a.userId?!1:a.initiator==a.userId?!0:!1};a.isNitiator=n();var e=function(){if(null==a.tag.applicant){var i="/"+a.env+"/images/head.png";return console.log("headImg="+i),i}if(null==a.tag.applicant.headImgUrl){var i="/"+a.env+"/images/head.png";return console.log("headImg="+i),i}return a.tag.applicant.headImgUrl};a.headImg=e();var l=function(){return 1==a.isNitiator?null!=a.tag.displayName?a.tag.displayName+"/"+a.tag.phone:a.tag.phone:""};a._displayName=l();var r=function(){return null==a.tag.applicant?"匿名":null==a.tag.applicant.displayName?"匿名":a.tag.applicant.displayName};a.applicantName=r()});
-riot.tag("communication-index",'<div if="{!hidden}"> <div class="communication-index" onclick="{showEdit}" name="{commenter.displayName}" replyuserid="{commenter._id}"> <div><img riot-src="{commenter.headImgUrl}" width="24" class="imgradius"></div> <div> <p class="p1"><span>{commenter.displayName}：</span>{replyString}<span>{replyToName}</span>{comment}</p> <p class="p2"> {time} <span>&nbsp;&nbsp;</span><a onclick="{deleteComment}" alt="{_id}" class="delete" if="{commenter._id == window.__page.user.id}">删除</a></p> </div> <div class="clear"></div> </div> </div>',function(){var e=this;e.env="production"==__app.settings.env.NODE_ENV?"public":"web",console.log("env="+e.env);var t=this.opts.tag.parent,a=this.opts.tag.parent._id,n=this.opts.tag.crtOn;e.replyString=""==this.opts.tag.replyTo?"":"回复 ";var i=domain.action("deleteActivityComment"),o=util.formatDate(n);e.time=o,e.update(),this.deleteComment=function(e){console.log(e);var n=$(e.target).attr("alt"),o=i.newInvocation({id:a,deleteId:n});o.onDone(function(e){t.comments=e,t.update()}).onFail(function(){alert("delete comment failed")}).execute(),e.stopPropagation()}.bind(this),this.showEdit=function(e){var a=$(e.currentTarget).parent().attr("class");if(a)t._resetFooterStyle();else{var n=$(e.currentTarget).attr("name"),i=$(e.currentTarget).attr("replyUserId"),o="";try{o=n?n:""}catch(e){o=""}t.replyToName=o,t.replyTo=i,$("#interflow_reply").val(""),$("#interflow_reply").attr("placeholder","回复 "+o+":"),$(".communication-index").parent().removeClass("com_wary_background_color"),$(e.currentTarget).parent().addClass("com_wary_background_color"),t.consult=1,t.update(),document.getElementById("interflow_reply").focus()}e.stopPropagation()}});
-riot.tag("component-date",'<input type="text" id="{dateidtext}" value="00/00/00" readonly="readonly"> <input id="{dateid}" onchange="{datechange}" onclick="{dateclick}" onblur="{dateblur}" style="display: inline-block;margin-top:0px;" type="date">',function(){var t=nest.presentable(this);t.dateid=this.opts.dateid,t.datename=this.opts.datename,t.dateidtext=this.opts.dateidtext;var e=t.newdate=new Date(__page.servertime);t.on("toabsolute",function(){t.parent.btnbox.style.position="absolute",t.parent.btnbox.style.bottom="0px",t.parent.btnbox2.style.position="absolute",t.parent.btnbox2.style.bottom="0px"}),t.on("tofixed",function(){t.parent.btnbox.style.position="fixed",t.parent.btnbox.style.bottom="0px",t.parent.btnbox2.style.position="fixed",t.parent.btnbox2.style.bottom="0px"});var n=navigator.userAgent;n.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)&&(this.dateclick=function(){t.trigger("toabsolute")}.bind(this),this.dateblur=function(){t.trigger("tofixed")}.bind(this)),this.datechange=function(){var n=document.querySelector("#"+t.dateid),a=document.querySelector("#"+t.dateidtext);return""==n.value&&util.getBrowser().android===!1?(n.value=e,a.value=util.dateFormat(e,"yyyy/MM/dd"),!1):(a.value=util.dateFormat(new Date(n.value),"yyyy/MM/dd"),void 0)}.bind(this)});
-riot.tag("debug-index",'<div class="view" if="{!hidden}"> <div> <button onclick="{refresh}">刷新</button> <button onclick="{back}">返回</button> <button onclick="{userInfo}">用户信息</button> <button onclick="{userReset}">重置用户</button> <button onclick="{userResetForChannel}">重置用户渠道信息</button> <a href="/auth/signout">注销</a>  <br> <a onclick="triggerClickMe();"> click me </a><br> <a id="clickMeLink" href="weixin://profile/gh_ad1cd17862c0" onclick="WeiXinAddContact(\'<span style=" background-color:#ff0000;"=""> click me </a><br>  <a id="clickLinkDirectlyLink" href="weixin://profile/gh_ad1cd17862c0" onclick="clickLinkDirectly();"> 直接点链接 </a><br>  <a id="followSeedTripLink" href="weixin://profile/gh_ad1cd17862c0" onclick="followSeedTrip"> 模拟点链接, 间接调用方法 </a><br>  <a href="weixin://profile/gh_ad1cd17862c0" onclick="triggerFollowMe();"> 模拟点链接, 直接调用方法 </a><br> <a id="followMeLink" href="weixin://profile/gh_ad1cd17862c0" onclick="WeiXinAddContact();"> 模拟点链接, 直接调用方法 </a><br>   </div> 页面用户信息： <div id="user"> </div> 存储用户信息： <div id="userLoaded"> </div> COOKIE信息 <div id="cookie"> </div> </div>',function(){function e(e,i){return"undefined"==typeof WeixinJSBridge?(alert("WeixinJSBridge undefined"),!1):"undefined"==typeof WeixinJSBridge.invoke?(alert("WeixinJSBridge.invoke undefined"),!1):(WeixinJSBridge.invoke("addContact",{webtype:"1",username:e},function(e,n){alert(e.err_code),alert(e.err_msg),alert(n),i&&i(e.err_msg)}),void 0)}var i=nest.presentable(this);i.env=__app.settings.env.NODE_ENV,console.log("env="+i.env);var n=function(){i.trigger("view-route-to")},t=function(){i.update(),i.trigger("show",!0)};this.on("mount",function(){console.info("tag debug is mounted")}),this.on("open",function(){console.info("tag debug is opening"),n()}),this.on("refresh",function(){console.info("tag debug is refreshing"),t()}),this.on("show",function(e){e&&__page.holder().setTitle("调试页面")}),this.refresh=function(){t()}.bind(this),this.back=function(){i.trigger("view-route-back")}.bind(this),this.userInfo=function(){$("#user").html(JSON.stringify(__page.user)),$("#cookie").html("token: "+$.cookie("token")+"<br>agent: "+$.cookie("agent")+"<br>connect.sid: "+$.cookie("connect.sid")),__page.user.id&&$.getJSON(__app.settings.api.url+"/user/_"+__page.user.id).done(function(e){$("#userLoaded").text(JSON.stringify(e.result))}).fail(function(e,i,n){$("#userLoaded").text(JSON.stringify(n))})}.bind(this),this.userReset=function(){$.cookie("token",null,{path:"/"}),$.cookie("agent",null,{path:"/"})}.bind(this),this.userResetForChannel=function(){$.get(__app.settings.api.url+"/user/resetUserForChannel",function(e){alert(e)})}.bind(this),this.follow=function(){e("gh_ad1cd17862c0",function(e,i){alert(e),alert(i)})}.bind(this)});
-riot.tag("highlights-desc","<span></span>",function(){this.root.innerHTML=""==this.opts.content?"&nbsp;":this.opts.content});
-riot.tag("initactivity-menu",' <div class="xcgyimg xcgy_gz setwzcss border_radius" id="focus_on"><a href="/index#activity/new"> <img riot-src="/{env==\'production\'?\'public\':\'web\'}/images/c_04.png" class="border_radius"></a></div>',function(){self=this,self.env=__app.settings.env.NODE_ENV,console.log("env="+self.env)});
-riot.tag("introduce-item","<p>{name}</p>",function(){});
-riot.tag("mask-loading",'<div> <div class="container" riot-style="height:{winheight}"> <div class="mask_loading" > <div></div> <div></div> <p>小种子努力加载中...</p> </div> </div> </div>',"mask-loading { } mask-loading .container{ width:100%; height:100%; min-height:567px; }",function(){var i=nest.presentable(this);i.env=__app.settings.env.NODE_ENV,this.winheight=window.innerHeight+"px",this.on("mount",function(){}),this.show=this.opts.show});
-riot.tag("mine-index",'<div if="{!hidden}"> <mask-loading show="{mask}"></mask-loading> <div if="{!mask}"> <div class="mine-top-bar-placeholder"></div> <div class="mine-top-bar"> <div class="mine_nav"> <div class="{mine_bar_checked == 1 ? \'checked\' : \'\'}" alt="1" onclick="{minenav}">参与的活动</div> <div class="{mine_bar_checked == 2 ? \'checked\' : \'\'}" alt="2" onclick="{minenav}">发布的活动</div> <div class="{mine_bar_checked == 3 ? \'checked\' : \'\'}" alt="3" onclick="{minenav}">收藏的活动</div> </div> </div> <div class="clear"></div> <div class="activity-list" id="attendee" if="{mine_bar_checked == 1}"> <activity-item class="activity-item" each="{items2}" curritem="{this}"></activity-item> </div> <div class="activity-list" id="initiator" if="{mine_bar_checked == 2}"> <activity-item class="activity-item" each="{items}" curritem="{this}"></activity-item> </div> <div class="activity-list" id="minelike" if="{mine_bar_checked == 3}"> <activity-item class="activity-item" each="{items3}" curritem="{this}"></activity-item> </div>  <div class="footer_placeholder"></div> <div class="footer-index setleft"> <div> <a href="#activity/index"><i><img riot-src="/{env}/images/footer_nav_activity1.png"><br>活动</i></a> <a href="#travel/index"><i><img riot-src="/{env}/images/footer_nav_travel1.png"><br>场所</i></a> <a href="#mine/index"><i class="current"><img riot-src="/{env}/images/footer_nav_mine2.png"><br>我的</i></a> </div> <div> <i onclick="{showattention}">发布活动</i> </div> </div> </div> </div>',function(){function i(){var i=Math.round(360*$("#wary").width()/640);$(".img1").css("height",i+"px")}var t=nest.presentable(this);t.env="production"==__app.settings.env.NODE_ENV?"public":"web",t.load=0;var e=this.collection=nest.collectable({},{url:__app.settings.api.url+"/pa/initiated",filter:this.opts.filter}),s=this.collection2=nest.collectable({},{url:__app.settings.api.url+"/pa/applied",filter:this.opts.filter}),a=this.collection3=nest.collectable({},{url:__app.settings.api.url+"/pa/stard",filter:this.opts.filter});this.filter=this.opts.filter,e.on("fetch",function(i){console.info("activities is fetched"),t.items=i,t.load>=2?(t.update(),t.trigger("show",!0),t.trigger("ready",!0),t.trigger("view-route-to"),r()):t.load=t.load+1}),s.on("fetch",function(i){console.info("activities is fetched 2"),t.items2=i,t.load>=2?(t.update(),t.trigger("show",!0),t.trigger("ready",!0),t.trigger("view-route-to"),r()):t.load=t.load+1,c()}),a.on("fetch",function(i){console.info("activities is fetched 3"),t.items3=i,t.mine_bar_checked=1,t.load>=2?(t.update(),t.trigger("show",!0),t.trigger("ready",!0),t.trigger("view-route-to"),r()):t.load=t.load+1});var o=function(i){this.trigger("ready",!1),this.filter=i||this.filter,t.load=0,e.fetch({filter:this.filter}),s.fetch({filter:this.filter}),a.fetch({filter:this.filter}),$("#wary").css({height:"auto",overflow:"visible"}),$("body").css({height:"auto",overflow:"visible"})}.bind(t),n=function(){this.trigger("ready",!1),t.load=0,e.fetch({filter:this.filter}),s.fetch({filter:this.filter}),a.fetch({filter:this.filter})}.bind(t);this.on("mount",function(){console.info("tag activities is mounted")}),this.on("open",function(i){console.info("tag activities is opening"),o(i)}),this.on("leave",function(){t.mask=!0,t.update()}),this.on("reenter",function(){t.mask=!1,t.update()}),this.on("show",function(i){i&&__page.holder().setTitle("我的"),$(window).scrollTop("0px")}),this.on("refresh",function(){console.info("tag activities is refreshing"),n()}),this.refresh=function(){n()}.bind(this);var r=function(){i()};this.showattention=function(){riot.route("activity/new")}.bind(this);var c=function(){$(document).click(function(){$(".home_gy_set")&&($(".home_gy").removeClass("home_gy_set"),$(".home_gy").addClass("home_gy_set1"))}),$(".img_home").click(function(i){$(".home_gy").removeClass("home_gy_set1"),$(".home_gy").addClass("home_gy_set"),i.stopPropagation()})};$(window).resize(function(){i()}),this.showFootterNav=function(i){$(i.target).toggleClass("footer_navs_but_hover");var t=$(i.target).attr("class");t.indexOf("footer_navs_but_hover")<0?$(".footer_navs_wary").slideUp(200):$(".footer_navs_wary").slideDown(200),i.stopPropagation()}.bind(this),this.minenav=function(i){var e=$(i.target).attr("alt");t.mine_bar_checked=e,t.update()}.bind(this)});
-riot.tag("navigator",'<div if="{show}">  <div class="home_gy" style="bottom:28px;"> <img riot-src="/{env==\'production\'?\'public\':\'web\'}/images/home.png" class="border_radius img_home"> <a href="#activity/index"><img riot-src="/{env==\'production\'?\'public\':\'web\'}/images/home_nav1.png" class="home_nav"></a> <a href="#travel/index"><img riot-src="/{env==\'production\'?\'public\':\'web\'}/images/home_nav2.png" class="home_nav"></a> <a href="#mine/index"><img riot-src="/{env==\'production\'?\'public\':\'web\'}/images/home_nav3.png" class="home_nav"></a> <img riot-src="/{env==\'production\'?\'public\':\'web\'}/images/home_close.png" class="home_close"> </div> </div>',function(){self=this,this.show=!0,self.env=__app.settings.env.NODE_ENV,console.log("env="+self.env)});
-riot.tag("randomnotes-item",'<div class="randomnotes-item"> <div class="fl" ><img src= "{initiator.headImgUrl || \'/public/images/head.png\'}" width="24" style="border-radius: 50em"></div> <div class="fl"> <div> <span>{initiator.displayName}：</span> <p onclick="{ shareinfo }"><img riot-src="/{env}/images/share_but.png" class=""> <span class="vertical"> 分享</span></p> </div> <p>{desc}</p> <div class="trave_img_wary"> <p each="{ pics }" ><img riot-src="{ parent.parseImg(meta, url) }" onclick="{parent.previewImg}" standard="{meta}"></p> </div> <p class="p2">{time} <a onclick="{deleteRandomNote}" alt="{_id}" class="delete" if="{initiator._id == window.__page.user.id}">删除</a></p> </div> <div class="clear"></div> </div>',function(){var e=this;e.env="production"==__app.settings.env.NODE_ENV?"public":"web";var t=domain.action("delRnActivity"),i=this.opts.tag.parent;e.currentRandomNote=e.opts.tag;var a=this.opts.tag.parent._id,n=this.opts.tag.crtOn,s=util.formatDate(n);e.time=s,e.parseImg=function(e,t){var i={meta:e,url:t};return util.parseImgUrl(i)},this.on("mount",function(){t.onDone(function(e){i.randomNotes=e,i.update()})}),this.previewImg=function(){e.currentRandomNote&&e.currentRandomNote.pics&&e.currentRandomNote.desc?util.wedgt.imgPreviewer($("#wary"),e.currentRandomNote.pics,{msg:e.currentRandomNote.desc}):e.currentRandomNote&&e.currentRandomNote.pics&&util.wedgt.imgPreviewer($("#wary"),e.currentRandomNote.pics,{msg:""})}.bind(this),this.deleteRandomNote=function(e){var i=$(e.target).attr("alt");t.execute({id:a,deleteId:i}),e.stopPropagation()}.bind(this),this.shareinfo=function(){var e,t,i,a,n=this,s=this.parent.parent;if(s.shareinfo_detail(),n&&n.pics[0]&&n.pics[0]){var r={};r.images=[],r.images[0]={meta:n.pics[0].meta,url:n.pics[0].url},e="http://"+util.sharepic(r)}else e="/public/images/pabanner.png";t={title:'我在参加"'+s.item.name+'"活动,给小伙伴直播一下~~~~',desc:n.desc||s.item.name,link:__page.holder().getBaseUrl()+"/index#activity/_"+s._id+"?guest="+n._id,imgUrl:e},i=Object.create(t),i.success=function(){_czc.push(["_trackEvent",util.getDc().PA.NAME+"("+util.getDc().PA.ACTION.SHARE+")",s.item.name+"随记"||"",util.convertToValue(s.item.tags.type).join(",")||"",0])},a=Object.create(t),a.success=function(){_czc.push(["_trackEvent",util.getDc().PA.NAME+"("+util.getDc().PA.ACTION.SHARE+")",s.item.name+"随记"||"",util.convertToValue(s.item.tags.type).join(",")||"",0])},wx.onMenuShareAppMessage(i),wx.onMenuShareTimeline(a)}.bind(this)});
-riot.tag("travel-detail",'<div if="{!hidden}" class="travel-detail"> <div id="wary"> <div class="travel-detail-screen"> <img riot-src="{picshow}" class="img1"> <div class="scr tt_setheight_line"> <div class="scr_left">{item.name}</div> <div class="scr_right"><img src="/public/images/3_03.png"> <span class="likesum">{item.meta.likes}</span></div> </div> <div class="shadow tt_setheight"></div> </div> <div class="pun t-c set_width2"> {item.promotionWords} </div> <div class="pub_tit t-c m_top10"> 亮点 </div> <ul class="ld_ul1"> <li each="{ i in highlightsArray }">• {i}</li> </ul> <div class="pub_tit t-c m_top10"> 概览 </div> <div class="pun m_top10 set_width1"> {item.summary} </div> <div class="pub_tit t-c m_top10"> 介绍 </div> <div class="introduce nav_info"> <div class="detail_pub m_top10" each="{element,i in item.elements }"> <p class="FB"><img src="/public/images/3_01.png" class="img_width vertical"> <span class="vertical" >{i+1}.{element.name}</span></p> <travel-spot each="{element.spots}"></travel-spot> </div> <div class="xcgyimg border_radius xcgy_gz" id="showCatalog" onclick="{showcatalogue}"> <img src="/public/images/3_09.png" class="border_radius"> </div> </div> <div class="comment display_none nav_info" id="commentId"></div> <div class="detail_pub m_top10 position_rel border_radius_3px"> <a href="http://mp.weixin.qq.com/s?__biz=MzA3MjIwNTk4Mg==&mid=204371161&idx=1&sn=51f61cc7634389147a7050a5a2e97a6f#rd" class="butA"><img src="../public/images/guanzhu.jpg" alt="提示" class="border_radius_3px"> </a> </div>  <div class="footer_placeholder"></div> <div class="footer"> <div onclick="{returnPage}"></div> <div class="but1 button travel-detail-live" onclick="{live}"></div> <div class="button but2" onclick="{shareinfo}">分享</div> </div> <div class="footer_shadow"></div> <div class="body_shadow display_none" onclick="{hideShadow}"></div> <div class="xcgy_wary display_none"> <div class="xcgy_wary_div1">介绍目录</div> <div class="xcgy_wary_div2"> <ul> <li each="{element,i in item.elements}"><p></p>{i+1}.{element.name} </li> </ul> </div> </div> <div class="comments_wary display_none border_radius"> <img src="/public/images/close.png" class="but_close_img"> <div class="comm_cz_sbss">随便说说</div> <textarea class="textarea border_radius"></textarea> <button class="comm_but border_radius">提交</button> </div> <div class="together display_none" id="clickXHidden" onclick="{hideShadow}"> <img src="/public/images/4_02.png" class="together_img"> </div> <wechat-menu if="{!subscribe}"></wechat-menu> </div> </div>',function(){var i=nest.presentable(this);i.env=__app.settings.env.NODE_ENV;var e=nest.modelable({},{url:__app.settings.api.url+"/tt/"});i.footershow=!0,e._id=this._id=this.opts._id,e.on("fetch",function(e){console.info("activity is fetched"),i.item=e,i.id=e._id,i.name=e.name,i.promotionWords=e.promotionWords,i.highlightsArray=e.highlights.split("\r\n"),console.log(e.highlights),i.userId=window.__page.user.id,i.user=JSON.stringify(window.__page.user),i.picshow=util.calcImageUrl(i.item),i.likes=e.meta.likes,i.subscribe=1==__page.user.wx_subscribe?!0:!1,i.update({item:e}),i.trigger("ready",!0),i.trigger("view-route-to"),a(),d(),o()});var s=function(i){this.trigger("ready",!1),this._id=i||this._id,e.set("_id",this._id),e.fetch({action:"open"})}.bind(i),t=function(){this.trigger("ready",!1),e.fetch(this._id,{action:"refresh"})}.bind(i);this.on("mount",function(){console.info("tag activity is mounted")}),this.on("open",function(i){console.info("tag activity is opening"),s(i)}),this.on("refresh",function(){console.info("tag activity is refreshing"),t()}),this.on("show",function(e){e&&__page.holder().setTitle(i.item.name),$(window).scrollTop("0px")});var a=function(){var e=__page.user.meta.likes[i.id];e?$(".footer .but1").removeClass("travel-detail-live").addClass("travel-detail-live1"):$(".footer .but1").removeClass("travel-detail-live1").addClass("travel-detail-live")},o=function(){$(document).click(function(){$(".home_gy_set")&&($(".home_gy").removeClass("home_gy_set"),$(".home_gy").addClass("home_gy_set1"))}),$(".img_home").click(function(i){$(".home_gy").removeClass("home_gy_set1"),$(".home_gy").addClass("home_gy_set"),i.stopPropagation()})};this.returnPage=function(){riot.route("travel/index")}.bind(this),this.live=function(){$.ajax({type:"GET",url:__app.settings.api.url+"/tt/_"+i.id+"/like",success:function(s){s.status&&(s.result>i.likes?__page.user.meta.likes[i.id]="11111":delete __page.user.meta.likes[i.id],e.fetch())}})}.bind(this),this.shareinfo=function(){var i=$(window).scrollTop(),e=$(window).height(),s=$("body").height(),t=e>s?e:s;$(".together").show().css("top",i+"px"),$(".body_shadow").show().css("height",t+"px")}.bind(this),this.showcatalogue=function(){var i=$(window).scrollTop(),e=$(window).height(),s=$("body").height(),t=e>s?e:s;$(".body_shadow").show().css("height",t+"px"),$(".xcgy_wary").show().css("top",i+20+"px")}.bind(this),this.hideShadow=function(){$(".body_shadow").hide(),$(".xcgy_wary").hide(),$(".comments_wary").hide(),$(".together").hide()}.bind(this);var d=function(){wx.ready(function(){wx.onMenuShareAppMessage({title:i.name,desc:i.promotionWords,link:__page.holder().getBaseUrl()+"/index#travel/_"+i.id,imgUrl:i.picshow,type:"",dataUrl:"",success:function(){},cancel:function(){}}),wx.onMenuShareTimeline({title:i.name,link:__page.holder().getBaseUrl()+"/index#travel/_"+i.id,imgUrl:i.picshow,success:function(){},cancel:function(){}})})}});
-riot.tag("travel-index",'<div if="{!hidden}"> <div class="clear">&nbsp</div> <div class="activity-list"> <travel-item each="{items}" curritem="{this}" class="activity-item travel-item"></travel-item> </div> <wechat-menu if="{!subscribe}"></wechat-menu>  <div class="footer_placeholder"></div> <div class="footer-index setleft"> <div> <a href="#activity/index"><i><img riot-src="/{env}/images/footer_nav_activity1.png"><br>活动</i></a> <a href="#travel/index"><i class="current"><img riot-src="/{env}/images/footer_nav_travel2.png"><br>场所</i></a> <a href="#mine/index"><i><img riot-src="/{env}/images/footer_nav_mine1.png"><br>我的</i></a> </div> <div> <i onclick="{showattention}">发布活动</i> </div> </div> </div>',function(){function i(){var i=Math.round(260*Math.round(.95*$("#wary").width())/600)-3;$(".img1").css("height",i+5)}var e=nest.presentable(this);e.env="production"==__app.settings.env.NODE_ENV?"public":"web";var t={sort:{updOn:-1},conditions:{}},n=this.collection=nest.collectable({},{url:__app.settings.api.url+"/tt/filter",filter:t});n.on("fetch",function(i){console.info("activities is fetched"),e.items=i,e.subscribe=1==__page.user.wx_subscribe?!0:!1,e.update(),e.trigger("ready",!0),e.trigger("view-route-to"),r(),a()});var o=function(i){this.trigger("ready",!1),this.filter=i||this.filter,n.fetch({filter:this.filter})}.bind(e),s=function(){this.trigger("ready",!1),n.fetch({filter:this.filter})}.bind(e);this.on("mount",function(){console.info("tag activities is mounted")}),this.on("open",function(i){console.info("tag activities is opening"),o(i)}),this.on("refresh",function(){console.info("tag activities is refreshing"),s()}),this.on("show",function(i){i&&__page.holder().setTitle("场所"),$(window).scrollTop("0px")}),this.refresh=function(){s()}.bind(this);var r=function(){i()};$(window).resize(function(){i()});var a=function(){$(document).click(function(){$(".home_gy_set")&&($(".home_gy").removeClass("home_gy_set"),$(".home_gy").addClass("home_gy_set1"))}),$(".img_home").click(function(i){$(".home_gy").removeClass("home_gy_set1"),$(".home_gy").addClass("home_gy_set"),i.stopPropagation()})};this.showattention=function(){riot.route("activity/new")}.bind(this),wx.ready(function(){wx.onMenuShareAppMessage({title:"快乐种子",desc:"欢迎关注快乐种子，更多精彩活动等你参加！",link:__page.holder().getBaseUrl()+"/index#activity/index",imgUrl:__page.holder().getBaseUrl()+"/public/images/logo.png",type:"",dataUrl:"",success:function(){},cancel:function(){}}),wx.onMenuShareTimeline({title:"快乐种子",link:__page.holder().getBaseUrl()+"/index#activity/index",imgUrl:__page.holder().getBaseUrl()+"/public/images/logo.png",success:function(){},cancel:function(){}})})});
-riot.tag("travel-item",'                  <div class="screen"> <a href="#travel/_{_id}"><img riot-src="{picshow}" class="activity-cover-img img1"></a> <div class="bottom-bar"> <div> <p>{name.length > 15 ? name.substring(0, 15)+\'...\':name}</p> <p> <span></span>{promotionWords.length > 16 ? promotionWords.substring(0, 16)+\'...\':promotionWords} </p> </div> <div><img src= "{path}"> <span>{likes}</span></div> </div> <div class="shadow"></div> </div>',function(){var i=this.opts.curritem,s=this,e=__page.user;s.env=__app.settings.env.NODE_ENV;var t="development"==s.env?"web":"public";s.picshow=util.calcImageUrl(i),s.likes="0",s.path="";var a=function(){if(e.id){var a=e.meta.likes[i._id];a?(s.path="/"+t+"/images/3_06_h.png",s.likes=i.meta.likes):(s.path="/"+t+"/images/3_03.png",s.likes=i.meta.likes)}else s.path="/"+t+"/images/3_03.png",s.likes=i.meta.likes;console.log(s.path)};this.on("mount",function(){console.info("tag activities is mounted"),a(),this.update()})});
-riot.tag("travel-spot",'<p each="{pic in pics}"> <img riot-src="{pic}" class="activity-cover-img img1 border_radius"> </p> <p>{desc}</p>',function(){});
-riot.tag("wechat-menu",'<div class="wechat-menu" id="focus_on"> <img riot-src="/{env}/images/logo_1.png"> </div> <a href="{wxhref}"><div class="xcgyimg_flash xcgyimg_1"></div></a>',function(){self=this;var e=function(){return"production"==__app.settings.env.NODE_ENV?"public":"web"};self.wxhref=util.getWxhref(),self.env=e()});}
+module.exports=function(){riot.tag('accordion', '<nav> <ul class="nav nav-pills nav-stacked"> <li role="presentation" class="{active: useAsDefault}" each="{opts.navs}"> <a href="#{path}">{presentation}</a> </li> </ul> </nav>', 'accordion ul{ margin: 0px; padding: 0px; }', function(opts) {
+
+    
+});
+riot.tag('add-group-member', '<div class="title_wrap"> <b onclick="{backToView}" style="display: block;width:24px;height:24px;float:left" onclick="{back}"> <i class="glyphicon glyphicon-chevron-left"></i> </b> 添加成员 <b onclick="{submit}" style="display: block;width:80px;height:24px;float:right"> <button type="button" class="btn btn-default" style="display:inline-block;background: #42AC3E; color:white; border: none"> 确认添加 </button> </b> </div> <div> <div class="wrapper" attr="{parent.mediaUsers}"> <div style="margin-bottom: 10px"> <button onclick="{selectContact}" class="{select_contact: status[\'contact\']}"> <span class="glyphicon glyphicon-user" aria-hidden="true"></span> 联系人 </button> <button onclick="{selectGroup}" class="{select_contact: status[\'group\']}"> <span class="glyphicon glyphicon-th" aria-hidden="true"></span> 群组 </button> </div> <div each="{parent.mediaUsers}"> <div class="list_container"> <div style="height:24px;line-height: 24px;margin-bottom: 10px;border-bottom:1px solid #ddd">{media.name}<strong>({mediaUsers.length})</strong></div> <ul class="user_list"> <li onclick="{parent.parent.selectMember}" each="{mediaUsers}" if="{parent.parent.status[contacttype]}" id="{_id}" media="{parent.media._id}" group="{parent.parent.parent.group._id}"> <img riot-src="{parent.parent.app.settings.api.url + \'/file?media_id=\' + headimgurl}"> <p style="overflow: hidden;height:24px">{remark}</p> </li> </ul> </div> </div> </div> </div>', 'add-group-member .select_contact{ background: #5B6779; border:1px solid #2E3238; color:white; } add-group-member .list_container{ overflow: scroll; height:500px; } add-group-member .wrapper{ width:90%; margin:0px auto; } add-group-member .user_list{ overflow: hidden; list-style-type: none; margin:0px; padding:0px; color:#888; } add-group-member .user_list >li{ width:100px; float:left; margin:5px 0px; text-align: center; line-height: 30px; position: relative; } add-group-member .user_list >li img{ display: inline-block; width:64px; height:64px; } add-group-member .title_wrap{ height:50px; margin:8px 10px; text-align: center; line-height: 50px; } add-group-member .select{ position: absolute; top:0px; left:17px; background:#42AC3E; width:64px; height:64px; opacity: 0.8; } add-group-member .select div{ font-size: 40px; color:white; margin:8px; }', function(opts) {
+        var self = this;
+        self.page = __page;
+        self.app = __app;
+        self.nav = 0;
+        self.members = {};
+        self.init = function(){
+            self.status = {};
+            self.status['contact'] = 'contact';
+        };
+        var navNameToIndex = {
+            '基本信息': 0,
+            '成员': 1
+        };
+        var addGroupMembers = domain.action('addGroupMembers');
+        function onAddGroupMembers(data){
+            if(data.success){
+                self.members = {};
+                if(data.data && data.data.length){
+                    data.data.forEach(function(member){
+                        self.parent.groupMembers.unshift(member);
+                    })
+                }
+                self.parent.panel.view();
+                self.parent.update();
+            }
+        }
+        this.on('mount', function(){
+            addGroupMembers.onDone(onAddGroupMembers);
+        });
+        this.on('unmount', function(){
+            addGroupMembers.offDone(onAddGroupMembers);
+        });
+        this.selectContact = function(e) {
+            if(self.status['contact']){
+                delete self.status['contact']
+                return;
+            }
+            self.status['contact'] = 'contact';
+        }.bind(this);
+        this.selectGroup = function(e) {
+            if(self.status['group']){
+                delete self.status['group']
+                return;
+            }
+            self.status['group'] = 'group';
+        }.bind(this);
+        this.clickNav = function(e) {
+            self.nav = navNameToIndex[e.target.innerText];
+        }.bind(this);
+        this.addMember = function(e) {
+            self.parent.panel.status = 'add_m';
+            self.parent.update();
+        }.bind(this);
+        this.selectMember = function(e) {
+            var target = e.currentTarget;
+            var id = target.id;
+            var group = target.getAttribute('group');
+            var media = target.getAttribute('media');
+            toggle(target)
+            function toggle(target){
+                if(self.members[id]){
+                    cancel(target);
+                    delete self.members[id];
+                }else{
+                    var member = {
+                        group: group,
+                        media: media,
+                        member: id
+                    };
+                    self.members[id] = member;
+                    select(target);
+                }
+            }
+            function select(el){
+                var maskEl = document.createElement('div');
+                maskEl.classList.add('select');
+                var iconEl = document.createElement('div');
+                iconEl.classList.add('glyphicon');
+                iconEl.classList.add('glyphicon-ok');
+                maskEl.appendChild(iconEl);
+                el.appendChild(maskEl);
+            }
+            function cancel(el){
+                el.removeChild(el.childNodes[el.childNodes.length-1])
+            }
+        }.bind(this);
+        this.submit = function(e) {
+            if(!Object.keys(self.members).length){
+                return;
+            }else{
+                addGroupMembers.execute({members: self.members});
+            }
+        }.bind(this);
+        this.backToView = function(e) {
+            self.members = {};
+            self.parent.panel.view();
+            self.parent.update();
+        }.bind(this);
+    
+});
+riot.tag('add-group', '<div class="title_wrap"> <b onclick="{backToView}" style="display: block;width:24px;height:24px;float:left" onclick="{back}"> <i class="glyphicon glyphicon-chevron-left"></i> </b> 添加分组 </div> <form id="form"> <div class="profile"> <div class="profile_item row-fluid form-group"> <div class="primary col-md-5 col-xs-5 col-sm-5"> <label>名称</label> </div> <div class="primary col-md-7 col-xs-7 col-sm-7"> <input id="groupName" class="form-control" type="text" placeholder="请输入名称"> </div> </div> <div class="profile_item row-fluid form-group"> <div class="secondary col-md-5 col-xs-5 col-sm-5"> <label>类型</label> </div> <div class="secondary col-md-7 col-xs-7 col-sm-7"> <label class="radio-inline"> <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="{app.enums.GroupType.names.Selected}" checked> {app.enums.GroupType.values.selected} </label> <label class="radio-inline" style="color:#ccc"> <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="{app.enums.GroupType.names.Tagged}" disabled> {app.enums.GroupType.values.tagged} </label> </div> </div> <div class="profile_item row-fluid form-group"> <div class="secondary col-md-5 col-xs-5 col-sm-5"> <label>包含微信号</label> </div> <div class="secondary col-md-7 col-xs-7 col-sm-7"> <button each="{parent.myManageMedia}" onclick="{backToView}" type="button" class="btn btn-default" style="display:inline-block;background: #CCC; color:white; border: none"> {name} </button> </div> </div> <div class="profile_item row-fluid form-group"> <div class="secondary col-md-5 col-xs-5 col-sm-5"> <label>负责人</label> </div> <div class="secondary col-md-7 col-xs-7 col-sm-7"> <label>{page.user.nickname}</label> </div> </div> <div class="profile_item"> <button onclick="{submit}" type="button" class="btn btn-default" style="height:40px;width:160px;background: #42AC3E; color:white; border: none"> <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> 确认 </button>&nbsp&nbsp&nbsp&nbsp <button onclick="{backToView}" type="button" class="btn btn-default" style="display:inline-block;height:40px;width:160px;background: #9D9D9D; color:white; border: none"> <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> 返回 </button> </div> </div> </form>', 'add-group .profile{ padding-top:80px; margin:0px auto; width:80% } add-group .profile_item{ margin: 0px auto; text-align: center; margin-bottom: 30px; overflow: hidden; } add-group .profile_item div.secondary label{ font-size: 16px; } add-group .profile_item >div:first-child{ text-align: right; } add-group .profile_item >div:nth-child(2){ text-indent: 3em; text-align: left; } add-group .profile_item label{ font-weight:400; font-size: 24px; } add-group .title_wrap{ height:50px; line-height: 50px; margin:8px 10px; text-align: center; border-bottom: 1px solid #ddd; } add-group .tips_wrapper{ width:100%; position: absolute; top:0px; left:0px; overflow: hidden; margin-top:100px; -webkit-transition: opacity 1s ease-in; -moz-transition: opacity 1s ease-in; -ms-transition: opacity 1s ease-in; -o-transition: opacity 1s ease-in; transition: opacity 1s ease-in; } add-group .tips{ width:60%; margin:0px auto; } add-group .fadeout{ opacity: 0; }', function(opts) {
+        var self = this;
+        self.app = __app;
+        self.page = __page;
+        var addGroup = domain.action('addGroup');
+        this.backToView = function(e) {
+            self.groupName.value = '';
+            self.parent.panel.status = 'view';
+            self.parent.tags['group-left'].init();
+            self.parent.update();
+        }.bind(this);
+        function onAddGroup(data){
+            self.parent.groups.unshift(data.data);
+            self.parent.group = data.data;
+            self.parent.groupMembers = [];
+            self.backToView();
+        }
+        this.on('mount', function(){
+            addGroup.onDone(onAddGroup);
+        });
+        this.on('unmount', function(){
+            addGroup.offDone(onAddGroup);
+        });
+        this.submit = function(e) {
+            if(!self.groupName.value){
+                showAlert(self.form, '请输入名称', false);
+                return;
+            }
+            var radio = document.querySelector('input[name="inlineRadioOptions"]:checked');
+            var group = {
+                name: self.groupName.value,
+                type: radio.value
+            };
+            addGroup.execute(group);
+        }.bind(this);
+
+        function showAlert(parentEl, text, flag){
+            var bgFlag = null;
+            var iconFlag = null;
+            if(flag){
+                bgFlag = 'alert-success';
+                iconFlag = 'glyphicon-ok';
+
+            }else{
+                bgFlag = 'alert-danger';
+                iconFlag = 'glyphicon-exclamation-sign';
+            }
+            var wrapper = document.createElement('div');
+            addClass(wrapper, 'tips_wrapper');
+
+            var tips = document.createElement('div');
+            addClass(tips, 'alert');
+            addClass(tips, bgFlag);
+            addClass(tips, 'tips');
+            tips.setAttribute('role', 'alert');
+
+            var icon = document.createElement('span');
+            addClass(icon, 'glyphicon');
+            addClass(icon, iconFlag);
+            icon.setAttribute('aria-hidden', 'true');
+
+            var title = document.createElement('span');
+            addClass(title, 'sr-only');
+            title.innerText ='错误:';
+
+            var txtEl = document.createElement('span');
+            txtEl.innerText = ' ' + text;
+            tips.append = function(el){
+                tips.appendChild(el);
+                return tips;
+            };
+
+            tips.append(icon).append(title).insertBefore(txtEl, title.nextSibling);
+            wrapper.appendChild(tips);
+            parentEl.appendChild(wrapper);
+
+            setTimeout(function(){
+                addClass(wrapper, 'fadeout');
+                setTimeout(function(){
+                    removeFrom(wrapper, self.form)
+                }, 1000)
+            }, 1000);
+
+            function addClass(el, className){
+                el.classList.add(className);
+            }
+
+            function removeFrom(el, parentEl){
+                parentEl.removeChild(el);
+            }
+        }
+    
+});
+riot.tag('adlink-detail', '<div if="{!hidden}"> <div class="container-fluid"> <div class="row-fluid"> <div class="col-sm-12 col-md-12 col-lg-12" > <div id="adlink-msg" class="alert alert-danger alert-dismissible fade in hidden" style="margin-left: 20px;" role="alert"> <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button> <h4></h4> <div id="msgs"></div> </div> </div> </div> <div class="row-fluid"> <div class="col-sm-12 col-md-12 col-lg-12" > <form class="form-horizontal" id="adlink-detail"> <input type="hidden" id="id" name="id" value="{adlink._id}"> <div class="form-group"> <label class="col-sm-2 col-md-2 col-lg-2 control-label">名称</label> <div class="col-sm-10 col-md-10 col-lg-10"> <p class="form-control-static">{adlink.name}</p> </div> </div>       <div class="form-group"> <label class="col-sm-2 col-md-2 col-lg-2 control-label">广告图片</label> <div class="col-sm-10 col-md-10 col-lg-10"> <div class="{hidden: !adlink.adpicUrl}"> <img riot-src="{adlink.adpicUrl}" style="width: 100%;"> </div> </div> </div> <div class="form-group"> <label class="col-sm-2 col-md-2 col-lg-2 control-label">广告链接</label> <div class="col-sm-10"> <p class="form-control-static">{adlink.url}</p> </div> </div> <div class="form-group"> <label class="col-sm-2 col-md-2 col-lg-2 control-label">客服电话</label> <div class="col-sm-10 col-md-10 col-lg-10"> <div class="input-group"> <p class="form-control-static">{adlink.phone}</p> </div> </div> </div> <div class="form-group"> <label class="col-sm-2 col-md-2 col-lg-2 control-label">位置</label> <div class="col-sm-10 col-md-10 col-lg-10"> <div class="btn-group"> <p class="form-control-static">{ __app.enums.AdlinkLayout.values[adlink.layout] }</p> </div> </div> </div> <div class="form-group"> <label class="col-sm-2 col-md-2 col-lg-2 control-label">主题</label> <div class="col-sm-10 col-md-10 col-lg-10"> <div class="btn-group"> <p class="form-control-static">{ __app.enums.AdlinkTheme.values[adlink.theme] }</p> </div> </div> </div> <div class="form-group"> <label class="col-sm-2 col-md-2 col-lg-2 control-label">创建时间</label> <div class="col-sm-10 col-md-10 col-lg-10"> <div class="btn-group"> <p class="form-control-static">{ adlink.crtOnText }</p> </div> </div> </div> <div class="form-group"> <div class="col-sm-offset-2 col-md-offset-2 col-lg-offset-2 col-sm-10 col-md-10 col-lg-10"> <button type="button" class="btn btn-primary" onclick="{onEdit}">编辑</button> </div> </div> </form> </div> </div> </div> </div>', 'adlink-detail .row-fluid { word-wrap: break-word; }', function(opts) {
+        var self = nest.presentable(this);
+        self.api =  __app.settings.api.url;
+        self.adlink = {};
+
+        var loadAdlink = domain.action('loadAdlink');
+        var onLoadAdlink = function(adlink){
+            adlink.crtOnText = formateDate(new Date(adlink.crtOn));
+            self.update({hidden: false, adlink: adlink});
+        };
+
+        this.on('mount', function(){
+            loadAdlink.onDone(onLoadAdlink);
+        });
+
+        this.on('unmount', function(){
+            loadAdlink.offDone(onLoadAdlink);
+        });
+
+        self.on('open', function(params){
+            if(params.id){
+                loadAdlink.execute(params.id);
+            }
+            else{
+                onLoadAdlink(params.model);
+            }
+        });
+
+        self.on('close', function(){self.update({hidden: true});});
+
+        function trim(str) {
+            if(!str) return '';
+            return str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+        }
+
+        function formateDate(date) {
+            return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+        }
+
+        this.onEdit = function(e) {
+            self.parent.showEditView(self.adlink._id);
+        }.bind(this);
+
+        this.onSyncLayout = function(e) {
+            $('#adlink-edit #layout').val( $(e.currentTarget).find('input').val() );
+        }.bind(this);
+
+        this.onSyncTheme = function(e) {
+            $('#adlink-edit #theme').val( $(e.currentTarget).find('input').val() );
+        }.bind(this);
+
+        this.onPhoneBlur = function(e) {
+            var phone = $(e.currentTarget).val();
+            $('#adlink-edit #hasPhone').prop("checked", trim(phone)!=='');
+        }.bind(this);
+
+    
+});
+riot.tag('adlink-edit', '<div if="{!hidden}"> <div class="container-fluid"> <div class="row-fluid"> <div class="col-sm-12 col-md-12 col-lg-12" > <div id="adlink-msg" class="alert alert-danger alert-dismissible fade in hidden" style="margin-left: 20px;" role="alert"> <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button> <h4></h4> <div id="msgs"></div> </div> </div> </div> <div class="row-fluid"> <div class="col-sm-12 col-md-12 col-lg-12" > <form class="form-horizontal" id="adlink-edit"> <input if="{action==\'edit\'}" type="hidden" id="id" name="id" value="{adlink._id}"> <input if="{action==\'new\'}" type="hidden" id="org" name="org" value="{tenantId}"> <div class="form-group"> <label for="name" class="col-sm-2 col-md-2 col-lg-2 control-label">名称</label> <div class="col-sm-10 col-md-10 col-lg-10"> <input type="text" class="form-control" id="name" placeholder="" value="{adlink.name}"> </div> </div>       <div class="form-group"> <label for="adwords" class="col-sm-2 col-md-2 col-lg-2 control-label">广告图片</label> <div class="col-sm-10 col-md-10 col-lg-10">   <div class="{hidden: adpicMode!=\'select\'}"> <span class="btn btn-default btn-file"> 浏览<input id="img_file" type="file" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{previewImg}"> </span> <div class="{hidden: !adlink.adpicUrl}"> <img riot-src="{adlink.adpicUrl}" style="width: 100%;"> </div> </div> <div class="{hidden: adpicMode!=\'preview\'}" class="panel panel-default" id="img_prew" style="margin-bottom: 10px"> <table class="table table-condensed" style="border: 0px; text-align: center; vertical-align: middle;"> <tbody> <tr> <td colspan="3"><img riot-src="{img_url}" style="width: 100%;"></td> </tr> <tr> <td>{img_name}</td> <td>{img_size}</td> <td>{img_width}*{img_height}</td> </tr> <tr> <td colspan="3"> <input class="btn btn-default" type="button" style="margin-right: 50px" value="取消" onclick="{cancel_send_img}"> <input class="btn btn-success" type="button" value="发送" onclick="{send_img}"> </td> </tr> </tbody> </table> </div> </div> </div> <div class="form-group"> <label for="url" class="col-sm-2 col-md-2 col-lg-2 control-label">广告链接</label> <div class="col-sm-10"> <input type="url" class="form-control" id="url" placeholder="" value="{adlink.url}"> </div> </div> <div class="form-group"> <label for="phone" class="col-sm-2 col-md-2 col-lg-2 control-label">客服电话</label> <div class="col-sm-10 col-md-10 col-lg-10"> <div class="input-group"> <span class="input-group-addon"> <input type="checkbox" aria-label="..." id="hasPhone" __checked="{adlink.phone==\'\' ? \'false\':\'true\'}"> </span> <input type="phone" class="form-control" id="phone" placeholder="" onblur="{onPhoneBlur}" value="{adlink.phone}"> </div> </div> </div> <div class="form-group"> <label for="layout" class="col-sm-2 col-md-2 col-lg-2 control-label">位置</label> <div class="col-sm-10 col-md-10 col-lg-10"> <div class="btn-group" data-toggle="buttons"> <input type="hidden" id="layout" name="layout" value="{adlink.layout ? adlink.layout : \'bottom\'}"> <label class="btn btn-default {!adlink.layout || adlink.layout==\'bottom\' ? \'active\': \'\'}" onclick="{onSyncLayout}"> <input type="radio" name="layoutRadio" id="layoutBottom" autocomplete="off" value="bottom">底部 </label> <label class="btn btn-default {adlink.layout==\'top\' ? \'active\': \'\'}" onclick="{onSyncLayout}"> <input type="radio" name="layoutRadio" id="layoutTop" autocomplete="off" value="top">顶部 </label> </div> </div> </div> <div class="form-group"> <label for="theme" class="col-sm-2 col-md-2 col-lg-2 control-label">主题</label> <div class="col-sm-10 col-md-10 col-lg-10"> <div class="btn-group" data-toggle="buttons"> <input type="hidden" id="theme" name="theme" value="{adlink.theme ? adlink.theme : \'dark\'}"> <label class="btn btn-default {!adlink.theme || adlink.theme==\'dark\' ? \'active\': \'\'}" onclick="{onSyncTheme}"> <input type="radio" name="themeRadio" id="themeDark" autocomplete="off" value="dark">深色 </label> <label class="btn btn-default {adlink.theme==\'light\' ? \'active\': \'\'}" onclick="{onSyncTheme}"> <input type="radio" name="themeRadio" id="themeLight" autocomplete="off" value="light">浅色 </label> </div> </div> </div> <div if="{action==\'edit\'}" class="form-group"> <label for="url" class="col-sm-2 col-md-2 col-lg-2 control-label">创建时间</label> <div class="btn-group"> <p class="form-control-static">{ adlink.crtOnText }</p> </div> </div> <div class="form-group"> <div class="col-sm-offset-2 col-md-offset-2 col-lg-offset-2 col-sm-10 col-md-10 col-lg-10"> <button if="{action==\'new\'}" type="button" class="btn btn-primary" onclick="{onSave}">创建</button> <button if="{action==\'edit\'}" type="button" class="btn btn-primary" onclick="{onSave}">更新</button> </div> </div> </form> </div> </div> </div> </div>', 'adlink-edit .btn-file { position: relative; overflow: hidden; } adlink-edit .btn-file input[type=file] { position: absolute; top: 0; right: 0; min-width: 100%; min-height: 100%; font-size: 100px; text-align: right; filter: alpha(opacity=0); opacity: 0; outline: none; background: white; cursor: inherit; display: block; }', function(opts) {
+        var self = nest.presentable(this);
+        self.api =  __app.settings.api.url;
+        self.adlink = {};
+        self.adpicMode = 'select'; //select | preview
+
+        var createAdlink = domain.action('createAdlink');
+        var updateAdlink = domain.action('updateAdlink');
+        var onSaveAdlink = function(adlink){
+            self.parent.showDetailView(adlink);
+            self.parent.onRefresh();
+        };
+
+        var loadAdlink = domain.action('loadAndEditAdlink');
+        var onLoadAdlink = function(adlink){
+            adlink.crtOnText = formateDate(new Date(adlink.crtOn));
+            self.update({hidden: false, adlink: adlink});
+        };
+
+        this.on('mount', function(){
+            createAdlink.onDone(onSaveAdlink);
+            updateAdlink.onDone(onSaveAdlink);
+            loadAdlink.onDone(onLoadAdlink);
+        });
+        this.on('unmount', function(){
+            createAdlink.offDone(onSaveAdlink);
+            updateAdlink.offDone(onSaveAdlink);
+            loadAdlink.offDone(onLoadAdlink);
+        });
+
+        self.on('open', function(params){
+            self.action = params.action;
+            if(params.action=='new'){
+                self.tenantId = params.tenantId;
+                self.adlink = {org: params.tenantId};
+                self.update({hidden: false});
+            }
+            else if(params.action=='edit'){
+                loadAdlink.execute(params.id);
+            }
+        });
+
+        self.on('close', function(){self.update({hidden: true});});
+
+        function trim(str) {
+            if(!str) return '';
+            return str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+        }
+
+        function formateDate(date) {
+            return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+        }
+
+        this.cancel_send_img = function(e) {
+            self.adpicMode = 'select';
+            self.update();
+        }.bind(this);
+        this.previewImg = function(e) {
+            var file = e.target.files[0];
+            var kSize = Math.round(file.size/1024);
+            self.img_size = kSize>=1024 ? Math.round(kSize/1024) + 'm' : kSize + 'k';
+            self.img_name = file.name;
+            self.img_width = 0;
+            self.img_height = 0;
+            var reader = new FileReader();
+            reader.onload = function(data){
+                self.img_url = data.target.result;
+
+                var image = new Image();
+                image.src = data.target.result;
+                image.onload = function() {
+                    self.img_width = this.width;
+                    self.img_height = this.height;
+                    self.update();
+                };
+
+                self.adpicMode = 'preview';
+                self.update();
+            }
+            reader.readAsDataURL(file);
+        }.bind(this);
+        this.send_img = function(e) {
+            var formData = new FormData();
+            var files = $('#img_file')[0].files;
+            formData.append('file', files[0]);
+            $.ajax({
+                url: self.api + '/file/upload',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (body) {
+                    self.adlink.adpic = body.media_id;
+                    self.adlink.adpicUrl = '/api/file?media_id=' + body.media_id;
+                    self.adpicMode = 'select';
+                    self.update();
+                },
+                error: function (responseStr) {
+                    console.error("失败:" + JSON.stringify(responseStr));
+                }
+            });
+        }.bind(this);
+
+        var model = {};
+        this.onSave = function(e) {
+            var msgs = [];
+
+            model.name = $('#adlink-edit #name').val();
+            if(trim(model.name)=='') msgs.push('<p>"名称"不能为空</p>');
+
+
+
+            console.log(self.adlink);
+            model.adpic = self.adlink.adpic;
+            model.adpicUrl = self.adlink.adpicUrl;
+            if(trim(model.adpic)=='') msgs.push('<p>"广告图片"不能为空</p>');
+
+            model.url = $('#adlink-edit #url').val();
+            if(trim(model.url)=='') msgs.push('<p>"广告链接"不能为空</p>');
+
+            model.phone = $('#adlink-edit #phone').val();
+
+            model.layout = $('#adlink-edit #layout').val();
+            model.theme = $('#adlink-edit #theme').val();
+
+            if(msgs.length){
+                $('#adlink-msg #msgs').html(msgs.join(''));
+                $('#adlink-msg').removeClass('hidden');
+                return;
+            }
+            else{
+                $('#adlink-msg #msgs').html('');
+                $('#adlink-msg').addClass('hidden');
+            }
+
+            if(self.action=='new'){
+                model.org = self.tenantId;
+                createAdlink.execute(model);
+            }
+            else if(self.action=='edit'){
+                model._id = $('#adlink-edit #id').val();
+                updateAdlink.execute(model);
+            }
+        }.bind(this);
+
+        this.onSyncLayout = function(e) {
+            $('#adlink-edit #layout').val( $(e.currentTarget).find('input').val() );
+        }.bind(this);
+
+        this.onSyncTheme = function(e) {
+            $('#adlink-edit #theme').val( $(e.currentTarget).find('input').val() );
+        }.bind(this);
+
+        this.onPhoneBlur = function(e) {
+            var phone = $(e.currentTarget).val();
+            $('#adlink-edit #hasPhone').prop("checked", trim(phone)!=='');
+        }.bind(this);
+
+    
+});
+riot.tag('adlink-index', '<div if="{!hidden}"> <div class="container-fluid"> <div class="row-fluid"> &nbsp; </div> <div class="row-fluid"> <div class="col-md-4 col-lg-4" > <div class="row-fluid"> <div class="col-md-12 col-lg-12" > <div class="pull-right"> <button class="btn btn-default btn-sm" type="button" onclick="{onRefresh}">刷新</button> <button class="btn btn-default btn-sm" type="button" onclick="{onNew}">新建</button> </div> <table class="table table-striped"> <thead> <tr> <th>名称</th> <th>广告</th> <th>布局</th> </tr> </thead> <tbody> <tr each="{adlinks}"> <td> <a onclick="{parent.onView}"> <input type="hidden" value="{_id}"> {name} </a> </td> <td> <a href="{url}"> <img riot-src="{adpicUrl}" style="width: 200px;"> </a> </td> <td> { __app.enums.AdlinkLayout.values[layout] } </td> </tr> </tbody> </table> </div> </div> </div> <div class="col-md-8 col-lg-8" > <adlink-edit id="edit"></adlink-edit> <adlink-detail id="detail"></adlink-detail> </div> </div> </div> </div>', function(opts) {
+            "use strict";
+            this.app = this.opts.app;
+            var self = nest.presentable(this);
+            self.api =  __app.settings.api.url;
+            self.tenantId = this.opts.tenant;
+            var edit = self.tags['adlink-edit'];
+            var detail = self.tags['adlink-detail'];
+
+            var findTenantAdlinks = domain.action('findTenantAdlinks');
+
+            var onFindTenantAdlinks = function(adlinks){
+                self.update({adlinks: adlinks});
+            };
+
+            this.on('mount', function(){
+                findTenantAdlinks.onDone(onFindTenantAdlinks);
+            });
+            this.on('unmount', function(){
+                findTenantAdlinks.offDone(onFindTenantAdlinks);
+            });
+            this.on('open', function(options){
+                console.info('tag adlink-index is opening');
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+                findTenantAdlinks.execute(self.tenantId);
+            });
+
+            this.on('leave', function(){
+                self.mask = true;
+                self.update();
+            });
+
+            this.on('reenter', function(){
+                self.mask = false;
+                self.update();
+            });
+
+            this.on('refresh', function(){
+                onRefresh();
+            });
+
+            this.onRefresh = function(e) {
+                findTenantAdlinks.execute(self.tenantId);
+            }.bind(this);
+
+            this.onNew = function(e) {
+                detail.trigger('close');
+                edit.trigger('open', {action: 'new', tenantId: self.tenantId});
+            }.bind(this);
+
+            this.onView = function(e) {
+                var id = $(e.currentTarget).find('input[type=hidden]').val();
+                edit.trigger('close');
+                detail.trigger('open', {id: id});
+            }.bind(this);
+
+            this.showEditView = function(id){
+                detail.trigger('close');
+                edit.trigger('open', {action: 'edit', id: id});
+            };
+
+            this.showDetailView = function(model){
+                edit.trigger('close');
+                detail.trigger('open', {model: model});
+            };
+
+        
+});
+riot.tag('alert', '<div class="alert-container" if="{opts.validators.length}"> <div style="width: 300px; margin: 0px auto;" class="alert {alert-warning: !opts.validator.success, alert-success: opts.validator.success} alert-dismissible fade in" role="alert"> <button onclick="{onCancel}" type="button" class="close" aria-label="Close"><span aria-hidden="true">×</span></button> <p each="{validator in opts.validators}"><strong>{validator.field && (\'【\' + validator.field + \'】\')}</strong> {validator.desc}</p> </div> </div>', 'alert .alert-container{ top: 60px; width: 100%; }', function(opts) {
+        var self = this;
+        this.onCancel = function(e){
+            self.opts.clear();
+            self.update();
+        };
+    
+});
+riot.tag('boss-tenant-power-add', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <alert validators="{validators}" clear="{clear}"></alert> <div class="col-md-10 col-md-offset-1"> <div class="jumbotron" style="height: auto; padding: 25px;"> <div id="addForm" class="panel" style="margin-top: 1em;"> <div style="padding-left: 20px; padding-bottom: 20px; padding-top: 15px"><a href="#power/list" style="font-size: 15px; text-decoration: none;">返回活动列表</a></div> <ul class="ul" style="text-align: left; padding-left: 2em"> <li><span>助力活动设置</span></li> <li> <span>活动公众号: </span> <select id="selectMedia" > <option each="{wechatMedias}" value="{originalId}" __selected="{patent.activity.wechatId = originalId}">{name}</option> </select> </li> <li id="type_select"><span>类型: </span> <label><input id="type_rp" name="activity_type" type="radio" value="rp" __checked="{activity.type === \'rp\'}">红包</label> <label><input id="type_po" name="activity_type" type="radio" value="po" __checked="{activity.type === \'po\'}">积分</label> </li> <li><span>启动图片助力: </span><input name="withPic" type="checkbox" __checked="{activity.withPic === \'true\'}" onclick="{toggleWithPic}"></li> <li id="poster" if="{activity.withPic === \'true\'}" style="clear: both; min-height: 26px;"><span style="float: left">海报背景图片: </span><input if="{!activity.posterBgImg}" id="posterBgImg" type="file" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadPosterBgImg}" style="width: 60px;"> <div if="{activity.posterBgImg}" class="posterBgImgCon"><i onclick="{deletePosterBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.posterBgImg}" alt=""></div> </li> <li><span>活动名称: </span><input name="activityName" type="text" value="{activity.name}"></li> <li class="bgImg" style="min-height: 26px"><span style="float: left">背景图片(3张): </span><input if="{activity.bgImg.length != 3}" id="bgImg" type="file" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadBgImg}" style="width: 60px;"> <div if="{activity.bgImg.length >= 1}" class="bgImgCon"><i onclick="{deleteBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.bgImg[0]}" alt=""></div> <div if="{activity.bgImg.length >= 2}" class="bgImgCon"><i onclick="{deleteBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.bgImg[1]}" alt=""></div> <div if="{activity.bgImg.length >= 3}" class="bgImgCon"><i onclick="{deleteBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.bgImg[2]}" alt=""></div> </li> <li style="clear: both; min-height: 26px"><span style="float: left">分享卡片图片: </span><input if="{!activity.shareImg}" id="shareImg" type="file" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadShareImg}" style="width: 60px;"> <div if="{activity.shareImg}" class="shareImgCon"><i onclick="{deleteShareImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.shareImg}" alt=""></div> </li> <li style="clear: both"><span>活动时间: </span><input id="startTime" type="date" value="{formatDate(activity.startTime)}"><span> 至 </span><input id="endTime" type="date" value="{formatDate(activity.endTime)}"> </li> <li><span>活动介绍: </span><div id="desc"></div></li> <li><span>活动规则: </span><div id="rule"></div></li> <li><span>分享标题自定义: </span><input class="form-control" type="text" name="shareTitle" value="{activity.shareTitle}"></li> <li><span>分享描述自定义: </span><input class="form-control" type="text" name="shareDesc" value="{activity.shareTitle}"></li> <li><span>基础奖励: </span><input id="base_power" type="text" value="{activity.base_power}"></li> <li><span>好友助力单次奖励: </span><input name="friend_help_min_power" type="text" value="{activity.friend_help_min_power}"><span> 至 </span><input name="friend_help_max_power" type="text" value="{activity.friend_help_max_power}"></li> <li><span>好友助力上限人数: </span><input name="friend_help_count_limit" type="text" value="{activity.friend_help_count_limit}"></li> <li style="text-align: center; margin-top: 1em"><input class="btn btn-success" type="button" onclick="{submit}" value="提交"></li> </ul> </div> </div> </div> </div> </div>', 'boss-tenant-power-add .ul {list-style-type: none; text-align: center; padding: 0} boss-tenant-power-add .ul li {margin-bottom: 20px;} boss-tenant-power-add .bgImg #bgImg {float: left; margin-left: 10px;} boss-tenant-power-add .bgImg .bgImgCon {margin-left: 10px; display: -webkit-inline-box; position: relative; border: solid 1px #E8E7E7;} boss-tenant-power-add .bgImgCon i{color: #EC3131; position: absolute; left: 58px; top: 2px; cursor: pointer;} boss-tenant-power-add .bgImgCon div{margin-left: 20px; float: left;} boss-tenant-power-add .bgImgCon img {width: 75px; height: 75px;} boss-tenant-power-add .shareImgCon img {width: 75px; height: 75px;} boss-tenant-power-add #shareImg{float: left; margin-left: 10px;} boss-tenant-power-add .shareImgCon i{color: #EC3131;position: absolute;left: 58px;top: 2px;cursor: pointer;} boss-tenant-power-add .shareImgCon{margin-left: 10px; display: -webkit-inline-box;position: relative; border: solid 1px #E8E7E7;} boss-tenant-power-add .posterBgImgCon img {width: 75px; height: 75px;} boss-tenant-power-add #posterBgImg{float: left; margin-left: 10px;} boss-tenant-power-add .posterBgImgCon i{color: #EC3131;position: absolute;left: 58px;top: 2px;cursor: pointer;} boss-tenant-power-add .posterBgImgCon{margin-left: 10px; display: -webkit-inline-box;position: relative; border: solid 1px #E8E7E7;}', function(opts) {
+        "use strict"
+        var self = nest.presentable(this);
+        self.validators = [];
+        var addPowerActivity = domain.action('addPowerActivity');
+        var loadAllTenantWechatSite = domain.action('loadAllTenantWechatSite');
+
+        self.activity = {
+            org: __page.tenantId,
+            type: 'rp',
+            bgImg: []
+        }
+        self.on('open', function(ctx){
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+            setTimeout(function(){
+                $('#rule').summernote({
+                    height: 200,
+                    minHeight: null,
+                    maxHeight: null,
+                    toolbar: [
+                        ['style', ['bold', 'italic', 'underline', 'clear']],
+                        ['fontsize', ['fontsize']],
+                        ['color', ['color']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['height', ['height']],
+                        ['fontname', ['fontname']],
+                        ['insert', ['picture', 'link', 'video', 'hr', 'table']]
+                    ],
+                    callbacks: {
+                        onImageUpload: function(files) {
+                            uploadEditorImg(files[0], '#rule')
+                        }
+                    }
+                }).summernote('code', self.activity.rule || '');
+            }, 10);
+            setTimeout(function(){
+                $('#desc').summernote({
+                    height: 200,
+                    minHeight: null,
+                    maxHeight: null,
+                    toolbar: [
+                        ['style', ['bold', 'italic', 'underline', 'clear']],
+                        ['fontsize', ['fontsize']],
+                        ['color', ['color']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['height', ['height']],
+                        ['fontname', ['fontname']],
+                        ['insert', ['picture', 'link', 'video', 'hr', 'table']]
+                    ],
+                    callbacks: {
+                        onImageUpload: function(files) {
+                            uploadEditorImg(files[0], '#desc')
+                        }
+                    }
+                }).summernote('code', self.activity.desc || '');
+            }, 10);
+            loadAllTenantWechatSite.newInvocation(__page.tenantId).onDone(function(data){
+                self.wechatMedias = data;
+                self.update();
+            }).execute();
+        });
+        self.on('mount', function(){
+            self.validators = _.widget.validatify([]);
+        });
+
+        self.formatDate = function(date) {
+            var dateTime = new Date(date);
+            var year = dateTime.getFullYear();
+            var month = (dateTime.getMonth() + 1)>9 ? (dateTime.getMonth() + 1) : '0' + (dateTime.getMonth() + 1);
+            var day = dateTime.getDate() > 9 ? dateTime.getDate() : '0' + dateTime.getDate();
+            return year + '-' + month + '-' + day;
+        }
+
+        function uploadFile(file, callback){
+            self.validators = [];
+            if(file.size > 2*1024*1024){
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '文件大小超过限制-2M'
+                });
+                return;
+            }
+            var formData = new FormData();
+            formData.append('file', file);
+            $.ajax({
+                url: __app.settings.api.url + '/file/upload',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    callback(null, res);
+                },
+                error: function (res) {
+                    callback(res, null);
+                }
+            });
+        }
+
+        self.uploadPosterBgImg = function(e){
+            var file = e.currentTarget.files[0];
+            uploadFile(file, function(err, res){
+                if(err) return console.error('upload file err in func uploadPosterBgImg, err: ' + err);
+                self.activity.posterBgImg = window.__app.settings.api.url + '/file?media_id=' + res.media_id;
+                self.update();
+            })
+        }
+
+        self.uploadBgImg = function(e){
+            var files = e.currentTarget.files;
+            self.validators = [];
+            if(files.length > (3 - self.activity.bgImg.length)){
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '最多上传三张背景图片'
+                });
+                return;
+            }
+            for(var i=0; i<files.length; i++) {
+                uploadFile(files[i], function(err, res){
+                    if(err) return console.error('upload file err in func uploadBgImg, err: ' + err);
+                    self.activity.bgImg.push(window.__app.settings.api.url + '/file?media_id=' + res.media_id);
+                    self.update();
+                });
+            }
+        }
+
+        self.uploadShareImg = function(e){
+            var file = e.currentTarget.files[0];
+            uploadFile(file, function(err, res){
+                if(err) return console.error('upload file err in func uploadShareImg, err: ' + err);
+                self.activity.shareImg = window.__app.settings.api.url + '/file?media_id=' + res.media_id;
+                self.update();
+            })
+        }
+
+        self.deleteBgImg = function(e){
+            self.activity.bgImg = self.activity.bgImg.filter(function(item){
+                return item != $($(e.currentTarget).siblings('img')[0]).attr('src');
+            });
+        }
+
+        self.deletePosterBgImg = function(e){
+            self.activity.posterBgImg = '';
+        }
+
+        self.deleteShareImg = function(e){
+            self.activity.shareImg = '';
+        }
+
+        self.clear = function(){
+            self.validators = [];
+        };
+
+        self.toggleWithPic = function(e){
+            if($(e.currentTarget).is(':checked')){
+                self.activity.withPic = 'true';
+            }else{
+                self.activity.withPic = 'false';
+            }
+            return true;
+        }
+
+        self.verify = function(data){
+            var legal = true;
+            if(!data.name){
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '活动名称不能为空!'
+                });
+                legal = false;
+            }
+            if(!data.shareDesc){
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '分享描述不能为空!'
+                });
+                legal = false;
+            }
+            if(!data.shareTitle){
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '分享标题不能为空!'
+                });
+                legal = false;
+            }
+            if(data.withPic && !data.posterBgImg){
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '必须上传海报背景图片!'
+                });
+                legal = false;
+            }
+
+            if(!data.shareImg){
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '必须设置分享卡片图片!'
+                });
+                legal = false;
+            }
+
+            if(!data.bgImg || data.bgImg.length < 1){
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '必须设置背景图片!'
+                });
+                legal = false;
+            }
+
+            if(!data.startTime){
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '必须设置活动开始时间!'
+                });
+                legal = false;
+            }
+            if(!data.endTime){
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '必须设置活动结束时间!'
+                });
+                legal = false;
+            }
+            if(!data.base_power || !/^[0-9]+$/.test(data.base_power)) {
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '基础奖励必填且必须为数字!'
+                });
+                legal = false;
+            }
+            if(!data.friend_help_count_limit || !/^[0-9]+$/.test(data.friend_help_count_limit)) {
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '好友助力上限必填且必须为数字!'
+                });
+                legal = false;
+            }
+            if(!data.friend_help_max_power || !/^[0-9]+$/.test(data.friend_help_max_power)) {
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '单次助力最大值必填且必须为数字!'
+                });
+                legal = false;
+            }
+            if(!data.friend_help_min_power || !/^[0-9]+$/.test(data.friend_help_min_power)) {
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '单次助力最小值必填且必须为数字!'
+                });
+                legal = false;
+            }
+            return legal;
+        };
+
+        self.submit = function(e){
+            self.validators = [];
+            self.activity.type = $(':radio[name="activity_type"]:checked').val();
+            self.activity.name = self.activityName.value;
+            self.activity.shareTitle = self.shareTitle.value;
+            self.activity.shareDesc = self.shareDesc.value;
+            self.activity.base_power = self.base_power.value;
+            self.activity.friend_help_count_limit = self.friend_help_count_limit.value;
+            self.activity.startTime = self.startTime.value;
+            self.activity.endTime = self.endTime.value;
+            self.activity.friend_help_min_power = self.friend_help_min_power.value;
+            self.activity.friend_help_max_power = self.friend_help_max_power.value;
+            self.activity.wechatId = self.selectMedia.value;
+            self.activity.rule = $('#rule').summernote('code');
+            self.activity.desc = $('#desc').summernote('code');
+            var allowSubmit = self.verify(self.activity);
+            if(allowSubmit){
+                addPowerActivity.newInvocation(self.activity).onDone(function(data){
+                    self.activity = {
+                        org: __page.tenantId,
+                        type: 'rp',
+                        bgImg: []
+                    }
+                    riot.route('power/list');
+                }).execute();
+            }
+        }
+
+        var uploadEditorImg = function(file, editorId){
+            _.uploadImgFile(file, function(err, url){
+                if(!err) {
+                    $(editorId).summernote('insertImage', url);
+                }else{
+                    alert('上传图片失败');
+                }
+            });
+        }
+    
+});
+riot.tag('boss-tenant-power-edit', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <alert validators="{validators}" clear="{clear}"></alert> <div class="col-md-10 col-md-offset-1"> <div class="jumbotron" style="height: auto; padding: 25px;"> <div id="addForm" class="panel" style="margin-top: 1em;"> <div style="padding-left: 20px; padding-bottom: 20px; padding-top: 15px"><a href="#power/list" style="font-size: 15px; text-decoration: none;">返回活动列表</a></div> <ul class="ul" style="text-align: left; padding-left: 2em"> <li><span>助力活动设置</span></li> <li> <span>活动公众号: </span> <select id="selectMedia" > <option each="{wechatMedias}" value="{originalId}" __selected="{parent.activity.wechatId === originalId}">{name}</option> </select> </li> <li id="type_select"><span>类型: </span> <label><input id="type_rp" name="activity_type" type="radio" value="rp" __checked="{activity.type === \'rp\'}">红包</label> <label><input id="type_po" name="activity_type" type="radio" value="po" __checked="{activity.type === \'po\'}">积分</label> </li> <li><span>启动图片助力: </span><input name="withPic" type="checkbox" __checked="{activity.withPic === \'true\'}" onclick="{toggleWithPic}"></li> <li id="poster" if="{activity.withPic === \'true\'}" style="clear: both; min-height: 26px;"><span style="float: left">海报背景图片: </span><input if="{!activity.posterBgImg}" id="posterBgImg" type="file" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadPosterBgImg}" style="width: 60px;"> <div if="{activity.posterBgImg}" class="posterBgImgCon"><i onclick="{deletePosterBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.posterBgImg}" alt=""></div> </li> <li><span>活动名称: </span><input name="activityName" type="text" value="{activity.name}"></li> <li class="bgImg" style="min-height: 26px"><span style="float: left">背景图片(3张): </span><input if="{activity.bgImg.length != 3}" id="bgImg" type="file" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadBgImg}" style="width: 60px;"> <div if="{activity.bgImg.length >= 1}" class="bgImgCon"><i onclick="{deleteBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.bgImg[0]}" alt=""></div> <div if="{activity.bgImg.length >= 2}" class="bgImgCon"><i onclick="{deleteBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.bgImg[1]}" alt=""></div> <div if="{activity.bgImg.length >= 3}" class="bgImgCon"><i onclick="{deleteBgImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.bgImg[2]}" alt=""></div> </li> <li style="clear: both; min-height: 26px"><span style="float: left">分享卡片图片: </span><input if="{!activity.shareImg}" id="shareImg" type="file" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadShareImg}" style="width: 60px;"> <div if="{activity.shareImg}" class="shareImgCon"><i onclick="{deleteShareImg}" class="glyphicon glyphicon-remove"></i><img riot-src="{activity.shareImg}" alt=""></div> </li> <li style="clear: both"><span>活动时间: </span><input id="startTime" type="date" value="{formatDate(activity.startTime)}"><span> 至 </span><input id="endTime" type="date" value="{formatDate(activity.endTime)}"> </li> <li><span>活动介绍: </span><div id="desc"></div></li> <li><span>活动规则: </span><div id="rule"></div></li> <li><span>分享标题自定义: </span><input class="form-control" type="text" name="shareTitle" value="{activity.shareTitle}"></li> <li><span>分享描述自定义: </span><input class="form-control" type="text" name="shareDesc" value="{activity.shareTitle}"></li> <li><span>基础奖励: </span><input id="base_power" type="text" value="{activity.base_power}"></li> <li><span>好友助力单次奖励: </span><input name="friend_help_min_power" type="text" value="{activity.friend_help_min_power}"><span> 至 </span><input name="friend_help_max_power" type="text" value="{activity.friend_help_max_power}"></li> <li><span>好友助力上限人数: </span><input name="friend_help_count_limit" type="text" value="{activity.friend_help_count_limit}"></li> <li style="text-align: center; margin-top: 1em"><input class="btn btn-success" type="button" onclick="{submit}" value="提交"></li> </ul> </div> </div> </div> </div> </div>', 'boss-tenant-power-edit .ul {list-style-type: none; text-align: center; padding: 0} boss-tenant-power-edit .ul li {margin-bottom: 20px;} boss-tenant-power-edit .bgImg #bgImg {float: left; margin-left: 10px;} boss-tenant-power-edit .bgImg .bgImgCon {margin-left: 10px; display: -webkit-inline-box; position: relative; border: solid 1px #E8E7E7;} boss-tenant-power-edit .bgImgCon i{color: #EC3131; position: absolute; left: 58px; top: 2px; cursor: pointer;} boss-tenant-power-edit .bgImgCon div{margin-left: 20px; float: left;} boss-tenant-power-edit .bgImgCon img {width: 75px; height: 75px;} boss-tenant-power-edit .shareImgCon img {width: 75px; height: 75px;} boss-tenant-power-edit #shareImg{float: left; margin-left: 10px;} boss-tenant-power-edit .shareImgCon i{color: #EC3131;position: absolute;left: 58px;top: 2px;cursor: pointer;} boss-tenant-power-edit .shareImgCon{margin-left: 10px; display: -webkit-inline-box;position: relative; border: solid 1px #E8E7E7;} boss-tenant-power-edit .posterBgImgCon img {width: 75px; height: 75px;} boss-tenant-power-edit #posterBgImg{float: left; margin-left: 10px;} boss-tenant-power-edit .posterBgImgCon i{color: #EC3131;position: absolute;left: 58px;top: 2px;cursor: pointer;} boss-tenant-power-edit .posterBgImgCon{margin-left: 10px; display: -webkit-inline-box;position: relative; border: solid 1px #E8E7E7;}', function(opts) {
+        "use strict"
+        var self = nest.presentable(this);
+        self.validators = [];
+        var loadPowerActivity = domain.action('loadPowerActivity');
+        var updatePowerActivity = domain.action('updatePowerActivity');
+        var loadAllTenantWechatSite = domain.action('loadAllTenantWechatSite');
+
+        self.on('open', function(ctx){
+            loadPowerActivity.newInvocation({
+                id: ctx.id
+            }).onDone(function(data){
+                self.activity = data;
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+                setTimeout(function(){
+                    $('#rule').summernote({
+                        height: 200,
+                        minHeight: null,
+                        maxHeight: null,
+                        toolbar: [
+                            ['style', ['bold', 'italic', 'underline', 'clear']],
+                            ['fontsize', ['fontsize']],
+                            ['color', ['color']],
+                            ['para', ['ul', 'ol', 'paragraph']],
+                            ['height', ['height']],
+                            ['fontname', ['fontname']],
+                            ['insert', ['picture', 'link', 'video', 'hr', 'table']]
+                        ],
+                        callbacks: {
+                            onImageUpload: function(files) {
+                                uploadEditorImg(files[0], '#rule')
+                            }
+                        }
+                    }).summernote('code', self.activity.rule || '');
+                }, 10);
+                setTimeout(function(){
+                    $('#desc').summernote({
+                        height: 200,
+                        minHeight: null,
+                        maxHeight: null,
+                        toolbar: [
+                            ['style', ['bold', 'italic', 'underline', 'clear']],
+                            ['fontsize', ['fontsize']],
+                            ['color', ['color']],
+                            ['para', ['ul', 'ol', 'paragraph']],
+                            ['height', ['height']],
+                            ['fontname', ['fontname']],
+                            ['insert', ['picture', 'link', 'video', 'hr', 'table']]
+                        ],
+                        callbacks: {
+                            onImageUpload: function(files) {
+                                uploadEditorImg(files[0], '#desc')
+                            }
+                        }
+                    }).summernote('code', self.activity.desc || '');
+                }, 10);
+            }).execute();
+            loadAllTenantWechatSite.newInvocation(__page.tenantId).onDone(function(data){
+                self.wechatMedias = data;
+                self.update();
+            }).execute();
+        });
+        self.on('mount', function(){
+            self.validators = _.widget.validatify([]);
+        });
+
+        self.formatDate = function(date) {
+            var dateTime = new Date(date);
+            var year = dateTime.getFullYear();
+            var month = (dateTime.getMonth() + 1)>9 ? (dateTime.getMonth() + 1) : '0' + (dateTime.getMonth() + 1);
+            var day = dateTime.getDate() > 9 ? dateTime.getDate() : '0' + dateTime.getDate();
+            return year + '-' + month + '-' + day;
+        }
+
+        function uploadFile(file, callback){
+            self.validators = [];
+            if(file.size > 2*1024*1024){
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '文件大小超过限制-2M'
+                });
+                return;
+            }
+            var formData = new FormData();
+            formData.append('file', file);
+            $.ajax({
+                url: __app.settings.api.url + '/file/upload',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    callback(null, res);
+                },
+                error: function (res) {
+                    callback(res, null);
+                }
+            });
+        }
+
+        self.uploadPosterBgImg = function(e){
+            var file = e.currentTarget.files[0];
+            uploadFile(file, function(err, res){
+                if(err) return console.error('upload file err in func uploadPosterBgImg, err: ' + err);
+                self.activity.posterBgImg = window.__app.settings.api.url + '/file?media_id=' + res.media_id;
+                self.update();
+            })
+        }
+
+        self.uploadBgImg = function(e){
+            var files = e.currentTarget.files;
+            self.validators = [];
+            if(files.length > (3 - self.activity.bgImg.length)){
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '最多上传三张背景图片'
+                });
+                return;
+            }
+            for(var i=0; i<files.length; i++) {
+                uploadFile(files[i], function(err, res){
+                    if(err) return console.error('upload file err in func uploadBgImg, err: ' + err);
+                    self.activity.bgImg.push(window.__app.settings.api.url + '/file?media_id=' + res.media_id);
+                    self.update();
+                });
+            }
+        }
+
+        self.uploadShareImg = function(e){
+            var file = e.currentTarget.files[0];
+            uploadFile(file, function(err, res){
+                if(err) return console.error('upload file err in func uploadShareImg, err: ' + err);
+                self.activity.shareImg = window.__app.settings.api.url + '/file?media_id=' + res.media_id;
+                self.update();
+            })
+        }
+
+        self.deleteBgImg = function(e){
+            self.activity.bgImg = self.activity.bgImg.filter(function(item){
+                return item != $($(e.currentTarget).siblings('img')[0]).attr('src');
+            });
+        }
+
+        self.deletePosterBgImg = function(e){
+            self.activity.posterBgImg = '';
+        }
+
+        self.deleteShareImg = function(e){
+            self.activity.shareImg = '';
+        }
+
+        self.clear = function(){
+            self.validators = [];
+        };
+
+        self.toggleWithPic = function(e){
+            if($(e.currentTarget).is(':checked')){
+                self.activity.withPic = 'true';
+            }else{
+                self.activity.withPic = 'false';
+            }
+            return true;
+        }
+
+        self.verify = function(data){
+            var legal = true;
+            if(!data.name){
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '活动名称不能为空!'
+                });
+                legal = false;
+            }
+            if(!data.shareDesc){
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '分享描述不能为空!'
+                });
+                legal = false;
+            }
+            if(!data.shareTitle){
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '分享标题不能为空!'
+                });
+                legal = false;
+            }
+            if(data.withPic && !data.posterBgImg){
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '必须上传海报背景图片!'
+                });
+                legal = false;
+            }
+
+            if(!data.shareImg){
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '必须设置分享卡片图片!'
+                });
+                legal = false;
+            }
+
+            if(!data.bgImg || data.bgImg.length < 1){
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '必须设置背景图片!'
+                });
+                legal = false;
+            }
+
+            if(!data.startTime){
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '必须设置活动开始时间!'
+                });
+                legal = false;
+            }
+            if(!data.endTime){
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '必须设置活动结束时间!'
+                });
+                legal = false;
+            }
+            if(!data.base_power || !/^[0-9]+$/.test(data.base_power)) {
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '基础奖励必填且必须为数字!'
+                });
+                legal = false;
+            }
+            if(!data.friend_help_count_limit || !/^[0-9]+$/.test(data.friend_help_count_limit)) {
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '好友助力上限必填且必须为数字!'
+                });
+                legal = false;
+            }
+            if(!data.friend_help_max_power || !/^[0-9]+$/.test(data.friend_help_max_power)) {
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '单次助力最大值必填且必须为数字!'
+                });
+                legal = false;
+            }
+            if(!data.friend_help_min_power || !/^[0-9]+$/.test(data.friend_help_min_power)) {
+                self.validators.push({
+                    success: false,
+                    field: '提示',
+                    desc: '单次助力最小值必填且必须为数字!'
+                });
+                legal = false;
+            }
+            return legal;
+        };
+
+        self.submit = function(e){
+            self.validators = [];
+            self.activity.type = $(':radio[name="activity_type"]:checked').val();
+            self.activity.name = self.activityName.value;
+            self.activity.shareTitle = self.shareTitle.value;
+            self.activity.shareDesc = self.shareDesc.value;
+            self.activity.base_power = self.base_power.value;
+            self.activity.friend_help_count_limit = self.friend_help_count_limit.value;
+            self.activity.startTime = self.startTime.value;
+            self.activity.endTime = self.endTime.value;
+            self.activity.friend_help_min_power = self.friend_help_min_power.value;
+            self.activity.friend_help_max_power = self.friend_help_max_power.value;
+            self.activity.wechatId = self.selectMedia.value;
+            self.activity.rule = $('#rule').summernote('code');
+            self.activity.desc = $('#desc').summernote('code');
+            var allowSubmit = self.verify(self.activity);
+            if(allowSubmit){
+                updatePowerActivity.newInvocation(self.activity).onDone(function(data){
+                    riot.route('power/list');
+                }).execute();
+            }
+        }
+
+        var uploadEditorImg = function(file, editorId){
+            _.uploadImgFile(file, function(err, url){
+                if(!err) {
+                    $(editorId).summernote('insertImage', url);
+                }else{
+                    alert('上传图片失败');
+                }
+            });
+        }
+    
+});
+riot.tag('boss-tenant-power-list', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="col-md-10 col-md-offset-1"> <div class="jumbotron" style="height: auto; padding: 25px;"> <div id="powerList" class="panel" style="margin-top: 1em; padding: 0; min-height: 30em"> <div style="padding-left: 20px; padding-top: 10px;"><a id="add" href="#power/add" style="font-size: 15px; text-decoration: none; cursor: pointer">新增</a> </div> <ul class="ul" id="list"> <li> <strong class="col-md-2">活动名称</strong> <strong class="col-md-2">开始时间</strong> <strong class="col-md-2">结束时间</strong> <strong class="col-md-2">类型</strong> <strong class="col-md-2">海报二维码</strong> <strong class="col-md-2">操作</strong> </li> <li> <hr width="100%"> </li> <li class="actItem" each="{activityArr}"> <strong class="col-md-2"><a href="#power/edit/_{_id}">{name}</a></strong> <strong class="col-md-2">{_.date.format(new Date(startTime), \'yyyy-MM-dd\')}</strong> <strong class="col-md-2">{_.date.format(new Date(endTime), \'yyyy-MM-dd\')}</strong> <strong class="col-md-2">{__app.enums.PowerType.values[type]}</strong> <strong class="col-md-2 actionCon"> <a class="fa fa-qrcode fa-lg" data-toggle="modal" data-target="#showImg" onclick="{parent.showImg}"></a> </strong> <strong class="col-md-2 actionCon"><a href="{ __app.settings.app.url + \'/marketing/tenant/power/\' + wechatId + \'/activity?id=\' + _id }" target="_blank">查看</a><a href="{__app.settings.api.url + \'/marketing/tenant/power/exportParticipants?id=\' + _id }" target="_blank" >导出</a></strong> </li> </ul> </div> </div> </div> </div> </div>', 'boss-tenant-power-list .ul {list-style-type: none; text-align: center; padding: 0} boss-tenant-power-list .ul li {margin-bottom: 20px;} boss-tenant-power-list .actItem {height: 17px; overflow: hidden; margin-top: 2px;} boss-tenant-power-list li strong{ padding: 0 !important; margin: 0 !important; } boss-tenant-power-list .actionCon a{ margin-left: 10px; cursor: pointer; }', function(opts) {
+        "use strict"
+        var self = nest.presentable(this);
+        var loadPowerActivities = domain.action('loadPowerActivities');
+        self.showImg = function(e){
+            var errorMsg = '';
+            if(!e.item.qrCodeUrl){
+                errorMsg = '该活动不是海报助力活动'
+            }
+            _.widget.showImg({
+                title: '用微信扫描下方二维码获取活动海报',
+                imgUrl: e.item.qrCodeUrl,
+                width: '300px',
+                height: '300px',
+                errorMsg: errorMsg
+            });
+        }
+        self.on('open', function(ctx){
+            loadPowerActivities.newInvocation({
+                tenantId: __page.tenantId
+            }).onDone(function(data){
+                self.activityArr = data;
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+            }).execute();
+        });
+        self.on('mount', function(){
+            self.validators = _.widget.validatify([]);
+        });
+    
+});
+riot.tag('boss-tenant-sd-bespeaks', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd/bespeaks"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div class="row" style="text-align: center"> <h4>预约管理</h4> </div>                 <div class="row" style="margin-top: 10px"> <table class="table table-striped"> <thead> <tr> <th>客户昵称</th> <th>预约产品</th> <th>日期</th> <th>电话</th> <th>成单</th> </tr> </thead> <tbody> <tr each="{bespeaks}"> <td> <a href="#sd/bespeaks/_{_id}"> {user.nickname} </a> </td> <td> { product.name } </td> <td> {_.date.format(new Date(crtOn), \'yyyy-MM-dd hh点mm分\')} </td> <td> { telephone } </td> <td> <input onclick="{parent.onOrderCreate}" data-toggle="modal" data-target="#orderModal" type="button" class="btn btn-default" value="成单"> <input onclick="{parent.onOrderGiveUp}" data-toggle="modal" data-target="#modal" type="button" class="btn btn-default" value="弃单"> </td> </tr> </tbody> </table> </div> </div> </div> <div id="orderModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"> <div class="modal-dialog"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> <h4 class="modal-title">生成订单</h4> </div> <div class="modal-body"> <form class="form-horizontal"> <div class="form-group"> <label class="col-sm-2 control-label">媒体价</label> <div class="col-sm-10"> <span>{currBespeak.product.listPrice}</span> </div> </div> <div class="form-group"> <label for="finalPrice" class="col-sm-2 control-label">成交价</label> <div class="col-sm-10"> <input class="form-control" oninput="{onInput}" id="finalPrice" type="number" name="finalPrice"> </div> </div> </form> </div> <div class="modal-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">取消</button> <button __disabled="{finalPrice.value.trim() === \'\' || parseInt(finalPrice.value.trim(), 10)<0 || parseInt(finalPrice.value.trim(), 10) > currBespeak.product.listPrice}" onclick="{onSubmitOrder}" data-dismiss="modal" type="button" class="btn btn-primary">确认</button> </div> </div> </div> </div> </div>', function(opts) {
+        "use strict";
+        var self = nest.presentable(this);
+        var findBespeaksAction = domain.action('findBespeaks');
+        var createOrderAction = domain.action('createOrder');
+        var updateBespeakByIdAction = domain.action('updateBespeakById');
+
+        self.bespeaks = [];
+        self.currBespeak = {};
+        self.filter = {
+            tenant: __page.tenantId
+        };
+        self.on('open', function(){
+            findBespeaksAction.newInvocation({
+                filter: self.filter
+            }).onDone(function(res){
+                if(res.error){
+                    return alert("failed to search bespeaks");
+                }
+                self.bespeaks= res.bespeaks;
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+            }).execute();
+        });
+        self.onOrderCreate = function(e){
+            self.finalPrice.value = "";
+            self.currBespeak = e.item;
+        };
+        self.onOrderGiveUp = function(e){
+            self.currBespeak = e.item;
+            _.widget.confirm({
+                title: '操作确认',
+                content: '你确认要“销毁”该预约吗？',
+                callback: function(){
+                    self.currBespeak.lFlg = __app.enums.LifeFlag.names.Deleted;
+                    console.log(e.item);
+                    updateBespeakByIdAction.newInvocation({
+                        id: self.currBespeak._id,
+                        o: {
+                            media: self.currBespeak.media,
+                            lFlg: self.currBespeak.lFlg
+                        }
+                    }).onDone(function(res){
+                        if(res.error){
+                            alert('销毁预约失败');
+                            return;
+                        }
+                        self.currBespeak = null;
+                        self.bespeaks = self.bespeaks.filter(function(bespeak){
+                            return bespeak._id != res.bespeak._id;
+                        });
+                        self.update();
+                    }).execute();
+                }
+            });
+        };
+        self.onSearch = function(e){
+            findBespeaksAction.newInvocation({
+                filter: self.filter
+            }).onDone(function(res){
+                if(res.error){
+                    return alert("failed to search bespeaks");
+                }
+                self.update({bespeaks: res.bespeaks});
+            }).execute();
+        };
+
+        self.onInput = function noop(){};
+
+        self.onSubmitOrder = function(e){
+            createOrderAction.newInvocation({
+                bespeak: self.currBespeak,
+                finalPrice : self.finalPrice.value.trim()
+            }).onDone(function(res){
+                if(res.error){
+                    alert('成单失败');
+                    return
+                }
+                self.currBespeak = null;
+                self.bespeaks = self.bespeaks.filter(function(bespeak){
+                    return bespeak._id != res.order.bespeak;
+                });
+                self.update();
+            }).execute();
+        };
+        self.onSelect = function(e){
+            var liveStatus = self.coursesStatus.value;
+            if(!liveStatus){
+                if(self.filter.hasOwnProperty('liveStatus')){
+                    delete self.filter['liveStatus'];
+                }
+                return;
+            }
+            self.filter.liveStatus = liveStatus;
+        }
+    
+});
+riot.tag('boss-tenant-sd-catalogs-add', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd/catalogs"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div class="row" style="text-align: center"> <h4>新建课程目录</h4> </div> <alert validators="{validators}" clear="{clear}"></alert> <div class="row"> <div class="panel panel-default"> <div class="panel-heading">基本信息</div> <div class="panel-body"> <form class="form-horizontal"> <div class="form-group text-left"> <label for="catalogNameInput" class="col-sm-2 control-label text-left">课程目录名称</label> <div class="col-sm-10 {has-error: !catalogNameInput.value.trim()} has-feedback"> <input onblur="{catalogNameInputBlur}" type="text" class="form-control " id="catalogNameInput"> </div> </div> <div class="form-group"> <label for="catalogWechatsiteInput" class="col-sm-2 control-label">公众号</label> <div class="col-sm-10"> <select class="form-control" id="catalogWechatsiteInput" style="width: 200px"> <option each="{wechatsites}" value="{_id}">{name}</option> </select> </div> </div> <div class="form-group"> <label class="col-sm-2 control-label">上/下架状态</label> <div class="col-sm-10" style="height: 32px;line-height: 32px"> <span>待上架</span> </div> </div> <div class="form-group"> <label class="col-sm-2 control-label">创建时间</label> <div class="col-sm-10"> <span>{_.date.format(new Date(), \'yyyy-MM-dd hh点mm分\') }</span> </div> </div> <div class="form-group"> <label for="catalogDescInput" class="col-sm-2 control-label">备注</label> <div class="col-sm-10"> <textarea onblur="{catalogDescInputBlur}" type="password" class="form-control" id="catalogDescInput"></textarea> </div> </div> </form> </div> </div> </div> <div class="row" style="margin-top: 10px"> <div class="col-md-12 col-lg-12 text-center"> <input __disabled="{!courseMediaPriceInput.value.trim() || !courseNameInput.value.trim()}" onclick="{onSubmit}" type="button" class="btn btn-primary" value="保存"> <a href="#sd/catalogs" class="btn btn-default">取消</a> </div> </div> </div> </div> </div>', '.form-horizontal .control-label{ text-align: left !important; }', function(opts) {
+        "use strict"
+        var self = nest.presentable(this);
+        var loadAllTenantWechatSiteAction = domain.action('loadAllTenantWechatSite');
+        var createCatalogAction = domain.action('createCatalog');
+        self.on('open', function(){
+            self.catalog = {};
+            self.catalog.tenant = __page.tenantId;
+            self.validators = [];
+            self.catalogNameInput.value = "";
+            self.catalogDescInput.value = "";
+            loadAllTenantWechatSiteAction.newInvocation(__page.tenantId)
+                .onDone(function(res){
+                    self.wechatsites = res;
+                    self.trigger('ready', false);
+                    self.trigger('view-route-to');
+                })
+                .execute();
+        });
+        self.catalogNameInputBlur = function(){
+            let catalogName = self.catalogNameInput.value.trim();
+            if(!catalogName){
+                return self.validators.push({
+                    success: false,
+                    field: '课程目录名称',
+                    desc: '不能为空!'
+                });
+            }
+            self.catalog.name = catalogName;
+        };
+        self.clear = function(){
+            self.validators = [];
+        };
+        self.catalogDescInputBlur = function(){
+            self.catalog.desc = self.catalogDescInput.value.trim();
+        };
+        self.onSubmit = function(){
+            self.catalog.media = self.catalogWechatsiteInput.value;
+            createCatalogAction.newInvocation(self.catalog)
+                .onDone(function(res){
+                    riot.route('sd/catalogs');
+                })
+                .execute();
+        };
+    
+});
+riot.tag('boss-tenant-sd-catalogs-detail', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd/catalogs"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div> <div class="row" style="text-align: center"> <a href="#sd/catalogs" style="position: absolute; left: 0px; top: 10px">返回课程目录列表</a> <h4>{catalog.name}</h4> </div> <alert validators="{validators.raw()}" clear="{clear}"></alert> <div class="row"> <div class="panel panel-default"> <div class="panel-body"> <div> <table class="table table-narrow"> <tr> <td>所属公众号</td> <td>{catalog.media.name}</td> </tr> <tr> <td>租户类型</td> <td>{__app.enums.PartyType.values[catalog.tenant.type]}</td> </tr> <tr> <td>状态</td> <td>{__app.enums.LifeFlag.values[catalog.lFlg]}</td> </tr> <tr> <td>创建时间</td> <td>{_.date.format(new Date(catalog.crtOn), \'yyyy-MM-dd hh点mm分\')}</td> </tr> <tr> <td>备注</td> <td>{catalog.desc}</td> </tr> <tr> <td>微站URL</td> <td><span>{__app.settings.app.url + "/sd/" + catalog.media.originalId + "/catalog?id=" + catalog._id}</span></td> </tr> </table> <div class="row text-center" style="margin-top: 20px; margin-bottom: 20px"> <div class="col-md-12 col-lg-12"> <a href="#sd/catalogs/edit/_{catalog._id}" class="btn btn-default">修改</a> <input if="{catalog.lFlg === __app.enums.LifeFlag.names.Active}" onclick="{onInactive}" data-toggle="modal" data-target="#modal" value="锁定" type="button" class="btn btn-default"> <input if="{catalog.lFlg === __app.enums.LifeFlag.names.Inactive}" onclick="{onActive}" data-toggle="modal" data-target="#modal" value="激活" type="button" class="btn btn-default"> <input onclick="{onDelete}" data-toggle="modal" data-target="#modal" value="删除" type="button" class="btn btn-default"> </div> </div> <div class="row" style="margin-top: 20px; margin-bottom: 20px"> <div class="col-md-12 col-lg-12"> <h4 class="text-left">课程目录</h4> <hr> <div class="text-right"> <input onclick="{onAddProduct}" type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" value="添加"> </div> <div> <table class="table table-striped"> <thead> <tr> <th>名称</th> <th>状态</th> <th>上/下架时间</th> <th>创建时间</th> <th>备注</th> <th>二维码</th> </tr> </thead> <tbody> <tr each="{populateProducts(catalog.products)}"> <td> {name} </td> <td> { __app.enums.LiveStatus.values[liveStatus] } </td> <td> { actionTime && _.date.format(new Date(actionTime), \'yyyy-MM-dd hh点mm分\') || \'空\'} </td> <td> {_.date.format(new Date(crtOn), \'yyyy-MM-dd hh点mm分\')} </td> <td> { desc } </td> <td> <i class="fa fa-qrcode fa-lg" aria-hidden="true" data-toggle="modal" data-target="#showImg" onclick="{parent.obtainQr(this)}"></i> </td> </tr> </tbody> </table> </div> </div> </div> </div> </div> </div> </div> </div> <div id="myModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"> <div class="modal-dialog modal-lg"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> <h4 class="modal-title">选择课程</h4> </div> <div class="modal-body"> <table class="table table-striped"> <thead> <tr> <th> <div class="checkbox"> <label> <input id="toggleInput" type="checkbox" onclick="{onToggleSelectAll}"> </label> </div> </th> <th>名称</th> <th>状态</th> <th>上/下架时间</th> <th>创建时间</th> <th>备注</th> </tr> </thead> <tbody> <tr each="{courses}"> <td> <div class="checkbox"> <label> <input name="CourseCheckBox" type="checkbox" __checked="{parent.isChecked(_id)}" value="{_id}"> </label> </div> </td> <td> {name} </td> <td> { __app.enums.LiveStatus.values[liveStatus] } </td> <td> { actionTime && _.date.format(new Date(actionTime), \'yyyy-MM-dd hh点mm分\') || \'空\'} </td> <td> {_.date.format(new Date(crtOn), \'yyyy-MM-dd hh点mm分\')} </td> <td> { desc } </td> </tr> </tbody> </table> </div> <div class="modal-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">取消</button> <button onclick="{onSubmitCourses}" data-dismiss="modal" type="button" class="btn btn-primary">确认</button> </div> </div> </div> </div> </div> </div> </div> </div>', 'boss-tenant-sd-catalogs-detail .form-horizontal .control-label{ text-align: left !important; } boss-tenant-sd-catalogs-detail .vcenter { vertical-align: middle; } boss-tenant-sd-catalogs-detail .table-narrow tr td{ border: none !important; width: 30% !important; } boss-tenant-sd-catalogs-detail .my-table{ width: 100%; } boss-tenant-sd-catalogs-detail .my-table td{ width: 33.33333%; } boss-tenant-sd-catalogs-detail .panel-default { border-top: none; border-color: #ddd; }', function(opts) {
+        "use strict"
+        var self = nest.presentable(this);
+        var loadCatalogByIdAction = domain.action('loadCatalogById');
+        var findCoursesAction = domain.action('findCourses');
+        var updateCatalogByIdAction = domain.action('updateCatalogById');
+        var fetchSdQrByProductAndWechatSiteAction = domain.action('fetchSdQrByProductAndWechatSite');
+
+        self.on('open', function(ctx){
+            var catalogId = ctx.req.paramList[0];
+            loadCatalogByIdAction.newInvocation({
+                id: catalogId
+            }).onDone(function(res){
+                self.catalog = res.catalog;
+                findCoursesAction.newInvocation({
+                    tenant: __page.tenantId
+                }).onDone(function(res){
+                    self.courses = res.courses;
+                    self.trigger('ready', false);
+                    self.trigger('view-route-to');
+                }).execute();
+            }).execute();
+        });
+        self.on('mount', function(){
+            self.validators = _.widget.validatify([]);
+        });
+
+        self.isChecked = function(id){
+            return self.catalog.products.map(function(product){return product._id}).indexOf(id)>=0;
+        };
+
+        self.populateProducts = function(products){
+            return products.map(function(product){
+                return self.courses.filter(function(course){
+                    return course._id === product._id;
+                })[0]
+            });
+        };
+
+        self.onToggleSelectAll = function(){
+            let inputs =[].slice.apply(document.querySelectorAll('input[name="CourseCheckBox"]'));
+            if(self.toggleInput.checked === false){
+                inputs.map(function(input){
+                    input.checked = false;
+                });
+            }else{
+                inputs.map(function(input){
+                    input.checked = true;
+                });
+            }
+            return true;
+        };
+
+        self.onInactive = function(e){
+            _.widget.confirm({
+                title: '操作确认',
+                content: '你确认要“锁定”该课程目录吗？',
+                callback: function(){
+                    self.catalog.lFlg = __app.enums.LifeFlag.names.Inactive;
+                    updateCatalogByIdAction.newInvocation({
+                        id: self.catalog._id,
+                        o: self.catalog
+                    }).onDone(function(res){
+                        self.update();
+                    }).execute();
+                }
+            });
+        };
+
+        self.obtainQr = function(product){
+            return function(e){
+                var qrTicket = null;
+                var qrUrl = null;
+                if(typeof self.catalog.media != 'object' || !product){
+                    return;
+                }
+                if(!product.poster){
+                    _.widget.showImg({
+                        title: '扫一扫获取课程海报',
+                        imgUrl: '',
+                        width: '300px',
+                        height: '300px',
+                        errorMsg: '该课程尚没有背景图片'
+                    });
+                    return;
+                }
+                if(product.qr && product.qr.ticket){
+                    qrTicket = product.qr.ticket || product.qr.ticket;
+                    qrUrl = 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=' + qrTicket;
+                    _.widget.showImg({
+                        title: '扫一扫获取课程海报',
+                        imgUrl: qrUrl,
+                        width: '300px',
+                        height: '300px'
+                    });
+                    return;
+                }
+                fetchSdQrByProductAndWechatSiteAction.newInvocation({
+                    product: _.toObjectFromRiot(product),
+                    media: self.catalog.media
+                }).onDone(function(res){
+                    if(res.error){
+                        alert('获取二维码失败');
+                        return;
+                    }
+                    qrTicket = res.product.qr.ticket;
+                    qrUrl = 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=' + qrTicket;
+                    _.widget.showImg({
+                        title: '扫一扫获取课程海报',
+                        imgUrl: qrUrl,
+                        width: '300px',
+                        height: '300px'
+                    });
+                    self.catalog.products.forEach(function(product, i){
+                        if(res.product._id === product._id){
+                            self.catalog.products[i] = res.product;
+                        }
+                    })
+                }).execute();
+            }
+        };
+
+        self.onActive = function(){
+            _.widget.confirm({
+                title: '操作确认',
+                content: '你确认要“锁定”该课程目录吗？',
+                callback: function(){
+                    self.catalog.lFlg = __app.enums.LifeFlag.names.Active;
+                    updateCatalogByIdAction.newInvocation({
+                        id: self.catalog._id,
+                        o: self.catalog
+                    }).onDone(function(res){
+                        self.update();
+                    }).execute();
+                }
+            });
+        };
+
+
+
+        self.onDelete = function(){
+            _.widget.confirm({
+                title: '操作确认',
+                content: '你确认要“删除”该课程目录吗？',
+                callback: function(){
+                    self.catalog.lFlg = __app.enums.LifeFlag.names.Deleted;
+                    updateCatalogByIdAction.newInvocation({
+                        id: self.catalog._id,
+                        o: self.catalog
+                    }).onDone(function(res){
+                        if(!res.error){
+                            riot.route('sd/catalogs');
+                        }
+                    }).execute();
+                }
+            });
+        };
+
+        self.onSubmitCourses = function(){
+            var checkedArr = document.querySelectorAll('input[name="CourseCheckBox"]:checked');
+            var ids = [];
+            self.catalog.products = [].slice.apply(checkedArr).map(function(input) {
+                ids.push(input.value);
+                return self.courses.filter(function(course){
+                    return course._id === input.value
+                })[0]
+            });
+
+            var catalogMeta = {};
+            catalogMeta._id = self.catalog._id;
+            catalogMeta.products = ids;
+
+            updateCatalogByIdAction.newInvocation({
+                id: self.catalog._id,
+                o: catalogMeta
+            }).onDone(function(res){
+                if(res.error){
+                    alert("保存课程失败");
+                }
+            }).execute();
+        };
+
+        self.onAddProduct = function(){
+            self.toggleInput.checked = false;
+        };
+    
+});
+riot.tag('boss-tenant-sd-catalogs-edit', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd/catalogs"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div class="row" style="text-align: center"> <h4>{catalog.name}</h4> </div> <alert validators="{validators.raw()}" clear="{clear}"></alert> <div class="row"> <div class="panel panel-default"> <div class="panel-body"> <form class="form-horizontal"> <div class="form-group text-left"> <label for="catalogNameInput" class="col-sm-2 control-label text-left">课程目录名称</label> <div class="col-sm-10 {has-error: !catalogNameInput.value.trim()} has-feedback"> <input onblur="{catalogNameInputBlur}" value="{catalog.name}" id="catalogNameInput" type="text" class="form-control "> </div> </div> <div class="form-group"> <label for="catalogMediaInput" class="col-sm-2 control-label">公众号</label> <div class="col-sm-10"> <select id="catalogMediaInput" class="form-control"> <option each="{wechatsites}" value="{_id}">{name}</option> </select> </div> </div> <div class="form-group"> <label for="catalogDescInput" class="col-sm-2 control-label">备注</label> <div class="col-sm-10"> <textarea onblur="{catalogDescInputBlur}" type="password" class="form-control" id="catalogDescInput"> {catalog.desc} </textarea> </div> </div> </form> </div> </div> </div> <div class="row" style="margin-top: 10px"> <div class="col-md-12 col-lg-12 text-center"> <input __disabled="{!courseMediaPriceInput.value.trim() || !courseNameInput.value.trim()}" onclick="{onSubmit}" type="button" class="btn btn-primary" value="保存"> <a href="#sd/catalogs" class="btn btn-default">取消</a> </div> </div> </div> </div> </div> </div>', '.form-horizontal .control-label{ text-align: left !important; } .vcenter { vertical-align: middle; } .my-table{ width: 100%; } .my-table td{ width: 33.33333%; } .panel-default { border-top: none; border-color: #ddd; }', function(opts) {
+        "use strict"
+        var self = nest.presentable(this);
+        var loadCatalogByIdAction = domain.action('loadCatalogById');
+        var updateCatalogByIdAction = domain.action('updateCatalogById');
+        var loadAllTenantWechatSiteAction = domain.action('loadAllTenantWechatSite');
+
+        self.on('open', function(ctx){
+            var courseId = ctx.req.paramList[0];
+            loadCatalogByIdAction.newInvocation({
+                id: courseId
+            }).onDone(function(res){
+                self.catalog = res.catalog;
+                loadAllTenantWechatSiteAction.newInvocation(__page.tenantId)
+                    .onDone(function(res){
+                        self.wechatsites = res;
+                        self.trigger('ready', false);
+                        self.trigger('view-route-to');
+                    })
+                    .execute();
+            }).execute();
+        });
+        self.on('mount', function(){
+            self.validators = _.widget.validatify([]);
+        });
+        self.catalogNameInputBlur = function(){
+            let catalogName = self.catalogNameInput.value.trim();
+            if(!catalogName){
+                return self.validators.addToSet({
+                    success: false,
+                    field: '课程名称',
+                    desc: '不能为空!',
+                    key: 'courseNameInput'
+                });
+            }
+            self.catalog.name = catalogName;
+        };
+        self.clear = function(){
+            self.validators.clear();
+        };
+        self.catalogDescInputBlur = function(){
+            self.catalog.desc = self.catalogDescInput.value.trim();
+        };
+
+        self.onSubmit = function(){
+            var req = {
+                id: self.catalog._id,
+                o: self.catalog
+            };
+
+            updateCatalogByIdAction.newInvocation(req)
+                .onDone(function(res){
+                    riot.route('sd/catalogs');
+                })
+                .execute();
+
+        };
+    
+});
+riot.tag('boss-tenant-sd-catalogs', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd/catalogs"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div class="row" style="text-align: center"> <h4>课程目录管理</h4> </div> <div class="row"> <form class="form-inline"> <div class="col-md-6 col-lg-6"> <div class="form-group"> <label for="catalogStatus">状态</label> <select id="catalogStatus" class="form-control" onchange="{onSelect}"> <option value="">全部状态</option> <option value="{__app.enums.LifeFlag.names.Active}">已激活</option> <option value="{__app.enums.LifeFlag.names.Inactive}">已锁定</option> <option value="{__app.enums.LifeFlag.names.Deleted}">已删除</option> </select> </div> <input onclick="{onSearch}" class="btn btn-primary" type="button" value="查询"> </div> <div class="col-md-6 col-lg-6 text-right"> <a class="btn btn-primary" href="#sd/catalogs/add">添加</a> </div> </form> </div> <div class="row" style="margin-top: 10px"> <table class="table table-striped"> <thead> <tr> <th>名称</th> <th>状态</th> <th>公众号</th> <th>创建时间</th> <th>备注</th> </tr> </thead> <tbody> <tr each="{catalogs}"> <td> <a href="#sd/catalogs/_{_id}"> {name} </a> </td> <td> { __app.enums.LifeFlag.values[lFlg] } </td> <td> { media.name } </td> <td> {_.date.format(new Date(crtOn), \'yyyy-MM-dd hh点mm分\')} </td> <td> { desc } </td> </tr> </tbody> </table> </div> </div> </div> </div>', function(opts) {
+        "use strict"
+        var self = nest.presentable(this);
+        var findCatalogsAction = domain.action('findCatalogs');
+        self.courses = [];
+        self.filter = {
+            tenant: __page.tenantId
+        };
+        self.on('open', function(){
+            findCatalogsAction.newInvocation({
+                filter: self.filter
+            }).onDone(function(res){
+                if(res.error){
+                    return alert("failed to search courses");
+                }
+                self.catalogs = res.catalogs;
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+            }).execute();
+        });
+        self.onSearch = function(e){
+            findCatalogsAction.newInvocation({
+                filter: self.filter
+            }).onDone(function(res){
+                if(res.error){
+                    return alert("failed to search courses");
+                }
+                self.update({catalogs: res.catalogs});
+            }).execute();
+        };
+        self.onSelect = function(e){
+            var lFlg = self.catalogStatus.value;
+            if(!lFlg){
+                if(self.filter.hasOwnProperty('lFlg')){
+                    delete self.filter['lFlg'];
+                }
+                return;
+            }
+            self.filter.lFlg = lFlg;
+        }
+    
+});
+riot.tag('boss-tenant-sd-courses-add', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd/courses"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div class="row" style="text-align: center"> <h4>新建课程</h4> </div> <alert validators="{validators}" clear="{clear}"></alert> <div class="row"> <div class="panel panel-default"> <div class="panel-heading">基本信息</div> <div class="panel-body"> <form class="form-horizontal"> <div class="form-group text-left"> <label for="courseNameInput" class="col-sm-2 control-label text-left">课程名称</label> <div class="col-sm-10 {has-error: !courseNameInput.value.trim()} has-feedback"> <input onblur="{courseNameInputBlur}" type="text" class="form-control " id="courseNameInput"> </div> </div> <div class="form-group"> <label for="coursePromoteInput" class="col-sm-2 control-label">推广语</label> <div class="col-sm-10"> <input type="text" class="form-control" id="coursePromoteInput" onblur="{coursePromoteInputBlur}"> </div> </div> <div class="form-group"> <label for="courseMediaPriceInput" class="col-sm-2 control-label">媒体价 ( :元 )</label> <div class="col-sm-10 {has-error: !courseMediaPriceInput.value.trim()}"> <input onblur="{courseMediaPriceInputBlur}" type="number" class="form-control" id="courseMediaPriceInput"> </div> </div> <div class="form-group"> <label class="col-sm-2 control-label">上/下架状态</label> <div class="col-sm-10" style="height: 32px;line-height: 32px"> <span>待上架</span> </div> </div> <div class="form-group"> <label class="col-sm-2 control-label">上/下架时间</label> <div class="col-sm-10" style="height: 32px;line-height: 32px"> <span>空</span> </div> </div> <div class="form-group"> <label for="courseDescInput" class="col-sm-2 control-label">备注</label> <div class="col-sm-10"> <textarea onblur="{courseDescInputBlur}" type="password" class="form-control" id="courseDescInput"></textarea> </div> </div> </form> </div> </div> </div> <div class="row" style="margin-top: 10px"> <div class="col-md-12 col-lg-12 text-center"> <input __disabled="{!courseMediaPriceInput.value.trim() || !courseNameInput.value.trim()}" onclick="{onSubmit}" type="button" class="btn btn-primary" value="保存"> <a href="#sd/courses" class="btn btn-default">取消</a> </div> </div> </div> </div> </div>', '.form-horizontal .control-label{ text-align: left !important; }', function(opts) {
+        "use strict"
+        var self = nest.presentable(this);
+        var createCourseAction = domain.action('createCourse');
+        self.on('open', function(){
+            self.course = {};
+            self.course.tenant = __page.tenantId;
+            self.validators = [];
+            self.courseMediaPriceInput.value = "";
+            self.courseNameInput.value = "";
+            self.coursePromoteInput.value = "";
+            self.courseDescInput.value = "";
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+        });
+        self.courseNameInputBlur = function(){
+            let courseName = self.courseNameInput.value.trim();
+            if(!courseName){
+                return self.validators.push({
+                    success: false,
+                    field: '课程名称',
+                    desc: '不能为空!'
+                });
+            }
+            self.course.name = courseName;
+        };
+        self.clear = function(){
+            self.validators = [];
+        };
+        self.courseDescInputBlur = function(){
+            self.course.desc = self.courseDescInput.value.trim();
+        };
+        self.coursePromoteInputBlur = function(){
+            self.course.slogan = self.coursePromoteInput.value.trim();
+        };
+        self.courseMediaPriceInputBlur = function(){
+            let listPrice = self.courseMediaPriceInput.value.trim();
+            if(!listPrice){
+                return self.validators.push({
+                    success: false,
+                    field: '媒体价',
+                    desc: '不能为空!'
+                });
+            }
+            self.course.listPrice = listPrice;
+        };
+        self.onSubmit = function(){
+            createCourseAction.newInvocation(self.course)
+                .onDone(function(res){
+                    riot.route('sd/courses');
+                })
+                .execute();
+        };
+    
+});
+riot.tag('boss-tenant-sd-courses-detail', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd/courses"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div> <div class="row" style="text-align: center"> <a href="#sd/courses" style="position: absolute; left: 0px; top: 10px">返回课程列表</a> <h4>{course.name}</h4> </div> <alert validators="{validators.raw()}" clear="{clear}"></alert> <div class="row"> <ul class="nav nav-tabs"> <li role="presentation" class="{active: currNav === 0}"><a onclick="{onChangeTab(0)}">课程</a></li> <li role="presentation" class="{active: currNav === 1}"><a onclick="{onChangeTab(1)}">分销</a></li> </ul> </div> <div class="row" if="{currNav === 0}"> <div class="panel panel-default"> <div class="panel-body"> <div> <table class="table table-narrow"> <tr> <td>课程名称</td> <td>{course.name}</td> </tr> <tr> <td>推广语</td> <td>{course.slogan}</td> </tr> <tr> <td>媒体价 ( :元 )</td> <td>{course.listPrice}</td> </tr> <tr> <td>上/下架状态</td> <td>{__app.enums.LiveStatus.values[course.liveStatus]}</td> </tr> <tr> <td>上/下架时间</td> <td>{course.actionTime && _.date.format(new Date(course.actionTime), \'yyyy-MM-dd hh点mm分\') || \'空\'}</td> </tr> <tr> <td>备注</td> <td>{course.desc}</td> </tr> <tr> <td><strong>焦点图</strong></td> <td colspan="2"> <ul class="banners-container"> <li each="{banner, i in course.banners}"> <img riot-src="{banner && (__app.settings.api.url + \'/file?media_id=\' + banner)}"> </li> </ul> </td> </tr> </table> <div class="row text-center"> <div class="col-md-12 col-lg-12"> <a href="#sd/courses/edit/details/_{course._id}" class="btn btn-primary">编辑课程详情</a> </div> </div> <div class="row text-center" style="margin-top: 20px; margin-bottom: 20px"> <div class="col-md-12 col-lg-12"> <a href="#sd/courses/edit/_{course._id}" class="btn btn-default">修改</a> <input if="{course.liveStatus === __app.enums.LiveStatus.names.Idle}" onclick="{onGoLive}" data-toggle="modal" data-target="#modal" value="上架" type="button" class="btn btn-default"> <input if="{course.liveStatus === __app.enums.LiveStatus.names.GoLive}" onclick="{onSunset}" data-toggle="modal" data-target="#modal" value="下架" type="button" class="btn btn-default"> <input onclick="{onDelete}" data-toggle="modal" data-target="#modal" value="删除" type="button" class="btn btn-default"> </div> </div> </div> </div> </div> </div> <div class="row" if="{currNav === 1}"> <div class="panel panel-default"> <div class="panel-body"> <td class="text-left"> <table class="my-table table table-narrow"> <tr> <td><strong>会员折扣</strong></td> <td>单位课程优惠</td> <td> <span>{__app.enums.CommissionType.names.Cash === course.memberDiscountsType && \'金额\' || \'百分比\'}</span> <span>{ course.memberDiscountsValue }</span> </td> </tr> <tr> <td><strong>直接分销商-直接推荐人</strong></td> <td>单位课程佣金</td> <td> <span>{__app.enums.CommissionType.names.Cash === course.upLine1CommissionType && \'金额\' || \'百分比\'}</span> <span>{ course.upLine1CommissionValue }</span> </td> </tr> <tr> <td><strong>间接分销商-间接推荐人</strong></td> <td>单位课程佣金</td> <td> <span>{__app.enums.CommissionType.names.Cash === course.upLine2CommissionType && \'金额\' || \'百分比\'}</span> <span>{ course.upLine2CommissionValue }</span> </td> </tr> <tr> <td><strong>第三级分销商-间接推荐人的推荐人</strong></td> <td>单位课程佣金</td> <td> <span>{__app.enums.CommissionType.names.Cash === course.upLine3CommissionType && \'金额\' || \'百分比\'}</span> <span>{ course.upLine3CommissionValue }</span> </td> </tr> <tr> <td colspan="3" style="text-align: center">注： 如果佣金按百分比计算，佣金基数以实际消费者实付金额为准（即线下实际核销金额）</td> </tr> <tr> <td><strong>分销海报背景</strong></td> <td colspan="2"><img style="width: 200px" riot-src="{course.poster &&__app.settings.api.url + \'/file?media_id=\' + course.poster}"></td> </tr> </table> </div> </div> </div>  </div> </div> </div> </div> </div>', 'boss-tenant-sd-courses-detail .form-horizontal .control-label{ text-align: left !important; } boss-tenant-sd-courses-detail .vcenter { vertical-align: middle; } boss-tenant-sd-courses-detail .table-narrow tr td{ border: none !important; width: 30% !important; } boss-tenant-sd-courses-detail .my-table{ width: 100%; } boss-tenant-sd-courses-detail .my-table td{ width: 33.33333%; } boss-tenant-sd-courses-detail .panel-default { border-top: none; border-color: #ddd; }', function(opts) {
+        "use strict"
+        var self = nest.presentable(this);
+        var loadCourseByIdAction = domain.action('loadCourseById');
+        var updateCourseByIdAction = domain.action('updateCourseById');
+        self.currNav = 0;
+        self.onChangeTab = function(index){
+            return function(){
+                self.currNav = index;
+            };
+        };
+        self.on('open', function(ctx){
+            var courseId = ctx.req.paramList[0];
+            loadCourseByIdAction.newInvocation({
+                id: courseId
+            }).onDone(function(res){
+                self.course = res.course;
+                if(!self.course.banners){
+                    self.course.banners = [];
+                }
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+            }).execute();
+        });
+        self.on('mount', function(){
+            self.validators = _.widget.validatify([]);
+        });
+
+        self.onGoLive = function(e){
+            _.widget.confirm({
+                title: '操作确认',
+                content: '你确认要“上架”该课程吗？',
+                callback: function(){
+                    self.course.liveStatus = __app.enums.LiveStatus.names.GoLive;
+                    updateCourseByIdAction.newInvocation({
+                        id: self.course._id,
+                        intention: 'GoLiveOrSunset',
+                        o: self.course
+                    }).onDone(function(res){
+                        self.course.actionTime = res.course.actionTime;
+                        self.course.qr = res.course.qr;
+                        self.update();
+                    }).execute();
+                }
+            });
+        };
+
+        self.onSunset = function(){
+            _.widget.confirm({
+                title: '操作确认',
+                content: '你确认要“下架”该课程吗？',
+                callback: function(){
+                    self.course.liveStatus = __app.enums.LiveStatus.names.Sunset;
+                    updateCourseByIdAction.newInvocation({
+                        id: self.course._id,
+                        intention: 'GoLiveOrSunset',
+                        o: self.course
+                    }).onDone(function(res){
+                        self.course.actionTime = res.course.actionTime;
+                        self.update();
+                    }).execute();
+                }
+            });
+        };
+
+        self.onDelete = function(){
+            _.widget.confirm({
+                title: '操作确认',
+                content: '你确认要“删除”该课程吗？',
+                callback: function(){
+                    self.course.lFlg = __app.enums.LifeFlag.names.Deleted;
+                    updateCourseByIdAction.newInvocation({
+                        id: self.course._id,
+                        o: self.course
+                    }).onDone(function(res){
+                        if(!res.error){
+                            riot.route('sd/courses');
+                        }
+                    }).execute();
+                }
+            });
+        };
+    
+});
+riot.tag('boss-tenant-sd-courses-edit-detail', '<div class="container" if="{!hidden}"> <div class="row"> <div class="col-md-6 col-md-offset-3"> <div class="row text-center"> <a href="#sd/courses/_{course._id}" style="position: absolute; left: 0px; top: 10px">返回</a> <h4>课程详情-{course.name}</h4> </div> <div class="row" style="margin-bottom: 10px"> <span>更新时间: {course.updOn && _.date.format(new Date(course.updOn), \'yyyy-MM-dd hh点mm分\')}</span> </div> <div if="{status===\'view\'}"> <div class="row" style="margin-bottom: 10px"> <input onclick="{onEdit}" type="button" class="btn btn-primary" value="编辑"> </div> <div class="row" style="height:450px; background: white; padding: 10px; margin-bottom: 20px; overflow: scroll"> <raw content="{course.details}"></raw> </div> </div> <div if="{status===\'edit\'}"> <div class="row" style="margin-bottom: 10px"> <input onclick="{onPreview}" type="button" class="btn btn-primary" value="预览"> </div> <div class="row text-center" style="padding-bottom: 50px"> <div id="richEditor"></div> <input onclick="{onSubmit}" type="button" class="btn-primary btn" value="保存"> <input onclick="{onCancel}" type="button" class="btn-default btn" value="取消"> </div> </div> <div if="{status===\'preview\'}"> <div class="row" style="margin-bottom: 10px"> <input onclick="{onBack}" type="button" class="btn btn-primary" value="返回"> </div> <div class="row" style="height: 450px;background: white; padding: 10px; margin-bottom: 20px; overflow: scroll"> <raw content="{preview}"></raw> </div>    </div> </div> </div> </div>', function(opts) {
+        "use strict"
+        var self = nest.presentable(this);
+        var loadCourseByIdAction = domain.action('loadCourseById');
+        var updateCourseByIdAction = domain.action('updateCourseById');
+
+        self.on('open', function(ctx){
+            self.status = 'view';
+            var courseId = ctx.req.paramList[0];
+            loadCourseByIdAction.newInvocation({
+                id: courseId
+            }).onDone(function(res){
+                self.course = res.course;
+                self.preview = res.course.details || '';
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+            }).execute();
+        });
+        self.onEdit = function(){
+            self.status = 'edit';
+            setTimeout(function(){
+                $('#richEditor').summernote({
+                    height: 400,
+                    minHeight: null,
+                    maxHeight: null,
+                    toolbar: [
+                        ['style', ['bold', 'italic', 'underline', 'clear']],
+                        ['fontsize', ['fontsize']],
+                        ['color', ['color']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['height', ['height']],
+                        ['fontname', ['fontname']],
+                        ['insert', ['picture', 'link', 'video', 'hr', 'table']]
+                    ],
+                    callbacks: {
+                        onImageUpload: function(files) {
+                            uploadEditorImg(files[0])
+                        }
+                    }
+
+                }).summernote('code', self.course.details || '');
+            }, 10);
+        };
+        self.onSubmit = function(){
+            self.course.details = $('#richEditor').summernote('code');
+            updateCourseByIdAction.newInvocation({
+                id: self.course._id,
+                o: self.course
+            }).onDone(function(res){
+                if(res.error){
+                    return alert("error occur.");
+                }
+                riot.route('sd/courses/_' + self.course._id);
+            }).execute();
+        };
+        self.onPreview = function(){
+            if(self.status != 'preview'){
+                self.status = 'preview';
+                self.preview = $('#richEditor').summernote('code');
+            }
+        };
+        self.onBack = function(){
+            self.status = 'edit';
+        };
+        self.onCancel = function(){
+            self.status = 'view';
+        };
+
+        var uploadEditorImg = function(file){
+            _.uploadImgFile(file, function(err, url){
+                if(!err) {
+                    $('#richEditor').summernote('insertImage', url);
+                }else{
+                    alert('上传图片失败');
+                }
+            });
+        }
+    
+});
+riot.tag('boss-tenant-sd-courses-edit', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd/courses"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div class="row" style="text-align: center"> <h4>{course.name}</h4> </div> <alert validators="{validators.raw()}" clear="{clear}"></alert> <div class="row"> <ul class="nav nav-tabs"> <li role="presentation" class="{active: currNav === 0}"><a onclick="{onChangeTab(0)}">课程</a></li> <li role="presentation" class="{active: currNav === 1}"><a onclick="{onChangeTab(1)}">分销</a></li> </ul> </div> <div class="row" if="{currNav === 0}"> <div class="panel panel-default"> <div class="panel-body"> <form class="form-horizontal"> <div class="form-group text-left"> <label for="courseNameInput" class="col-sm-2 control-label text-left">课程名称</label> <div class="col-sm-10 {has-error: !courseNameInput.value.trim()} has-feedback"> <input onblur="{courseNameInputBlur}" value="{course.name}" id="courseNameInput" type="text" class="form-control "> </div> </div> <div class="form-group"> <label for="coursePromoteInput" class="col-sm-2 control-label">推广语</label> <div class="col-sm-10"> <input onblur="{coursePromoteInputBlur}" value="{course.slogan}" type="text" class="form-control" id="coursePromoteInput"> </div> </div> <div class="form-group"> <label for="courseMediaPriceInput" class="col-sm-2 control-label">媒体价 ( :元 )</label> <div class="col-sm-10 {has-error: !courseMediaPriceInput.value.trim()}"> <input onblur="{courseMediaPriceInputBlur}" value="{course.listPrice}" type="number" class="form-control" id="courseMediaPriceInput"> </div> </div> <div class="form-group"> <label class="col-sm-2 control-label">上/下架状态</label> <div class="col-sm-10" style="height: 32px;line-height: 32px"> <span>{__app.enums.LiveStatus.values[course.liveStatus]}</span> </div> </div> <div class="form-group"> <label class="col-sm-2 control-label">上/下架时间</label> <div class="col-sm-10" style="height: 32px;line-height: 32px"> <span>{course.actionTime && _.date.format(new Date(course.actionTime), \'yyyy-MM-dd hh点mm分\') || \'空\'}</span> </div> </div> <div class="form-group"> <label for="courseDescInput" class="col-sm-2 control-label">备注</label> <div class="col-sm-10"> <textarea onblur="{courseDescInputBlur}" type="password" class="form-control" id="courseDescInput"> {course.desc} </textarea> </div> </div> <div class="form-group"> <label for="courseDescInput" class="col-sm-2 control-label">轮播焦点图</label> <div class="col-sm-10"> <input multiple="multiple" onchange="{onBannersChange}" id="bannersInput" type="file" accept="image/jpeg, image/png, image/jpg"> <ul class="banners-container"> <li each="{banner, i in course.banners}" onmouseenter="{parent.onHover}" onmouseleave="{parent.onUnHover}"> <div onclick="{parent.removeBanner}" if="{isImgMaskShow}"> <b> <b class="close-a"></b> <b class="close-b"></b> </b> </div> <img riot-src="{banner.data || banner && (__app.settings.api.url + \'/file?media_id=\' + banner)}"> </li> </ul> </div> </div> </form> </div> </div> </div> <div class="row" if="{currNav === 1}"> <div class="panel panel-default"> <div class="panel-body"> <td class="text-left"> <table class="my-table table table-striped"> <tr> <td><strong>会员折扣</strong></td> <td>单位课程优惠</td> <td> <table> <tr> <td> <div onclick="{onSelectMemberDiscountsType1}" class="radio form-inline"> <label for="memberDiscountsTypeInput1"> <input id="memberDiscountsTypeInput1" value="{__app.enums.CommissionType.names.Cash}" __checked="{course.memberDiscountsType === __app.enums.CommissionType.names.Cash}" type="radio" name="memberDiscountsType"> 金额 </label> </div> </td> <td> <input id="memberDiscountsValueInput1" onblur="{onValidateValue}" __disabled="{course.memberDiscountsType != __app.enums.CommissionType.names.Cash}" value="{course.memberDiscountsType === __app.enums.CommissionType.names.Cash && course.memberDiscountsValue || \'\'}" class="form-control" type="number"> </td> </tr> <tr> <td> <div onclick="{onSelectMemberDiscountsType2}" class="radio form-inline"> <label for="memberDiscountsTypeInput2"> <input type="radio" name="memberDiscountsType" id="memberDiscountsTypeInput2" value="{__app.enums.CommissionType.names.Percent}" __checked="{course.memberDiscountsType === __app.enums.CommissionType.names.Percent}"> 百分比 </label> </div> </td> <td> <input id="memberDiscountsValueInput2" onblur="{onValidatePercent}" __disabled="{course.memberDiscountsType != __app.enums.CommissionType.names.Percent}" value="{course.memberDiscountsType === __app.enums.CommissionType.names.Percent && course.memberDiscountsValue || \'\'}" class="form-control" type="number"> </td> </tr> </table> </td> </tr> <tr> <td><strong>直接分销商-直接推荐人</strong></td> <td>单位课程佣金</td> <td> <table> <tr> <td> <div onclick="{onSelectUpLine1CommissionType1}" class="radio form-inline"> <label for="upLine1CommissionTypeInput1"> <input id="upLine1CommissionTypeInput1" value="{__app.enums.CommissionType.names.Cash}" __checked="{course.upLine1CommissionType === __app.enums.CommissionType.names.Cash}" type="radio" name="upLine1CommissionType"> 金额 </label> </div> </td> <td> <input id="upLine1CommissionValueInput1" onblur="{onBlurUpLine1CommissionValue(\'val\')}" __disabled="{course.upLine1CommissionType != __app.enums.CommissionType.names.Cash}" value="{course.upLine1CommissionType === __app.enums.CommissionType.names.Cash && course.upLine1CommissionValue || \'\'}" class="form-control" type="number"> </td> </tr> <tr> <td> <div onclick="{onSelectUpLine1CommissionType2}" class="radio form-inline"> <label for="upLine1CommissionTypeInput2"> <input id="upLine1CommissionTypeInput2" value="{__app.enums.CommissionType.names.Percent}" __checked="{course.upLine1CommissionType === __app.enums.CommissionType.names.Percent}" type="radio" name="upLine1CommissionType"> 百分比 </label> </div> </td> <td> <input id="upLine1CommissionValueInput2" onblur="{onBlurUpLine1CommissionValue(\'percent\')}" __disabled="{course.upLine1CommissionType != __app.enums.CommissionType.names.Percent}" value="{course.upLine1CommissionType === __app.enums.CommissionType.names.Percent && course.upLine1CommissionValue || \'\'}" class="form-control" type="number"> </td> </tr> </table> </td> </tr> <tr> <td><strong>间接分销商-间接推荐人</strong></td> <td>单位课程佣金</td> <td> <table> <tr> <td> <div onclick="{onSelectUpLine2CommissionType1}" class="radio form-inline"> <label for="upLine2CommissionTypeInput1"> <input id="upLine2CommissionTypeInput1" value="{__app.enums.CommissionType.names.Cash}" __checked="{course.upLine2CommissionType === __app.enums.CommissionType.names.Cash}" type="radio" name="upLine2CommissionType"> 金额 </label> </div> </td> <td> <input id="upLine2CommissionValueInput1" onblur="{onBlurUpLine2CommissionValue(\'val\')}" __disabled="{course.upLine2CommissionType != __app.enums.CommissionType.names.Cash}" value="{course.upLine2CommissionType === __app.enums.CommissionType.names.Cash && course.upLine2CommissionValue || \'\'}" class="form-control" type="number"> </td> </tr> <tr> <td> <div onclick="{onSelectUpLine2CommissionType2}" class="radio form-inline"> <label for="upLine2CommissionTypeInput2"> <input id="upLine2CommissionTypeInput2" value="{__app.enums.CommissionType.names.Percent}" __checked="{course.upLine2CommissionType === __app.enums.CommissionType.names.Percent}" type="radio" name="upLine2CommissionType"> 百分比 </label> </div> </td> <td> <input id="upLine2CommissionValueInput2" onblur="{onBlurUpLine2CommissionValue(\'percent\')}" __disabled="{course.upLine2CommissionType != __app.enums.CommissionType.names.Percent}" value="{course.upLine2CommissionType === __app.enums.CommissionType.names.Percent && course.upLine2CommissionValue || \'\'}" class="form-control" type="number"> </td> </tr> </table> </td> </tr> <tr> <td><strong>第三级分销商-间接推荐人的推荐人</strong></td> <td>单位课程佣金</td> <td> <table> <tr> <td> <div onclick="{onSelectUpLine3CommissionType1}" class="radio form-inline"> <label for="upLine3CommissionTypeInput1"> <input id="upLine3CommissionTypeInput1" value="{__app.enums.CommissionType.names.Cash}" __checked="{course.upLine3CommissionType === __app.enums.CommissionType.names.Cash}" type="radio" name="upLine3CommissionType"> 金额 </label> </div> </td> <td> <input id="upLine3CommissionValueInput1" onblur="{onBlurUpLine3CommissionValue(\'val\')}" __disabled="{course.upLine3CommissionType != __app.enums.CommissionType.names.Cash}" value="{course.upLine3CommissionType === __app.enums.CommissionType.names.Cash && course.upLine3CommissionValue || \'\'}" class="form-control" type="number"> </td> </tr> <tr> <td> <div onclick="{onSelectUpLine3CommissionType2}" class="radio form-inline"> <label for="upLine3CommissionTypeInput2"> <input id="upLine3CommissionTypeInput2" value="{__app.enums.CommissionType.names.Percent}" __checked="{course.upLine3CommissionType === __app.enums.CommissionType.names.Percent}" type="radio" name="upLine3CommissionType"> 百分比 </label> </div> </td> <td> <input id="upLine3CommissionValueInput2" onblur="{onBlurUpLine3CommissionValue(\'percent\')}" __disabled="{course.upLine3CommissionType != __app.enums.CommissionType.names.Percent}" value="{course.upLine3CommissionType === __app.enums.CommissionType.names.Percent && course.upLine3CommissionValue || \'\'}" class="form-control" type="number"> </td> </tr> </table> </td> </tr> <tr> <td colspan="3" style="text-align: center">注： 如果佣金按百分比计算，佣金基数以实际消费者实付金额为准（即线下实际核销金额）</td> </tr> <tr> <td> <strong>分销海报背景</strong> </td> <td colspan="2"> <input onchange="{onFileChange}" id="posterInput" type="file" accept="image/jpeg, image/png, image/jpg"> <img style="width: 100px; margin-top: 10px" riot-src="{course.poster && !course.poster.data && __app.settings.api.url + \'/file?media_id=\' + course.poster || course.poster.data}"> </td> </tr> </table> </div> </div> </div>  <div class="row" style="margin-top: 10px"> <div class="col-md-12 col-lg-12 text-center"> <input __disabled="{!courseMediaPriceInput.value.trim() || !courseNameInput.value.trim() || !validators.allOk()}" onclick="{onSubmit}" type="button" class="btn btn-primary" value="保存"> <a href="#sd/courses" class="btn btn-default">取消</a> </div> </div> </div> </div> </div> </div>', '.form-horizontal .control-label{ text-align: left !important; } .vcenter { vertical-align: middle; } .my-table{ width: 100%; } .my-table td{ width: 33.33333%; } .panel-default { border-top: none; border-color: #ddd; } .banners-container{ margin: 0px; margin-top: 10px;overflow: hidden;padding:0px } .banners-container >li { position: relative;width: 100px;height:100px;overflow: hidden;background-color: #EFEFEF; list-style-type:none;float:left;margin-right: 10px;line-height: 100px;text-align: center } .banners-container >li img{ width: 100px; } .banners-container >li div{ position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.3); } .banners-container >li div >b{ position: absolute; top:38px; left:38px; width:24px; height:24px; } .close-a{ position: absolute; top:0px; left:10px; width: 4px; height: 24px; transform:rotate(45deg); background: white; } .close-b{ position: absolute; top:0px; left:10px; width: 4px; height: 24px; transform:rotate(135deg); background: white; }', function(opts) {
+        "use strict";
+        var self = nest.presentable(this);
+        var maxBannerCount = 3;
+        var loadCourseByIdAction = domain.action('loadCourseById');
+        var updateCourseByIdAction = domain.action('updateCourseById');
+        self.currNav = 0;
+        self.onChangeTab = function(index){
+            return function(){
+                self.currNav = index;
+            };
+        };
+        self.on('open', function(ctx){
+            var courseId = ctx.req.paramList[0];
+            self.posterInput.value = "";
+            loadCourseByIdAction.newInvocation({
+                id: courseId
+            }).onDone(function(res){
+                self.course = res.course;
+                if(!self.course.banners){
+                    self.course.banners = [];
+                }
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+            }).execute();
+        });
+        self.onHover = function(){
+            this.isImgMaskShow = true;
+        };
+        self.onUnHover = function(){
+            this.isImgMaskShow = false;
+        };
+        self.on('mount', function(){
+            self.validators = _.widget.validatify([]);
+            setTimeout(function(){
+                $('#richEditor').summernote({
+                    height: 200,
+                    minHeight: null,
+                    maxHeight: null,
+                    focus: true
+                });
+            }, 100);
+        });
+        self.courseNameInputBlur = function(){
+            let courseName = self.courseNameInput.value.trim();
+            if(!courseName){
+                return self.validators.addToSet({
+                    success: false,
+                    field: '课程名称',
+                    desc: '不能为空!',
+                    key: 'courseNameInput'
+                });
+            }
+            self.course.name = courseName;
+        };
+        self.clear = function(){
+            self.validators.clear();
+        };
+        self.courseDescInputBlur = function(){
+            self.course.desc = self.courseDescInput.value.trim();
+        };
+        self.coursePromoteInputBlur = function(){
+            self.course.slogan = self.coursePromoteInput.value.trim();
+        };
+        self.courseMediaPriceInputBlur = function(){
+            let listPrice = self.courseMediaPriceInput.value.trim();
+            if(!listPrice){
+                return self.validators.addToSet({
+                    success: false,
+                    field: '媒体价',
+                    desc: '不能为空!',
+                    key: 'courseMediaPrice'
+                });
+            }
+            self.course.listPrice = listPrice;
+        };
+        self.onSelectMemberDiscountsType1 = function(e){
+            self.course.memberDiscountsType = __app.enums.CommissionType.names.Cash;
+            self.course.memberDiscountsValue = '';
+        };
+        var validateValue = function(val, kv, callback){
+            if(val.trim() < 0 || parseInt(val.trim(), 10) > parseInt(self.course.listPrice, 10)){
+                return self.validators.addToSet({
+                    success: false,
+                    field: kv.value,
+                    desc: '所属金额小于0,或者大于媒体价',
+                    key: kv.key
+                });
+            }
+            self.validators.pass(kv.key);
+            callback();
+        };
+        var validatePercent = function(val, kv, callback){
+            if(val.trim() <= 0 || val.trim() > 100){
+                return self.validators.addToSet({
+                    success: false,
+                    field: kv.value,
+                    desc: '请输入1到100的自然数',
+                    key: kv.key
+                });
+            }
+            self.validators.pass(kv.key);
+            callback();
+        };
+        self.onValidateValue = function(e){
+            validateValue(e.target.value, {key: 'membershipDiscountValue', value: '会员折扣金额非法'}, function(){
+                self.course.memberDiscountsValue = e.target.value;
+            })
+        };
+        self.onValidatePercent = function(e){
+            validatePercent(e.target.value, {key: 'membershipDiscountPercent', value: '会员折扣百分比非法'}, function(){
+                self.course.memberDiscountsValue = e.target.value;
+            })
+        };
+        self.onSelectMemberDiscountsType2 = function(e){
+            self.course.memberDiscountsType = __app.enums.CommissionType.names.Percent;
+            self.course.memberDiscountsValue = '';
+        };
+
+        self.onSelectUpLine1CommissionType1 = function(e){
+            self.course.upLine1CommissionType = __app.enums.CommissionType.names.Cash;
+            self.course.upLine1CommissionValue = '';
+        };
+        self.onSelectUpLine1CommissionType2 = function(e){
+            self.course.upLine1CommissionType = __app.enums.CommissionType.names.Percent;
+            self.course.upLine1CommissionValue = '';
+        };
+        self.onBlurUpLine1CommissionValue = function(type){
+            return function(e){
+                if(type === 'val'){
+                    validateValue(e.target.value, {key: 'upLine1CommissionValue', value: '一级分销金额非法'}, function(){
+                        self.course.upLine1CommissionValue = e.target.value;
+                    });
+                    return;
+                }
+                validatePercent(e.target.value, {key: 'upLine1CommissionPercent', value: '一级分销百分比非法'}, function(){
+                    self.course.upLine1CommissionValue = e.target.value;
+                })
+            }
+        };
+
+        self.onSelectUpLine2CommissionType1 = function(e){
+            self.course.upLine2CommissionType = __app.enums.CommissionType.names.Cash;
+            self.course.upLine2CommissionValue = '';
+        };
+        self.onSelectUpLine2CommissionType2 = function(e){
+            self.course.upLine2CommissionType = __app.enums.CommissionType.names.Percent;
+            self.course.upLine2CommissionValue = '';
+        };
+        self.onBlurUpLine2CommissionValue = function(type){
+            return function(e){
+                if(type === 'val'){
+                    validateValue(e.target.value, {key: 'upLine2CommissionValue', value: '二级分销金额非法'}, function(){
+                        self.course.upLine2CommissionValue = e.target.value;
+                    });
+                    return;
+                }
+                validatePercent(e.target.value, {key: 'upLine2CommissionPercent', value: '二级分销百分比非法'}, function(){
+                    self.course.upLine2CommissionValue = e.target.value;
+                })
+            }
+        };
+
+        self.onSelectUpLine3CommissionType1 = function(e){
+            self.course.upLine3CommissionType = __app.enums.CommissionType.names.Cash;
+            self.course.upLine3CommissionValue = '';
+        };
+        self.onSelectUpLine3CommissionType2 = function(e){
+            self.course.upLine3CommissionType = __app.enums.CommissionType.names.Percent;
+            self.course.upLine3CommissionValue = '';
+        };
+        self.onBlurUpLine3CommissionValue = function(type){
+            return function(e){
+                if(type === 'val'){
+                    validateValue(e.target.value, {key: 'upLine3CommissionValue', value: '三级分销金额非法'}, function(){
+                        self.course.upLine3CommissionValue = e.target.value;
+                    });
+                    return;
+                }
+                validatePercent(e.target.value, {key: 'upLine3CommissionPercent', value: '三级分销百分比非法'}, function(){
+                    self.course.upLine3CommissionValue = e.target.value;
+                })
+            }
+        };
+
+        self.onFileChange = function(e){
+            var file = document.getElementById("posterInput").files[0];
+            if(file.size > 2*1024*1024){
+                alert("文件大小超过限制-2M");
+                return;
+            }
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(e){
+                self.course.poster = {
+                    file: file,
+                    data: e.target.result
+                };
+                self.update();
+            };
+        };
+
+        self.removeBanner = function(e){
+            self.course.banners.map(function(banner, i){
+                if(banner
+                    && banner.file
+                    && banner.file.name
+                    && e.item.banner
+                    && e.item.banner.file
+                    && e.item.banner.file.name){
+
+                    if(banner.file.name === e.item.banner.file.name){
+                        self.course.banners.splice(i, 1)
+                    }
+                    return;
+                }
+
+                if(banner === e.item.banner){
+                    self.course.banners.splice(i, 1);
+                }
+            });
+        };
+
+        self.onBannersChange = function(e){
+            var files = document.getElementById("bannersInput").files;
+
+            if(self.course.banners){
+                if(self.course.banners.length + files.length > maxBannerCount){
+                    alert('焦点图最多' + maxBannerCount + '张');
+                    return;
+                }
+            }else if(files.length > maxBannerCount){
+                alert('焦点图最多' + maxBannerCount + '张');
+                return;
+            }
+            if(files && files.length){
+                var index = 0;
+                var loadRecur = function(index){
+                    var file = files[index];
+                    if(!file){
+                        return;
+                    }
+                    if(file.size > 2*1024*1024){
+                        alert("文件大小超过限制-2M");
+                        return;
+                    }
+                    var reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = function(e){
+                        if(!self.course.banners){
+                            self.course.banners = [];
+                        }
+                        self.course.banners.push({
+                            file: file,
+                            data: e.target.result
+                        });
+                        self.update();
+                        loadRecur(++index)
+                    };
+                };
+                loadRecur(index)
+            }
+        };
+
+        self.onSubmit = function(){
+            var totalTasksNum = 0;
+            var completelyTasksNum = 0;
+            var req = {
+                id: self.course._id,
+                o: self.course
+            };
+            if(self.course.poster && self.course.poster.file){
+                ++totalTasksNum;
+                var formData1 = new FormData();
+                formData1.append('file', self.course.poster.file);
+                $.ajax({
+                    url: __app.settings.api.url + '/file/upload',
+                    type: 'POST',
+                    data: formData1,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        req.o.poster = res.media_id;
+                        ++completelyTasksNum;
+                        done();
+                    },
+                    error: function (responseStr) {
+                        console.error("失败:" + JSON.stringify(responseStr));
+                    }
+                });
+            }
+
+            if(self.course.banners){
+                ++totalTasksNum;
+                var formData2 = new FormData();
+                self.course.banners.map(function(banner){
+                    if(banner.file){
+                        formData2.append('files', banner.file);
+                    }
+                });
+
+                $.ajax({
+                    url: __app.settings.api.url + '/file/uploads',
+                    type: 'POST',
+                    data: formData2,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        var persistedBanners = [];
+                        if(self.course.banners && self.course.banners.length){
+                            persistedBanners = self.course.banners.filter(function(banner){
+                                return typeof banner === 'string'
+                            });
+                        }
+                        req.o.banners = persistedBanners.concat(res.metas.map(function(meta){return meta.media_id}));
+                        ++completelyTasksNum;
+                        done();
+                    },
+                    error: function (responseStr) {
+                        console.error("失败:" + JSON.stringify(responseStr));
+                    }
+                });
+            }
+
+            done();
+
+            function done(){
+                if(completelyTasksNum != totalTasksNum){
+                    return;
+                }
+                updateCourseByIdAction.newInvocation(req)
+                    .onDone(function(res){
+                        riot.route('sd/courses');
+                    })
+                    .execute();
+            }
+
+        };
+    
+});
+riot.tag('boss-tenant-sd-courses', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd/courses"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div class="row" style="text-align: center"> <h4>课程管理</h4> </div> <div class="row"> <form class="form-inline"> <div class="col-md-6 col-lg-6"> <div class="form-group"> <label for="coursesStatus">状态</label> <select id="coursesStatus" class="form-control" onchange="{onSelect}"> <option value="">全部状态</option> <option value="{__app.enums.LiveStatus.names.Idle}">待上架</option> <option value="{__app.enums.LiveStatus.names.GoLive}">已上架</option> <option value="{__app.enums.LiveStatus.names.Sunset}">已下架</option> </select> </div> <input onclick="{onSearch}" class="btn btn-primary" type="button" value="查询"> </div> <div class="col-md-6 col-lg-6 text-right"> <a class="btn btn-primary" href="#sd/courses/add">添加</a> </div> </form> </div> <div class="row" style="margin-top: 10px"> <table class="table table-striped"> <thead> <tr> <th>名称</th> <th>状态</th> <th>上/下架时间</th> <th>创建时间</th> <th>备注</th> </tr> </thead> <tbody> <tr each="{courses}"> <td> <a href="#sd/courses/_{_id}"> {name} </a> </td> <td> { __app.enums.LiveStatus.values[liveStatus] } </td> <td> { actionTime && _.date.format(new Date(actionTime), \'yyyy-MM-dd hh点mm分\') || \'空\'} </td> <td> {_.date.format(new Date(crtOn), \'yyyy-MM-dd hh点mm分\')} </td> <td> { desc } </td> </tr> </tbody> </table> </div> </div> </div> </div>', function(opts) {
+        "use strict"
+        var self = nest.presentable(this);
+        var findCoursesAction = domain.action('findCourses');
+        self.courses = [];
+        self.filter = {};
+        console.log(__app.enums)
+        self.on('open', function(){
+            findCoursesAction.newInvocation({
+                tenant: __page.tenantId,
+                filter: self.filter
+            }).onDone(function(res){
+                if(res.error){
+                    return alert("failed to search courses");
+                }
+                self.courses= res.courses;
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+            }).execute();
+        });
+        self.onSearch = function(e){
+            findCoursesAction.newInvocation({
+                tenant: __page.tenantId,
+                filter: self.filter
+            }).onDone(function(res){
+                if(res.error){
+                    return alert("failed to search courses");
+                }
+                self.update({courses: res.courses});
+            }).execute();
+        };
+        self.onSelect = function(e){
+            var liveStatus = self.coursesStatus.value;
+            if(!liveStatus){
+                if(self.filter.hasOwnProperty('liveStatus')){
+                    delete self.filter['liveStatus'];
+                }
+                return;
+            }
+            self.filter.liveStatus = liveStatus;
+        }
+    
+});
+riot.tag('boss-tenant-sd-customers', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd/customers"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div class="row" style="text-align: center"> <h4>客户管理</h4> </div> <div class="row"> <form class="form-inline"> <div class="col-md-12 col-lg-12"> <div class="form-group"> <label for="wechatsitesSelect">公众号</label> <select id="wechatsitesSelect" class="form-control" onchange="{onSelect}"> <option value="">全部</option> <option each="{wechatsites}" value="{originalId}">{name}</option> </select> </div> <input onclick="{onSearch}" class="btn btn-primary" type="button" value="查询"> </div> </form> </div> <div class="row" style="margin-top: 10px"> <span if="{!customers.length}"> <strong>该机构尚没有任何客户.</strong> </span> <table if="{customers.length}" class="table table-striped"> <thead> <tr> <th>名称</th> <th>所属公众号</th> <th>上线分销商</th> <th>创建时间</th> <th>备注</th> </tr> </thead> <tbody> <tr each="{customers}"> <td> { user.nickname } </td> <td> { media.name } </td> <td> { upLine && upLine.user.nickname || \'顶级\' } </td> <td> {_.date.format(new Date(crtOn), \'yyyy-MM-dd hh点mm分\')} </td> <td> { desc } </td> </tr> </tbody> </table> <div> <input onclick="{prevPage}" type="button" class="btn btn-default" value="上一页"> <span>当前页: </span> <span>{filter.no}</span>, <span>共( {totalPage} )页: </span> <input onclick="{nextPage}" type="button" class="btn btn-default" value="下一页"> <input name="pageTo" type="number" value=""> <input onclick="{jumpToPage}" type="button" class="btn btn-default" value="跳转"> </div> </div> </div> </div> </div>', function(opts) {
+        "use strict"
+        var self = nest.presentable(this);
+        var findCustomersByTenantIdAction = domain.action('findCustomersByTenantId');
+        var findCustomersCountByTenantIdAction = domain.action('findCustomersCountByTenantId');
+        var loadAllTenantWechatSiteAction = domain.action('loadAllTenantWechatSite');
+        self.customers = [];
+        self.totalPage = 1;
+        self.filter = {
+            tenant: __page.tenantId,
+            no: 1,
+            size: 10
+        };
+        self.on('mount', function(){
+            findCustomersByTenantIdAction.onDone(function(res){
+                self.customers= res.customers;
+                self.update();
+            })
+        });
+        self.on('open', function(){
+            loadAllTenantWechatSiteAction.newInvocation(__page.tenantId)
+                .onDone(function(res){
+                    self.update({wechatsites: res});
+                }).execute();
+            findCustomersCountByTenantIdAction.newInvocation({
+                tenant: __page.tenantId
+            })
+            .onDone(function(res){
+                if(res.error){
+                    return alert("failed to search customers");
+                }
+                self.totalPage = Math.ceil(res.count/self.filter.size);
+                self.update();
+            }).execute();
+            findCustomersByTenantIdAction.newInvocation({
+                filter: self.filter
+            }).onDone(function(res){
+                if(res.error){
+                    return alert("failed to search customers");
+                }
+                self.customers= res.customers;
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+            }).execute();
+        });
+        self.onSearch = function(e){
+            findCustomersByTenantIdAction.execute({
+                filter: self.filter
+            });
+        };
+        self.onSelect = function(e){
+            var wechatId = self.wechatsitesSelect.value;
+            if(!wechatId){
+                if(self.filter.hasOwnProperty('wechatId')){
+                    delete self.filter['wechatId'];
+                }
+                return;
+            }
+            self.filter.wechatId = wechatId;
+        };
+        self.prevPage = function(e){
+            var currPage = self.filter.no;
+            if(currPage <= 1){
+                return;
+            }
+            self.filter.no = --currPage;
+            findCustomersByTenantIdAction.execute({
+                filter: self.filter
+            });
+        };
+        self.nextPage = function(e){
+            var currPage = self.filter.no;
+            if(currPage >= self.totalPage){
+                return;
+            }
+            self.filter.no = ++currPage;
+            findCustomersByTenantIdAction.execute({
+                filter: self.filter
+            });
+        };
+        self.jumpToPage = function(e){
+            console.log(typeof self.pageTo.value)
+            if(self.pageTo.value.trim() === ''){
+                alert('请输入页码');
+                return;
+            }
+            if(self.pageTo.value <= 0 || self.pageTo.value > self.totalPage){
+                alert('页码非法');
+                return;
+            }
+            self.filter.no = parseInt(self.pageTo.value, 10);
+            findCustomersByTenantIdAction.execute({
+                filter: self.filter
+            });
+        }
+    
+});
+riot.tag('boss-tenant-sd-distributors', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd/distributors"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div class="row" style="text-align: center"> <h4>分销商管理</h4> </div> <div class="row"> <form class="form-inline"> <div class="col-md-12 col-lg-12"> <div class="form-group"> <label for="wechatsitesSelect">公众号</label> <select id="wechatsitesSelect" class="form-control" onchange="{onSelect}"> <option value="">全部</option> <option each="{wechatsites}" value="{originalId}">{name}</option> </select> </div> <input onclick="{onSearch}" class="btn btn-primary" type="button" value="查询"> </div> </form> </div> <div class="row" style="margin-top: 10px"> <span if="{!distributors.length}"> <strong>该机构尚没有任何分销商.</strong> </span> <table if="{distributors.length}" class="table table-striped"> <thead> <tr> <th>名称</th> <th>所属公众号</th> <th>上线分销商</th> <th>创建时间</th> <th>备注</th> </tr> </thead> <tbody> <tr each="{distributors}"> <td> { user.nickname } </td> <td> { media.name } </td> <td> { upLine && upLine.user.nickname || \'顶级\' } </td> <td> {_.date.format(new Date(crtOn), \'yyyy-MM-dd hh点mm分\')} </td> <td> { desc } </td> </tr> </tbody> </table> <div> <input onclick="{prevPage}" type="button" class="btn btn-default" value="上一页"> <span>当前页: </span> <span>{filter.no}</span>, <span>共( {totalPage} )页: </span> <input onclick="{nextPage}" type="button" class="btn btn-default" value="下一页"> <input name="pageTo" type="number" value=""> <input onclick="{jumpToPage}" type="button" class="btn btn-default" value="跳转"> </div> </div> </div> </div> </div>', function(opts) {
+        "use strict"
+        var self = nest.presentable(this);
+        var findDistributorsByTenantIdAction = domain.action('findDistributorsByTenantId');
+        var findDistributorsCountByTenantIdAction = domain.action('findDistributorsCountByTenantId');
+        var loadAllTenantWechatSiteAction = domain.action('loadAllTenantWechatSite');
+        self.distributors = [];
+        self.totalPage = 1;
+        self.filter = {
+            tenant: __page.tenantId,
+            no: 1,
+            size: 10
+        };
+        self.on('mount', function(){
+            findDistributorsByTenantIdAction.onDone(function(res){
+                self.distributors= res.distributors;
+                self.update();
+            })
+        });
+        self.on('open', function(){
+            loadAllTenantWechatSiteAction.newInvocation(__page.tenantId)
+            .onDone(function(res){
+                self.update({wechatsites: res});
+            }).execute();
+            findDistributorsCountByTenantIdAction.newInvocation({
+                tenant: __page.tenantId
+            })
+            .onDone(function(res){
+                if(res.error){
+                    return alert("failed to search distributors");
+                }
+                self.totalPage = Math.ceil(res.count/self.filter.size);
+                self.update();
+            }).execute();
+            findDistributorsByTenantIdAction.newInvocation({
+                filter: self.filter
+            }).onDone(function(res){
+                if(res.error){
+                    return alert("failed to search distributors");
+                }
+                self.distributors= res.distributors;
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+            }).execute();
+        });
+        self.onSearch = function(e){
+            findDistributorsByTenantIdAction.execute({
+                filter: self.filter
+            });
+        };
+        self.onSelect = function(e){
+            var wechatId = self.wechatsitesSelect.value;
+            if(!wechatId){
+                if(self.filter.hasOwnProperty('wechatId')){
+                    delete self.filter['wechatId'];
+                }
+                return;
+            }
+            self.filter.wechatId = wechatId;
+        };
+        self.prevPage = function(e){
+            var currPage = self.filter.no;
+            if(currPage <= 1){
+                return;
+            }
+            self.filter.no = --currPage;
+            findDistributorsByTenantIdAction.execute({
+                filter: self.filter
+            });
+        };
+        self.nextPage = function(e){
+            var currPage = self.filter.no;
+            if(currPage >= self.totalPage){
+                return;
+            }
+            self.filter.no = ++currPage;
+            findDistributorsByTenantIdAction.execute({
+                filter: self.filter
+            });
+        };
+        self.jumpToPage = function(e){
+            console.log(typeof self.pageTo.value)
+            if(self.pageTo.value.trim() === ''){
+                alert('请输入页码');
+                return;
+            }
+            if(self.pageTo.value <= 0 || self.pageTo.value > self.totalPage){
+                alert('页码非法');
+                return;
+            }
+            self.filter.no = parseInt(self.pageTo.value, 10);
+            findDistributorsByTenantIdAction.execute({
+                filter: self.filter
+            });
+        }
+    
+});
+riot.tag('boss-tenant-sd-left', '<div class="my-container"> <accordion navs="{navs}"></accordion> </div>', 'boss-tenant-sd-left .my-container{ background: white; }', function(opts) {
+        var self = this;
+        self.navs=[
+            {
+                path: 'sd',
+                presentation: '首页'
+            },
+            {
+                path: 'sd/courses',
+                presentation: '课程管理'
+            },
+            {
+                path: 'sd/catalogs',
+                presentation: '课程目录管理'
+            },
+            {
+                path: 'sd/bespeaks',
+                presentation: '预约管理'
+            },
+            {
+                path: 'sd/orders',
+                presentation: '订单管理'
+            },
+            {
+                path: 'sd/customers',
+                presentation: '客户管理'
+            },
+            {
+                path: 'sd/distributors',
+                presentation: '分销商管理'
+            },
+            {
+                path: 'sd/splitbill',
+                presentation: '分账管理'
+            }
+        ];
+        self.on('mount', function(){
+            var path  = this.opts.path;
+            self.navs.forEach(function(nav){
+                nav.path === path && (nav['useAsDefault'] = true)
+            })
+        });
+    
+});
+riot.tag('boss-tenant-sd-orders', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd/orders"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div class="row" style="text-align: center"> <h4>订单管理</h4> </div> <div class="row"> <form class="form-inline"> <div class="col-md-6 col-lg-6"> <div class="form-group"> <label for="orderStatus">状态</label> <select id="orderStatus" class="form-control" onchange="{onSelect}"> <option value="">全部状态</option> <option value="{__app.enums.OrderStatus.names.finish}">已结算</option> <option value="{__app.enums.OrderStatus.names.unFinish}">未结算</option> </select> </div> <input onclick="{onSearch}" class="btn btn-primary" type="button" value="查询"> </div> </form> </div> <div class="row" style="margin-top: 10px"> <table class="table table-striped"> <thead> <tr> <th>客户昵称</th> <th>课程</th> <th>状态</th> <th>成交价</th> <th>创建时间</th> <th colspan="3">受益分销商</th> </tr> </thead> <tbody> <tr each="{orders}"> <td> {bespeak.user.nickname} </td> <td> {bespeak.product.name} </td> <td> { __app.enums.OrderStatus.values[status] } </td> <td> { finalPrice } </td> <td> {_.date.format(new Date(crtOn), \'yyyy-MM-dd hh点mm分\')} </td> <td> {distributors && distributors[0] && parent.getDistributorMoney(distributors[0].user, bespeak.product, 1, finalPrice) || \'无\'} </td> <td> {distributors && distributors[1] && parent.getDistributorMoney(distributors[1].user, bespeak.product, 2, finalPrice) || \'无\'} </td> <td> {distributors && distributors[2] && parent.getDistributorMoney(distributors[2].user, bespeak.product, 3, finalPrice) || \'无\'} </td> </tr> </tbody> </table> <div> <input onclick="{prevPage}" type="button" class="btn btn-default" value="上一页"> <span>当前页: </span> <span>{filter.no}</span>, <span>共( {totalPage} )页: </span> <input onclick="{nextPage}" type="button" class="btn btn-default" value="下一页"> <input name="pageTo" type="number" value=""> <input onclick="{jumpToPage}" type="button" class="btn btn-default" value="跳转"> </div> </div> </div> </div> </div>', function(opts) {
+        "use strict"
+        var self = nest.presentable(this);
+        var findOrdersAction = domain.action('findOrders');
+        self.orders = [];
+        self.totalPage = 1;
+        self.filter = {
+            tenant: __page.tenantId,
+            no: 1,
+            size: 10
+        };
+        self.on('mount', function(){
+            findOrdersAction.onDone(function(res){
+                if(!res.error) {
+                    self.orders = res.orders;
+                    self.totalPage = Math.ceil(res.count / self.filter.size);
+                    self.update();
+                }else{
+                    console.error('failed find orders err:' + res.error);
+                }
+            })
+        });
+        self.on('open', function(){
+            findOrdersAction.execute({
+                filter: self.filter
+            });
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+        });
+
+        self.onSearch = function(e){
+            findOrdersAction.execute({
+                filter: self.filter
+            });
+        };
+
+        self.onSelect = function(e){
+            var status = self.orderStatus.value;
+            if(!status){
+                if(self.filter.hasOwnProperty('status')){
+                    delete self.filter['status'];
+                }
+                return;
+            }
+            self.filter.status = status;
+        }
+
+        self.getDistributorMoney = function(user, course, level, finalPrice){
+            var money = 0;
+            var commissionType = 'upLine' + level + 'CommissionType';
+            var commissionValue = 'upLine' + level + 'CommissionValue';
+            if(course[commissionType] === __app.enums.CommissionType.names.Percent){
+                money = (parseFloat(finalPrice)*parseFloat(parseFloat(course[commissionValue])/100)).toFixed(2);
+            }else if(course[commissionType] === __app.enums.CommissionType.names.Cash){
+                money = parseFloat(course[commissionValue]);
+            }
+            return user.nickname + ': ' + money;
+        }
+
+        self.prevPage = function(e){
+            var currPage = self.filter.no;
+            if(currPage <= 1){
+                return;
+            }
+            self.filter.no = --currPage;
+            findOrdersAction.execute({
+                filter: self.filter
+            });
+        };
+        self.nextPage = function(e){
+            var currPage = self.filter.no;
+            if(currPage >= self.totalPage){
+                return;
+            }
+            self.filter.no = ++currPage;
+            findOrdersAction.execute({
+                filter: self.filter
+            });
+        };
+        self.jumpToPage = function(e){
+            console.log(typeof self.pageTo.value)
+            if(self.pageTo.value.trim() === ''){
+                alert('请输入页码');
+                return;
+            }
+            if(self.pageTo.value <= 0 || self.pageTo.value > self.totalPage){
+                alert('页码非法');
+                return;
+            }
+            self.filter.no = parseInt(self.pageTo.value, 10);
+            findOrdersAction.execute({
+                filter: self.filter
+            });
+        }
+    
+});
+riot.tag('boss-tenant-sd-splitbill', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd/splitbill"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div class="row" style="text-align: center"> <h4>分账管理</h4> </div>                 <div class="row" style="margin-top: 10px"> <span if="{!distributors.length}"> <strong>尚没有未结款项.</strong> </span> <table if="{distributors.length}" class="table table-striped"> <thead> <tr> <th>分销商</th> <th>所属公众号</th> <th>手机号</th> <th>待结款</th> <th>结款</th> </tr> </thead> <tbody> <tr each="{distributors}"> <td> <a data-toggle="modal" data-target="#ordersInDistributors" onclick="{parent.onClickDistributor}">{ user.nickname }</a> </td> <td> { media.name } </td> <td> { telephone } </td> <td> { accountBalance || \'顶级\' } </td> <td> <input onclick="{parent.onCheckout}" data-toggle="modal" data-target="#modal" type="button" class="btn btn-default" value="结款"> </td> </tr> </tbody> </table> <div> <input onclick="{prevPage}" type="button" class="btn btn-default" value="上一页"> <span>当前页: </span> <span>{filter.no}</span>, <span>共( {totalPage} )页: </span> <input onclick="{nextPage}" type="button" class="btn btn-default" value="下一页"> <input name="pageTo" type="number" value=""> <input onclick="{jumpToPage}" type="button" class="btn btn-default" value="跳转"> </div> </div> <div id="ordersInDistributors" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"> <div class="modal-dialog modal-lg"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> <h4 class="modal-title">相关订单</h4> </div> <div class="modal-body"> <table class="table table-striped"> <thead> <tr> <th>客户</th> <th>产品</th> <th>成交价</th> <th>所获分成</th> </tr> </thead> <tbody> <tr each="{orders}"> <td> { bespeak.user.nickname } </td> <td> { bespeak.product.name } </td> <td> { finalPrice } </td> <td> { commission } </td> </tr> </tbody> </table> </div> </div> </div> </div> </div> </div> </div>', function(opts) {
+        "use strict";
+        var self = nest.presentable(this);
+        var findDistributorsWithPendingPaymentByTenantIdAction = domain.action('findDistributorsWithPendingPaymentByTenantId');
+        var findDistributorsCountWithPendingPaymentByTenantIdAction = domain.action('findDistributorsCountWithPendingPaymentByTenantId');
+        var findOrderRelatedDistributorAction = domain.action('findOrderRelatedDistributor');
+        var checkoutAction = domain.action('checkout');
+        self.distributors = [];
+        self.totalPage = 1;
+        self.filter = {
+            tenant: __page.tenantId,
+            no: 1,
+            size: 10
+        };
+        self.on('mount', function(){
+            findDistributorsWithPendingPaymentByTenantIdAction.onDone(function(res){
+                self.distributors= res.distributors;
+                self.update();
+            })
+        });
+        self.on('open', function(){
+            findDistributorsCountWithPendingPaymentByTenantIdAction.newInvocation({
+                tenant: __page.tenantId
+            })
+            .onDone(function(res){
+                if(res.error){
+                    return alert("failed to search distributors");
+                }
+                self.totalPage = Math.ceil(res.count/self.filter.size);
+                self.update();
+            }).execute();
+            findDistributorsWithPendingPaymentByTenantIdAction.newInvocation({
+                filter: self.filter
+            }).onDone(function(res){
+                if(res.error){
+                    return alert("failed to search distributors");
+                }
+                self.distributors= res.distributors;
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+            }).execute();
+        });
+        self.onSearch = function(e){
+            findDistributorsWithPendingPaymentByTenantIdAction.execute({
+                filter: self.filter
+            });
+        };
+        self.onClickDistributor = function(e){
+            findOrderRelatedDistributorAction
+                .newInvocation({
+                    distributor: e.item._id,
+                    status: __app.enums.OrderStatus.names['unFinish']
+                })
+                .onDone(function(res){
+                    if(res.error){
+                        alert('获取相关订单失败');
+                        return;
+                    }
+                    self.orders = res.orders.map(function(order){
+                        var commission = 0;
+                        var product = order.bespeak.product;
+                        if(order.distributors){
+                            var level = order.distributors.indexOf(e.item._id) + 1;
+                            var cmType = product['upLine' + level + 'CommissionType'];
+                            var cmValue = product['upLine' + level + 'CommissionValue'];
+                            if(cmType === __app.enums.CommissionType.names.Percent){
+                                commission = parseFloat(order.finalPrice) * parseFloat(parseFloat(cmValue)/100);
+                            }else{
+                                commission = cmValue;
+                            }
+                        }
+                        order.commission = commission;
+                        return order;
+                    });
+
+                    self.update();
+                })
+                .execute();
+        };
+        self.onCheckout = function(e){
+            _.widget.confirm({
+                title: '操作确认',
+                content: '你已经为 [ ' + e.item.user.nickname + ' ] 结清款项了吗？',
+                callback: function(){
+                    checkoutAction
+                        .newInvocation({
+                            media: e.item.media,
+                            distributor: e.item._id,
+                            tenant: __page.tenantId
+                        })
+                        .onDone(function(res){
+                            if(res.error){
+                                alert('借款失败,请联系管理员');
+                                return;
+                            }
+                            findDistributorsWithPendingPaymentByTenantIdAction.execute({
+                                filter: self.filter
+                            });
+                        })
+                        .execute();
+                }
+            });
+        };
+        self.onSelect = function(e){
+            var liveStatus = self.coursesStatus.value;
+            if(!liveStatus){
+                if(self.filter.hasOwnProperty('liveStatus')){
+                    delete self.filter['liveStatus'];
+                }
+                return;
+            }
+            self.filter.liveStatus = liveStatus;
+        };
+        self.prevPage = function(e){
+            var currPage = self.filter.no;
+            if(currPage <= 1){
+                return;
+            }
+            self.filter.no = --currPage;
+            findDistributorsWithPendingPaymentByTenantIdAction.execute({
+                filter: self.filter
+            });
+        };
+        self.nextPage = function(e){
+            var currPage = self.filter.no;
+            if(currPage >= self.totalPage){
+                return;
+            }
+            self.filter.no = ++currPage;
+            findDistributorsWithPendingPaymentByTenantIdAction.execute({
+                filter: self.filter
+            });
+        };
+        self.jumpToPage = function(e){
+            if(self.pageTo.value.trim() === ''){
+                alert('请输入页码');
+                return;
+            }
+            if(self.pageTo.value <= 0 || self.pageTo.value > self.totalPage){
+                alert('页码非法');
+                return;
+            }
+            self.filter.no = parseInt(self.pageTo.value, 10);
+            findDistributorsWithPendingPaymentByTenantIdAction.execute({
+                filter: self.filter
+            });
+        }
+    
+});
+riot.tag('boss-tenant-sd', '<div if="{!hidden}" class="container"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div class="row"> <h4 class="text-center">欢迎来到课程分销系统</h4> </div> </div> </div> </div>', function(opts) {
+        var self = nest.presentable(this);
+        self.on('open', function(){
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+        });
+
+    
+});
+riot.tag('boss-tenant-topbar', '<nav class="navbar navbar-default navbar-inverse" role="navigation" style="margin-bottom: 5px; border-radius: 0;"> <div class="collapse navbar-collapse"> <a class="navbar-brand" style="font-size:20px; color: #ffffff">百加宝-平台端</a> <ul class="nav navbar-nav" style="width: 86%"> <li class="navbtn"><a id="tenant" href="#" route="tenant" class="myActive" onclick="{nav}">机构</a></li> <li class="navbtn"><a id="wechatsite" href="#" route="wechatsite" onclick="{nav}" >公众号</a></li> <li class="navbtn"><a id="sd" href="#" route="sd" onclick="{nav}">分销</a></li> <li class="navbtn"><a id="power" href="#" route="power/list" onclick="{nav}">助力活动</a></li> <li style="float: right;"><a href="#" style="font-size: 1.4em" class="glyphicon glyphicon-off" title="退出" onclick="{logout}"></a></li> <li style="float: right; margin-right: 20px; padding-top: 5px;"> <img riot-src="{headimgurl}" style="height: 40px; width: 40px" alt=""><span style="margin-left: 10px; color: white">{nickname}</span> </li> </ul> </div> </nav>', '.navbtn{padding-left: 20px; font-size:16px} .myActive{color: #ffffff !important; border:0; outline: none !important;}', function(opts) {
+        this.headimgurl = __page.user.headimgurl;
+        this.nickname = __page.user.nickname;
+
+        this.on('mount', function(){
+            if(window.location.hash) {
+                $('.navbtn a').removeClass('myActive');
+                var reg = new RegExp(/^#[a-z, A-Z, _]+/);
+                var res = reg.exec(window.location.hash);
+                $(res[0]).addClass('myActive');
+            }
+        });
+
+        this.logout = function(e) {
+            $.get('/logout', function(data){
+               window.location.href = '/login';
+            });
+        }.bind(this);
+
+        this.nav = function(e) {
+            e.preventUpdate = true;
+            $('.navbtn a').removeClass('myActive');
+            $(e.currentTarget).addClass('myActive');
+            riot.route($(e.currentTarget).attr('route'));
+        }.bind(this);
+    
+});
+riot.tag('boss-tenant-wechatsite', '<div class="container" if="{!hidden}"> <div class="row"> <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2" style="text-align: center"><h3>公众号管理</h3></div> </div> <div class="row" style="margin-top: 10px"> <div class="action col-md-offset-2 col-lg-offset-2"> <button class="btn btn-default" onclick="{add}">添加</button> </div> <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2"> <div class="row panel-container"> <table class="table table-striped"> <thead> <tr> <th>名称</th> <th>类型</th> <th>状态</th> <th>创建时间</th> </tr> </thead> <tbody> <tr each="{wechatSites}"> <td><a href="#wechatsite/_{_id}">{name}</a></td> <td>{ __app.enums.WechatSiteType.values[wechatSiteType] }</td> <td>{ __app.enums.LifeFlag.values[lFlg] }</td> <td>{_.date.format(new Date(crtOn), \'yyyy-MM-dd hh点mm分\')}</td> </tr> </tbody> </table> </div> </div> </div> </div>', 'boss-tenant-wechatsite .panel-container >div{ height: 40px; line-height: 40px; }', function(opts) {
+        var self = nest.presentable(this);
+        var loadAllWechatSite = domain.action('loadAllTenantWechatSite');
+
+        var onLoadAllWechatSite = function(data){
+            self.update({wechatSites: data});
+        }
+
+        self.on('open', function(){
+            loadAllWechatSite.execute(__page.tenantId);
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+        });
+        self.on('mount', function(){
+            loadAllWechatSite.onDone(onLoadAllWechatSite);
+        })
+
+        self.add = function(e){
+            riot.route('wechatsite/add');
+        }
+    
+});
+riot.tag('boss-tenant', '<div class="container" if="{!hidden}"> <div class="row"> <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2" style="text-align: center"><h3>{tenant.name}</h3></div> </div> <div class="row" style="margin-top: 30px"> <div class="col-md-4 col-md-offset-3 col-lg-4 col-lg-offset-3"> <div class="row panel-container"> <div class="col-md-6">名称</div> <div class="col-md-6">{tenant.name}</div> <div class="col-md-6">类型</div> <div class="col-md-6">{__app.enums.PartyType.values[tenant.type]}</div> <div class="col-md-6">状态</div> <div class="col-md-6">{ __app.enums.LifeFlag.values[tenant.lFlg]}</div> <div class="col-md-6">创建时间</div> <div class="col-md-6">{_.date.format(new Date(tenant.crtOn), \'yyyy-MM-dd hh点mm分\')}</div> <div class="col-md-6">备注</div> <div class="col-md-6">{tenant.desc}</div> </div> </div> </div> </div>', 'boss-tenant .panel-container >div{ height: 40px; line-height: 40px; }', function(opts) {
+        var self = nest.presentable(this);
+        var loadTenantById = domain.action('loadTenantById');
+        var onLoadTenantById = function(res){
+            self.update({tenant: res.tenant});
+        };
+        self.on('open', function(){
+            loadTenantById.execute({id: __page.tenantId});
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+        });
+        self.on('mount', function(){
+            loadTenantById.onDone(onLoadTenantById);
+        })
+        self.on('unmount', function(){
+            loadTenantById.offDone(onLoadTenantById);
+        })
+    
+});
+riot.tag('boss-topbar', '<nav class="navbar navbar-default navbar-inverse" role="navigation" style="margin-bottom: 5px; border-radius: 0;"> <div class="collapse navbar-collapse"> <a class="navbar-brand" style="font-size:20px; color: #ffffff">微节点</a> <ul class="nav navbar-nav" style="width: 88%"> <li class="navbtn"><a id="tenants" href="#" route="tenants" class="myActive" onclick="{tenants}">机构</a></li> <li class="navbtn"><a id="power" href="/marketing/boss/power" >助力活动</a></li> <li style="float: right;"><a href="#" style="font-size: 1.4em" class="glyphicon glyphicon-off" title="退出" onclick="{logout}"></a></li> <li style="float: right; margin-right: 20px; padding-top: 5px;"> <img riot-src="{headimgurl}" style="height: 40px; width: 40px" alt=""><span style="margin-left: 10px; color: white">{nickname}</span> </li> </ul> </div> </nav>', '.navbtn{padding-left: 20px; font-size:16px} .myActive{color: #ffffff !important; border:0; outline: none !important;}', function(opts) {
+        this.headimgurl = __page.user.headimgurl;
+        this.nickname = __page.user.nickname;
+
+        this.on('mount', function(){
+            if(window.location.hash) {
+                $('.navbtn a').removeClass('myActive');
+                var reg = new RegExp(/^#[a-z, A-Z, _]+/);
+                var res = reg.exec(window.location.hash);
+                $(res[0]).addClass('myActive');
+            }
+        });
+
+        this.logout = function(e) {
+            $.get('/logout', function(data){
+               window.location.href = '/login';
+            });
+        }.bind(this);
+
+        this.tenants = function(e) {
+            e.preventUpdate = true;
+            $('.navbtn a').removeClass('myActive');
+            $(e.currentTarget).addClass('myActive');
+            riot.route($(e.currentTarget).attr('route'));
+        }.bind(this);
+    
+});
+riot.tag('boss-wechatsite-add', '<div class="container" if="{!hidden}"> <alert validators="{validators}" clear="{clear}"></alert> <div class="row" style="margin-top: 10px"> <div class="action col-md-offset-2 col-lg-offset-2"> <a href="#wechatsite">返回公众号列表</a> </div> <div class="form-con col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2"> <div class="panel panel-default"> <div class="panel-heading">基本信息</div> <div class="panel-body"> <div class="row"> <div class="col-md-3">名称</div> <div class="col-md-9"><input name="name" class="form-control" type="text"></div> </div> <div class="row"> <div class="col-md-3">类型</div> <div class="col-md-9"> <select id="selectType" class="form-control"> <option value="voa">认证服务号</option> <option value="vsa">认证订阅号</option> <option value="oa">服务号</option> <option value="sa">订阅号</option> </select> </div> </div> <div class="row"> <div class="col-md-3">公众号邮箱</div> <div class="col-md-9"><input name="email" class="form-control" type="email"></div> </div> <div class="row"> <div class="col-md-3">原始ID</div> <div class="col-md-9"><input name="originalId" class="form-control" type="text"></div> </div> <div class="row"> <div class="col-md-3">AppID</div> <div class="col-md-9"><input name="appId" class="form-control" type="text"></div> </div> <div class="row"> <div class="col-md-3">AppSecret</div> <div class="col-md-9"><input name="appSecret" class="form-control" type="text"></div> </div> </div> </div> <div class="sub"> <input class="btn btn-primary" onclick="{submit}" type="button" value="提交"> <input class="btn btn-default" onclick="{cancel}" type="button" value="取消"> </div> </div> </div> </div>', 'boss-wechatsite-add a { cursor: pointer; } boss-wechatsite-add .row{ margin-top: 10px; } boss-wechatsite-add .panel-container >div{ height: 40px; line-height: 40px; } boss-wechatsite-add .form-con { margin-top: 15px; padding: 0 0; } boss-wechatsite-add #selectType{ width: 30% !important; } boss-wechatsite-add .sub{ text-align: center; } boss-wechatsite-add .sub input{ margin-left: 30px; }', function(opts) {
+        var self = nest.presentable(this);
+        self.validators = [];
+
+        var addTenantWechatSite = domain.action('addTenantWechatSite');
+
+        var onAddTenantWechatSite = function(data){
+            if(!data.error){
+                riot.route('wechatsite/_' + data.wechatSite._id);
+            }
+        }
+        self.on('open', function(){
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+        });
+
+        self.on('mount', function(){
+            addTenantWechatSite.onDone(onAddTenantWechatSite)
+        })
+
+        self.cancel = function(e){
+            riot.route('wechatsite');
+        }
+        self.verify = function(data){
+            var legal = true;
+            if(!data.name){
+                self.validators.push({
+                    success: false,
+                    field: '名称',
+                    desc: '不能为空!'
+                });
+                legal = false;
+            }
+            if(!data.email){
+                self.validators.push({
+                    success: false,
+                    field: '邮箱',
+                    desc: '不能为空!'
+                });
+                legal = false;
+            }
+            if(!data.originalId){
+                self.validators.push({
+                    success: false,
+                    field: '原始ID',
+                    desc: '不能为空!'
+                });
+                legal = false;
+            }
+            if(!data.appId){
+                self.validators.push({
+                    success: false,
+                    field: 'AppID',
+                    desc: '不能为空!'
+                });
+                legal = false;
+            }
+            if(!data.appSecret){
+                self.validators.push({
+                    success: false,
+                    field: 'AppSecret',
+                    desc: '不能为空!'
+                });
+                legal = false;
+            }
+            if(data.email) {
+                var emailReg = new RegExp(/^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$/);
+                if (!emailReg.test(data.email)) {
+                    self.validators.push({
+                        success: false,
+                        field: '邮箱',
+                        desc: '输入邮箱非法!'
+                    });
+                    legal = false;
+                }
+            }
+            return legal;
+        };
+        self.clear = function(){
+            self.validators = [];
+        };
+
+        self.submit = function(e){
+            self.validators = [];
+            var json = {
+                org: __page.tenantId,
+                name: self.name.value.trim(),
+                email: self.email.value.trim(),
+                originalId: self.originalId.value.trim(),
+                appId: self.appId.value.trim(),
+                appSecret: self.appSecret.value.trim(),
+                wechatSiteType: self.selectType.value
+            }
+            var allowSubmit = self.verify(json);
+            if(allowSubmit){
+                addTenantWechatSite.execute(json);
+            }
+        }
+    
+});
+riot.tag('boss-wechatsite-edit', '<div class="container" if="{!hidden}"> <alert validators="{validators}" clear="{clear}"></alert> <div class="row" style="margin-top: 10px"> <div class="action col-md-offset-2 col-lg-offset-2"> <a href="#wechatsite">返回公众号列表</a> </div> <div class="form-con col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2"> <div class="panel panel-default"> <div class="panel-heading">基本信息</div> <div class="panel-body"> <div class="row"> <div class="col-md-3">名称</div> <div class="col-md-9"><input name="name" class="form-control" type="text" value="{wechatSite.name}"></div> </div> <div class="row"> <div class="col-md-3">类型</div> <div class="col-md-9"> <select id="selectType" class="form-control"> <option value="voa">认证服务号</option> <option value="vsa">认证订阅号</option> <option value="oa">服务号</option> <option value="sa">订阅号</option> </select> </div> </div> <div class="row"> <div class="col-md-3">公众号邮箱</div> <div class="col-md-9"><input name="email" class="form-control" type="email" value="{wechatSite.email}"></div> </div> <div class="row"> <div class="col-md-3">原始ID</div> <div class="col-md-9"><input name="originalId" class="form-control" type="text" value="{wechatSite.originalId}"></div> </div> <div class="row"> <div class="col-md-3">AppID</div> <div class="col-md-9"><input name="appId" class="form-control" type="text" value="{wechatSite.appId}"></div> </div> <div class="row"> <div class="col-md-3">AppSecret</div> <div class="col-md-9"><input name="appSecret" class="form-control" type="text" value="{wechatSite.appSecret}"></div> </div> </div> </div> <div class="panel panel-default"> <div class="panel-heading">托管配置信息</div> <div class="panel-body"> <div class="row"> <div class="col-md-3">Token(令牌)</div> <div class="col-md-7" id="token">{ wechatSite.token }</div> <a class="col-md-2 resetToken" onclick="{resetToken}">重新生成</a> </div> <div class="row"> <div class="col-md-3">EncodingAESKey<br>(消息加解密密钥)</div> <div class="col-md-7" id="encodingAESKey">{ wechatSite.encodingAESKey }</div> <a class="col-md-2 resetAes" onclick="{resetAes}">重新生成</a> </div> </div> </div> <div class="sub"> <input class="btn btn-primary" onclick="{submit}" type="button" value="提交"> <input class="btn btn-default" onclick="{cancel}" type="button" value="取消"> </div> </div> </div> </div>', 'boss-wechatsite-edit a { cursor: pointer; } boss-wechatsite-edit .row{ margin-top: 10px; } boss-wechatsite-edit .panel-container >div{ height: 40px; line-height: 40px; } boss-wechatsite-edit .form-con { margin-top: 15px; padding: 0 0; } boss-wechatsite-edit #selectType{ width: 30% !important; } boss-wechatsite-edit .sub{ text-align: center; padding-bottom: 50px; } boss-wechatsite-edit .sub input{ margin-left: 30px; }', function(opts) {
+        var self = nest.presentable(this);
+        self.validators = [];
+
+        var loadTenantWechatSite = domain.action('loadTenantWechatSite');
+        var updateTenantWechatSiteById = domain.action('updateTenantWechatSiteById');
+
+        self.on('open', function(opt){
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+            self.id = opt.id;
+            loadTenantWechatSite.newInvocation(opt.id).onDone(function(res){
+                self.update({wechatSite: res.wechatSite});
+                $("#selectType").find("option[value='" + res.wechatSite.wechatSiteType + "']").attr("selected",true);
+            }).execute();
+        });
+
+        self.on('mount', function(){
+        })
+
+        self.cancel = function(e){
+            riot.route('wechatsite/_' + self.wechatSite._id);
+        }
+        self.verify = function(data){
+            var legal = true;
+            if(!data.name){
+                self.validators.push({
+                    success: false,
+                    field: '名称',
+                    desc: '不能为空!'
+                });
+                legal = false;
+            }
+            if(!data.email){
+                self.validators.push({
+                    success: false,
+                    field: '邮箱',
+                    desc: '不能为空!'
+                });
+                legal = false;
+            }
+            if(!data.originalId){
+                self.validators.push({
+                    success: false,
+                    field: '原始ID',
+                    desc: '不能为空!'
+                });
+                legal = false;
+            }
+            if(!data.appId){
+                self.validators.push({
+                    success: false,
+                    field: 'AppID',
+                    desc: '不能为空!'
+                });
+                legal = false;
+            }
+            if(!data.appSecret){
+                self.validators.push({
+                    success: false,
+                    field: 'AppSecret',
+                    desc: '不能为空!'
+                });
+                legal = false;
+            }
+            if(data.email) {
+                var emailReg = new RegExp(/^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$/);
+                if (!emailReg.test(data.email)) {
+                    self.validators.push({
+                        success: false,
+                        field: '邮箱',
+                        desc: '输入邮箱非法!'
+                    });
+                    legal = false;
+                }
+            }
+            return legal;
+        };
+        self.clear = function(){
+            self.validators = [];
+        };
+
+        self.submit = function(e){
+            self.validators = [];
+            var json = {
+                id: self.id,
+                org: __page.tenantId,
+                name: self.name.value.trim(),
+                email: self.email.value.trim(),
+                originalId: self.originalId.value.trim(),
+                appId: self.appId.value.trim(),
+                appSecret: self.appSecret.value.trim(),
+                wechatSiteType: self.selectType.value,
+                token: $('#token').text(),
+                encodingAESKey: $('#encodingAESKey').text()
+            }
+            var allowSubmit = self.verify(json);
+            if(allowSubmit){
+                updateTenantWechatSiteById.newInvocation(json).onDone(function(res){
+                    if(!res.error){
+                        riot.route('wechatsite/_' + self.wechatSite._id);
+                    }else{
+                        self.validators.push({
+                            success: false,
+                            field: '公众号',
+                            desc: '修改失败!'
+                        });
+                    }
+                }).execute();
+            }
+        }
+
+        self.resetToken = function(e){
+            self.wechatSite.token = _.generateRandomString(20);
+            self.update()
+        }
+
+        self.resetAes = function(e){
+            self.wechatSite.encodingAESKey = _.generateRandomString(43);
+            self.update()
+        }
+    
+});
+riot.tag('boss-wechatsite', '<div class="container" if="{!hidden}"> <div class="row" style="margin-top: 10px"> <div class="row"> <div class="col-md-2 col-md-offset-2 col-lg-offset-2"> <a href="#wechatsite">返回公众号列表</a> </div> <div class="col-md-2 col-md-offset-1 col-lg-2 col-lg-offset-1" style="text-align: center"><h3>{wechatSite.name}</h3></div> </div> <div class="form-con col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2"> <div class="panel panel-default"> <div class="panel-heading">基本信息</div> <div class="panel-body"> <div class="row"> <div class="col-md-3">名称</div> <div class="col-md-9">{wechatSite.name}</div> </div> <div class="row"> <div class="col-md-3">类型</div> <div class="col-md-9">{ __app.enums.WechatSiteType.values[wechatSite.wechatSiteType] }</div> </div> <div class="row"> <div class="col-md-3">状态</div> <div class="col-md-9">{ __app.enums.LifeFlag.values[wechatSite.lFlg] }</div> </div> <div class="row"> <div class="col-md-3">创建时间</div> <div class="col-md-9">{_.date.format(new Date(wechatSite.crtOn), \'yyyy-MM-dd hh点mm分\')}</div> </div> <div class="row"> <div class="col-md-3">公众号邮箱</div> <div class="col-md-9">{wechatSite.email}</div> </div> <div class="row"> <div class="col-md-3">原始ID</div> <div class="col-md-9">{wechatSite.originalId}</div> </div> <div class="row"> <div class="col-md-3">AppID</div> <div class="col-md-9">{wechatSite.appId}</div> </div> <div class="row"> <div class="col-md-3">AppSecret</div> <div class="col-md-9">{wechatSite.appSecret}</div> </div> </div> </div> <div class="panel panel-default"> <div class="panel-heading">托管配置信息</div> <div class="panel-body"> <div class="row"> <div class="col-md-3">URL(服务器地址)</div> <div class="col-md-8" id="url">{__app.settings.app.protocol + \'://\' + __app.settings.app.domain + \'/wechat/\' + wechatSite.originalId + \'/message\'}</div> <a class="col-md-1 clip_button" data-clipboard-target="url">复制</a> </div> <div class="row"> <div class="col-md-3">Token(令牌)</div> <div class="col-md-8" id="token">{ wechatSite.token }</div> <a class="col-md-1 clip_button" data-clipboard-target="token">复制</a> </div> <div class="row"> <div class="col-md-3">EncodingAESKey<br>(消息加解密密钥)</div> <div class="col-md-8" id="encodingAESKey">{ wechatSite.encodingAESKey }</div> <a class="col-md-1 clip_button" data-clipboard-target="encodingAESKey">复制</a> </div> <div class="row"> <div class="col-md-3">公众号邮箱</div> <div class="col-md-8" id="email">{wechatSite.email}</div> <a class="col-md-1 clip_button" data-clipboard-target="email">复制</a> </div> <div class="row"> <div class="col-md-3">授权回调页面域名</div> <div class="col-md-8" id="callbackDomain">{__app.settings.app.domain}</div> <a class="col-md-1 clip_button" data-clipboard-target="callbackDomain">复制</a> </div> <div class="row"> <div class="col-md-3">JS接口安全域名</div> <div class="col-md-8" id="jsDomain">{__app.settings.app.domain}</div> <a class="col-md-1 clip_button" data-clipboard-target="jsDomain">复制</a> </div> </div> </div> <div class="action"> <a href="#wechatsite/edit/_{wechatSite._id}" class="btn btn-default">修改</a> <input if="{wechatSite.lFlg != \'a\'}" onclick="{unlockWechatSite}" class="btn btn-default" data-toggle="modal" data-target="#modal" type="button" value="激活"> <input if="{wechatSite.lFlg != \'i\'}" onclick="{lockWechatSite}" class="btn btn-default" data-toggle="modal" data-target="#modal" type="button" value="锁定"> <input if="{wechatSite.lFlg != \'d\'}" onclick="{delWechatSite}" class="btn btn-default" data-toggle="modal" data-target="#modal" type="button" value="删除"> </div> </div> </div> </div>', 'boss-wechatsite a { cursor: pointer; } boss-wechatsite .row{ margin-top: 10px; } boss-wechatsite .panel-container >div{ height: 40px; line-height: 40px; } boss-wechatsite .form-con { margin-top: 15px; padding: 0 0; } boss-wechatsite .action{ text-align: center; padding-bottom: 50px; } boss-wechatsite .action input{ margin-left: 30px; }', function(opts) {
+        var self = nest.presentable(this);
+        var loadTenantWechatSite = domain.action('loadTenantWechatSite');
+        var updateTenantWechatSiteById = domain.action('updateTenantWechatSiteById');
+
+        var onLoadTenantWechatSite = function(data){
+            if(!data.error){
+                self.update({wechatSite: data.wechatSite});
+            }
+        }
+        self.on('open', function(opt){
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+            loadTenantWechatSite.execute(opt.id);
+            var client = new ZeroClipboard( $('.clip_button') );
+        });
+
+        self.on('mount', function(){
+            loadTenantWechatSite.onDone(onLoadTenantWechatSite)
+        })
+
+        self.unlockWechatSite = function(){
+            _.widget.confirm({
+                title: '操作确认?',
+                content: '你确认要“激活”该公众号吗？',
+                callback: function(){
+                    self.wechatSite.lFlg = __app.enums.LifeFlag.names.Active;
+                    updateTenantWechatSiteById.newInvocation({
+                        id: self.wechatSite._id,
+                        lFlg: self.wechatSite.lFlg
+                    }).onDone(function(res){
+                        self.update();
+                    }).execute();
+                }
+            });
+        };
+        self.lockWechatSite = function(){
+            _.widget.confirm({
+                title: '操作确认?',
+                content: '你确认要“锁定”该公众号吗？',
+                callback: function(){
+                    self.wechatSite.lFlg = __app.enums.LifeFlag.names.Inactive;
+                    updateTenantWechatSiteById.newInvocation({
+                        id: self.wechatSite._id,
+                        lFlg: self.wechatSite.lFlg
+                    }).onDone(function(res){
+                        self.update();
+                    }).execute();
+                }
+            });
+        };
+        self.delWechatSite = function(){
+            _.widget.confirm({
+                title: '操作确认?',
+                content: '你确认要“删除”该公众号吗？',
+                callback: function(){
+                    self.wechatSite.lFlg = __app.enums.LifeFlag.names.Deleted;
+                    updateTenantWechatSiteById.newInvocation({
+                        id: self.wechatSite._id,
+                        lFlg: self.wechatSite.lFlg
+                    }).onDone(function(res){
+                        self.update();
+                    }).execute();
+                }
+            });
+        };
+    
+});
+riot.tag('broadcast', '<div if="{!hidden}"> <div if="{tip}" class="alert {addClass}" style="margin-top: -5px; float: left; width: 100%; text-align: center; margin-bottom: 0; position: absolute; z-index: 9999"> <strong>{tipInfo}</strong> </div> <div class="container" style="width: 100%; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0"> <div class="row-fluid"> <div class="col-md-4 col-xs-4 col-sm-4" style="padding-right: 0; padding-left: 0; margin-top: -5px; width: 30%"> <div class="well sidebar-nav" style="padding-top: 0; padding-right: 0; padding-left: 0;height: 48em; background-color: #222; border: 1px solid #080808; overflow: scroll; border-radius: 0"> <div if="{!broadcastHistory.length}"> <ul style="padding: 0; margin: 0; list-style-type: none"> <li style="margin-bottom: 3px; padding: 25px 20px; background-color: #333; cursor: pointer; text-align: center"> <span style="color: white">暂无群发纪录</span> </li> </ul> </div> <div if="{broadcastHistory.length}"> <ul style="padding: 0; margin: 0; list-style-type: none"> <li each="{broadcastHistory}" style="position:relative; border-bottom: 1px solid #252525; padding: 5px 5px 5px 10px; background-color:#2E3238; cursor: pointer; color: white"> <div if="{contentType == \'image\'}" style="height: 100%; width: 100%"> <div style="display: -webkit-inline-box;"> <img style="width: 48px;height:48px" riot-src="{contentType == \'image\' && media_id && parent.api + \'/file/?media_id=\' + media_id}" alt=""> </div> <div style="position:absolute;right:10px;bottom:10px;font-size: 12px;float:right; text-align: right;">{parent.formatDate(crtOn)}</div> </div> <div if="{contentType == \'text\'}" style="height: 100%; width: 100%"> <div style="display: -webkit-inline-box; padding: 5px; min-height: 50px; overflow: hidden; width: 100%; font-size: 14px">{content}</div> <div style="position:absolute;right:10px;bottom:10px;font-size: 12px;float:right; text-align: right;">{parent.formatDate(crtOn)}</div> </div> </li> </ul> </div> </div> </div> <div class="col-md-8 col-xs-8 col-sm-8" style="padding-right: 1px; padding-left: 0; margin-top: -5px; width: 70%"> <div class="jumbotron" style="height: 48em; border-radius: 0"> <div id="broadcast"> <div class="panel panel-default" id="img_prew" style="display:none; margin-bottom: 10px"> <table class="table table-bordered" style="text-align: center; vertical-align: middle;"> <tbody> <tr> <td rowspan="3"> <img riot-src="{img_url}" alt="" style="height: 9em;"></td> <td>文件名</td> <td>{img_name}</td> </tr> <tr> <td>文件大小</td> <td>{img_size}</td> </tr> <tr> <td colspan="2"> <input class="btn btn-default" type="button" style="margin-right: 50px" value="取消" onclick="{cancel_send_img}"> <input class="btn btn-success" type="button" value="发送" onclick="{send_img}"> </td> </tr> </tbody> </table> </div> <div class="btn-group" style="float: left;margin-bottom: 10px"> <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span id="groupDisplay">请选择分组</span><span class="caret"></span> </button> <ul class="dropdown-menu"> <li each="{groups}"><a href="javascript:void(0)" onclick="{parent.chooseGroup}" groupid="{_id}">{name}</a></li> </ul> <input id="group" type="hidden"> </div> <textarea id="broadcastMsg" style="height:160px;background: #FBFBFB;margin-top: 5px;" class="form-control" rows="3"></textarea> <button id="send" type="button" onclick="{broadcast}" style="margin-top: 1em; width: 7em;float:right" class="btn btn-success">发送</button> <div id="choose_img" style="float: right; margin-right: 20px; margin-top: 12px"> <span class="btn_addPic glyphicon glyphicon-picture" href="javascript:void(0);"><input id="img_file" type="file" class="filePrew" class="glyphicon glyphicon-picture" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{previewImg}"></span> </div> </div> </div> </div> </div> </div> </div>', 'broadcast .btn_addPic{ display: block; position: relative; font-size: 35px; width: 38px; height: 38px; overflow: hidden; cursor: pointer; text-align: center; } broadcast .filePrew { display: block; position: absolute; top: 0; left: 0; width: 38px; height: 38px; cursor: pointer; font-size: 100px; opacity: 0; filter:alpha(opacity=0); }', function(opts) {
+            this.app = this.opts.app; //keep spa object
+            var self = nest.presentable(this);
+            self.env = (__app.settings.env.NODE_ENV=="production")?"public":"web";
+            self.api =  __app.settings.api.url;
+            self.botId = __page.bot.customId;
+            self.broadcastHistory = [];
+            self.tip = false;
+            self.tipInfo = "";
+
+            var broadcastTxt = domain.action('broadcastTxt');
+            var broadcastImg = domain.action('broadcastImg');
+            var loadBroadcastHistory = domain.action('loadBroadcastHistory')
+            var loadGroups = domain.action('loadGroups');
+
+            var onLoadGroups = function(data){
+                self.update({groups: data.groups});
+            };
+
+            var onBroadcastTxt = function(data){
+                $('#send').attr('disabled', false);
+                if(data.success){
+                    $('#broadcastMsg').val('');
+                    data.msgArr.forEach(function(msg){
+                        self.broadcastHistory.unshift(msg);
+                    });
+                    self.update();
+                    tipShow('success', '群发成功');
+                }else{
+                    tipShow('error', '群发失败');
+                }
+            }
+
+            var onBroadcastImg = function(data){
+                if(data.success){
+                    $('#img_file').val('');
+                    data.msgArr.forEach(function(msg){
+                        self.broadcastHistory.unshift(msg);
+                    });
+                    self.update();
+                    tipShow('success', '群发图片成功');
+                }else{
+                    tipShow('error', '群发图片失败');
+                }
+            }
+
+            var onLoadBroadcastHistory = function(data){
+                self.broadcastHistory = data.history || [];
+                self.update();
+            }
+
+            this.on('mount', function(){
+                console.info('tag broadcast index is mounted');
+                broadcastTxt.onDone(onBroadcastTxt);
+                broadcastImg.onDone(onBroadcastImg);
+                loadBroadcastHistory.onDone(onLoadBroadcastHistory);
+                loadGroups.onDone(onLoadGroups);
+            });
+            this.on('unmount', function(){
+                console.info('tag broadcast index is unmounted');
+                broadcastTxt.offDone(onBroadcastTxt);
+                broadcastImg.offDone(onBroadcastImg);
+                loadBroadcastHistory.offDone(onLoadBroadcastHistory);
+                loadGroups.offDone(onLoadGroups);
+            });
+            this.on('open', function(options){
+                console.info('tag broadcast index is opening');
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+                loadBroadcastHistory.execute(self.botId);
+                loadGroups.execute({tenantId:__page.user.posts[0].org, operatorId: __page.user.posts[0].member});
+            });
+
+            this.on('leave', function(){
+                self.mask = true;
+                self.update();
+            });
+
+            this.on('reenter', function(){
+                self.mask = false;
+                self.update();
+            });
+
+            this.on('refresh', function(){
+                console.info('tag broadcast index is refreshing');
+
+            });
+
+            function tipShow(type, msg){
+                var addClass = '';
+                if(type === 'success'){
+                    addClass = 'alert-success';
+                }
+                if(type === 'error'){
+                    addClass = 'alert-danger';
+                }
+                if(type === 'info'){
+                    addClass = 'alert-info';
+                }
+                if(type === 'warning'){
+                    addClass = 'alert-warning';
+                }
+                self.update({tip: true, tipInfo: msg, addClass: addClass});
+                setTimeout(function(){
+                    self.update({tip: false, tipInfo: '', addClass: ''});
+                }, 1000);
+            }
+
+            self.formatDate = function(date){
+                var dateStr = new Date(date).toLocaleString();
+                return dateStr.replace(/\//g, '-');
+            }
+
+            this.previewImg = function(e) {
+                var file = e.target.files[0];
+                self.img_size = file.size/1000 + 'KB';
+                self.img_name = file.name;
+                var reader = new FileReader();
+                reader.onload = function(data){
+                    self.img_url = data.target.result;
+                    self.update();
+                    $('#img_prew').show();
+                }
+                reader.readAsDataURL(file);
+            }.bind(this);
+
+            this.cancel_send_img = function(e) {
+                $('#img_prew').hide();
+            }.bind(this);
+
+            this.send_img = function(e) {
+                var groupId = $('#group').val();
+                if(groupId) {
+                    var formData = new FormData();
+                    var files = $('#img_file')[0].files;
+                    formData.append('file', files[0]);
+                    $.ajax({
+                        url: self.api + '/file/upload',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (responseStr) {
+                            $('#img_prew').hide();
+                            var data = {
+                                botId: self.botId,
+                                groupId: groupId,
+                                media_id: responseStr.media_id
+                            }
+                            broadcastImg.execute(data);
+                        },
+                        error: function (responseStr) {
+                            console.error("失败:" + JSON.stringify(responseStr));
+                        }
+                    });
+                }else{
+                    tipShow('warning', '请先选择群发的分组');
+                }
+            }.bind(this);
+
+            this.broadcast = function(e) {
+                e.preventUpdate = true;
+                var groupId = $('#group').val();
+                if(groupId) {
+                    var msg = $('#broadcastMsg').val().trim();
+                    if (msg.length > 0) {
+                        var data = {
+                            botId: self.botId,
+                            groupId: groupId,
+                            msg: msg
+                        }
+                        broadcastTxt.execute(data);
+                        $(e.currentTarget).attr('disabled', true);
+                    } else {
+                        tipShow('warning', '发送内容不能为空');
+                    }
+                }else{
+                    tipShow('warning', '请先选择群发的分组');
+                }
+            }.bind(this);
+
+            this.chooseGroup = function(e) {
+                $('#groupDisplay').text($(e.currentTarget).text());
+                $('#group').val($(e.currentTarget).attr('groupId'));
+            }.bind(this);
+        
+});
+riot.tag('confirm', '<div class="modal fade" id="modal"> <div class="modal-dialog"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> <h4 class="modal-title">{title || \'操作确认\'}</h4> </div> <div class="modal-body"> <p>{content || \'确定吗?\'}&hellip;</p> </div> <div class="modal-footer"> <button onclick="{Cancel}" type="button" class="btn btn-default" data-dismiss="modal">取消</button> <button onclick="{Confirm}" type="button" class="btn btn-primary" data-dismiss="modal">确认</button> </div> </div> </div> </div>', function(opts) {
+        var self = this;
+        app.on('confirm', function(data){
+            self.update({title: data.title, content: data.content})
+        });
+        this.Cancel = function(e){
+            app.trigger('confirmCancel')
+        };
+        this.Confirm = function(e){
+            app.trigger('confirmOk');
+        };
+    
+});
+riot.tag('contacts', '<div if="{!hidden}" onclick="{hideMenu}"> <div if="{tip}" class="alert {addClass}" style="margin-top: -5px; float: left; width: 100%; text-align: center; margin-bottom: 0; position: absolute; z-index: 9999"> <strong>{tipInfo}</strong> </div> <div class="container" style="width: 100%; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0"> <div class="row-fluid"> <div class="col-md-4 col-xs-4 col-sm-4" style="padding-right: 0; padding-left: 0; margin-top: -5px; width: 30%"> <div class="row-fluid" style="height:50px; background: #2E3238;"> <div onclick="{selectContacts}" class="{left_nav_sel: viewModel.nav === CONST.NAV.CONTACT, left_nav_def: viewModel.nav != CONST.NAV.CONTACT} col-md-5 col-xs-5 col-sm-5" style="text-align: center;height:50px; line-height: 50px;border-right:1px solid #1C2129"> <span class="glyphicon glyphicon-user" aria-hidden="true"></span> &nbsp联系人 </div> <div onclick="{selectGroups}" class="{left_nav_sel: viewModel.nav === CONST.NAV.GROUP,left_nav_def: viewModel.nav != CONST.NAV.GROUP} col-md-5 col-xs-5 col-sm-5" style="border-right:1px solid #1C2129;text-align: center;height:50px; line-height: 50px"> <span class="glyphicon glyphicon-th" aria-hidden="true"></span> &nbsp群 </div> <div id="menuBtn" onclick="{toggleMenu}" class="{menu_open: menuOpen} col-md-2 col-xs-2 col-sm-2" style="overflow:visible;position:relative;height:50px;line-height: 50px;color:white;font-size:16px;text-align: center"> <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> <div if="{menuOpen===true}" id="menu" style="position: absolute;top:50px;left:0px;width:170px;height:100px"> <ul style="list-style-type: none;margin: 0px;padding:0px;"> <li if="{!syncingContacts}" style="background: #4D5767;border-bottom: 1px solid #3F4650;text-align: left;padding-left:20px" onclick="{syncContact}"> <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> &nbsp<span style="font-size: 14px">同步联系人</span> </li> <li if="{syncingContacts}" style="background: #4D5767;border-bottom: 1px solid #3F4650;text-align: left;padding-left:20px"> <span class="sync glyphicon glyphicon-refresh" aria-hidden="true"></span> &nbsp<span style="font-size: 14px">正在同步联系人...</span> </li> <li if="{!syncingGroups}" style="background: #4D5767;border-bottom: 1px solid #3F4650;text-align: left;padding-left:20px" onclick="{syncGroup}"> <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> &nbsp<span style="font-size: 14px">同步群</span> </li> <li if="{syncingGroups}" style="background: #4D5767;border-bottom: 1px solid #3F4650;text-align: left;padding-left:20px"> <span class="sync glyphicon glyphicon-refresh" aria-hidden="true"></span> &nbsp<span style="font-size: 14px">正在同步群...</span> </li> </ul> </div> </div> </div> <div class="well sidebar-nav" style="padding-top: 0; padding-right: 0; padding-left: 0;height: 48em; background-color: #2E3238; border: 1px solid #080808; overflow: scroll; border-radius: 0"> <ul if="{viewModel.nav === CONST.NAV.CONTACT}" style="padding: 0; margin: 0; list-style-type: none"> <li each="{contacts}" onclick="{parent.selectContact}" style="margin-bottom: 3px; padding: 5px 20px; border-bottom:1px solid #292C33; cursor: pointer"> <img riot-src="{parent.api + \'/file?media_id=\' + headimgurl}" style="width: 4em; height: 4em" alt=""> <span style="color: white; margin-left: 15px">{nickname}</span> </li> </ul> <span style="display:block;text-align: center;margin-top: 10px; color: white" if="{!groups || groups.length===0}">暂无相关记录</span> <ul if="{viewModel.nav === CONST.NAV.GROUP}" style="padding: 0; margin: 0; list-style-type: none"> <li each="{groups}" style="height:50px;line-height:40px;margin-bottom: 3px; padding: 5px 20px; border-bottom:1px solid #292C33; cursor: pointer">  <span style="color: white; margin-left: 15px">{nickname}</span> </li> </ul> </div> </div> <div if="{Object.keys(currUser).length>0}" class="col-md-8 col-xs-8 col-sm-8" style="padding-right: 1px; padding-left: 0; margin-top: -5px; width: 70%"> <div style="margin-bottom:50px;height: 50px;line-height:50px;border-bottom:1px solid #ddd;text-align: center"> <span>明细</span> </div> <div style="padding-bottom:30px;"> <div class="avatar" style="text-align: center;"><img riot-src="{api + \'/file?media_id=\' + currUser.headimgurl}" style="width:120px;height:120px;border-radius: 5px;margin-bottom: 10px"></div> <div class="nickname_area" style="text-align:center;height:48px;line-height: 48px;"><strong style="font-size: 24px;font-weight: 100">{currUser.nickname}</strong></div> <div style="width:70%;padding-left: 28%;margin: 0px auto;color:#999;margin-bottom:10px"> <label>备注: &nbsp&nbsp&nbsp&nbsp</label><span>{currUser.remark}</span><br> <label>地区: &nbsp&nbsp&nbsp&nbsp</label><span>{showPlace()}</span> </div> <div class="tags_area"> <div style="text-align: center; margin-bottom:20px"> <button if="{viewModel.mode===\'view\'}" onclick="{editTags}" type="button" class="btn btn-default" style="display:inline-block;background: #269227; color:white; border: none"> 编辑标签 </button> <button if="{viewModel.mode===\'edit\'}" onclick="{submitTags}" type="button" class="btn btn-default" style="display:inline-block;background: #269227; color:white; border: none"> 确认 </button>    </div> <ul onclick="{clickTags}" class="{tags_body:true, tags_body_edit:viewModel.mode===\'edit\'}"> <li style="position: relative" class="{tags_item:true ,tags_edit: parent.viewModel.mode===\'edit\'}" each="{name in (currUser.tags || [])}"> {name} <b onclick="{parent.removeTag}" if="{parent.viewModel.mode===\'edit\'}" style="position: absolute;border-radius: 50em;top:6px;right:3px;width:18px;height:18px;background:#8A8A8A"> <b style="width:16px;height:16px;border-radius: 50em;display:block;margin:4px auto"> <span style="position: absolute; top: 2px; left: 2px;" class="glyphicon glyphicon-remove" aria-hidden="true"></span> </b> </b> </li> <li><input name="newTag" onkeyup="{newTagInput}" type="text" value="" style="display:inline-block;margin-left:10px;margin-top:5px;font-size:16px;background:transparent;border:none"></li> </ul> </div> </div> <div> </div> </div> </div> </div> </div>', 'contacts .sync{ animation:rotation 2.5s linear infinite; -webkit-animation:rotation 2.5s linear infinite; } contacts .menu_open{ background: #4D5767; } contacts input,contacts textarea{ outline:none; } contacts .left_nav_def{ color:white; } contacts .left_nav_sel{ color:#6CBD6E; } contacts .tags_body{ list-style-type: none; width:50%; margin:0px auto; padding-top: 12px; overflow:hidden; padding-left:0px; padding:10px; } contacts .tags_body_edit{ border:1px solid #ccc; border-radius: 5px; } contacts .tags_item{ float:left;margin-right:10px;margin-bottom:10px;height:32px;padding:5px 25px; background:#6CBD6E;color:white;text-align:center;border-radius: 5px; } contacts .tags_item:first-child{ margin-left:0px; } contacts .tags_edit{ background:#8FC590 !important; }', function(opts) {
+            this.app = this.opts.app; //keep spa object
+            var self = nest.presentable(this);
+            var CONST = self.CONST = {
+                NAV: {
+                    CONTACT: 'contact',
+                    GROUP: 'group'
+                }
+            };
+            self.env = (__app.settings.env.NODE_ENV=="production")?"public":"web";
+            self.api =  __app.settings.api.url;
+            self.botId = __page.bot.customId;
+            self.tip = false;
+            self.tipInfo = "";
+            self.viewModel = {
+                nav: CONST.NAV.CONTACT,
+                mode: 'view'
+            };
+            self.menuOpen = false;
+            
+            self.currUser = {};
+            self.init = function(){
+
+            };
+            var loadContacts = domain.action('loadContacts');
+            var saveTagsById = domain.action('saveTagsById');
+            var syncContacts = domain.action('syncContacts');
+            var syncGroups = domain.action('syncGroups');
+
+            var onLoadContacts = function(data){
+                self.update({contacts: data.contacts, groups: data.groups});
+            };
+            var onSyncContacts = function(data){
+                setTimeout(function(){
+                    self.syncingContacts = false;
+                    self.update();
+                }, 5*3600*1000);
+            };
+            var onSyncGroups = function(data){
+                setTimeout(function(){
+                    self.syncingGroups = false;
+                    self.update();
+                }, 5*3600*1000);
+            };
+            var onSaveTagsById = function(data){
+                if(data.success){
+                    self.viewModel.mode = 'view';
+
+                    self.newTag.value = '';
+                    self.update();
+                }
+            };
+
+            this.on('mount', function(){
+                console.info('tag contacts index is mounted');
+                syncContacts.onDone(onSyncContacts);
+                syncGroups.onDone(onSyncGroups);
+                loadContacts.onDone(onLoadContacts);
+                saveTagsById.onDone(onSaveTagsById);
+            });
+            this.on('unmount', function(){
+                console.info('tag contacts index is unmounted');
+                syncContacts.offDone(onSyncContacts);
+                syncGroups.offDone(onSyncGroups);
+                loadContacts.offDone(onLoadContacts);
+                saveTagsById.offDone(onSaveTagsById);
+            });
+            this.on('open', function(options){
+                console.info('tag contacts index is opening');
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+                loadContacts.execute(self.botId);
+            });
+
+            this.on('leave', function(){
+                self.mask = true;
+                self.update();
+            });
+
+            this.on('reenter', function(){
+                self.mask = false;
+                self.update();
+            });
+
+            this.on('refresh', function(){
+                console.info('tag contacts index is refreshing');
+
+            });
+
+            function tipShow(type, msg){
+                var addClass = '';
+                if(type === 'success'){
+                    addClass = 'alert-success';
+                }
+                if(type === 'error'){
+                    addClass = 'alert-danger';
+                }
+                if(type === 'info'){
+                    addClass = 'alert-info';
+                }
+                if(type === 'warning'){
+                    addClass = 'alert-warning';
+                }
+                self.update({tip: true, tipInfo: msg, addClass: addClass});
+                setTimeout(function(){
+                    self.update({tip: false, tipInfo: '', addClass: ''});
+                }, 1000);
+            }
+
+            this.selectContact = function(e) {
+                self.currUser = e.item
+                self.viewModel.mode = 'view';
+                self.newTag.value = "";
+            }.bind(this);
+            self.formatDate = function(date){
+                var dateStr = new Date(date).toLocaleDateString();
+                return dateStr.replace(/\//g, '-');
+            };
+            self.showPlace = function(){
+                var result = "";
+                if (self.currUser.district) {
+                    result = (self.currUser.city || '') + ' '+ (self.currUser.district || '');
+                }
+                else{
+                    result = (self.currUser.province || '') + ' ' + (self.currUser.city || '');
+                }
+                return result;
+            };
+            this.hideMenu = function(e) {
+                self.menuOpen = false;
+            }.bind(this);
+            this.selectContacts = function(e) {
+                self.viewModel.nav = CONST.NAV.CONTACT;
+            }.bind(this);
+            this.selectGroups = function(e) {
+                self.viewModel.nav = CONST.NAV.GROUP;
+            }.bind(this);
+            this.editTags = function(e) {
+                self.viewModel.mode = 'edit';
+                $('.tags_body').find('>li>input').focus();
+            }.bind(this);
+            this.cancelTags = function(e) {
+                self.viewModel.mode = 'view';
+                self.newTag.value = "";
+            }.bind(this);
+            this.clickTags = function(e) {
+                var $target = $(e.currentTarget);
+                $target.find('>li>input').focus();
+            }.bind(this);
+            this.newTagInput = function(e) {
+                if(e.which === 32 && (self.newTag.value.trim() != '')){
+                    if(!self.currUser.tags){
+                        self.currUser.tags = [];
+                    }
+                    if(self.currUser.tags.length > 4){
+                        alert('最多添加五个标签');
+                        return;
+                    }
+                    self.currUser.tags.forEach(function(tag){
+                        if(tag.trim() === self.newTag.value.trim()){
+                            return;
+                        }
+                    });
+                    self.currUser.tags.push(self.newTag.value.trim());
+                    self.newTag.value = "";
+                }
+            }.bind(this);
+            this.removeTag = function(e) {
+                self.currUser.tags.forEach(function(item, index){
+                    if(item === e.item.name){
+                        self.currUser.tags.splice(index, 1);
+                    }
+                });
+                return false;
+            }.bind(this);
+            this.submitTags = function(e) {
+                saveTagsById.execute({
+                    id: self.currUser._id,
+                    tags: self.currUser.tags,
+                    tenant: __page.bot.org
+                })
+            }.bind(this);
+            this.toggleMenu = function(e) {
+                self.menuOpen = !self.menuOpen;
+                e.stopPropagation();
+            }.bind(this);
+            this.syncContact = function(e) {
+                syncContacts.execute({
+                    botid: __page.bot.customId
+                });
+                self.syncingContacts = true;
+                e.stopPropagation();
+            }.bind(this);
+            this.syncGroup = function(e) {
+                syncGroups.execute({
+                    botid: __page.bot.customId
+                });
+                self.syncingGroups = true;
+                e.stopPropagation();
+            }.bind(this);
+        
+});
+riot.tag('del-group-member', '<div class="title_wrap"> <b onclick="{backToView}" style="display: block;width:24px;height:24px;float:left" onclick="{back}"> <i class="glyphicon glyphicon-chevron-left"></i> </b> 移除成员 <b onclick="{submit}" style="display: block;width:80px;height:24px;float:right"> <button type="button" class="btn btn-default" style="display:inline-block;background: #42AC3E; color:white; border: none"> 确认移除 </button> </b> </div> <div> <div class="wrapper" attr="{parent.mediaUsers}"> <div>   <ul class="user_list"> <li onclick="{parent.selectMember}" each="{parent.groupMembers}" id="{_id}" media="{parent.media._id}" group="{parent.parent.parent.group._id}"> <img riot-src="{parent.app.settings.api.url + \'/file?media_id=\' + member.headimgurl}"> <p style="overflow: hidden;height:24px">{member.remark}</p> </li> </ul> </div> </div> </div>', 'del-group-member .wrapper{ width:90%; margin:0px auto; } del-group-member .user_list{ overflow: hidden; list-style-type: none; margin:0px; padding:0px; color:#888; } del-group-member .user_list >li{ width:100px; float:left; margin:5px 0px; text-align: center; line-height: 30px; position: relative; } del-group-member .user_list >li img{ display: inline-block; width:64px; height:64px; } del-group-member .title_wrap{ height:50px; margin:8px 10px; text-align: center; line-height: 50px; } del-group-member .select{ position: absolute; top:0px; left:17px; background:#42AC3E; width:64px; height:64px; opacity: 0.8; } del-group-member .select div{ font-size: 40px; color:white; margin:8px; }', function(opts) {
+        var self = this;
+        self.page = __page;
+        self.app = __app;
+        self.nav = 0;
+        self.members = {};
+        var navNameToIndex = {
+            '基本信息': 0,
+            '成员': 1
+        };
+        var addGroupMembers = domain.action('addGroupMembers');
+        function onAddGroupMembers(data){
+            if(data.success){
+                self.members = {};
+                if(data.data && data.data.length){
+                    data.data.forEach(function(member){
+                        self.parent.groupMembers.unshift(member);
+                    })
+                }
+                self.parent.panel.view();
+                self.parent.update();
+            }
+        }
+        this.on('mount', function(){
+            addGroupMembers.onDone(onAddGroupMembers);
+        });
+        this.on('unmount', function(){
+            addGroupMembers.offDone(onAddGroupMembers);
+        });
+        this.clickNav = function(e) {
+            self.nav = navNameToIndex[e.target.innerText];
+        }.bind(this);
+        this.addMember = function(e) {
+            self.parent.panel.status = 'add_m';
+            self.parent.update();
+        }.bind(this);
+        this.selectMember = function(e) {
+            var target = e.currentTarget;
+            var id = target.id;
+            var group = target.getAttribute('group');
+            var media = target.getAttribute('media');
+            toggle(target)
+            function toggle(target){
+                if(self.members[id]){
+                    cancel(target);
+                    delete self.members[id];
+                }else{
+                    var member = {
+                        group: group,
+                        media: media,
+                        member: id
+                    };
+                    self.members[id] = member;
+                    select(target);
+                }
+            }
+            function select(el){
+                var maskEl = document.createElement('div');
+                maskEl.classList.add('select');
+                var iconEl = document.createElement('div');
+                iconEl.classList.add('glyphicon');
+                iconEl.classList.add('glyphicon-ok');
+                maskEl.appendChild(iconEl);
+                el.appendChild(maskEl);
+            }
+            function cancel(el){
+                el.removeChild(el.childNodes[el.childNodes.length-1])
+            }
+        }.bind(this);
+        this.submit = function(e) {
+            if(!Object.keys(self.members).length){
+                return;
+            }else{
+                addGroupMembers.execute({members: self.members});
+            }
+        }.bind(this);
+        this.backToView = function(e) {
+            self.members = {};
+            self.parent.panel.view();
+            self.parent.update();
+        }.bind(this);
+    
+});
+riot.tag('group-left', '<div class="well sidebar-nav" style="padding-top: 0; padding-right: 0; padding-left: 0;height: 48em; background-color: #2E3238; border: 1px solid #080808; overflow: scroll; border-radius: 0"> <ul style="padding: 0; margin: 0; list-style-type: none"> <li style="height: 50px; border-bottom:1px solid #252525; line-height: 50px;overflow: hidden"> <div class="col-md-8 col-xs-8 col-sm-8" style="height:50px;line-height:50px;overflow: hidden"> <div style="padding-left:10px;background: #24272C;height: 32px; margin-top: 8px;line-height:32px;color: #777"> <b style="width:20%;"> <span class="glyphicon glyphicon-search"></span> </b> <input oninput="{search}" type="text" id="searchInput" style="background: transparent;border: none;width:80%" placeholder="搜索"> </div> </div> <div class="col-md-4 col-xs-4 col-sm-4" style="height:50px;overflow: hidden;"> <div style="height:32px;margin-top: 6px;line-height: 32px"> <button type="button" onclick="{parent.addGroup}" class="btn btn-sm" style="background: #42AC3E; color:white"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 添加分组 </button> </div> </div> </li> <li onclick="{parent.parent.viewGroup}" id="{_id}" each="{ownGroups || parent.groups}" style="height: 50px;line-height: 40px;border-bottom:1px solid #252525;padding: 5px 20px; cursor: pointer"> <span style="color: white; margin-left: 15px">{name}</span> </li> </ul> </div>', function(opts) {
+    var self = this;
+    self.ownGroups = null;
+    self._timeout = null;
+    self.init = function(){
+        self.ownGroups = null;
+        self.searchInput.value = '';
+    }
+    this.search = function(e) {
+        if(self._timeout){
+            return;
+        }
+        self._timeout = setTimeout(function(){
+            var txt = self.searchInput.value;
+            var keywords = txt.split(' ');
+            self.ownGroups = self.parent.groups.filter(function(group){
+                var matched = true;
+                keywords.forEach(function(keyword){
+                    if(group.name.search(new RegExp(keyword)) <= -1){
+                        matched = false;
+                    }
+                });
+                return matched;
+            });
+            clearTimeout(self._timeout);
+            self._timeout = null;
+            self.update();
+        }, 500)
+    }.bind(this);
+
+});
+riot.tag('group', '<div if="{!hidden}"> <div class="row-fluid" style="overflow: hidden; background: #eee;margin-top:-6px"> <div class="col-md-4 col-xs-4 col-sm-4" style="padding-right: 0; padding-left: 0; width: 30%"> <group-left></group-left> </div> <div class="col-md-8 col-xs-8 col-sm-8" style="background:#eee;padding-right: 1px; padding-left: 0;width: 70%"> <div if ="{panel.status === \'start\'}"> </div> <view-group if="{panel.status === \'view\'}"></view-group> <add-group if="{panel.status === \'add\'}"></add-group> <del-group-member if="{panel.status === \'del_m\'}"></del-group-member> <add-group-member if="{panel.status === \'add_m\'}"></add-group-member> </div> </div> </div>', function(opts) {
+        this.app = this.opts.app; //keep spa object
+        var self = nest.presentable(this);
+        self.env = (__app.settings.env.NODE_ENV=="production")?"public":"web";
+        self.api =  __app.settings.api.url;
+        self.botId = __page.bot.customId;
+        self.tip = false;
+        self.tipInfo = "";
+        self.groups = {};
+        self.groupMembers = [];
+
+        var loadAllMyManageMedia = domain.action('loadAllMyManageMedia');
+        var loadGroups = domain.action('loadGroups');
+        var loadGroup = domain.action('loadGroup');
+
+        var onLoadGroups = function(data){
+            self.groups = data.groups
+            self.update();
+        };
+        var onLoadAllMyManageMedia = function(data){
+            self.myManageMedia = data.medias;
+            self.panel.add();
+            self.update();
+        };
+        var onLoadGroup = function(data){
+            self.group = data.group;
+            self.groupMembers = data.members;
+            self.panel.view();
+            self.update();
+        };
+
+        this.on('mount', function(){
+            loadAllMyManageMedia.onDone(onLoadAllMyManageMedia);
+            loadGroups.onDone(onLoadGroups);
+            loadGroup.onDone(onLoadGroup);
+        });
+        this.on('unmount', function(){
+            loadAllMyManageMedia.offDone(onLoadAllMyManageMedia);
+            loadGroups.offDone(onLoadGroups);
+            loadGroup.offDone(onLoadGroup);
+        });
+        this.on('open', function(options){
+            console.info('tag group index is opening');
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+            loadGroups.execute({tenantId:__page.user.posts[0].org, operatorId: __page.user.posts[0].member});
+        });
+
+        this.on('leave', function(){
+            self.mask = true;
+            self.update();
+        });
+
+        this.on('reenter', function(){
+            self.mask = false;
+            self.update();
+        });
+
+        this.on('refresh', function(){
+            console.info('tag group index is refreshing');
+
+        });
+
+        self.formatDate = function(date){
+            var dateStr = new Date(date).toLocaleDateString();
+            return dateStr.replace(/\//g, '-');
+        }
+
+        self.panel ={
+            status: 'start',
+            add:function(){
+                this.status = 'add'
+            },
+            view: function(){
+                this.status = 'view';
+                self.tags['view-group'].init();
+            },
+            start: function(){
+                this.status = 'start';
+                self.group = {};
+                self.groupMembers = [];
+            }
+        };
+        this.viewGroup = function(e) {
+            var groupId = e.currentTarget.id;
+            loadGroup.execute({id: groupId});
+        }.bind(this);
+        this.addGroup = function(e) {
+            var w = self.panel;
+            if(w.status === 'add'){
+                return
+            }
+            loadAllMyManageMedia.execute({tenantId: __page.user.posts[0].org, operatorId: __page.user.posts[0].member});
+        }.bind(this);
+    
+});
+riot.tag('overview', '<div if="{!hidden}"> <div if="{tip}" class="alert {addClass}" style="margin-top: -5px; float: left; width: 100%; text-align: center; margin-bottom: 0; position: absolute; z-index: 9999"> <strong>{tipInfo}</strong> </div> <div class="container" style="width: 100%; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0"> <div class="row"> &nbsp; </div> <div class="row"> <div class="col-md-8 col-md-offset-2" > <div class="panel panel-default"> <div class="panel-heading">账户信息</div> <div class="panel-body"> <div class="container" style=""> <div class="row"> <div class="col-md-1 col-lg-1" style=""> 账户： </div> <div class="col-md-3 col-lg-3" riot-style=""> {user.nickname} &nbsp;&nbsp; <small><small>个人账户</small></small> </div> <div class="col-md-1 col-lg-1" style=""> 管理员： </div> <div class="col-md-3 col-lg-3" style=""> <img src="{user.headimgurl}" alt="{user.nickname}" class="img-rounded" data-src="holder.js/40x40" style="width: 40px; height: 40px;"> &nbsp;&nbsp;{user.nickname} </div> </div> </div> </div> </div> <div class="panel panel-default"> <div class="panel-heading">微信托管</div> <div class="panel-body"> <div style=""> <div class="row"> <div class="col-md-3 col-lg-3" style=""> <img src="{bot.headimgurl}" alt="{bot.name}" class="img-rounded" data-src="holder.js/40x40" style="width: 40px; height: 40px;"> &nbsp; {bot.name} <img if="{bot.sex==1}" src="/web/images/male.png" alt="男" class="" style="boder:0px; width: 16px; height: 16px;"> <img if="{bot.sex==2}" src="/web/images/female.png" alt="女" class="" style="boder:0px; width: 16px; height: 16px;"> </div> <div class="col-md-3 col-lg-3" style=""> <div class="row" > <div class="col-md-4 col-lg-4" style="height: 60px"> <img if="{!botActioning && botKeepLogged}" src="/web/images/stop-active.png" alt="退出" onclick="{goExiting}" class="bot-action-icon bot-logged" style=""> <img if="{botActioning && botKeepLogged}" src="/web/images/start.png" alt="启动中..." class="bot-action-icon bot-logging" style=""> <img if="{!botActioning && botKeepExited}" src="/web/images/start-active.png" alt="启动" onclick="{goLogging}" class="bot-action-icon bot-exited" style=""> <img if="{botActioning && botKeepExited}" src="/web/images/stop.png" alt="退出中..." class="bot-action-icon bot-exiting" style=""> </div> <div class="col-md-8 col-lg-8" style="vertical-align: middle;height: 60px;"> <label>&nbsp;&nbsp;{bot.statusName}</label> </div> </div> </div> <div class="col-md-6 col-lg-6" if="{needLoginFlg}"> <div class="row" > <div class="col-md-4 col-lg-4" style="height: 112px;"> <img riot-src="{loginQR}" style="border:1px solid #ddd;display: inline-block; height: 100%"> </div> <div class="col-md-8 col-lg-8" style="vertical-align: middle;height: 60px;"> <label>扫描左方二维码登录</label> </div> </div> </div> </div> </div> </div> </div> </div> </div> </div> </div>', 'overview .panel-body{ line-height: 70px; } overview .bot-action-icon{ border: 0px; width: 60px; height: 60px; } overview .bot-logged {cursor: default !important;} overview .bot-logging {cursor: wait !important;} overview .bot-exited {cursor: default !important;} overview .bot-exiting {cursor: wait !important;}', function(opts) {
+            "use strict";
+            this.app = this.opts.app; //keep spa object
+            var self = nest.presentable(this);
+            self.api =  __app.settings.api.url;
+            self.tip = false;
+            self.tipInfo = "";
+            self.botId = __page.bot.customId;
+            self.bot = __page.bot;
+            self.user = __page.user;
+            self.tenantId = __page.tenantId;
+            self.botKeepLogged = true;
+            self.botKeepExited = false;
+            self.botActioning = true;
+            self.needLoginFlg = false;
+            var loadBotByMediaId = domain.action('loadBotByMediaId');
+            var startBot = domain.action('startBot');
+            var stopBot = domain.action('stopBot');
+            var IntentionStatus = __app.enums.IntentionStatus.names;
+            var Status = __app.enums.WechatBotStatus.names;
+            var statusValues = __app.enums.WechatBotStatus.values;
+            var BotState = function(id, intentionStatus, status){
+                this.id = id;
+                this.intentionStatus = intentionStatus || IntentionStatus.Logged;
+                this.on('logged', this.onLogged.bind(this));
+                this.on('exited', this.onExited.bind(this));
+                this.on('logging', this.onLogging.bind(this));
+                this.on('exiting', this.onExiting.bind(this));
+                this.on('status-changed', this.onStatusChanged.bind(this));
+                this.updateStatus(status);
+            };
+            BotState.prototype = riot.observable({});
+            BotState.prototype.updateStatus = function(status){
+                if(this.status==status){
+                    return;
+                }
+                else{
+                    this.status = status;
+                }
+
+                if(status == IntentionStatus.Logged){
+                    this.trigger('logged');
+                }
+                else if(status == IntentionStatus.Exited || status == Status.Aborted){
+                    this.trigger('exited');
+                }
+                this.trigger('status-changed', this.status, status);
+            };
+            BotState.prototype.goLogging = function(){
+                this.trigger('logging');
+            };
+            BotState.prototype.goExiting = function(){
+                this.trigger('exiting');
+            };
+            BotState.prototype.onLogged = function(){
+                self.bot.intentionStatus = IntentionStatus.Logged;
+                self.botKeepLogged = true;
+                self.botKeepExited = false;
+                self.botActioning = false;
+                self.update();
+            };
+            BotState.prototype.onExited = function(){
+                self.bot.intentionStatus = IntentionStatus.Exited;
+                self.botKeepLogged = false;
+                self.botKeepExited = true;
+                self.botActioning = false;
+                self.update();
+            };
+            BotState.prototype.onLogging = function(){
+                self.botKeepLogged = true;
+                self.botKeepExited = false;
+                self.botActioning = true;
+                self.update();
+                console.info('logging...');
+
+            };
+            BotState.prototype.onExiting = function(){
+                self.botKeepLogged = false;
+                self.botKeepExited = true;
+                self.botActioning = true;
+                self.update();
+                console.info('exiting...');
+
+            };
+            BotState.prototype.onStatusChanged = function(oldStatus, newStatus){
+                self.bot.status = newStatus;
+                self.bot.statusName = statusValues[self.bot.status];
+                console.info(self.bot.statusName);
+                self.update();
+            };
+
+            var botState = null;
+
+            ws.subscribe('/bot/st_change', function(data){
+                var json = data;
+                if(json.agentId === self.bot.customId){
+                    if(json.newStatus === Status.Logged){
+                        self.needLoginFlg = false;
+                    }
+                    botState.updateStatus(json.newStatus);
+                }
+            });
+
+            ws.subscribe('/bot/need_login', function(data){
+                var json = data;
+                if(json.agentId === self.bot.customId){
+                    self.loginQR = json.mediaUrl;
+                    self.needLoginFlg = true;
+                    self.update();
+                }
+            });
+
+            this.goLogging = function(e) {
+                startBot.execute({
+                    openid: self.bot.customId,
+                    intention: 'login',
+                    mode: 'untrusted',
+                    nickname: self.bot.name,
+                    sex: self.bot.sex
+                });
+                botState.goLogging();
+            }.bind(this);
+
+            this.goExiting = function(e) {
+                stopBot.execute({openid: self.bot.customId});
+                console.log({openid: self.bot.customId});
+                botState.goExiting();
+            }.bind(this);
+
+            var onLoadBotByMediaId = function(data){
+                botState = new BotState(self.bot.id, data.media.intentionStatus, data.media.status);
+                botState.updateStatus(data.media.status);
+                self.update();
+            };
+
+            this.on('mount', function(){
+                loadBotByMediaId.onDone(onLoadBotByMediaId);
+                loadBotByMediaId.execute({
+                    botId: self.bot._id
+                });
+            });
+            this.on('unmount', function(){
+                loadBotByMediaId.offDone(onLoadBotByMediaId);
+            });
+            this.on('open', function(options){
+                console.info('tag overview is opening');
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+            });
+
+            this.on('leave', function(){
+                self.mask = true;
+                self.update();
+            });
+
+            this.on('reenter', function(){
+                self.mask = false;
+                self.update();
+            });
+
+            this.on('refresh', function(){
+                console.info('tag overview is refreshing');
+
+            });
+
+        
+});
+riot.tag('raw', '', function(opts) {
+        var me = this;
+        me.on('update', function(){
+            me.root.innerHTML = me.opts.content || '';
+        })
+    
+});
+riot.tag('recontent-index', '<div if="{!hidden}"> <div class="container-fluid"> <div class="row-fluid"> &nbsp; </div> <div class="row-fluid"> <div class="col-md-6 col-lg-6" > <div class="row-fluid"> <div class="col-md-12 col-lg-12" > <div class="pull-right"> <button class="btn btn-default btn-sm" type="button" onclick="{onRefresh}">刷新</button> <button class="btn btn-default btn-sm" type="button" onclick="{onNew}">新建</button> </div> <table class="table table-striped"> <thead> <tr> <th>名称</th> <th>广告</th> <th>预览</th> </tr> </thead> <tbody> <tr each="{recontents}"> <td> <a onclick="{parent.onView}"> <input type="hidden" value="{_id}"> {originalTitle} </a> </td> <td> {adName} </td> <td> <a href="{newUrl}" target="_blank"> 预览 </a> </td> </tr> </tbody> </table> </div> </div> </div> <div class="col-md-6 col-lg-6" >   </div> </div> </div> <form id="newForm" method="post" action="recontent-set" target="_blank"> <input type="hidden" id="tenantId" name="tenantId" value="{tenantId}"> </form> </div>', function(opts) {
+            "use strict";
+            this.app = this.opts.app;
+            var self = nest.presentable(this);
+            self.api =  __app.settings.api.url;
+            self.tenantId = this.opts.tenant;
+
+
+
+            var findTenantRecontents = domain.action('findTenantRecontents');
+
+            var onFindTenantRecontents = function(recontents){
+                console.log(recontents);
+                self.update({recontents: recontents});
+            };
+
+            this.on('mount', function(){
+                findTenantRecontents.onDone(onFindTenantRecontents);
+            });
+            this.on('unmount', function(){
+                findTenantRecontents.offDone(onFindTenantRecontents);
+            });
+            this.on('open', function(options){
+                console.info('tag adlink-index is opening');
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+                findTenantRecontents.execute(self.tenantId);
+            });
+
+            this.on('leave', function(){
+                self.mask = true;
+                self.update();
+            });
+
+            this.on('reenter', function(){
+                self.mask = false;
+                self.update();
+            });
+
+            this.on('refresh', function(){
+                onRefresh();
+            });
+
+            this.onRefresh = function(e) {
+                findTenantRecontents.execute(self.tenantId);
+            }.bind(this);
+
+            this.onNew = function(e) {
+
+
+                $('#newForm').submit();
+            }.bind(this);
+
+            this.onView = function(e) {
+
+
+
+            }.bind(this);
+
+            this.showEditView = function(id){
+                detail.trigger('close');
+                edit.trigger('open', {action: 'edit', id: id});
+            };
+
+            this.showDetailView = function(model){
+                edit.trigger('close');
+                detail.trigger('open', {model: model});
+            };
+
+        
+});
+riot.tag('redpacket-boss', '<div if="{!hidden}"> <div if="{tip}" class="alert {addClass}" style="margin-top: -5px; float: left; width: 100%; text-align: center; margin-bottom: 0; position: absolute; z-index: 9999"> <strong>{tipInfo}</strong> </div> <div class="container"> <div class="row-fluid"> <div class="jumbotron" style="height: auto; padding: 25px;"> <div if="{!editing}" id="luckyMoneyHelpList" class="panel" style="margin-top: 1em; padding: 0; min-height: 30em"> <div style="padding-left: 20px; padding-bottom: 10px;"><a id="add" style="font-size: 1.5em; text-decoration: none; cursor: pointer">新增</a> </div> <ul class="ul" id="list"> <li> <strong class="col-md-2">活动名称</strong> <strong class="col-md-2">开始时间</strong> <strong class="col-md-2">结束时间</strong>  <strong class="col-md-6">操作</strong> </li> <li> <hr width="100%"> </li> <li each="{redpackets}"> <strong class="col-md-2 activity-name" onclick="{parent.edit}">{name}</strong> <strong class="col-md-2">{parent.formatDate(startTime)}</strong> <strong class="col-md-2">{parent.formatDate(endTime)}</strong> <strong class="col-md-6 actionCon"><a href="{__app.settings.app.url + \'/marketing/redpacket/redpacket?id=\' + _id}" target="_blank">查看</a><a href="{__app.settings.api.url + \'/marketing/redpacket/exportParticipants?id=\' + _id}" target="_blank" >导出</a></strong> </li> </ul> </div> <div if="{editing}" id="addForm" class="panel" style="margin-top: 1em;"> <div style="padding-left: 20px; padding-bottom: 10px;"><a id="return" style="font-size: 1.5em; text-decoration: none; cursor: pointer">返回</a></div> <ul class="ul" style="text-align: left; padding-left: 2em"> <li><span>红包助力活动设置</span></li> <li><span>活动名称: </span><input name="redpacketActivityName" id="activityName" type="text" value="{redpacket.name}"></li> <li class="bgImg" style="min-height: 26px"><span style="float: left">背景图片(3张): </span><input id="bgImg" type="file" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="uploadBgImg()" style="width: 60px;"> <div id="bgImg1" if="{redpacket.bgImg[0]}" class="bgImgCon"><i class="glyphicon glyphicon-remove"></i><img riot-src="{redpacket.bgImg[0]}" alt=""></div> <div id="bgImg2" if="{redpacket.bgImg[1]}" class="bgImgCon"><i class="glyphicon glyphicon-remove"></i><img riot-src="{redpacket.bgImg[1]}" alt=""></div> <div id="bgImg3" if="{redpacket.bgImg[2]}" class="bgImgCon"><i class="glyphicon glyphicon-remove"></i><img riot-src="{redpacket.bgImg[2]}" alt=""></div> </li> <li style="clear: both; min-height: 26px"><span style="float: left">分享卡片图片: </span><input id="shareImg" type="file" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="uploadShareImg()" style="width: 60px;"> <div id="shareImg1" if="{redpacket.shareImg}" class="shareImgCon"><i class="glyphicon glyphicon-remove"></i><img riot-src="{redpacket.shareImg}" alt=""></div> </li> <li style="clear: both"><span>活动时间: </span><input id="startTime" type="date" value="{formatDate(redpacket.startTime)}"><span> 至 </span><input id="endTime" type="date" value="{formatDate(redpacket.endTime)}"> </li> <li><span>活动介绍: </span><div id="desc"></div></li> <li><span>活动规则: </span><div id="rule"></div></li> <li><span>分享标题自定义: </span><textarea id="shareTitle" cols="60" rows="1">{redpacket.shareTitle}</textarea></li> <li><span>分享描述自定义: </span><textarea id="shareDesc" cols="60" rows="1">{redpacket.shareDesc}</textarea></li> <li><span>基础红包金额: </span><input id="base_power" type="text" value="{redpacket.base_power}"></li> <li><span>好友助力单次奖励: </span><input id="friend_help_min_power" type="text" value="{redpacket.friend_help_min_power}"><span> 至 </span><input id="friend_help_max_power" type="text" value="{redpacket.friend_help_max_power}"></li> <li><span>好友助力上限人数: </span><input id="friend_help_count_limit" type="text" value="{redpacket.friend_help_count_limit}"></li> <li style="text-align: center; margin-top: 1em"><input class="btn btn-success" type="button" id="submit" value="提交"></li> </ul> </div> </div> </div>  </div> </div>', 'redpacket-boss .leftlist {list-style-type: none; text-align: center; font-size: 1.3em} redpacket-boss .ul {list-style-type: none; text-align: center; padding: 0} redpacket-boss .ul li {margin-bottom: 20px;} redpacket-boss .bgImg #bgImg {float: left; margin-left: 10px;} redpacket-boss .bgImg .bgImgCon {margin-left: 10px; display: -webkit-inline-box; position: relative; display: none; border: solid 1px #E8E7E7;} redpacket-boss .bgImgCon i{color: #EC3131; position: absolute; left: 58px; top: 2px; cursor: pointer;} redpacket-boss .bgImgCon div{margin-left: 20px; float: left;} redpacket-boss .bgImgCon img {width: 75px; height: 75px;} redpacket-boss .shareImgCon img {width: 75px; height: 75px;} redpacket-boss #shareImg{float: left; margin-left: 10px;} redpacket-boss .shareImgCon i{color: #EC3131;position: absolute;left: 58px;top: 2px;cursor: pointer;} redpacket-boss .shareImgCon{margin-left: 10px; display: -webkit-inline-box;position: relative; display: none; border: solid 1px #E8E7E7;} redpacket-boss .activity-name{ color: #23527c; cursor: pointer; } redpacket-boss li strong{ padding: 0 !important; margin: 0 !important; } redpacket-boss .actionCon a{ margin-left: 10px; }', function(opts) {
+            "use strict";
+            this.app = this.opts.app; //keep spa object
+            var self = nest.presentable(this);
+            self.api =  __app.settings.api.url;
+            self.tip = false;
+            self.tipInfo = "";
+            self.redpacket = {};
+            self.editing = false;
+
+            var loadRedpackets = domain.action('loadRedpackets');
+            var onloadRedpackets = function(redpackets){
+                self.redpackets = redpackets;
+                self.update();
+            };
+
+            setTimeout(function(){
+                debugger;
+                console.error($('#desc').summernote);
+                console.log( $('#desc'));
+                $('#desc').summernote({
+                    height: 200,
+                    minHeight: null,
+                    maxHeight: null,
+                    focus: true
+                });
+                $('#rule').summernote({
+                    height: 200,
+                    minHeight: null,
+                    maxHeight: null,
+                    focus: true
+                });
+            }, 5000);
+            this.on('mount', function(){
+                loadRedpackets.onDone(onloadRedpackets);
+            });
+            this.on('unmount', function(){
+                loadRedpackets.offDone(onloadRedpackets);
+            });
+            this.on('open', function(options){
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+                loadRedpackets.execute({});
+                console.info('tag tenants is opening');
+            });
+
+            this.on('leave', function(){
+                self.mask = true;
+                self.update();
+            });
+
+            this.on('reenter', function(){
+                self.mask = false;
+                self.update();
+            });
+
+            this.on('refresh', function(){
+                console.info('tag tenants is refreshing');
+
+            });
+
+            self.formatDate = function(date){
+                var dateTime = new Date(date);
+                var year = dateTime.getFullYear();
+                var month = (dateTime.getMonth() + 1)>9 ? (dateTime.getMonth() + 1) : '0' + (dateTime.getMonth() + 1);
+                var day = dateTime.getDate() > 9 ? dateTime.getDate() : '0' + dateTime.getDate();
+                return year + '-' + month + '-' + day;
+            }
+            self.edit = function(e){
+                self.update({redpacket: e.item, editing: true});
+            }
+        
+});
+riot.tag('showimg', '<div class="modal fade" id="showImg"> <div class="modal-dialog"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> <h4 class="modal-title">{title || \'图片\'}</h4> </div> <div if="{!errorMsg}" class="modal-body" style="text-align: center"> <img riot-src="{imgUrl}" alt="" id="img" riot-style="height: {height}; width: {width}"> </div> <div if="{errorMsg}" class="modal-body" style="text-align: center"> <span>{errorMsg}</span> </div> </div> </div> </div>', function(opts) {
+        var self = this;
+        app.on('showImg', function(data){
+            console.log(data);
+            self.update({title: data.title, imgUrl: data.imgUrl, width: data.width, height: data.imgUrl, errorMsg: data.errorMsg});
+        });
+
+    
+});
+riot.tag('tenant-edit', '<div class="container" if="{!hidden}"> <div class="row"> <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2" style="text-align: center"><h3>{tenant.name}</h3></div> </div> <alert validators="{validators}" clear="{clear}"></alert> <div class="row" style="margin-top: 30px"> <div class="col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3"> <div class="row panel-container"> <div class="col-md-3">名称</div> <div class="col-md-9"> <div class="{has-error: !tenantNameInput.value.trim()} has-feedback"> <input type="text" onblur="{onNameBlur}" class="form-control" name="tenantNameInput" value="{tenant.name}" required> </div> </div> <div class="col-md-3">类型</div> <div class="col-md-9"> <div class="btn-group" data-toggle="buttons"> <label onclick="{selectPersonalType}" class="btn btn-default {active: tenant.type == \'p\'}"> <input type="radio" name="orgTypeRadio" autocomplete="off" __checked="{tenant.type == \'p\'}" value="p"> 个人 </label> <label onclick="{selectOrgType}" class="btn btn-default {active: tenant.type == \'o\'}"> <input type="radio" name="orgTypeRadio" autocomplete="off" __checked="{tenant.type == \'o\'}" value="o"> 机构 </label> </div> </div> <div class="col-md-3">状态</div> <div class="col-md-9">{ __app.enums.LifeFlag.values[tenant.lFlg]}</div> <div class="col-md-3">创建时间</div> <div class="col-md-9">{_.date.format(new Date(tenant.crtOn), \'yyyy-MM-dd hh点mm分\')}</div> <div class="col-md-3">备注</div> <div class="col-md-9"><textarea name="tenantDescInput" class="form-control" onblur="{descOnBlur}">{tenant.desc}</textarea></div> </div> </div> </div> <div class="row" style="margin-top: 30px"> <div class="col-md-12 col-lg-12" style="text-align: center"> <input __disabled="{!tenantNameInput.value.trim()}" onclick="{onSubmit}" class="btn btn-primary" type="button" value="保存"> <a href="#tenants/_{tenant._id}" class="btn btn-default">取消</a> </div> </div> </div>', function(opts) {
+        var self = nest.presentable(this);
+        var loadTenantById = domain.action('loadTenantById');
+        var updateTenantById = domain.action('updateTenantById');
+        var onLoadTenantById = function(res){
+            self.update({tenant: res.tenant});
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+        };
+        self.validators = [];
+        self.on('open', function(ctx){
+            loadTenantById.newInvocation({id: ctx.req.paramList[0]})
+                .onDone(onLoadTenantById)
+                .execute()
+        });
+        self.selectPersonalType = function(e){
+            self.tenant.type = 'p';
+            self.update();
+        };
+        self.selectOrgType = function(e){
+            self.tenant.type = 'o';
+            self.update();
+        };
+        self.onSubmit = function(){
+            updateTenantById.newInvocation(self.tenant)
+                .onDone(function(){
+                    riot.route('tenants/_' + self.tenant._id);
+                })
+                .execute();
+        };
+        self.onNameBlur = function(){
+            var name = self.tenantNameInput.value.trim();
+            if(!name){
+                return self.validators.push({
+                    success: false,
+                    field: '名称',
+                    desc: '不能为空!'
+                });
+            }
+            self.tenant.name = name;
+        };
+        self.clear = function(){
+            self.validators = [];
+        };
+        self.descOnBlur = function(){
+            var desc = self.tenantDescInput.value.trim();
+            if(!desc){
+                return;
+            }
+            self.tenant.desc = desc;
+        }
+    
+});
+riot.tag('tenant-topbar', '<nav class="navbar navbar-default navbar-inverse" role="navigation" style="margin-bottom: 5px; border-radius: 0;"> <div class="collapse navbar-collapse"> <a class="navbar-brand" style="font-size:20px; color: #ffffff">微节点</a> <ul class="nav navbar-nav" style="width: 88%"> <li class="navbtn"><a id="adlink-index" href="#" route="adlink-index" onclick="{adlinks}">广告位</a></li> <li class="navbtn"><a id="recontent-index" href="#" route="recontent-index" class="myActive" onclick="{recontents}">文章</a></li> <li style="float: right;"><a href="#" style="font-size: 1.4em" class="glyphicon glyphicon-off" title="退出" onclick="{logout}"></a></li> <li style="float: right; margin-right: 20px; padding-top: 5px;"> <img riot-src="{headimgurl}" style="height: 40px; width: 40px" alt=""><span style="margin-left: 10px; color: white">{nickname}</span> </li> </ul> </div> </nav>', '.navbtn{padding-left: 20px; font-size:16px} .myActive{color: #ffffff !important; border:0; outline: none !important;}', function(opts) {
+        this.headimgurl = __page.user.headimgurl;
+        this.nickname = __page.user.nickname;
+        this.tenantId = this.opts.tenant;
+
+        this.on('mount', function(){
+            if(window.location.hash) {
+                $('.navbtn a').removeClass('myActive');
+                $(window.location.hash).addClass('myActive');
+            }
+        });
+
+        this.logout = function(e) {
+            $.get('/logout', function(data){
+               window.location.href = '/login';
+            });
+        }.bind(this);
+
+        this.adlinks = function(e) {
+            e.preventUpdate = true;
+            $('.navbtn a').removeClass('myActive');
+            $(e.currentTarget).addClass('myActive');
+            riot.route($(e.currentTarget).attr('route'));
+        }.bind(this);
+
+        this.recontents = function(e) {
+            e.preventUpdate = true;
+            $('.navbtn a').removeClass('myActive');
+            $(e.currentTarget).addClass('myActive');
+            riot.route($(e.currentTarget).attr('route'));
+        }.bind(this);
+
+    
+});
+riot.tag('tenant', '<div class="container" if="{!hidden}"> <div class="row"> <div class="col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3" style="position: relative;text-align: center"> <a href="#tenants" style="position: absolute; left: 0px; top: 20px;">返回机构列表</a> <h3>{tenant.name}</h3> </div> </div> <div class="row" style="margin-top: 30px"> <div class="col-md-4 col-md-offset-3 col-lg-4 col-lg-offset-3"> <div class="row panel-container"> <div class="col-md-6">名称</div> <div class="col-md-6">{tenant.name}</div> <div class="col-md-6">类型</div> <div class="col-md-6">{__app.enums.PartyType.values[tenant.type]}</div> <div class="col-md-6">状态</div> <div class="col-md-6">{ __app.enums.LifeFlag.values[tenant.lFlg]}</div> <div class="col-md-6">创建时间</div> <div class="col-md-6">{_.date.format(new Date(tenant.crtOn), \'yyyy-MM-dd hh点mm分\')}</div> <div class="col-md-6">备注</div> <div class="col-md-6">{tenant.desc}</div> </div> </div> </div> <div class="row" style="margin-top: 30px"> <div class="col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4" style="text-align: center"> <a href="#tenants/edit/_{tenant._id}" class="btn btn-default">修改</a> <input if="{tenant.lFlg != \'a\'}" onclick="{unlockTenant}" class="btn btn-default" data-toggle="modal" data-target="#modal" type="button" value="激活"> <input if="{tenant.lFlg != \'i\'}" onclick="{lockTenant}" class="btn btn-default" data-toggle="modal" data-target="#modal" type="button" value="锁定"> <input if="{tenant.lFlg != \'d\'}" onclick="{delTenant}" class="btn btn-default" data-toggle="modal" data-target="#modal" type="button" value="删除"> </div> </div> <div class="row" style="margin-top: 30px"> <div class="col-md-12 col-lg-12" style="text-align: center"> <a class="btn btn-primary" type="button" href="/boss/tenant/_{tenant._id}">机构管理</a> </div> </div> </div>', '.panel-container >div{ height: 40px; line-height: 40px; }', function(opts) {
+        var self = nest.presentable(this);
+        var loadTenantById = domain.action('loadTenantById');
+        var updateTenantById = domain.action('updateTenantById');
+        self.unlockTenant = function(){
+            _.widget.confirm({
+                title: '操作确认?',
+                content: '你确认要“激活”机构吗？',
+                callback: function(){
+                    self.tenant.lFlg = __app.enums.LifeFlag.names.Active;
+                    updateTenantById.newInvocation({
+                        id: self.tenant._id,
+                        lFlg: self.tenant.lFlg
+                    }).onDone(function(res){
+                        self.update();
+                    }).execute();
+                }
+            });
+        };
+        self.lockTenant = function(){
+            _.widget.confirm({
+                title: '操作确认?',
+                content: '你确认要“锁定”机构吗？',
+                callback: function(){
+                    self.tenant.lFlg = __app.enums.LifeFlag.names.Inactive;
+                    updateTenantById.newInvocation({
+                        id: self.tenant._id,
+                        lFlg: self.tenant.lFlg
+                    }).onDone(function(res){
+                        self.update();
+                    }).execute();
+                }
+            });
+        };
+        self.delTenant = function(){
+            _.widget.confirm({
+                title: '操作确认?',
+                content: '你确认要“删除”机构吗？',
+                callback: function(){
+                    self.tenant.lFlg = __app.enums.LifeFlag.names.Deleted;
+                    updateTenantById.newInvocation({
+                        id: self.tenant._id,
+                        lFlg: self.tenant.lFlg
+                    }).onDone(function(res){
+                        self.update();
+                    }).execute();
+                }
+            });
+        };
+        self.on('open', function(ctx){
+            loadTenantById.newInvocation({id: ctx.req.paramList[0]})
+                .onDone(function(res){
+                    self.update({tenant: res.tenant});
+                    self.trigger('ready', false);
+                    self.trigger('view-route-to');
+                }).execute();
+        });
+    
+});
+riot.tag('tenants', '<div if="{!hidden}"> <div if="{tip}" class="alert {addClass}" style="margin-top: -5px; float: left; width: 100%; text-align: center; margin-bottom: 0; position: absolute; z-index: 9999"> <strong>{tipInfo}</strong> </div> <div class="container" style="width: 100%; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0"> <div class="row"> &nbsp; </div> <div class="row"> <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2" > <form class="form-inline"> <div class="form-group"> <label for="statusSelect">状态</label> <select id="statusSelect" class="form-control"> <option value="" selected>请选择</option> <option value="{__app.enums.LifeFlag.names.Active}">{__app.enums.LifeFlag.values.a}</option> <option value="{__app.enums.LifeFlag.names.Inactive}">{__app.enums.LifeFlag.values.i}</option> <option value="{__app.enums.LifeFlag.names.Deleted}">{__app.enums.LifeFlag.values.d}</option> </select> </div> <button onclick="{queryTenantsByFilter}" class="btn btn-primary">查询</button> </form> <table class="table table-striped"> <thead> <tr> <th>名称</th> <th>类型</th> <th>状态</th> <th>创建时间</th> <th>备注</th> </tr> </thead> <tbody> <tr each="{tenants}"> <td> <a href="#tenants/_{_id}"> {name} </a> </td> <td> { __app.enums.PartyType.values[type] } </td> <td> { __app.enums.LifeFlag.values[lFlg] } </td> <td> {_.date.format(new Date(crtOn), \'yyyy-MM-dd hh点mm分\')} </td> <td> { desc } </td> </tr> </tbody> </table> </div> </div> </div> </div>', function(opts) {
+            "use strict";
+            this.app = this.opts.app; //keep spa object
+            var self = nest.presentable(this);
+            self.api =  __app.settings.api.url;
+            self.tip = false;
+            self.tipInfo = "";
+            var findTenants = domain.action('findTenants');
+            var onFindTenants = function(res){
+                let ts = res.tenants;
+                ts = ts.filter(function(t){return t.lFlg==='a'})
+                        .concat(ts.filter(function(t){return t.lFlg==='i'}))
+                        .concat(ts.filter(function(t){return t.lFlg==='d'}));
+                self.update({tenants: ts});
+            };
+            self.queryTenantsByFilter = function(e){
+                var filter = {};
+                self.statusSelect.value && (filter['lFlg'] = self.statusSelect.value);
+                findTenants.execute(filter);
+            };
+
+            this.on('mount', function(){
+                findTenants.onDone(onFindTenants);
+            });
+            this.on('unmount', function(){
+                findTenants.offDone(onFindTenants);
+            });
+            this.on('open', function(options){
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+                findTenants.execute({});
+                console.info('tag tenants is opening');
+            });
+
+        
+});
+riot.tag('top-menu', '<nav class="navbar navbar-default navbar-inverse" role="navigation" style="margin-bottom: 5px; border-radius: 0;"> <div class="collapse navbar-collapse"> <a class="navbar-brand" style="font-size: 1.6em;color: white">微节点</a> <ul class="nav navbar-nav" style="width: 88%"> <li class="navbtn"><a id="overview" href="#" route="overview" class="myActive" onclick="{overview}">首页</a></li> <li class="navbtn"><a id="broadcast" href="#" route="broadcast" class="" onclick="{broadcast}">群发</a></li> <li class="navbtn"><a id="contacts" href="#" route="contacts" onclick="{contacts}">联系人</a></li> <li class="navbtn"><a id="group" href="#" route="group" onclick="{group}">群组</a></li> <li style="float: right;"><a href="#" style="font-size: 1.4em" class="glyphicon glyphicon-off" title="退出" onclick="{logout}"></a></li> <li style="float: right; margin-right: 20px; padding-top: 5px;"> <img riot-src="{headimgurl}" style="height: 40px; width: 40px" alt=""><span style="margin-left: 10px; color: white">{nickname}</span> </li> </ul> </div> </nav>', 'top-menu .navbtn{padding-left: 3em; font-size:1.2em} top-menu .myActive{color: #ffffff !important; border:0; outline:none !important;}', function(opts) {
+        this.headimgurl = __page.user.headimgurl;
+        this.nickname = __page.user.nickname;
+
+        this.on('mount', function(){
+            if(window.location.hash) {
+                $('.navbtn a').removeClass('myActive');
+                $(window.location.hash).addClass('myActive');
+            }
+        });
+
+        this.logout = function(e) {
+            $.get('/logout', function(data){
+               window.location.href = '/login';
+            });
+        }.bind(this);
+
+        this.overview = function(e) {
+            e.preventUpdate = true;
+            $('.navbtn a').removeClass('myActive');
+            $(e.currentTarget).addClass('myActive');
+            riot.route($(e.currentTarget).attr('route'));
+        }.bind(this);
+
+        this.broadcast = function(e) {
+            e.preventUpdate = true;
+            $('.navbtn a').removeClass('myActive');
+            $(e.currentTarget).addClass('myActive');
+            riot.route($(e.currentTarget).attr('route'));
+        }.bind(this);
+
+        this.group = function(e) {
+            e.preventUpdate = true;
+            $('.navbtn a').removeClass('myActive');
+            $(e.currentTarget).addClass('myActive');
+            riot.route($(e.currentTarget).attr('route'));
+        }.bind(this);
+
+        this.contacts = function(e) {
+            e.preventUpdate = true;
+            $('.navbtn a').removeClass('myActive');
+            $(e.currentTarget).addClass('myActive');
+            riot.route($(e.currentTarget).attr('route'));
+        }.bind(this);
+    
+});
+riot.tag('view-group', '<div class="title_wrap"> <ul onclick="{clickNav}" class="nav nav-tabs" style="color: #3E3D3D"> <li role="presentation" class="{active: nav===0}"><a href="#">基本信息</a></li> <li role="presentation" class="{active: nav===1}"><a href="#">成员</a></li> </ul> </div> <div if="{nav===0}" class="profile"> <div class="profile_item row-fluid"> <div class="primary col-md-6 col-xs-6 col-sm-6"> <label>名称</label> </div> <div class="primary col-md-6 col-xs-6 col-sm-6"> <div if="{viewModel.mode === \'view\'}"> <label>{parent.group.name}</label>&nbsp&nbsp <span onclick="{editGroupName}" style="color:#45cc10;font-size:16px;" class="glyphicon glyphicon-edit" aria-hidden="true"></span> </div> <form if="{viewModel.mode===\'edit\'}" class="form-inline"> <input onblur="{checkGroupName}" class="form-control" name="groupName" type="text" value="{parent.group.name}" style="width:100px"> <button onclick="{submitGroupName}" type="button" class="btn btn-default" style="background: #18c54b;border:none"> <span class="glyphicon glyphicon-ok" style="color:white" aria-hidden="true"></span> </button> </form> </div> </div> <div class="profile_item row-fluid"> <div class="secondary col-md-6 col-xs-6 col-sm-6"> <label>类型</label> </div> <div class="secondary col-md-6 col-xs-6 col-sm-6"> <label>{__app.enums.GroupType.values[parent.group.type]}</label> </div> </div> <div class="profile_item row-fluid"> <div class="secondary col-md-6 col-xs-6 col-sm-6"> <label>范围</label> </div> <div class="secondary col-md-6 col-xs-6 col-sm-6"> <label>{__app.enums.GroupScope.values[parent.group.scope]}</label> </div> </div> <div class="profile_item row-fluid"> <div class="secondary col-md-6 col-xs-6 col-sm-6"> <label>包含微信号</label> </div> <div class="secondary col-md-6 col-xs-6 col-sm-6"> <button each="{parent.group.medias}" onclick="{backToView}" type="button" class="btn btn-default" style="display:inline-block;background: #CCC; color:white; border: none"> {name} </button> </div> </div> <div class="profile_item row-fluid"> <div class="secondary col-md-6 col-xs-6 col-sm-6"> <label>负责人</label> </div> <div class="secondary col-md-6 col-xs-6 col-sm-6"> <label>{parent.group.operator.remark}</label> </div> </div> <div class="profile_item"> <button onclick="{delGroup}" type="button" class="btn btn-default" style="height:40px;width:160px;background: #903D3D; color:white; border: none"> <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> 删除该组 </button> </div> </div> <div if="{nav===1}"> <div class="wrapper"> <div style="margin-bottom: 10px; overflow: hidden"> <span>共 ( <strong style="color:#65cc2b">{parent.groupMembers.length}</strong> ) 人</span> <button onclick="{selectContact}" class="{select_contact: status[\'contact\']}"> <span class="glyphicon glyphicon-user" aria-hidden="true"></span> 联系人 </button> <button onclick="{selectGroup}" class="{select_contact: status[\'group\']}"> <span class="glyphicon glyphicon-th" aria-hidden="true"></span> 群组 </button> <div style="float:right"> <button if="{currentStatus === \'view\'}" onclick="{addMember}" style="background: #52B918; color:white" type="button" class="btn" aria-label="Left Align"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 添加成员 </button> <button if="{currentStatus === \'view\'}" onclick="{editMember}" style="background: #e35a51; color:white" type="button" class="btn" aria-label="Align Right"> <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 移除成员 </button> <button if="{currentStatus === \'edit\'}" onclick="{delMember}" class="{btn: true, btn_enabled: members && Object.keys(members).length>0, btn_disable: !members || Object.keys(members).length===0}" style="color:white" type="button" aria-label="Align Right"> <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> 完成 </button> <button if="{currentStatus === \'edit\'}" onclick="{cancelDelMember}" style="background: #B1B1B1; color:white" type="button" class="btn" aria-label="Align Right"> <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> 取消 </button> </div> </div> <div class="list_container"> <ul class="user_list" > <li onclick="{parent.selectMember}" each="{parent.groupMembers}" if="{parent.status[member.contacttype]}" remark="{member.remark}" mid="{member._id}"> <img class="{img_sel: parent.currentStatus === \'edit\'}" riot-src="{parent.app.settings.api.url + \'/file?media_id=\' + member.headimgurl}"> <p style="overflow: hidden;height:24px">{member.remark}</p> </li> </ul> </div> </div> </div>', 'view-group input,view-group textarea{ outline:none; } view-group .select_contact{ background: #5B6779; border:1px solid #2E3238; color:white; } view-group .profile_item .primary:nth-child(1){ padding-left:25% } view-group .profile_item .primary:nth-child(2){ padding-left:15% } view-group .profile_item .secondary:nth-child(1){ padding-left:25% } view-group .profile_item .secondary:nth-child(2){ padding-left:15% } view-group .list_container{ overflow: scroll; height:500px; } view-group .img_sel{ opacity: 0.4; } view-group .wrapper{ width:90%; margin:0px auto; } view-group .user_list{ overflow: hidden; list-style-type: none; margin:0px; padding:0px; color:#888; } view-group .user_list >li{ width:100px; float:left; margin:5px 0px; text-align: center; line-height: 30px; position: relative; } view-group .user_list >li img{ display: inline-block; width:64px; height:64px; } view-group .profile{ padding-top:30px; margin:0px auto; width:80% } view-group .profile_item{ margin: 0px auto; text-align: center; margin-bottom: 30px; overflow: hidden; } view-group .profile_item div.secondary label{ font-size: 16px; } view-group .profile_item >div:first-child{ text-align: left; } view-group .profile_item >div:nth-child(2){ text-align: left; } view-group .profile_item label{ font-weight:400; font-size: 24px; } view-group .select{ position: absolute; top:0px; left:17px; background:#42AC3E; width:64px; height:64px; opacity: 0.8; } view-group .select div{ font-size: 40px; color:white; margin:8px; } view-group .title_wrap{ height:50px; margin:8px 10px; } view-group .btn_disable{ background: #B1B1B1; } view-group .btn_enabled{ background: #e35a51; }', function(opts) {
+    var self = this;
+    var loadAllGroupMediaUsers = domain.action('loadAllGroupMediaUsers');
+    var editGroup = domain.action('editGroup');
+    var delGroup = domain.action('delGroup');
+    var delGroupMember = domain.action('delGroupMember');
+    var navNameToIndex = {
+        '基本信息': 0,
+        '成员': 1
+    };
+    var status = {
+        VIEW : 'view',
+        EDIT  : 'edit'
+    };
+    self.page = __page;
+    self.app = __app;
+    self.viewModel={};
+    self.status = {};
+    self.init = function(){
+        self.currentStatus = status.VIEW;
+        self.members = {};
+        self.nav = 0;
+        self.viewModel.mode = 'view';
+        self.status = {};
+        self.status['contact'] = 'contact';
+    };
+    self.init();
+    function onLoadAllGroupMediaUsers(data){
+        self.parent.panel.status = 'add_m';
+        self.parent.mediaUsers = data.users;
+        self.parent.tags['add-group-member'].init();
+        self.parent.update();
+    }
+    function onDelGroupMember(data){
+        if(!data.success){
+            alert('删除失败')
+        }
+        data.deprecateMembers.forEach(function(member){
+            var members = self.parent.groupMembers.map(function(pMember){
+                return pMember._id
+            });
+            var index = members.indexOf(member._id);
+            if(index >= 0){
+                return self.parent.groupMembers.splice(index, 1);
+            }
+        });
+        self.currentStatus = status.VIEW;
+        self.members = {};
+        self.parent.update();
+    }
+    function onDelGroup(data){
+        self.parent.groups.forEach(function(group, index){
+            if(group._id === self.parent.group._id){
+                self.parent.groups.splice(index, 1);
+            }
+        });
+        self.parent.panel.start();
+        self.parent.update();
+    }
+    function onEditGroup(data){
+        if(data.success){
+            self.parent.group.name = data.group.name;
+            self.parent.groups.forEach(function(group){
+                if(group._id === data.group._id){
+                    group.name = data.group.name;
+                }
+            })
+            self.parent.panel.view();
+            self.parent.update();
+        }
+    }
+    this.on('mount', function(){
+        delGroup.onDone(onDelGroup);
+        delGroupMember.onDone(onDelGroupMember);
+        editGroup.onDone(onEditGroup);
+        loadAllGroupMediaUsers.onDone(onLoadAllGroupMediaUsers);
+    });
+    this.on('unmount', function(){
+        delGroup.offDone(onDelGroup);
+        delGroupMember.offDone(onDelGroupMember);
+        editGroup.offDone(onEditGroup);
+        loadAllGroupMediaUsers.offDone(onLoadAllGroupMediaUsers);
+    });
+    this.selectContact = function(e) {
+        if(self.status['contact']){
+            delete self.status['contact']
+            return;
+        }
+        self.status['contact'] = 'contact';
+    }.bind(this);
+    this.selectGroup = function(e) {
+        if(self.status['group']){
+            delete self.status['group']
+            return;
+        }
+        self.status['group'] = 'group';
+    }.bind(this);
+    this.clickNav = function(e) {
+        self.nav = navNameToIndex[e.target.innerText];
+    }.bind(this);
+    this.addMember = function(e) {
+        var medias = self.parent.group.medias;
+        var groupId = self.parent.group._id;
+        loadAllGroupMediaUsers.execute({medias: medias, groupId: groupId});
+    }.bind(this);
+    this.delGroup = function(e) {
+        delGroup.execute({groupId: self.parent.group._id});
+    }.bind(this);
+    this.editMember = function(e) {
+
+        self.currentStatus = status.EDIT;
+    }.bind(this);
+    this.delMember = function(e) {
+        if(!Object.keys(self.members).length){
+            return;
+        }
+        [].forEach.call(document.querySelectorAll('ul.user_list >li'), function(i){
+            i.removeChild(i.childNodes[i.childNodes.length-1])
+        });
+        delGroupMember.execute({groupId: self.parent.group._id, mids: JSON.stringify(Object.keys(self.members))});
+    }.bind(this);
+    this.submitGroupName = function(e) {
+        var groupName = self.groupName.value.trim();
+        if(groupName === ''){
+            alert('请输入名称')
+            return;
+        }
+        editGroup.execute({
+            id: self.parent.group._id,
+            name: groupName
+        });
+    }.bind(this);
+    this.cancelDelMember = function(e) {
+        self.members = {};
+        [].forEach.call(document.querySelectorAll('ul.user_list >li >div.select'), function(i){
+            i.parentNode.removeChild(i);
+        });
+        self.currentStatus = status.VIEW;
+    }.bind(this);
+    this.checkGroupName = function(e) {
+        var groupName = self.groupName.value;
+        if(groupName.trim() === ''){
+            e.target.parentNode.classList.add('has-error');
+            e.target.focus();
+        }
+        else{
+            e.target.parentNode.classList.remove('has-error');
+        }
+    }.bind(this);
+    this.editGroupName = function(e) {
+        self.viewModel.mode = 'edit';
+        self.groupName.focus();
+    }.bind(this);
+    this.selectMember = function(e) {
+        if(self.currentStatus != status.EDIT){
+            return;
+        }
+        var target = e.currentTarget;
+        var remark = target.getAttribute('remark');
+        var mid = target.getAttribute('mid');
+        toggle(target);
+        self.update();
+        function toggle(target){
+            if(self.members[mid]){
+                cancel(target);
+                delete self.members[mid];
+            }else{
+                self.members[mid] = remark;
+                select(target);
+            }
+        }
+        function select(el){
+            var maskEl = document.createElement('div');
+            maskEl.classList.add('select');
+            var iconEl = document.createElement('div');
+            iconEl.classList.add('glyphicon');
+            iconEl.classList.add('glyphicon-ok');
+            maskEl.appendChild(iconEl);
+            el.appendChild(maskEl);
+        }
+        function cancel(el){
+            el.removeChild(el.childNodes[el.childNodes.length-1])
+        }
+    }.bind(this);
+
+});}

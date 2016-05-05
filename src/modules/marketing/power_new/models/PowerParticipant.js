@@ -6,10 +6,11 @@ var Model = function(DomainBuilder) {
             .withCreatedOn()
             .withProperties({
                     activity: {type: String, ref: 'PowerActivity'}
-                    , user: {type: String, ref: 'PlatformUser'}
+                    , user: {type: String}
                     , phone: {type: String}
                     , total_power: {type: Number}
                     , help_friends: [{type: String}] //openid array
+                    , poster: {type: String, ref: 'PowerPoster'} //participant poster
             })
             .build();
         return schema.model(true);

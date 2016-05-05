@@ -4,6 +4,7 @@ var qrRegistry = new QrTypeRegistry();
 var context = require('../../../context/context');
 var wsConns = require('../../../app/wsConns');
 var tenantService = context.services.tenantService;
+var platformUserService = context.services.platformUserService;
 var bindBotResults = tenantService.bindBotResults;
 var securityService = context.services.securityService;
 var authResults = securityService.authResults;
@@ -12,6 +13,10 @@ var defaultType =     qrRegistry.getQrType('default');
 var tenantAdminType = qrRegistry.newType('ta', {temp: true});
 var tenantBotType =   qrRegistry.newType('tb', {temp: true});
 var loginType =       qrRegistry.newType('lg', {temp: true});
+var activityType =    qrRegistry.newType('ac', {temp: true});
+var activityPosterType =    qrRegistry.newType('acp', {temp: true});
+var participantPosterType =    qrRegistry.newType('pap', {temp: true});
+
 var recontentTenantType = qrRegistry.newType('rec-ta', {temp: true}); //创建文章采集租户
 
 recontentTenantType.onAccess(function(qr, openid){
@@ -152,7 +157,60 @@ defaultType.onAccess(function(qr, openid){
     });
 });
 
+activityType.onAccess(function(qr, openid){
+    var logger = context.logger;
+    var powerActivityService = context.services.powerActivityService;
+    co(function*(){
+        try{
+            yield platformUserService.ensurePlatformUserAsync(openid);
+            var res = yield powerActivityService.getActivityPoster(qr, openid);
+            wechatApi.sendText(openid, res.reply, function (err) {
+                if(err) logger.error(err);
+            });
+            if(res.success) {
+                wechatApi.sendImage(openid, res.mediaId, function (err) {
+                    if (err) logger.error(err);
+                });
+            }
+        }
+        catch(e){
+            logger.error(e);
+            logger.error('获取活动海报失败,活动二维码ID:' + qr._id);
+        }
+    });
+});
+activityType.onExpire(function(){});
 
+activityPosterType.onAccess(function(qr, openid){
+    var logger = context.logger;
+    co(function*(){
+        try{
+            yield platformUserService.ensurePlatformUserAsync(openid);
+            var powerActivityService = context.services.powerActivityService;
+            yield powerActivityService.scanActivityPoster(qr, openid);
+        }
+        catch(e){
+            logger.error(e);
+            logger.error('扫描活动海报参与活动失败,活动海报二维码ID:' + qr._id);
+        }
+    });
+});
+activityPosterType.onExpire(function(){});
 
+participantPosterType.onAccess(function(qr, openid){
+    var logger = context.logger;
+    co(function*(){
+        try{
+            yield platformUserService.ensurePlatformUserAsync(openid);
+            var powerParticipantService = context.services.powerParticipantService;
+            yield powerParticipantService.scanParticipantPoster(qr, openid);
+        }
+        catch(e){
+            logger.error(e);
+            logger.error('扫描参与者海报参失败,活动海报二维码ID:' + qr._id);
+        }
+    });
+});
+participantPosterType.onExpire(function(){});
 
 module.exports = qrRegistry;

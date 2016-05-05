@@ -1,0 +1,182 @@
+<boss-wechatsite>
+    <div class="container" if="{!hidden}">
+        <div class="row" style="margin-top: 10px">
+            <div class="row">
+                <div class="col-md-2 col-md-offset-2 col-lg-offset-2">
+                    <a href="#wechatsite">返回公众号列表</a>
+                </div>
+                <div class="col-md-2 col-md-offset-1 col-lg-2 col-lg-offset-1" style="text-align: center"><h3>{wechatSite.name}</h3></div>
+            </div>
+            <div class="form-con col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
+                <div class="panel panel-default">
+                    <div class="panel-heading">基本信息</div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-3">名称</div>
+                            <div class="col-md-9">{wechatSite.name}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">类型</div>
+                            <div class="col-md-9">{ __app.enums.WechatSiteType.values[wechatSite.wechatSiteType] }</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">状态</div>
+                            <div class="col-md-9">{ __app.enums.LifeFlag.values[wechatSite.lFlg] }</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">创建时间</div>
+                            <div class="col-md-9">{_.date.format(new Date(wechatSite.crtOn), 'yyyy-MM-dd hh点mm分')}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">公众号邮箱</div>
+                            <div class="col-md-9">{wechatSite.email}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">原始ID</div>
+                            <div class="col-md-9">{wechatSite.originalId}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">AppID</div>
+                            <div class="col-md-9">{wechatSite.appId}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">AppSecret</div>
+                            <div class="col-md-9">{wechatSite.appSecret}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">托管配置信息</div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-3">URL(服务器地址)</div>
+                            <div class="col-md-8" id="url">{__app.settings.app.protocol + '://' + __app.settings.app.domain + '/wechat/' + wechatSite.originalId + '/message'}</div>
+                            <a class="col-md-1 clip_button" data-clipboard-target="url">复制</a>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">Token(令牌)</div>
+                            <div class="col-md-8" id="token">{ wechatSite.token }</div>
+                            <a class="col-md-1 clip_button" data-clipboard-target="token">复制</a>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">EncodingAESKey<br>(消息加解密密钥)</div>
+                            <div class="col-md-8" id="encodingAESKey">{ wechatSite.encodingAESKey }</div>
+                            <a class="col-md-1 clip_button" data-clipboard-target="encodingAESKey">复制</a>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">公众号邮箱</div>
+                            <div class="col-md-8" id="email">{wechatSite.email}</div>
+                            <a class="col-md-1 clip_button" data-clipboard-target="email">复制</a>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">授权回调页面域名</div>
+                            <div class="col-md-8" id="callbackDomain">{__app.settings.app.domain}</div>
+                            <a class="col-md-1 clip_button" data-clipboard-target="callbackDomain">复制</a>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">JS接口安全域名</div>
+                            <div class="col-md-8" id="jsDomain">{__app.settings.app.domain}</div>
+                            <a class="col-md-1 clip_button" data-clipboard-target="jsDomain">复制</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="action">
+                    <a href="#wechatsite/edit/_{wechatSite._id}" class="btn btn-default">修改</a>
+                    <input if="{wechatSite.lFlg != 'a'}" onclick="{unlockWechatSite}" class="btn btn-default" data-toggle="modal" data-target="#modal" type="button" value="激活">
+                    <input if="{wechatSite.lFlg != 'i'}" onclick="{lockWechatSite}" class="btn btn-default" data-toggle="modal" data-target="#modal" type="button" value="锁定">
+                    <input if="{wechatSite.lFlg != 'd'}" onclick="{delWechatSite}" class="btn btn-default" data-toggle="modal" data-target="#modal" type="button" value="删除">
+                </div>
+            </div>
+        </div>
+    </div>
+    <style scoped>
+        a {
+            cursor: pointer;
+        }
+        .row{
+            margin-top: 10px;
+        }
+        .panel-container >div{
+            height: 40px;
+            line-height: 40px;
+        }
+        .form-con {
+            margin-top: 15px;
+            padding: 0 0;
+        }
+        .action{
+            text-align: center;
+            padding-bottom: 50px;
+        }
+        .action input{
+            margin-left: 30px;
+        }
+    </style>
+    <script>
+        var self = nest.presentable(this);
+        var loadTenantWechatSite = domain.action('loadTenantWechatSite');
+        var updateTenantWechatSiteById = domain.action('updateTenantWechatSiteById');
+
+        var onLoadTenantWechatSite = function(data){
+            if(!data.error){
+                self.update({wechatSite: data.wechatSite});
+            }
+        }
+        self.on('open', function(opt){
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+            loadTenantWechatSite.execute(opt.id);
+            var client = new ZeroClipboard( $('.clip_button') );
+        });
+
+        self.on('mount', function(){
+            loadTenantWechatSite.onDone(onLoadTenantWechatSite)
+        })
+
+        self.unlockWechatSite = function(){
+            _.widget.confirm({
+                title: '操作确认?',
+                content: '你确认要“激活”该公众号吗？',
+                callback: function(){
+                    self.wechatSite.lFlg = __app.enums.LifeFlag.names.Active;
+                    updateTenantWechatSiteById.newInvocation({
+                        id: self.wechatSite._id,
+                        lFlg: self.wechatSite.lFlg
+                    }).onDone(function(res){
+                        self.update();
+                    }).execute();
+                }
+            });
+        };
+        self.lockWechatSite = function(){
+            _.widget.confirm({
+                title: '操作确认?',
+                content: '你确认要“锁定”该公众号吗？',
+                callback: function(){
+                    self.wechatSite.lFlg = __app.enums.LifeFlag.names.Inactive;
+                    updateTenantWechatSiteById.newInvocation({
+                        id: self.wechatSite._id,
+                        lFlg: self.wechatSite.lFlg
+                    }).onDone(function(res){
+                        self.update();
+                    }).execute();
+                }
+            });
+        };
+        self.delWechatSite = function(){
+            _.widget.confirm({
+                title: '操作确认?',
+                content: '你确认要“删除”该公众号吗？',
+                callback: function(){
+                    self.wechatSite.lFlg = __app.enums.LifeFlag.names.Deleted;
+                    updateTenantWechatSiteById.newInvocation({
+                        id: self.wechatSite._id,
+                        lFlg: self.wechatSite.lFlg
+                    }).onDone(function(res){
+                        self.update();
+                    }).execute();
+                }
+            });
+        };
+    </script>
+</boss-wechatsite>

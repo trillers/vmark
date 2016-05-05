@@ -1,0 +1,61 @@
+<boss-tenant-wechatsite>
+    <div class="container" if="{!hidden}">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2" style="text-align: center"><h3>公众号管理</h3></div>
+        </div>
+        <div class="row" style="margin-top: 10px">
+            <div class="action col-md-offset-2 col-lg-offset-2">
+                <button class="btn btn-default" onclick="{add}">添加</button>
+            </div>
+            <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
+                <div class="row panel-container">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>名称</th>
+                                <th>类型</th>
+                                <th>状态</th>
+                                <th>创建时间</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr each="{wechatSites}">
+                                <td><a href="#wechatsite/_{_id}">{name}</a></td>
+                                <td>{ __app.enums.WechatSiteType.values[wechatSiteType] }</td>
+                                <td>{ __app.enums.LifeFlag.values[lFlg] }</td>
+                                <td>{_.date.format(new Date(crtOn), 'yyyy-MM-dd hh点mm分')}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style scoped>
+        .panel-container >div{
+            height: 40px;
+            line-height: 40px;
+        }
+    </style>
+    <script>
+        var self = nest.presentable(this);
+        var loadAllWechatSite = domain.action('loadAllTenantWechatSite');
+
+        var onLoadAllWechatSite = function(data){
+            self.update({wechatSites: data});
+        }
+
+        self.on('open', function(){
+            loadAllWechatSite.execute(__page.tenantId);
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+        });
+        self.on('mount', function(){
+            loadAllWechatSite.onDone(onLoadAllWechatSite);
+        })
+
+        self.add = function(e){
+            riot.route('wechatsite/add');
+        }
+    </script>
+</boss-tenant-wechatsite>

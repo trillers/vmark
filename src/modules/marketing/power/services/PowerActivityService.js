@@ -1,5 +1,6 @@
 var util = require('util');
 var settings = require('@private/vmark-settings');
+var qrRegistry = require('../../../wechatsite/qr');
 
 var Service = function(context){
     this.context = context
@@ -9,8 +10,11 @@ Service.prototype.create = function*(jsonData){
     var logger = this.context.logger;
     var PowerActivity = this.context.models.PowerActivity;
     var kv = this.context.kvs.power;
-    var power = new PowerActivity(jsonData);
     try{
+        var qrType = qrRegistry.getQrType('ac');
+        var qr = yield qrType.createQrAsync();
+        jsonData.qrCode = qr._id;
+        var power = new PowerActivity(jsonData);
         var doc = yield power.save();
         yield kv.saveActivityAsync(doc.toObject());
         logger.info('success create power: ' + util.inspect(doc));
@@ -27,6 +31,12 @@ Service.prototype.updateById = function*(id, update){
     var PowerActivity = this.context.models.PowerActivity;
     var kv = this.context.kvs.power;
     try{
+        var oldDoc = yield PowerActivity.findById(id).lean().exec();
+        if(!oldDoc.withPic && update.withPic){
+            var qrType = qrRegistry.getQrType('ac');
+            var qr = yield qrType.createQrAsync();
+            update.qrCode = qr._id;
+        }
         var doc = yield PowerActivity.findByIdAndUpdate(id, update, {new: true}).lean().exec();
         yield kv.saveActivityAsync(doc);
         logger.info('success update power by id: ' + id);
@@ -62,6 +72,18 @@ Service.prototype.loadById = function*(id){
         logger.info('success load power by id: ' + id);
     }else{
         logger.info('failed load power by id: ' + id + ' err: no such activity');
+    }
+    return doc;
+}
+
+Service.prototype.loadByQrCodeId = function*(id){
+    var logger = this.context.logger;
+    var PowerActivity = this.context.models.PowerActivity;
+    var doc = yield PowerActivity.findOne({qrCode: id}, {}, {lean: true}).populate({path: 'poster'}).exec();
+    if(doc) {
+        logger.info('success load power by qrCode id: ' + id);
+    }else{
+        logger.info('failed load power by qrCode id: ' + id + ' err: no such activity');
     }
     return doc;
 }

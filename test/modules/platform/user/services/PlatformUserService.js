@@ -11,8 +11,20 @@ before(function(done){
 
 describe('PlatformUserService', function(){
     //var openid = 'okvXqs_VftHruzwFV9rx4Pbd_fno'; //小小星星妹
-    var openid = 'okvXqsw1VG76eVVJrKivWDgps_gA';
-    describe('createPlatformUser', function(){
+    //var openid = 'okvXqsw1VG76eVVJrKivWDgps_gA';
+    //var openid = 'oqSpUuDlnKxHxwZa4xylKuyxaXNM'; //包三哥 错题本测试号
+    var openid = 'okvXqs4vtB5JDwtb8Gd6Rj26W6mE'; //独自等待错题本 openid
+    describe('ensureTenantUser', function(){
+        it('Succeed to ensure a platform user created', function(done){
+            var service = context.services.platformUserService;
+            service.ensurePlatformUser(openid, function(err, user){
+                logger.debug(user);
+                assert.ok(user);
+                done();
+            });
+        });
+    });
+    describe.only('createPlatformUser', function(){
         it('Succeed to create a platform user', function(done){
             var service = context.services.platformUserService;
             service.createPlatformUser(openid, function(err, user){
@@ -34,7 +46,7 @@ describe('PlatformUserService', function(){
         });
     });
 
-    describe.only('deletePlatformUserByOpenid', function(){
+    describe('deletePlatformUserByOpenid', function(){
         it('Succeed to delete a platform user', function(done){
             var service = context.services.platformUserService;
             service.deletePlatformUserByOpenid(openid, function(err){

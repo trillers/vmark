@@ -1,0 +1,21 @@
+<alert>
+    <div class="alert-container" if="{opts.validators.length}">
+        <div style="width: 300px; margin: 0px auto;" class="alert {alert-warning: !opts.validator.success, alert-success: opts.validator.success} alert-dismissible fade in" role="alert">
+            <button onclick="{onCancel}" type="button" class="close" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <p each="{validator in opts.validators}"><strong>{validator.field && ('【' + validator.field + '】')}</strong> {validator.desc}</p>
+        </div>
+    </div>
+    <style scoped>
+        .alert-container{
+            top: 60px;
+            width: 100%;
+        }
+    </style>
+    <script>
+        var self = this;
+        this.onCancel = function(e){
+            self.opts.clear();
+            self.update();
+        };
+    </script>
+</alert>

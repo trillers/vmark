@@ -1,0 +1,55 @@
+<boss-tenant-sd-left>
+    <div class="my-container">
+        <accordion navs="{navs}"></accordion>
+    </div>
+
+    <style scoped>
+        .my-container{
+            background: white;
+        }
+
+    </style>
+    <script>
+        var self = this;
+        self.navs=[
+            {
+                path: 'sd',
+                presentation: '首页'
+            },
+            {
+                path: 'sd/courses',
+                presentation: '课程管理'
+            },
+            {
+                path: 'sd/catalogs',
+                presentation: '课程目录管理'
+            },
+            {
+                path: 'sd/bespeaks',
+                presentation: '预约管理'
+            },
+            {
+                path: 'sd/orders',
+                presentation: '订单管理'
+            },
+            {
+                path: 'sd/customers',
+                presentation: '客户管理'
+            },
+            {
+                path: 'sd/distributors',
+                presentation: '分销商管理'
+            },
+            {
+                path: 'sd/splitbill',
+                presentation: '分账管理'
+            }
+        ];
+        self.on('mount', function(){
+            var path  = this.opts.path;
+            self.navs.forEach(function(nav){
+                nav.path === path && (nav['useAsDefault'] = true)
+            })
+        });
+    </script>
+</boss-tenant-sd-left>

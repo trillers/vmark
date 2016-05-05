@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" id="viewport" content="width=device-width, initial-scale=1">
+    <title>商城页</title>
+    <script>
+        window.__app = {{ JSON.stringify(__app) }};
+        window.__app.tenant = {{JSON.stringify(tenant)}};
+        window.__page = {{ JSON.stringify(__page) }};
+        window.prdOrNot =( __app.settings.env.NODE_ENV === "production" );
+    </script>
+    <script src="/web/build/js/common.js"></script>
+    <link href="/web/css/common.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+    <catalog-app id="{{ id }}"></catalog-app>
+    <script src="/web/build/js/build.js"></script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<boss-tenant-sd-bespeaks>
+    <div if="{!hidden}" class="container" style="margin-top: 0px">
+        <div class="row">
+            <div class="col-md-3 col-lg-3">
+                <boss-tenant-sd-left path="sd/bespeaks"></boss-tenant-sd-left>
+            </div>
+            <div class="col-md-9 col-lg-9">
+                <div class="row" style="text-align: center">
+                    <h4>预约管理</h4>
+                </div>
+                <div class="row">
+                    <form class="form-inline">
+                        <div class="col-md-6 col-lg-6">
+                            <div class="form-group">
+                                <label for="bespeakStatus">状态</label>
+                                <select id="bespeakStatus" class="form-control" onchange="{onSelect}">
+                                    <option value="">全部状态</option>
+                                    <option selected value="{__app.enums.LifeFlag.names.Active}">待处理</option>
+                                    <option value="{__app.enums.LifeFlag.names.Deleted}">已处理</option>
+                                </select>
+                            </div>
+                            <input onclick="{onSearch}" class="btn btn-primary" type="button" value="查询"/>
+                        </div>
+                    </form>
+                </div>
+                <div class="row" style="margin-top: 10px">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>客户昵称</th>
+                            <th>预约产品</th>
+                            <th>日期</th>
+                            <th>电话</th>
+                            <th>状态</th>
+                            <th>成单</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr each="{bespeaks}">
+                            <td>
+                                <a href="#sd/bespeaks/_{_id}">
+                                    {user.nickname}
+                                </a>
+                            </td>
+                            <td>
+                                { product.name }
+                            </td>
+                            <td>
+                                {_.date.format(new Date(crtOn), 'yyyy-MM-dd hh点mm分')}
+                            </td>
+                            <td>
+                                { telephone }
+                            </td>
+                            <td>
+                                { lFlg === __app.enums.LifeFlag.names.Active ? '待处理': '已处理' }
+                            </td>
+                            <td>
+                                <div if="{lFlg === __app.enums.LifeFlag.names.Active}">
+                                    <input onclick="{parent.onOrderCreate}" data-toggle="modal" data-target="#orderModal" type="button" class="btn btn-default" value="成单"/>
+                                    <input onclick="{parent.onOrderGiveUp}" data-toggle="modal" data-target="#modal" type="button" class="btn btn-default" value="弃单"/>
+                                </div>
+                            </td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="orderModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">生成订单</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">媒体价</label>
+                                <div class="col-sm-10">
+                                    <span>{currBespeak.product.listPrice}</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="finalPrice" class="col-sm-2 control-label">成交价</label>
+                                <div class="col-sm-10">
+                                    <input class="form-control" oninput="{onInput}" id="finalPrice" type="number" name="finalPrice"/>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button disabled="{finalPrice.value.trim() === '' || parseInt(finalPrice.value.trim(), 10)<0 || parseInt(finalPrice.value.trim(), 10) > currBespeak.product.listPrice}" onclick="{onSubmitOrder}" data-dismiss="modal" type="button" class="btn btn-primary">确认</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div>
+    </div>
+    <style></style>
+    <script>
+        "use strict";
+        var self = nest.presentable(this);
+        var findBespeaksAction = domain.action('findBespeaks');
+        var createOrderAction = domain.action('createOrder');
+        var updateBespeakByIdAction = domain.action('updateBespeakById');
+
+        self.bespeaks = [];
+        self.currBespeak = {};
+        self.filter = {
+            tenant: __page.tenantId,
+            lFlg: 'a'
+        };
+        self.on('open', function(){
+            findBespeaksAction.newInvocation({
+                filter: self.filter
+            }).onDone(function(res){
+                if(res.error){
+                    return alert("failed to search bespeaks");
+                }
+                self.bespeaks= res.bespeaks;
+                self.trigger('ready', false);
+                self.trigger('view-route-to');
+            }).execute();
+        });
+        self.onOrderCreate = function(e){
+            self.finalPrice.value = "";
+            self.currBespeak = e.item;
+        };
+        self.onOrderGiveUp = function(e){
+            self.currBespeak = e.item;
+            _.widget.confirm({
+                title: '操作确认',
+                content: '你确认要“销毁”该预约吗？',
+                callback: function(){
+                    self.currBespeak.lFlg = __app.enums.LifeFlag.names.Deleted;
+                    console.log(e.item);
+                    updateBespeakByIdAction.newInvocation({
+                        id: self.currBespeak._id,
+                        o: {
+                            media: self.currBespeak.media,
+                            lFlg: self.currBespeak.lFlg
+                        }
+                    }).onDone(function(res){
+                        if(res.error){
+                            alert('销毁预约失败');
+                            return;
+                        }
+                        self.currBespeak = null;
+                        self.bespeaks = self.bespeaks.filter(function(bespeak){
+                            return bespeak._id != res.bespeak._id;
+                        });
+                        self.update();
+                    }).execute();
+                }
+            });
+        };
+        self.onSearch = function(e){
+            findBespeaksAction.newInvocation({
+                filter: self.filter
+            }).onDone(function(res){
+                if(res.error){
+                    return alert("failed to search bespeaks");
+                }
+                self.update({bespeaks: res.bespeaks});
+            }).execute();
+        };
+
+        self.onInput = function noop(){};
+
+        self.onSubmitOrder = function(e){
+            createOrderAction.newInvocation({
+                bespeak: self.currBespeak,
+                finalPrice : self.finalPrice.value.trim()
+            }).onDone(function(res){
+                if(res.error){
+                    alert('成单失败');
+                    return
+                }
+                self.currBespeak = null;
+                self.bespeaks = self.bespeaks.filter(function(bespeak){
+                    return bespeak._id != res.order.bespeak;
+                });
+                self.update();
+            }).execute();
+        };
+        self.onSelect = function(e){
+            var liveStatus = self.bespeakStatus.value;
+            console.log(liveStatus);
+            if(!liveStatus){
+                if(self.filter.hasOwnProperty('lFlg')){
+                    delete self.filter['lFlg'];
+                }
+                return;
+            }
+            self.filter.lFlg = liveStatus;
+        }
+    </script>
+</boss-tenant-sd-bespeaks>

@@ -22,6 +22,9 @@ var Model = function(DomainBuilder){
             ,views: {type: Number, default: 0}    //浏览量, 用户浏览一次活动页或者参与者详情页时+1
             ,rule: {type: String}
             ,desc: {type: String}
+            ,withPic: {type: Boolean} //是否启动图片助力功能
+            ,qrCode: {type: String, ref: 'QrCode'} //scan get activity post
+            ,poster: {type: String, ref: 'PowerPoster'} //activity poster
             ,type: {type: String, enum: PowerType.valueList(), default: PowerType.RedPacket.value(), required: true}
         })
         .build();

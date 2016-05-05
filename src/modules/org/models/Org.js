@@ -14,8 +14,8 @@ var Model = function(domainBuilder){
             /*
              *  integration type: internal: 内部租户 | external：外部租户
              */
-            , interType:    {type: String, enum: IntegrationType.valueList(), default: IntegrationType.Internal.value(), required: true}
-            , interId:      {type: String, required: false} //integration external id
+            //, interType:    {type: String, enum: IntegrationType.valueList(), default: IntegrationType.Internal.value(), required: true}
+            //, interId:      {type: String, required: false} //integration external id
             , administrative:      {type: Boolean, default: false}
             , desc:         {type: String}
         })

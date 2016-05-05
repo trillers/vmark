@@ -1,0 +1,15 @@
+require('./catalog-index.html')
+
+<catalog-app>
+    <catalog-index id="{opts.id}"></catalog-index>
+    <script>
+        this.mixin('router');
+        this.routeConfig([
+            {
+                path: '/',
+                name: 'catalog-index',
+                defaultRoute: true
+            }
+        ]);
+    </script>
+</catalog-app>

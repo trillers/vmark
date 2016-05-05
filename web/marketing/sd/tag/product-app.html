@@ -1,0 +1,235 @@
+require('./product.html');
+require('./personal.html');
+
+<product-app>
+    <product id="{opts.id}" media="{opts.media}" catalog="{opts.catalog}" product="{product}"></product>
+    <personal></personal>
+    <div class="footer">
+        <div onclick="{routeTo}" style="width:20%" class="btn btn-default">
+            <div style="margin-top: 6px; line-height: 0">
+                <img src="/web/images/list.png" style="width: 24px"/>
+                <div style="font-size: 14px; margin-top: 12px;">课程目录</div>
+            </div>
+        </div>
+        <a href="javascript:;" style="width:60%" class="btn btn-primary" onclick="{appointment}">立刻预约</a>
+        <a if="{menu.state === 0}" href="javascript:;" style="width:20%" class="btn btn-default" onclick="{personal}">个人中心</a>
+        <a if="{menu.state === 1}" href="#/product" style="width:20%" class="btn btn-default">课程详情</a>
+    </div>
+    <div id="form" if="{formShow}">
+        <div id="bg" onclick="{cancelAppointment}"></div>
+        <div id="info">
+            <div class="pop-window">
+                <div>
+                    <p>请留下您的联系方式</p>
+                    <p>我们的课程顾问会尽快和您联系</p>
+                    <p>为您提供专业的建议和服务</p>
+                </div>
+                <div>
+                    <div style="position:relative;width: 220px;margin:0px auto">
+                        <input style="text-indent: 15px" class="text-input" name="telephone" type="text" placeholder="请输入电话号码">
+                    </div>
+                </div>
+                <div>
+                    <a href="javascript:;" class="btn-rd btn-primary" onclick="{onSubmit}">确认提交</a>
+                </div>
+                <div onclick="{cancelAppointment}" style="text-align:center;line-height: 32px;width :32px;height: 32px;position: absolute; top: -20px; right: 0px">X</div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .footer{
+            background-color: white;
+            width: 100%;
+            height: 56px;
+            position: fixed;
+            bottom: 0px;
+        }
+        .btn{
+            box-sizing: border-box;
+            display: block;
+            float: left;
+            height:56px;
+            line-height: 56px;
+            border:none;
+            text-align: center;
+            font-size: 18px;
+            text-decoration: none;
+        }
+        .btn-default{
+            background-color: white;
+            color: #ff5000;
+        }
+        .btn-primary{
+            background-color: #ff5000;
+            color: white;
+        }
+        .text-input{
+            background: #f1f1f1;
+            border: none;
+            width: 220px;
+            height: 40px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        .pop-window{
+            position: relative;
+            margin: 0px auto;
+            height: 260px;
+            width: 280px;
+            background-color: white;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .pop-window >div{
+            margin-top: 20px
+        }
+        .pop-window >div >p {
+            margin: 10px auto;
+            font-size: 16px;
+        }
+        .text-input{
+            background: #f1f1f1;
+            border: none;
+            width: 220px;
+            height: 40px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        .btn-rd{
+            display: inline-block;
+            width: 220px;
+            height:40px;
+            line-height: 40px;
+            border:none;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 18px;
+            text-decoration: none;
+        }
+        #bg{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 99;
+        }
+        #info{
+            position: fixed;
+            top: 160px;
+            left: 0;
+            width: 100%;
+            height: 200px;
+            text-align: center;
+            z-index: 100;
+        }
+    </style>
+    <script>
+        this.mixin('router');
+        this.mixin('dispatcher');
+        var self = this;
+        var menuMap = {
+            0: '个人中心',
+            1: '课程详情'
+        };
+        self.menu = {
+            state: 0
+        };
+        self.product = {};
+        self.routeConfig([
+            {
+                path: '/product',
+                name: 'product',
+                defaultRoute: true
+            },
+            {
+                path: '/personal',
+                name: 'personal'
+            }
+        ]);
+
+        self.on('mount', function(opts){
+            self.on('loadProduct', function(data){
+                self.product =  data.course;
+                self.update();
+            });
+            self.dispatch(actions.productActions.loadProduct(self.opts.id));
+        });
+
+        self.on('menu', function(o){
+            self.menu.state = o;
+            self.update();
+        });
+
+        self.on('addBespeak', function(res) {
+            if(!res.error){
+                alert('预约成功');
+                self.update({formShow: false});
+                return;
+            }
+            console.error(res.error);
+        });
+
+        self.personal = function(e){
+            if(self.isAnonymous()){
+                return self.goToAuthorize();
+            }
+            riot.route('/personal');
+        };
+
+        self.appointment = function(e){
+            if(self.isAnonymous()){
+                return self.goToAuthorize();
+            }
+            self.update({formShow: true});
+        };
+
+        self.cancelAppointment = function(e) {
+            self.update({formShow: false});
+        };
+
+        self.isAnonymous = function() {
+            return !__page.user || !__page.user.status || __page.user.status === __app.enums.TenantUserStatus.names.BaseInfo;
+        };
+
+        self.routeTo = function(e){
+            var returnUrl = __app.settings.app.url + "/sd/" + __page.user.wechatId + "/catalog?id=";
+            if(self.opts.catalog){
+                returnUrl += self.opts.catalog;
+                window.location = returnUrl;
+                return;
+            }
+            self.one('loadCatalogByProductIdAndMediaId', function(res){
+                if(res.error || !res.catalogs || !res.catalogs.length){
+                    alert('读取目录失败');
+                    return;
+                }
+                returnUrl += res.catalogs[0]._id;
+                window.location = returnUrl;
+            });
+            self.dispatch(actions.loadCatalogByProductIdAndMediaId(self.product._id, self.opts.media));
+        };
+
+        self.goToAuthorize = function(e){
+            var getUserInfoUrl = '/auth/' + __page.user.wechatId + '/authorize?';
+            getUserInfoUrl += 'route=get_user_info&returnUrl='+ encodeURIComponent(location.href);
+            location.href = getUserInfoUrl;
+        };
+
+        self.onSubmit = function(e){
+            if(self.telephone.value.trim() === ""){
+                return;
+            }
+            self.dispatch(actions.addBespeak({
+                user: __page.user,
+                product: self.product._id,
+                media: self.opts.media,
+                telephone: self.telephone.value.trim()
+            }));
+        }
+
+    </script>
+</product-app>

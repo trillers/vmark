@@ -17,12 +17,57 @@ module.exports = function(router){
         var media_id = self.query.media_id;
         try {
             var file = yield FileService.loadAsync(media_id);
-            //console.log(file);
             self.type = file.mimeType;
             self.body = yield readFile(file.path);
         }catch(err){
-            //console.log(err);
             self.body = '404';
+        }
+    });
+
+    router.post('/uploads', function* (){
+        var self = this;
+        var metas = [];
+        var files = self.request.body.files.files;
+        files = Array.isArray(files) ? files : [files];
+
+        try{
+            for(var i=0, len=files.length; i<len; i++){
+                var file = files[i];
+                var fileType = file.type && file.type.split('/')[0];
+                var ext = '';
+                var pos = file.name.lastIndexOf('.');
+                if(pos != -1){
+                    ext = file.name.substring(pos + 1, file.name.length);
+                }
+                if(fileType === 'image' || fileType === 'audio' || ext === 'amr') {
+                    if(ext === 'amr'){
+                        file.type = 'audio/amr'
+                    }
+                    var fileJson = {
+                        name: file.name,
+                        ext: ext,
+                        size: file.size,
+                        path: file.path,
+                        mimeType: file.type
+                    };
+                    try {
+                        var result = yield FileService.createAsync(fileJson);
+                        metas.push({media_id: result._id, custom_id: result.custom_id})
+                    } catch (err) {
+                        logger.error('save file info err:' + err);
+                        this.body = {err: err, metas: metas};
+                        return;
+                    }
+                } else {
+                    logger.error('save file info err: file type invalid');
+                    this.body = {err: 'file_type_invalid', metas: metas};
+                    return;
+                }
+            }
+            this.body = {err: null, metas: metas}
+        }catch(e){
+            logger.error('save file info err: file type invalid');
+            this.body = {err: e, metas: metas};
         }
     });
 
@@ -31,6 +76,8 @@ module.exports = function(router){
      * */
     router.post('/upload', function* (){
         var self = this;
+        console.error(self.request.body.files);
+
         if(self.request.body.files) {
             var file = self.request.body.files.file;
             var mediaId = self.request.body.fields.mediaId;
@@ -80,6 +127,8 @@ module.exports = function(router){
                 logger.error('save file info err: file type invalid');
                 this.body = {err: 'file_type_invalid', media_id: null, wx_media_id: null, custom_id: null};
             }
+        }else{
+            this.body = {error: 'no file'}
         }
     });
 

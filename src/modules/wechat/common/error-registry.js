@@ -95,7 +95,7 @@ var errorList =  [
 
 var errorMap = {};
 errorList.forEach(function(v){
-    errorMap[String(v[0])] = v[1];
+    errorMap[''+v[0]] = v[1];
 });
 
 module.exports = {

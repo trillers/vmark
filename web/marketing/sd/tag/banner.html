@@ -1,0 +1,27 @@
+<banner>
+    <div id="imgPreviewer"></div>
+    <style scoped>
+        #imgPreviewer{
+            height: 200px !important;
+            overflow: hidden !important;
+        }
+    </style>
+    <script>
+        var self = this;
+
+        self.on('mount', function(){
+            _.nextTick(function(){
+                if(!self.opts.imgs || !self.opts.imgs.length){
+                    return;
+                }
+                var imgs = self.opts.imgs.map(function(img){
+                    return {
+                        url: __app.settings.api.url + '/file?media_id=' + img,
+                        meta: '600|400'
+                    }
+                });
+                _.imgPreviewer($('#imgPreviewer'), imgs, {currentIndex: 0, msg: '111'});
+            });
+        });
+    </script>
+</banner>

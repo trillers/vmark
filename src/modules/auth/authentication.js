@@ -24,7 +24,7 @@ Authentication.prototype.deleteAuthentication = function(ctx){
 };
 
 Authentication.prototype.authenticated = function(ctx){
-    var auth = ctx.session && ctx.session[AUTH_KEY] && ctx.session[AUTH_KEY].user.type !== 'c';
+    var auth = ctx.session && ctx.session[AUTH_KEY];
     //TODO need more check
     return auth;
 };

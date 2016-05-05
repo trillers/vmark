@@ -12,6 +12,7 @@ module.exports = function (context) {
     try{
         recontentTenantType.createQr(function(err, qr){
             var url = wechatApi.showQRCodeURL(qr.ticket);
+
             var qrCodePath = path.join(os.tmpdir(), 'recontent_' + openid + '.png');
             request(url).pipe(fs.createWriteStream(qrCodePath)).on('close', function () {
                 wechatApi.uploadMedia(qrCodePath, 'image', function (err, data) {

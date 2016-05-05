@@ -1,5 +1,6 @@
 var WechatMediaType = require('../../common/models/TypeRegistry').item('WechatMediaType');
 var WechatBotStatus = require('../../common/models/TypeRegistry').item('WechatBotStatus');
+var WechatSiteType = require('../../common/models/TypeRegistry').item('WechatSiteType');
 
 var Model = function(domainBuilder){
     var schema = domainBuilder
@@ -22,6 +23,10 @@ var Model = function(domainBuilder){
 
             , appId:   {type: String}   //as openid when it is wechat bot
             , appSecret:   {type: String}
+            , email: {type: String} //wechat site registry email
+            , token: {type: String}
+            , encodingAESKey: {type: String}
+            , wechatSiteType: {type: String, enum: WechatSiteType.valueList(), default: WechatSiteType.OfficialAccount.value(), required: true}
         })
         .build();
     return schema.model(true);

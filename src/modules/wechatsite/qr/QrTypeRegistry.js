@@ -101,7 +101,7 @@ QrTypeRegistry.prototype.getQr = function(sceneId, callback){
         }
     })
 };
-QrTypeRegistry.prototype.getQrAsync = Promise.promisify(QrTypeRegistry.prototype.createQr);
+QrTypeRegistry.prototype.getQrAsync = Promise.promisify(QrTypeRegistry.prototype.getQr);
 
 /**
  * handle the qr that own given sceneId, load it from db,
@@ -183,7 +183,6 @@ QrType.prototype.createQr = function(qrData, cb){
             var defaultExpire = 30*24*3600;
             qr.type = me.type;
             qr.temp = (qr && qr.temp)? true : me.temp;
-
             if(qr.temp){
                 qr.expire = qr && qr.expire || me.expire || defaultExpire;
             }
@@ -214,7 +213,7 @@ QrType.prototype.createQr = function(qrData, cb){
             qr.ticket = result.ticket;
             qr.scene_id = sceneId;
             qr.typeObj = me;
-            yield service.createAsync(qr);
+            qr = yield service.createAsync(qr);
             callback && callback(null, new Qr(qr));
         }
         catch(e){
@@ -248,6 +247,38 @@ QrType.prototype.getQr = function(sceneId, callback){
 QrType.prototype.getQrAsync = Promise.promisify(QrType.prototype.getQr);
 
 /**
+ * get qr from db
+ * @param id string
+ * @param callback function
+ * @returns {Qr|null}
+ */
+QrType.prototype.getQrById = function(id, callback){
+    var me = this;
+    co(function*(){
+        try{
+            var qrDoc = yield service.loadByIdAsync(id);
+            qrDoc.sceneId = qrDoc.scene_id;
+            var qr = new Qr(qrDoc);
+            qr.typeObj = me;
+            callback(null, qr);
+        }catch(e){
+            callback(e);
+        }
+    })
+};
+QrType.prototype.getQrByIdAsync = Promise.promisify(QrType.prototype.getQrById);
+
+/**
+ * get qr code url by ticket
+ * @param ticket
+ * @param callback
+ * */
+QrType.prototype.getQrCodeUrl = function(ticket){
+    var url = wechatApi.showQRCodeURL(ticket);
+    return url;
+}
+
+/**
  * Qr
  * @param qr
  * @constructor
@@ -258,7 +289,7 @@ function Qr(qr){
     this.temp = qr && qr.temp || false;
     this.type = qr && qr.type || null;
     this.ticket = qr && qr.ticket || null;
-    this.sceneId = qr && qr.sceneId || null;
+    this.sceneId = qr && qr.sceneId || qr.scene_id || null;
     this.expire = qr && qr.expire || null;
     this.data = qr && qr.data || null;
     this.views = 0;

@@ -2,6 +2,9 @@ var util = require('util');
 var settings = require('@private/vmark-settings');
 var _ = require('underscore');
 var myUtil = require('../../../../app/util');
+var PowerType = require('../../../common/models/TypeRegistry').item('PowerType');
+var wechatApiCache = require('../../../tenant/wechat/api-cache');
+var PosterType = require('../../../common/models/TypeRegistry').item('PosterType');
 
 var Service = function(context){
     this.context = context;
@@ -18,13 +21,13 @@ Service.prototype.create = function*(jsonData){
     return doc.toObject();
 }
 
-Service.prototype.updateById = function*(id, update, helpPower){
+Service.prototype.updateById = function*(id, update){
     var logger = this.context.logger;
     var PowerParticipant = this.context.models.PowerParticipant;
     var kv = this.context.kvs.power;
 
     var doc = yield PowerParticipant.findByIdAndUpdate(id, update, {new: true}).lean().exec();
-    yield kv.increaseParticipantScoreInRankingListAsync(doc.activity, doc.user, helpPower);
+    yield kv.saveParticipantAsync(doc);
     logger.info('success update participant by id: ' + id);
     return doc;
 }
@@ -52,14 +55,26 @@ Service.prototype.loadById = function*(id){
     //var doc = yield PowerParticipant.findById(id, {}, {lean: true}).populate({path: 'power'}).populate({path: 'user'}).exec();
     var kv = this.context.kvs.power;
     var userKv = this.context.kvs.platformUser;
+    var tenantUserService = this.context.services.tenantUserService;
+    var powerActivityService = this.context.services.powerActivityService;
     var participant = yield kv.loadParticipantByIdAsync(id);
     if(participant){
-        var activity = yield kv.loadActivityByIdAsync(participant.activity);
-        activity.bgImg = activity.bgImg.split(',');
-        var user = yield userKv.loadByIdAsync(participant.user);
+        var activity = yield powerActivityService.loadById(participant.activity);
+        var user = {};
+        if(activity.wechatId){
+            user = yield tenantUserService.loadByWechatIdAndIdAsync(activity.wechatId, participant.user);
+        }else{
+            user = yield userKv.loadByIdAsync(participant.user);
+        }
         var rank = yield kv.getParticipantRankAsync(participant.activity, participant.user);
         var helpArr = yield kv.getHelpFriendsSetAsync(id);
-        participant.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + activity._id;
+        if(activity.wechatId){
+            participant.participateLink = 'http://' + settings.app.domain + '/marketing/tenant/power/' + activity.wechatId + '/join?id=' + activity._id;
+            participant.homePage = 'http://' + settings.app.domain + '/marketing/tenant/power/' + activity.wechatId + '/participant?id=' + participant._id;
+        }else {
+            participant.participateLink = 'http://' + settings.app.domain + '/marketing/power/join?id=' + activity._id;
+            participant.homePage = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participant._id;
+        }
         participant.activity = activity;
         participant.user = user;
         participant.rank = rank;
@@ -159,7 +174,11 @@ Service.prototype.getStatus = function*(participant, user){
             if (participantId) {
                 status.join = 'none';
                 status.joined = '';
-                status.homeLink = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participantId;
+                if(participant.activity.wechatId) {
+                    status.homeLink = 'http://' + settings.app.domain + '/marketing/tenant/power/' + participant.activity.wechatId + '/participant?id=' + participantId;
+                }else{
+                    status.homeLink = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participantId;
+                }
             }
             var helpArr = yield kv.getHelpFriendsSetAsync(participant.id);
             if (_.indexOf(helpArr, user.openid) !== -1) {
@@ -188,8 +207,9 @@ Service.prototype.help = function*(participant, user){
             var helpPower = myUtil.random(min, max);
             var data = yield kv.incParticipantPowerByIdAsync(participant.id, helpPower);
             yield kv.increaseParticipantScoreInRankingListAsync(participant.activity._id, participant.user.id, helpPower);
-            var rank = yield kv.getParticipantRankAsync(participant.activity, participant.user);
-            result = {rank: rank, total_power: data};
+
+            var rank = yield kv.getParticipantRankAsync(participant.activity._id, participant.user._id);
+            result = {rank: rank, total_power: data, helpPower: helpPower};
         } else if(res === 0) {
             result = {helped: true};
         } else {
@@ -200,4 +220,136 @@ Service.prototype.help = function*(participant, user){
     }
     return result;
 }
+
+/**
+ * handle user scan participant poster
+ * @params qr
+ * @params wechatId
+ * @params openid
+ *
+ * */
+Service.prototype.scanParticipantPoster = function*(qr, wechatId, openid){
+    var logger = this.context.logger;
+    var participant = null;
+    var wechatApi = (yield wechatApiCache.get(wechatId)).api;
+
+    try {
+        var tenantUserService = this.context.services.tenantUserService;
+        var powerPosterService = this.context.services.powerPosterService;
+        var poster = yield powerPosterService.loadByWechatIdAndSceneId(wechatId, qr.sceneId);
+        var user = yield tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, openid);
+        participant = yield this.loadById(poster.participant);
+        if(participant.activity.type === PowerType.RedPacket.value() || participant.activity.type === PowerType.Points.value()){
+            yield this.scanRpAndPoParticipantPoster(user, participant, wechatId);
+        }else if(participant.activity.type === PowerType.courses.value()){
+            yield this.scanCoParticipantPoster(user, participant, wechatId);
+        }
+
+    }catch(e){
+        logger.error('scan paticipant poster err: ' + e + ', qr: ' + qr._id + ', user openid: ' + openid);
+        logger.error(e.stack);
+        return wechatApi.sendText(openid, '抱歉,助力好友失败', function (err) {
+            if(err) logger.error(err);
+        });
+    }
+}
+
+/**
+ * handle user scan redpacket and points power participant poster
+ * @params user
+ * @params participant
+ * @params wechatId
+ * */
+Service.prototype.scanRpAndPoParticipantPoster = function*(user, participant, wechatId){
+    var wechatApi = (yield wechatApiCache.get(wechatId)).api;
+
+    var res = yield this.help(participant, user);
+    var reply = '';
+    if(res.limited){
+        reply = '<' + participant.user.nickname + '> 助力人数已达上限';
+    }else if(res.error){
+        reply = '助力<' + participant.user.nickname + '> 失败';
+    }else if(res.helped){
+        reply = '您已经助力过 <' + participant.user.nickname + '>';
+    }else {
+        if (participant.activity.type === PowerType.RedPacket.value()) {
+            reply = '<' + user.nickname + '> 您已成功为 \n<' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 红包,\n <' + participant.user.nickname + '> 目前总红包数: ' + res.total_power + ', 排名: ' + res.rank;
+        }else if(participant.activity.type === PowerType.Points.value()){
+            reply = '<' + user.nickname + '> 您已成功为 \n<' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 积分,\n <' + participant.user.nickname + '> 目前总积分: ' + res.total_power + ', 排名: ' + res.rank;
+        }else{
+            reply = '活动类型异常';
+        }
+    }
+
+    yield wechatApi.sendTextAsync(user.openid, reply);
+    var articles = [
+        {
+            "title": participant.user.nickname + '  的活动主页，点击查看详情',
+            "description": participant.activity.shareDesc,
+            "url": participant.homePage,
+            "picurl": participant.activity.shareImg
+        }];
+    yield wechatApi.sendNewsAsync(user.openid, articles);
+}
+
+/**
+ * handle user scan courses power participant poster
+ * @params user
+ * @params participant
+ * @params wechatId
+ * */
+Service.prototype.scanCoParticipantPoster = function*(user, participant, wechatId){
+    var kv = this.context.kvs.power;
+    var wechatApi = (yield wechatApiCache.get(wechatId)).api;
+    var powerParticipantService = this.context.services.powerParticipantService;
+    var powerPosterService = this.context.services.powerPosterService;
+    var replyToUser = '', replyToParticipant = '';
+    var participantId = yield kv.getParticipantIdByUserIdAndActivityIdAsync(participant.activity._id, user.id);
+    if (participantId) {
+        replyToUser = '您已经支持过一个好友了,每人只能支持一人哟~~';
+        yield wechatApi.sendTextAsync(user.openid, replyToUser);
+        return;
+    }
+    yield kv.addHelpFriendToSetAsync(participant.id, user.openid);
+    var helpArr = yield kv.getHelpFriendsSetAsync(participant.id);
+
+    var participantJson = {
+        activity: participant.activity._id
+        , user: user._id
+        , help_friends: []
+    }
+    var data = yield powerParticipantService.create(participantJson);
+    var posterJson = {
+        user: user._id,
+        activity: participant.activity._id,
+        participant: data._id,
+        wechatId: wechatId,
+        posterBgImg: participant.activity.posterBgImg,
+        type: PosterType.participant.value()
+    }
+    var poster = yield powerPosterService.create(posterJson);
+    yield powerParticipantService.updateById(data._id, {poster: poster._id});
+
+    replyToUser = '您已成功参与活动: [' + participant.activity.name + ']\n'
+        + '活动说明: \n' + participant.activity.desc;
+    yield wechatApi.sendTextAsync(user.openid, replyToUser);
+    yield wechatApi.sendImageAsync(user.openid, poster.mediaId);
+    if (helpArr.length >= participant.activity.friend_help_count_limit) {
+        replyToParticipant = '恭喜你,你的好友 ' + user.nickname + ' 帮你获得了上课链接,点击下方卡片进入';
+        yield wechatApi.sendTextAsync(participant.user.openid, replyToParticipant);
+        var articles = [
+            {
+                "title": participant.activity.shareTitle ,
+                "description": participant.activity.shareDesc,
+                "url": participant.activity.courseUrl,
+                "picurl": participant.activity.shareImg
+            }];
+        yield wechatApi.sendNewsAsync(participant.user.openid, articles);
+        return;
+    }
+    var num = participant.activity.friend_help_count_limit - helpArr.length;
+    replyToParticipant = '你的好友 ' + user.nickname + ' 帮你扫码啦,还需' + num + '位好友帮忙扫码就可获得免费课程链接了,继续加油哦~~';
+    yield wechatApi.sendTextAsync(participant.user.openid, replyToParticipant);
+}
+
 module.exports = Service;

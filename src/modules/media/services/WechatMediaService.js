@@ -34,6 +34,46 @@ Service.prototype.create = function(mediaJson, callback){
 
 };
 
+Service.prototype.find = function(params, callback){
+    var WechatMedia = this.context.models.WechatMedia;
+
+    var query = WechatMedia.find();
+
+    if (params.options) {
+        query.setOptions(params.options);
+    }
+
+    if (params.sort) {
+        query.sort(params.sort);
+    }
+
+    if (params.page) {
+        var skip = (params.page.no - 1) * params.page.size;
+        var limit = params.page.size;
+        if (skip) query.skip(skip);
+        if (limit) query.limit(limit);
+    }
+
+    if (params.conditions) {
+        query.find(params.conditions);
+    }
+
+    if (params.populate) {
+        params.populate.forEach(function(item){
+            query.populate(item);
+        })
+    }
+    query.lean(true);
+    query.exec(function (err, docs) {
+        if (err) {
+            callback(err);
+            return;
+        }
+
+        if (callback) callback(null, docs);
+    });
+};
+
 Service.prototype.findBotsById = function(id, callback){
     var WechatMedia = this.context.models.WechatMedia;
     WechatMedia.findOne({lFlg: 'a', _id: id, type: 'wb'}, function (err, result) {
@@ -58,7 +98,7 @@ Service.prototype.findBotByOpenid = function(openid, callback){
     });
 };
 
-Service.prototype.updateById = function(id, json){
+Service.prototype.updateById = function(id, json, callback){
     var kv = this.context.kvs.wechatMedia;
     var WechatMedia = this.context.models.WechatMedia;
     WechatMedia.findByIdAndUpdate(id, json, {new: true}, function (err, result) {

@@ -17,7 +17,7 @@ var createLimitQRCode = function(sceneId, callback){
 };
 
 var createTempQRCode = function(sceneId, callback){
-    wechat.api.createTmpQRCode(sceneId, 604800, function(err, result){
+    wechat.api.createTmpQRCode(sceneId, 30*24*3600, function(err, result){
         if(err){
             if(callback) callback(err);
         }
@@ -46,7 +46,7 @@ Service.create = function(json, callback){
             if (callback) callback(new Error('Fail to create qrChannel'));
         }
     });
-}
+};
 
 Service.createQrCode = function(forever, type, sceneId, customId){
     var createQrCode = this.temp ?  createTempQRCodeAsync : createLimitQRCodeAsync;
@@ -76,6 +76,17 @@ Service.createQrCode = function(forever, type, sceneId, customId){
         })
 };
 
+Service.updateBySceneIdAndWechatId = function(sceneId, wechatId, json, callback){
+    QrCode.findOneAndUpdate({scene_id: sceneId, wechatId: wechatId}, _.omit(json, '_id', 'views', 'crtOn'), {lean: true, new: true}).exec(function(err, doc){
+        if(err){
+            if(callback) callback(err);
+        }
+        else{
+            if(callback) callback(null, doc);
+        }
+    })
+};
+
 Service.updateBySceneId = function(sceneId, json, callback){
     QrCode.findOneAndUpdate({scene_id: sceneId}, _.omit(json, '_id', 'views', 'crtOn'), {lean: true, new: true}).exec(function(err, doc){
         if(err){
@@ -101,6 +112,30 @@ Service.updateById = function(json, callback){
 
 Service.loadBySceneId = function (sceneId, callback) {
     QrCode.findOneAndUpdate({scene_id: sceneId}, {$inc: {'views': 1}}, function(err, doc){
+        if(err){
+            if(callback) callback(err);
+        }
+        else{
+            if(callback) callback(null, doc);
+        }
+        //TODO: update to increase views by one
+    });
+};
+
+Service.loadBySceneIdAndWechatId = function(sceneId, wechatId, callback){
+    QrCode.findOneAndUpdate({scene_id: sceneId, wechatId: wechatId}, {$inc: {'views': 1}}, function(err, doc){
+        if(err){
+            if(callback) callback(err);
+        }
+        else{
+            if(callback) callback(null, doc);
+        }
+        //TODO: update to increase views by one
+    });
+};
+
+Service.loadById = function (id, callback) {
+    QrCode.findByIdAndUpdate(id, {$inc: {'views': 1}}, function(err, doc){
         if(err){
             if(callback) callback(err);
         }

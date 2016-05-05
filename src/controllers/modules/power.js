@@ -27,7 +27,7 @@ module.exports = function(){
 
     router.get('/activity', needBaseInfoFilter, function *(){
         var id = this.query.id;
-        var user = this.session.auth && this.session.auth.user || {};
+        var user = this.session.auth && this.session.auth.user;
         var activity = yield powerActivityService.loadById(id);
         if(activity && activity.lFlg === 'a'){
             var status = yield powerActivityService.getStatus(activity, user);
@@ -51,28 +51,32 @@ module.exports = function(){
 
     router.get('/participant', needBaseInfoFilter, function *(){
         var id = this.query.id;
-        var user = this.session.auth && this.session.auth.user || {};
-        if(user.type === UserType.Customer.value()) {
+        var user = this.session.auth && this.session.auth.user;
+        if(user) {
             var participant = yield powerParticipantService.loadById(id);
             if(participant) {
-                if (participant.activity.lFlg === 'a') {
-                    var status = yield powerParticipantService.getStatus(participant, user);
-                    util.extend(participant, status);
-                    var participants = yield powerActivityService.getParticipantRankingList(participant.activity._id, 200);
-                    yield powerActivityService.increaseViews(participant.activity._id);
-                    if(participant.activity.type === PowerType.RedPacket.value()) {
-                        yield this.render('/marketing/power/participant-redpacket', {
-                            participant: participant,
-                            participants: participants
-                        });
-                    }else if(participant.activity.type === PowerType.Points.value()) {
-                        yield this.render('/marketing/power/participant-points', {
-                            participant: participant,
-                            participants: participants
-                        });
+                if(!participant.phone){
+                    this.redirect('/marketing/power/fullInfo?id=' + participant._id);
+                }else {
+                    if (participant.activity.lFlg === 'a') {
+                        var status = yield powerParticipantService.getStatus(participant, user);
+                        util.extend(participant, status);
+                        var participants = yield powerActivityService.getParticipantRankingList(participant.activity._id, 200);
+                        yield powerActivityService.increaseViews(participant.activity._id);
+                        if (participant.activity.type === PowerType.RedPacket.value()) {
+                            yield this.render('/marketing/power/participant-redpacket', {
+                                participant: participant,
+                                participants: participants
+                            });
+                        } else if (participant.activity.type === PowerType.Points.value()) {
+                            yield this.render('/marketing/power/participant-points', {
+                                participant: participant,
+                                participants: participants
+                            });
+                        }
+                    } else {
+                        yield this.render('/marketing/power/error', {error: '活动暂未开放'});
                     }
-                } else {
-                    yield this.render('/marketing/power/error', {error: '活动暂未开放'});
                 }
             }else{
                 yield this.render('/marketing/power/error', {error: '页面不存在'});
@@ -84,8 +88,8 @@ module.exports = function(){
 
     router.get('/join', needUserInfoFilter, function *(){
         var id = this.query.id;
-        var user = this.session.auth && this.session.auth.user || {};
-        if(user.type === UserType.Customer.value() && user.openid) {
+        var user = this.session.auth && this.session.auth.user;
+        if(user && user.openid) {
             var activity = yield powerActivityService.loadById(id);
             if (activity) {
                 yield this.render('/marketing/power/join', {
@@ -98,6 +102,16 @@ module.exports = function(){
             }
         }else{
                 yield this.render('/marketing/power/error', {error: '请用微信浏览器打开该页面'});
+        }
+    });
+
+    router.get('/fullInfo', needUserInfoFilter, function *(){
+        var id = this.query.id;
+        var user = this.session.auth && this.session.auth.user;
+        if(user && user.openid) {
+            yield this.render('/marketing/power/fullInfo', {participantId: id, headimgurl: user.headimgurl});
+        }else{
+            yield this.render('/marketing/power/error', {error: '请用微信浏览器打开该页面'});
         }
     });
 

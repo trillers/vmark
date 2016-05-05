@@ -19,11 +19,4 @@ module.exports = function(router){
         this.body = null;
     });
 
-    router.get('/func-list', function *(){
-        if(!this.session.auth){
-            this.redirect('/login');
-        }else{
-            yield this.render('func-list');
-        }
-    });
 };

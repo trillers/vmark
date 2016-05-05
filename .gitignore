@@ -124,7 +124,6 @@ node_modules
 .lock-wscript
 
 public/components
-web/build
 public/qrCode/*
 !public/qrCode/README
 public/uploads/*
@@ -132,6 +131,9 @@ public/uploads/*
 !public/uploads/README
 public/uploads/images/*
 !public/uploads/images/README
+!public/uploads/posters/
+public/uploads/posters/*
+!public/uploads/posters/README
 
 
 

@@ -5,8 +5,10 @@ var nodeExcel = require('excel-export');
 var typeRegistry = require('../../modules/common/models/TypeRegistry');
 var UserType = typeRegistry.item('UserType');
 var util = require('../../app/util');
+//var checkauth = require('../../middlewares/checkauth');
 
 module.exports = function(router){
+    //router.use(checkauth);
     router.post('/add', function *(){
         var json = {
             type:  this.request.body.type
@@ -23,7 +25,9 @@ module.exports = function(router){
             ,friend_help_max_power: this.request.body.friend_help_max_power
             ,rule: this.request.body.rule
             ,desc: this.request.body.desc
-        }
+            //,withPic: this.request.body.withPic
+            //,posterBgImg: this.request.body.posterBgImg
+    }
         var data = yield powerActivityService.create(json);
         this.body = data;
     });
@@ -43,6 +47,7 @@ module.exports = function(router){
         var id = this.request.body.id;
         var json = {
             type:  this.request.body.type
+            //,withPic: this.request.body.withPic
             ,name: this.request.body.name
             ,shareTitle: this.request.body.shareTitle
             ,shareDesc: this.request.body.shareDesc
@@ -56,6 +61,7 @@ module.exports = function(router){
             ,friend_help_max_power: this.request.body.friend_help_max_power
             ,rule: this.request.body.rule
             ,desc: this.request.body.desc
+            //,posterBgImg: this.request.body.posterBgImg
         }
         var data = yield powerActivityService.updateById(id, json);
         this.body = data;
@@ -87,7 +93,8 @@ module.exports = function(router){
                 activity: activityId
             },
             populate:[{
-                path: 'user'
+                path: 'user',
+                model: 'PlatformUser'
             },{
                 path: 'activity'
             }]
@@ -111,8 +118,8 @@ module.exports = function(router){
         var id = this.request.body.id;
         var phone = this.request.body.phone;
         var user = this.session.auth && this.session.auth.user;
-        if(user && user.type === UserType.Customer.value()) {
-            if (phone) {
+        if(user) {
+            //if (phone) {
                 var activity = yield powerActivityService.loadById(id);
                 if (activity) {
                     var status = yield powerActivityService.getStatus(activity, user);
@@ -138,9 +145,9 @@ module.exports = function(router){
                 } else {
                     this.body = {error: 'no such activity'};
                 }
-            } else {
-                this.body = {error: 'phone no is must'};
-            }
+            //} else {
+            //    this.body = {error: 'phone no is must'};
+            //}
         }else{
             this.body = {err: 'please open url in wechat browser'};
         }
@@ -148,8 +155,8 @@ module.exports = function(router){
 
     router.post('/help', function *() {
         var id = this.request.body.id;
-        var user = this.session.auth && this.session.auth.user || {};
-        if(user.openid && user.type === UserType.Customer.value()){
+        var user = this.session.auth && this.session.auth.user;
+        if(user && user.openid){
             var participant = yield powerParticipantService.loadById(id);
             var res = yield powerParticipantService.help(participant, user);
             this.body = res;
@@ -158,5 +165,20 @@ module.exports = function(router){
         }
     });
 
+    router.post('/fullInfo', function *() {
+        var id = this.request.body.id;
+        var phone = this.request.body.phone;
+        var user = this.session.auth && this.session.auth.user;
+        if(user && user.openid){
+            var res = yield powerParticipantService.updateById(id, {phone: phone});
+            if(res.phone === phone){
+                this.body = {error: null, msg: 'success'};
+            }else{
+                this.body = {error: 'unknown error', msg: 'failed'};
+            }
+        }else {
+            this.body = {error: 'please open in wechat browser'};
+        }
+    });
 }
 

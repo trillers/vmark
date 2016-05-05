@@ -10,7 +10,9 @@ var schema = DomainBuilder
         scene_id:{type: String},
         data:{type: String},
         expire:{type: Number},
-        views:{type: Number, default: 0}
+        wechatId: {type: String},
+        views:{type: Number, default: 0},
+
     }).build();
 
     //schema.static('create', function (qrChannel, callback) {

@@ -1,7 +1,7 @@
 var crypto = require('crypto');
 var settings = require('@private/vmark-settings');
 var salt = settings.security.salt;
-var CookieField = require('./common/CookieField');
+var CookieField = require('./../../framework/web/CookieField');
 var logger = require('../../app/logging').logger;
 
 var agentToken = new CookieField({

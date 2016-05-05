@@ -1,0 +1,114 @@
+require('./raw.html');
+require('./banner.html');
+
+<product>
+    <div class="container" if="{!hidden}">
+        <banner each="{[opts.product]}" imgs="{parent.opts.product.banners}"></banner>
+        <div class="header">
+            <div class="title"><span>{opts.product.name}</span></div>
+            <div class="slogan"><span>{opts.product.slogan}</span></div>
+            <div>
+                <span class="main-color">会员价</span>
+                <span><span style="margin-left: 10px" class="primary-color">¥ </span> <span class="primary-color h2">{_.getMemberPrice(opts.product.listPrice, opts.product.memberDiscountsType, opts.product.memberDiscountsValue)}</span></span>
+                <span class="secondary-color" style="margin-left: 10px;text-decoration:line-through">{opts.product.listPrice}</span>
+            </div>
+        </div>
+        <div class="body">
+            <div>
+                <div>
+                    <b></b>
+                    <span>课程详情</span>
+                </div>
+                <div style="margin-top: 10px; margin-bottom: 120px">
+                    <raw content="{opts.product.details}"/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style scoped>
+        .header >div{
+            margin-bottom: 8px;
+        }
+        .header .title >span{
+            font-size: 24px;
+        }
+        .header .slogan >span{
+            font-size: 16px;
+            color: #ababab;
+        }
+        .body{
+            padding: 10px
+        }
+        .btn{
+            box-sizing: border-box;
+            display: block;
+            float: left;
+            height:56px;
+            line-height: 56px;
+            border:none;
+            text-align: center;
+            font-size: 18px;
+            text-decoration: none;
+        }
+        .btn-default{
+            background-color: white;
+            color: #ff5000;
+        }
+        .btn-primary{
+            background-color: #ff5000;
+            color: white;
+        }
+        .container{
+            position: relative;
+        }
+        .container .header{
+            padding: 10px;
+            height: 100px;
+            background-color: white;
+            margin-bottom: 10px;
+        }
+        .container .body{
+            height: 120px;
+            background-color: white;
+            margin-bottom: 10px;
+        }
+        .body{
+            min-height: 200px
+        }
+        .body b{
+            display: inline-block; width: 3px; height: 12px;background-color: #ff5000
+        }
+        .imgPreviewer ul li{
+            float:left;
+        }
+        .picPrevIndexSpan {
+            display: inline-block;
+            border-radius: 50em;
+            width: 5px;
+            height: 5px;
+            background-color: #838383;
+            margin-right: 12px;
+        }
+        .picPrevIndexSpan:last-child {
+            margin-right: 0px  !important;
+        }
+        .picIndexSpanSelected {
+            background-color: white !important;
+        }
+    </style>
+    <script>
+        'use strict';
+        this.mixin('dispatcher');
+        this.mixin('viewify');
+
+        var self = this;
+
+        self.on('open', function(ctx){
+            self.parent.trigger('menu', 0);
+            self.trigger('ready');
+        });
+
+
+    </script>
+</product>

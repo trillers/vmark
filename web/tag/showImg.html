@@ -1,0 +1,26 @@
+<showimg>
+    <div class="modal fade" id="showImg">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">{title || '图片'}</h4>
+                </div>
+                <div if="{!errorMsg}" class="modal-body" style="text-align: center">
+                    <img src="{imgUrl}" alt="" id="img" style="height: {height}; width: {width}">
+                </div>
+                <div if="{errorMsg}" class="modal-body" style="text-align: center">
+                    <span>{errorMsg}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var self = this;
+        app.on('showImg', function(data){
+            console.log(data);
+            self.update({title: data.title, imgUrl: data.imgUrl, width: data.width, height: data.imgUrl, errorMsg: data.errorMsg});
+        });
+
+    </script>
+</showimg>

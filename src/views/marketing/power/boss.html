@@ -15,6 +15,10 @@
     #shareImg{float: left; margin-left: 10px;}
     .shareImgCon i{color: #EC3131;position: absolute;left: 58px;top: 2px;cursor: pointer;}
     .shareImgCon{margin-left: 10px; display: -webkit-inline-box;position: relative; display: none; border: solid 1px #E8E7E7;}
+    .posterBgImgCon img {width: 75px; height: 75px;}
+    #posterBgImg{float: left; margin-left: 10px;}
+    .posterBgImgCon i{color: #EC3131;position: absolute;left: 58px;top: 2px;cursor: pointer;}
+    .posterBgImgCon{margin-left: 10px; display: -webkit-inline-box;position: relative; display: none; border: solid 1px #E8E7E7;}
     .activity-name{
         color: #23527c;
         cursor: pointer;
@@ -31,6 +35,8 @@
     var bgImgCount = 0;
     var bgImg = [];
     var shareImg = '';
+    var posterBgImg = '';
+
     $(function () {
         $('#desc').summernote({
             height: 200,
@@ -55,6 +61,14 @@
             })
         });
 
+        $("#with_pic").click(function(){
+            if($(this).is(':checked')){
+                $('#poster').show();
+            }else{
+                $('#poster').hide();
+            }
+        })
+
         $('#add').click(function () {
             $('#powerList').hide();
             $('#addForm').show();
@@ -64,6 +78,11 @@
                 $('#activityName').val('');
                 $('#shareTitle').val('');
                 $("input[name='activity_type']")[0].checked = true;
+                $("#with_pic").removeAttr('checked');
+                $('#poster').hide();
+                posterBgImg = '';
+                $('#posterBgImg1 img').attr('src', '').parent().css('display', 'none');
+                $('#posterBgImg').show();
                 bgImgCount = 0;
                 bgImg = [];
                 shareImg = '';
@@ -99,6 +118,11 @@
             --bgImgCount;
         });
 
+        $('.posterBgImgCon i').click(function(){
+            $(this).parent().hide();
+            $('#posterBgImg').show();
+        });
+
         $('.shareImgCon i').click(function(){
             $(this).parent().hide();
             $('#shareImg').show();
@@ -107,9 +131,11 @@
         $('#submit').click(function () {
             var json = {
                 type: $(':radio[name="activity_type"]:checked').val()
+                , withPic: false
                 , name: $('#activityName').val()
                 , bgImg: bgImg
                 , shareImg: shareImg
+                , posterBgImg: posterBgImg
                 , shareTitle: $('#shareTitle').val()
                 , shareDesc: $('#shareDesc').val()
                 , base_power: $('#base_power').val()
@@ -121,6 +147,9 @@
                 , rule: $('#rule').summernote('code')
                 , desc: $('#desc').summernote('code')
             }
+//            if($("#with_pic").is(':checked')){
+//                json.withPic = true;
+//            }
             if($('#add-or-update').val() === 'add'){
                 add(json);
             }else{
@@ -168,6 +197,20 @@
                 }else if(data.type === 'po'){
                     $("input[name='activity_type']")[1].checked = true;
                 }
+//                if(data.withPic === 'true'){
+//                    console.error($("#with_pic").attr('checked'));
+//                    $("#with_pic").prop('checked', true);
+//                    $("#poster").show();
+//                    $('#posterBgImg1 img').attr('src', data.posterBgImg || '').parent().css('display', '-webkit-inline-box');
+//                    posterBgImg = data.posterBgImg || '';
+//                    $('#posterBgImg').hide();
+//                }else{
+//                    $("#with_pic").attr('checked', false);
+//                    $("#poster").hide();
+//                    $('#posterBgImg1 img').attr('src', '');
+//                    posterBgImg = '';
+//                    $('#posterBgImg').show();
+//                }
                 if(data.bgImg && data.bgImg.length > 0){
                     bgImgCount = data.bgImg.length;
                     bgImg = data.bgImg;
@@ -204,6 +247,31 @@
         var month = (dateTime.getMonth() + 1)>9 ? (dateTime.getMonth() + 1) : '0' + (dateTime.getMonth() + 1);
         var day = dateTime.getDate() > 9 ? dateTime.getDate() : '0' + dateTime.getDate();
         return year + '-' + month + '-' + day;
+    }
+
+    function uploadPosterBgImg() {
+        var files = $('#posterBgImg')[0].files;
+        var formData = new FormData();
+        formData.append('file', files[0]);
+        $.ajax({
+            url: __app.settings.api.url + '/file/upload',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (responseStr) {
+                if (responseStr.media_id) {
+                    $('#posterBgImg1 img').attr('src', __app.settings.api.url + '/file?media_id=' + responseStr.media_id).parent().css('display', '-webkit-inline-box');
+                    posterBgImg = window.__app.settings.api.url + '/file?media_id=' + responseStr.media_id;
+                    $('#posterBgImg').hide();
+                }
+            },
+            error: function (responseStr) {
+                console.error(responseStr);
+                //TODO
+            }
+        });
+        $('#posterBgImg').val();
     }
 
     function uploadShareImg() {
@@ -302,6 +370,10 @@
                             <label><input id="type_rp" name="activity_type" type="radio" value="rp" checked="checked"/>红包</label>
                             <label><input id="type_po" name="activity_type" type="radio" value="po" />积分</label>
                         </li>
+                        <!--<li><span>启动图片助力:  </span><input id="with_pic" type="checkbox"></li>-->
+                        <!--<li id="poster" style="clear: both; min-height: 26px; display: none"><span style="float: left">海报背景图片:  </span><input id="posterBgImg" type="file" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="uploadPosterBgImg()" style="width: 60px;"/>-->
+                            <!--<div id="posterBgImg1" class="posterBgImgCon"><i class="glyphicon glyphicon-remove"></i><img src="" alt=""/></div>-->
+                        <!--</li>-->
                         <li><span>活动名称:  </span><input id="activityName" type="text"/></li>
                         <li class="bgImg" style="min-height: 26px"><span style="float: left">背景图片(3张):  </span><input id="bgImg" type="file" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="uploadBgImg()" style="width: 60px;"/>
 

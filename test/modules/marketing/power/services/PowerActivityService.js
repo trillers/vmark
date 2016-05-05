@@ -1,5 +1,7 @@
 var co = require('co');
 var contextLoader = require('../../../../../src/context');
+var PowerType = require('../../../../../src/modules/common/models/TypeRegistry').item('PowerType');
+var co = require('co');
 var context = contextLoader.context;
 
 before(function(done){
@@ -9,6 +11,77 @@ before(function(done){
 });
 
 describe('PowerActivityService', function(){
+    var wechatSite = {};
+    var originalId = 'gh_74570a11f763';//独自等待测试号
+
+    before(function(done){
+        co(function*(){
+            var tenantWechatSiteService = context.services.tenantWechatSiteService;
+            wechatSite = yield tenantWechatSiteService
+                .loadTenantWechatSiteByOriginalIdAsync(originalId);
+            if(!wechatSite){
+                var wechatSiteData = {
+                    org: 'org1'
+                    , type: 'ws'
+                    , originalId: 'gh_74570a11f763'
+                    , name: '独自等待测试号'
+                    , appId: 'wxe6127a840e1c8c9f'
+                    , appSecret: 'd4624c36b6795d1d99dcf0547af5443d'
+                    , wechatSiteType: 'voa'
+                    , token: 'nFMXmXa0CDtWefLOF6LZ'
+                }
+                wechatSite = yield tenantWechatSiteService.createTenantWechatSiteAsync(wechatSiteData);
+            }
+            done();
+        }).catch(function(e){
+            console.error(e);
+        })
+    });
+
+    describe('create power activity', function(){
+        it('success create power activity', function(done){
+            var activity = {
+                org: 'org1',
+                wechatId: 'wechatId',
+                name: '测试活动',
+                startTime: '2016-04-23',
+                endTime: '2016-05-23',
+                type: PowerType.Points.value()
+            }
+            var service = context.services.powerActivityService;
+            co(function*(){
+                var doc = yield service.create(activity);
+                console.info(doc);
+                done();
+            }).catch(function(e){
+                console.error(e);
+            })
+        })
+    })
+
+    describe.only('create poster power activity', function(){
+        it('success create poster power activity', function(done){
+            var activity = {
+                org: 'org1',
+                wechatId: wechatSite.originalId,
+                name: '测试活动',
+                startTime: '2016-04-23',
+                endTime: '2016-05-23',
+                type: PowerType.Points.value(),
+                withPic: true,
+                posterBgImg: 'http://up.qqjia.com/z/19/tu22346_2.jpg'
+            }
+            var service = context.services.powerActivityService;
+            co(function*(){
+                var doc = yield service.create(activity);
+                console.info(doc);
+                done();
+            }).catch(function(e){
+                console.error(e);
+            })
+        })
+    })
+
     describe('putParticipantToMapString', function(){
         var id = 'A01';
 
@@ -125,4 +198,5 @@ describe('PowerActivityService', function(){
         });
 
     });
+
 });
