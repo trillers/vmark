@@ -18,8 +18,8 @@
                             <label><input id="type_po" name="activity_type" type="radio" value="po" checked="{activity.type === 'po'}" onclick="{selectType}"/>积分</label>
                             <label><input id="type_co" name="activity_type" type="radio" value="co" checked="{activity.type === 'co'}" onclick="{selectType}"/>课程助力</label>
                         </li>
-                        <li if="{activity.type !== 'co'}"><span>启动图片助力:  </span><input name="withPic" type="checkbox" checked="{activity.withPic === 'true'}" onclick="{toggleWithPic}"></li>
-                        <li id="poster" if="{activity.withPic === 'true' || activity.type === 'co'}" style="clear: both; min-height: 26px;"><span style="float: left">海报背景图片:  </span><input if="{!activity.posterBgImg}" id="posterBgImg" type="file" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadPosterBgImg}" style="width: 60px;"/>
+                        <li if="{activity.type !== 'co'}"><span>启动图片助力:  </span><input name="withPic" type="checkbox" checked="{activity.withPic}" onclick="{toggleWithPic}"></li>
+                        <li id="poster" if="{activity.withPic || activity.type === 'co'}" style="clear: both; min-height: 26px;"><span style="float: left">海报背景图片:  </span><input if="{!activity.posterBgImg}" id="posterBgImg" type="file" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="{uploadPosterBgImg}" style="width: 60px;"/>
                             <div if="{activity.posterBgImg}" class="posterBgImgCon"><i onclick="{deletePosterBgImg}" class="glyphicon glyphicon-remove"></i><img src="{activity.posterBgImg}" alt=""/></div>
                         </li>
                         <li><span>活动名称:  </span><input name="activityName" type="text" value="{activity.name}"/></li>
@@ -227,9 +227,9 @@
 
         self.toggleWithPic = function(e){
             if($(e.currentTarget).is(':checked')){
-                self.activity.withPic = 'true';
+                self.activity.withPic = true;
             }else{
-                self.activity.withPic = 'false';
+                self.activity.withPic = false;
             }
             return true;
         }

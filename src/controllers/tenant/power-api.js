@@ -19,12 +19,12 @@ module.exports = function(router){
                 , shareDesc: this.request.body.shareDesc
                 , shareImg: this.request.body.shareImg
                 , bgImg: this.request.body.bgImg
-                , base_power: this.request.body.base_power
+                , base_power: this.request.body.base_power || 0
                 , friend_help_count_limit: this.request.body.friend_help_count_limit
                 , startTime: new Date(this.request.body.startTime + ' 00:00:00')
                 , endTime: new Date(this.request.body.endTime + ' 23:59:59')
-                , friend_help_min_power: this.request.body.friend_help_min_power
-                , friend_help_max_power: this.request.body.friend_help_max_power
+                , friend_help_min_power: this.request.body.friend_help_min_power || 0
+                , friend_help_max_power: this.request.body.friend_help_max_power || 0
                 , rule: this.request.body.rule
                 , desc: this.request.body.desc
                 , withPic: this.request.body.withPic
@@ -63,12 +63,12 @@ module.exports = function(router){
                 ,shareDesc: this.request.body.shareDesc
                 ,shareImg: this.request.body.shareImg
                 ,bgImg: this.request.body.bgImg
-                ,base_power: this.request.body.base_power
-                ,friend_help_count_limit: this.request.body.friend_help_count_limit
+                ,base_power: this.request.body.base_power || 0
+                ,friend_help_count_limit: this.request.body.friend_help_count_limit || 0
                 ,startTime: new Date(this.request.body.startTime + ' 00:00:00')
                 ,endTime: new Date(this.request.body.endTime + ' 23:59:59')
-                ,friend_help_min_power: this.request.body.friend_help_min_power
-                ,friend_help_max_power: this.request.body.friend_help_max_power
+                ,friend_help_min_power: this.request.body.friend_help_min_power || 0
+                ,friend_help_max_power: this.request.body.friend_help_max_power || 0
                 ,rule: this.request.body.rule
                 ,desc: this.request.body.desc
                 ,posterBgImg: this.request.body.posterBgImg

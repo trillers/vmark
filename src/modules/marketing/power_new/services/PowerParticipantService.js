@@ -272,10 +272,12 @@ Service.prototype.scanRpAndPoParticipantPoster = function*(user, participant, we
     }else if(res.helped){
         reply = '您已经助力过 <' + participant.user.nickname + '>';
     }else {
-        if (participant.activity.type = PowerType.RedPacket.value()) {
+        if (participant.activity.type === PowerType.RedPacket.value()) {
             reply = '<' + user.nickname + '> 您已成功为 \n<' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 红包,\n <' + participant.user.nickname + '> 目前总红包数: ' + res.total_power + ', 排名: ' + res.rank;
-        }else if(participant.activity.type = PowerType.Points.value()){
+        }else if(participant.activity.type === PowerType.Points.value()){
             reply = '<' + user.nickname + '> 您已成功为 \n<' + participant.user.nickname + '> 助力 ' + res.helpPower + ' 积分,\n <' + participant.user.nickname + '> 目前总积分: ' + res.total_power + ', 排名: ' + res.rank;
+        }else{
+            reply = '活动类型异常';
         }
     }
 

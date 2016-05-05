@@ -228,9 +228,9 @@
 
         self.toggleWithPic = function(e){
             if($(e.currentTarget).is(':checked')){
-                self.activity.withPic = 'true';
+                self.activity.withPic = true;
             }else{
-                self.activity.withPic = 'false';
+                self.activity.withPic = false;
             }
             return true;
         }
