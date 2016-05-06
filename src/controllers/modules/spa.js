@@ -8,7 +8,7 @@ module.exports = function(router){
         if(!this.session.auth || this.session.auth.user.type === 'c'){
             this.redirect('/login');
         }else{
-            yield this.render('/boss');
+            this.redirect('/boss');
         }
     });
     router.get('/login', loginFilter, function *(){
