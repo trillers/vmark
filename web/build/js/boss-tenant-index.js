@@ -825,7 +825,7 @@ webpackJsonp([0,1],[
 	            org: __page.tenantId,
 	            type: 'rp',
 	            bgImg: [],
-	            withPic: false
+	            withPic: 'false'
 	        }
 	        self.on('open', function(ctx){
 	            self.trigger('ready', false);
@@ -1015,7 +1015,7 @@ webpackJsonp([0,1],[
 	                self.validators.push(msg);
 	                legal = false;
 	            }
-	            if((data.withPic && !data.posterBgImg) || (data.type === 'co' && !data.posterBgImg)){
+	            if((data.withPic === 'true' && !data.posterBgImg) || (data.type === 'co' && !data.posterBgImg)){
 	                self.validators.push({
 	                    success: false,
 	                    field: '提示',
@@ -1351,7 +1351,7 @@ webpackJsonp([0,1],[
 	                self.validators.push(msg);
 	                legal = false;
 	            }
-	            if((data.withPic && !data.posterBgImg) || (data.type === 'co' && !data.posterBgImg)){
+	            if((data.withPic === 'true' && !data.posterBgImg) || (data.type === 'co' && !data.posterBgImg)){
 	                self.validators.push({
 	                    success: false,
 	                    field: '提示',
@@ -1457,6 +1457,7 @@ webpackJsonp([0,1],[
 	                self.activity.courseUrl = self.courseUrl.value;
 	                self.activity.withPic = 'true';
 	            }
+	            debugger;
 	            var allowSubmit = self.verify(self.activity);
 
 	            if(allowSubmit){

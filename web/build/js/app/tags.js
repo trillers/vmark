@@ -502,7 +502,7 @@ riot.tag('boss-tenant-power-add', '<div if="{!hidden}" class="container" style="
             org: __page.tenantId,
             type: 'rp',
             bgImg: [],
-            withPic: false
+            withPic: 'false'
         }
         self.on('open', function(ctx){
             self.trigger('ready', false);
@@ -692,7 +692,7 @@ riot.tag('boss-tenant-power-add', '<div if="{!hidden}" class="container" style="
                 self.validators.push(msg);
                 legal = false;
             }
-            if((data.withPic && !data.posterBgImg) || (data.type === 'co' && !data.posterBgImg)){
+            if((data.withPic === 'true' && !data.posterBgImg) || (data.type === 'co' && !data.posterBgImg)){
                 self.validators.push({
                     success: false,
                     field: '提示',
@@ -1028,7 +1028,7 @@ riot.tag('boss-tenant-power-edit', '<div if="{!hidden}" class="container" style=
                 self.validators.push(msg);
                 legal = false;
             }
-            if((data.withPic && !data.posterBgImg) || (data.type === 'co' && !data.posterBgImg)){
+            if((data.withPic === 'true' && !data.posterBgImg) || (data.type === 'co' && !data.posterBgImg)){
                 self.validators.push({
                     success: false,
                     field: '提示',
@@ -1134,6 +1134,7 @@ riot.tag('boss-tenant-power-edit', '<div if="{!hidden}" class="container" style=
                 self.activity.courseUrl = self.courseUrl.value;
                 self.activity.withPic = 'true';
             }
+            debugger;
             var allowSubmit = self.verify(self.activity);
 
             if(allowSubmit){
