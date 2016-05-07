@@ -111,7 +111,7 @@ Service.updateById = function(json, callback){
 };
 
 Service.loadBySceneId = function (sceneId, callback) {
-    QrCode.findOneAndUpdate({scene_id: sceneId}, {$inc: {'views': 1}}, function(err, doc){
+    QrCode.findOneAndUpdate({scene_id: sceneId, wechatId: {$exists: false}}, {$inc: {'views': 1}}, function(err, doc){
         if(err){
             if(callback) callback(err);
         }

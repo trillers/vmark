@@ -33,7 +33,7 @@
     "log4js": "0.6.26",
     "mongoose": "4.2.6",
     "node-schedule": "^1.0.0",
-    "redis": "2.6.0",
+    "redis": "2.6.0-2",
     "request": "2.61.0",
     "sockjs": "0.3.15",
     "summernote": "0.7.3",
