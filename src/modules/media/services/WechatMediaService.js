@@ -6,7 +6,17 @@ var Service = function(context){
 
 Service.prototype.loadById = function(id, callback){
     var kv = this.context.kvs.wechatMedia;
-    kv.loadById(id, callback);
+    var WechatMedia = this.context.models.WechatMedia;
+    kv.loadById(id, function(err, doc){
+        if(err){
+            return callback(err);
+        }
+        else if(!doc){
+            return WechatMedia.findById(id, callback);
+        }else{
+            callback(null, doc);
+        }
+    });
 };
 
 Service.prototype.findById = function(id, callback){
