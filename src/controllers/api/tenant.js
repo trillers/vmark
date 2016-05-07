@@ -233,6 +233,8 @@ module.exports = function (router) {
     router.post('/sd/bespeak', function*(){
         try{
             let bespeak = this.request.body;
+            console.log("media***************");
+            console.log(bespeak.media);
             let wechatsite = yield context.services.tenantWechatSiteService.loadByIdAsync(bespeak.media);
             yield context.services.membershipService.ensureSignUpAsync(wechatsite.originalId, bespeak.user._id);
             yield context.services.bespeakService.createAsync({
