@@ -69,7 +69,7 @@ var drawImg = function*(ctx, url, path, offsetX, offsetY, width, height, type){
 
 var drawText = function*(ctx, text, offsetX, offsetY, maxWidth){
     ctx.save();
-    ctx.font = "30px 'Arial Unicode MS'";
+    ctx.font = "30px SimHei";
     ctx.fillStyle = 'white';
     ctx.textAlign = 'center';
     ctx.fillText(text, offsetX, offsetY, maxWidth);
