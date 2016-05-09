@@ -96,7 +96,7 @@ var drawSdParticipantPoster = function*(meta){
         var user = meta.user;
         var bgImg = meta.bgImg;
         var wechatId = meta.wechatId;
-        var canvas = new Canvas(600, 900);
+        var canvas = new Canvas(450, 800);
         var ctx = canvas.getContext('2d');
         var wechatApi = (yield wechatApiCache.get(wechatId)).api;
         var qrUrl = wechatApi.showQRCodeURL(qr.ticket);
@@ -115,7 +115,7 @@ var drawSdParticipantPoster = function*(meta){
 };
 
 var createActivityPoster = function*(wechatId, bgImg){
-    var canvas = new Canvas(600, 900);
+    var canvas = new Canvas(450, 800);
     var ctx = canvas.getContext('2d');
     var wechatApi = (yield wechatApiCache.get(wechatId)).api;
     var imgPaths = getImgPaths(PosterType.activity.value(), (new Date()).getTime());
@@ -127,7 +127,7 @@ var createActivityPoster = function*(wechatId, bgImg){
     return  {err: null, mediaId: mediaId, sceneId: qr.sceneId, path: imgPaths.posterPath}
 }
 var createParticipantPoster = function*(wechatId, bgImg, user){
-    var canvas = new Canvas(600, 900);
+    var canvas = new Canvas(450, 800);
     var ctx = canvas.getContext('2d');
     var wechatApi = (yield wechatApiCache.get(wechatId)).api;
     var imgPaths = getImgPaths(PosterType.participant.value(), user.openid);
