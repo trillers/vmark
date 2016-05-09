@@ -174,7 +174,7 @@
 //        });
     });
     function join(){
-        if(!{{activity.withPic}}){
+        if(!{{activity.withPic || false}}){
             window.location.href = "{{activity.participateLink}}";
         }else{
             $('.activity_poster').show();

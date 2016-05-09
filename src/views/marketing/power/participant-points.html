@@ -188,7 +188,7 @@
     });
 
     function join(){
-        if(!{{participant.activity.withPic}}){
+        if(!{{participant.activity.withPic || false}}){
             window.location.href = "{{participant.activity.participateLink}}";
         }else{
             $('.activity_poster').show();
