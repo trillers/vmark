@@ -151,7 +151,7 @@ Service.prototype.loadAll = function*(tenantId){
             filter.org = tenantId;
         }else{
             filter.org = {$exists: false};
-            filter.withPic = false;
+            filter.withPic = {$exists: false};
             filter.qrCode = {$exists: false};
         }
 
