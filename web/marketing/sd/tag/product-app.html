@@ -223,6 +223,7 @@ require('./personal.html');
             if(self.telephone.value.trim() === ""){
                 return;
             }
+            console.log(self.opts.media);
             self.dispatch(actions.addBespeak({
                 user: __page.user,
                 product: self.product._id,
