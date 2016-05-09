@@ -4,31 +4,31 @@ var logger = require('./logging').logger;
 var redis = require('redis');
 var DEFAULT_NAME = 'default';
 var clients = {};
-var options = [
-    "host",
-    "port",
-    "path",
-    "url",
-    "parser",
-    "string_numbers",
-    "return_buffers",
-    "detect_buffers",
-    "socket_keepalive",
-    "no_ready_check",
-    "enable_offline_queue",
-    "retry_max_delay",
-    "connect_timeout",
-    "max_attempts",
-    "retry_unfulfilled_commands",
-    "password",
-    "db",
-    "family",
-    "disable_resubscribing",
-    "rename_commands",
-    "tls",
-    "prefix",
-    "retry_strategy"
-];
+//var options = [
+//    "host",
+//    "port",
+//    "path",
+//    "url",
+//    "parser",
+//    "string_numbers",
+//    "return_buffers",
+//    "detect_buffers",
+//    "socket_keepalive",
+//    "no_ready_check",
+//    "enable_offline_queue",
+//    "retry_max_delay",
+//    "connect_timeout",
+//    "max_attempts",
+//    "retry_unfulfilled_commands",
+//    "password",
+//    "db",
+//    "family",
+//    "disable_resubscribing",
+//    "rename_commands",
+//    "tls",
+//    "prefix",
+//    "retry_strategy"
+//];
 
 /*
  * logging methods
@@ -58,7 +58,8 @@ var redisClient = function(name){
 var createRedisClient = function(name){
     var redisClient = {};
     if (settings.mode == 'single') {
-        redisClient = redis.createClient(_.pick.apply(null, [settings].concat(options))); //TODO: need options
+        redisClient = redis.createClient(settings.port, settings.host, {} );
+        //redisClient = redis.createClient(_.pick.apply(null, [settings].concat(options))); //TODO: need options
     } else {
         redisClient = null; //TODO: sentinel
     }
