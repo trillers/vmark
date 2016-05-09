@@ -79,13 +79,13 @@ var drawText = function*(ctx, text, offsetX, offsetY, maxWidth){
 
 var drawSdActivityPoster = function*(posterMeta, wechatId, bgImg){
     var qr = posterMeta.qr;
-    var canvas = new Canvas(600, 900);
+    var canvas = new Canvas(450, 800);
     var ctx = canvas.getContext('2d');
     var wechatApi = (yield wechatApiCache.get(wechatId)).api;
     var imgPaths = getImgPaths(PosterType.activity.value(), (new Date()).getTime());
-    yield drawImg(ctx, bgImg, imgPaths.bgImgPath, 0, 0, 600, 900);
-    yield drawImg(ctx, qr.url, imgPaths.qrPath, 180, 495, 240, 240);
-    //yield drawText(ctx, '长按图片识别二维码', 300, 650, 600);
+    yield drawImg(ctx, bgImg, imgPaths.bgImgPath, 0, 0, 450, 800);
+    yield drawImg(ctx, qr.url, imgPaths.qrPath, 150, 567, 150, 150);
+    yield drawText(ctx, '长按图片识别二维码', 225, 738, 450);
     var mediaId = yield getPosterMediaId(wechatApi, imgPaths.posterPath, canvas);
     return  {err: null, mediaId: mediaId, sceneId: qr.sceneId, path: imgPaths.posterPath}
 };
@@ -101,11 +101,11 @@ var drawSdParticipantPoster = function*(meta){
         var wechatApi = (yield wechatApiCache.get(wechatId)).api;
         var qrUrl = wechatApi.showQRCodeURL(qr.ticket);
         var imgPaths = getImgPaths(PosterType.sdParticipant.value(), user.openid);
-        yield drawImg(ctx, bgImg, imgPaths.bgImgPath, 0, 0, 600, 900);
-        yield drawImg(ctx, user.headimgurl, imgPaths.headImgPath, 235, 160, 130, 130, 'headImg');
-        yield drawImg(ctx, qrUrl, imgPaths.qrPath, 180, 495, 240, 240);
-        yield drawText(ctx, user.nickname, 300, 315, 600);
-        //yield drawText(ctx, '长按图片识别二维码', 300, 850, 600);
+        yield drawImg(ctx, bgImg, imgPaths.bgImgPath, 0, 0, 450, 800);
+        yield drawImg(ctx, user.headimgurl, imgPaths.headImgPath, (450-80)/2, 24, 80, 80, 'headImg');
+        yield drawText(ctx, user.nickname, 225, 115, 300);
+        yield drawImg(ctx, qrUrl, imgPaths.qrPath, 150, 567, 150, 150);
+        yield drawText(ctx, '长按图片识别二维码', 225, 738, 450);
         var mediaId = yield getPosterMediaId(wechatApi, imgPaths.posterPath, canvas);
         return  {mediaId: mediaId, fsPath: imgPaths.posterPath}
     }catch(e){
@@ -120,9 +120,9 @@ var createActivityPoster = function*(wechatId, bgImg){
     var wechatApi = (yield wechatApiCache.get(wechatId)).api;
     var imgPaths = getImgPaths(PosterType.activity.value(), (new Date()).getTime());
     var qr = yield getQrCode(wechatApi, wechatId, PosterType.activity.value());
-    yield drawImg(ctx, bgImg, imgPaths.bgImgPath, 0, 0, 600, 900);
-    yield drawImg(ctx, qr.url, imgPaths.qrPath, 150, 300, 300, 300);
-    yield drawText(ctx, '长按图片识别二维码', 300, 650, 600);
+    yield drawImg(ctx, bgImg, imgPaths.bgImgPath, 0, 0, 450, 800);
+    yield drawImg(ctx, qr.url, imgPaths.qrPath, 150, 567, 150, 150);
+    yield drawText(ctx, '长按图片识别二维码', 225, 738, 450);
     var mediaId = yield getPosterMediaId(wechatApi, imgPaths.posterPath, canvas);
     return  {err: null, mediaId: mediaId, sceneId: qr.sceneId, path: imgPaths.posterPath}
 }
@@ -132,11 +132,11 @@ var createParticipantPoster = function*(wechatId, bgImg, user){
     var wechatApi = (yield wechatApiCache.get(wechatId)).api;
     var imgPaths = getImgPaths(PosterType.participant.value(), user.openid);
     var qr = yield getQrCode(wechatApi, wechatId, PosterType.participant.value());
-    yield drawImg(ctx, bgImg, imgPaths.bgImgPath, 0, 0, 600, 900);
-    yield drawImg(ctx, user.headimgurl, imgPaths.headImgPath, 200, 100, 200, 200, 'headImg');
-    yield drawImg(ctx, qr.url, imgPaths.qrPath, 150, 500, 300, 300);
-    yield drawText(ctx, user.nickname, 300, 350, 600);
-    yield drawText(ctx, '长按图片识别二维码', 300, 850, 600);
+    yield drawImg(ctx, bgImg, imgPaths.bgImgPath, 0, 0, 450, 800);
+    yield drawImg(ctx, user.headimgurl, imgPaths.headImgPath, (450-80)/2, 24, 80, 80, 'headImg');
+    yield drawText(ctx, user.nickname, 225, 115, 300);
+    yield drawImg(ctx, qr.url, imgPaths.qrPath, 150, 567, 150, 150);
+    yield drawText(ctx, '长按图片识别二维码', 225, 738, 450);
     var mediaId = yield getPosterMediaId(wechatApi, imgPaths.posterPath, canvas);
     return  {err: null, mediaId: mediaId, sceneId: qr.sceneId, path: imgPaths.posterPath}
 }
