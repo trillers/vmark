@@ -69,7 +69,8 @@ var drawImg = function*(ctx, url, path, offsetX, offsetY, width, height, type){
 
 var drawText = function*(ctx, text, offsetX, offsetY, maxWidth){
     ctx.save();
-    ctx.font = "30px SimHei";
+    //todo font size
+    ctx.font = "16px SimHei";
     ctx.fillStyle = 'white';
     ctx.textAlign = 'center';
     ctx.fillText(text, offsetX, offsetY, maxWidth);
@@ -102,8 +103,8 @@ var drawSdParticipantPoster = function*(meta){
         var qrUrl = wechatApi.showQRCodeURL(qr.ticket);
         var imgPaths = getImgPaths(PosterType.sdParticipant.value(), user.openid);
         yield drawImg(ctx, bgImg, imgPaths.bgImgPath, 0, 0, 450, 800);
-        yield drawImg(ctx, user.headimgurl, imgPaths.headImgPath, (450-80)/2, 24, 80, 80, 'headImg');
-        yield drawText(ctx, user.nickname, 225, 115, 300);
+        yield drawImg(ctx, user.headimgurl, imgPaths.headImgPath, 100-40, 24, 80, 80, 'headImg');
+        yield drawText(ctx, user.nickname, 100, 115 + 8, 300);
         yield drawImg(ctx, qrUrl, imgPaths.qrPath, 150, 567, 150, 150);
         yield drawText(ctx, '长按图片识别二维码', 225, 738, 450);
         var mediaId = yield getPosterMediaId(wechatApi, imgPaths.posterPath, canvas);
@@ -133,8 +134,8 @@ var createParticipantPoster = function*(wechatId, bgImg, user){
     var imgPaths = getImgPaths(PosterType.participant.value(), user.openid);
     var qr = yield getQrCode(wechatApi, wechatId, PosterType.participant.value());
     yield drawImg(ctx, bgImg, imgPaths.bgImgPath, 0, 0, 450, 800);
-    yield drawImg(ctx, user.headimgurl, imgPaths.headImgPath, (450-80)/2, 24, 80, 80, 'headImg');
-    yield drawText(ctx, user.nickname, 225, 115, 300);
+    yield drawImg(ctx, user.headimgurl, imgPaths.headImgPath, 100-40, 24, 80, 80, 'headImg');
+    yield drawText(ctx, user.nickname, 100, 115 + 8, 300);
     yield drawImg(ctx, qr.url, imgPaths.qrPath, 150, 567, 150, 150);
     yield drawText(ctx, '长按图片识别二维码', 225, 738, 450);
     var mediaId = yield getPosterMediaId(wechatApi, imgPaths.posterPath, canvas);
