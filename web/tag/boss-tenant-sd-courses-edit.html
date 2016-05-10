@@ -337,6 +337,7 @@
         self.on('open', function(ctx){
             var courseId = ctx.req.paramList[0];
             self.posterInput.value = "";
+            self.bannersInput.value = "";
             loadCourseByIdAction.newInvocation({
                 id: courseId
             }).onDone(function(res){

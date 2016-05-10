@@ -1629,7 +1629,7 @@ riot.tag('boss-tenant-sd-catalogs', '<div if="{!hidden}" class="container" style
         }
     
 });
-riot.tag('boss-tenant-sd-courses-add', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd/courses"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div class="row" style="text-align: center"> <h4>新建课程</h4> </div> <alert validators="{validators}" clear="{clear}"></alert> <div class="row"> <div class="panel panel-default"> <div class="panel-heading">基本信息</div> <div class="panel-body"> <form class="form-horizontal"> <div class="form-group text-left"> <label for="courseNameInput" class="col-sm-2 control-label text-left">课程名称</label> <div class="col-sm-10 {has-error: !courseNameInput.value.trim()} has-feedback"> <input onblur="{courseNameInputBlur}" type="text" class="form-control " id="courseNameInput"> </div> </div> <div class="form-group"> <label for="coursePromoteInput" class="col-sm-2 control-label">推广语</label> <div class="col-sm-10"> <input type="text" class="form-control" id="coursePromoteInput" onblur="{coursePromoteInputBlur}"> </div> </div> <div class="form-group"> <label for="courseMediaPriceInput" class="col-sm-2 control-label">媒体价 ( :元 )</label> <div class="col-sm-10 {has-error: !courseMediaPriceInput.value.trim()}"> <input onblur="{courseMediaPriceInputBlur}" type="number" class="form-control" id="courseMediaPriceInput"> </div> </div> <div class="form-group"> <label class="col-sm-2 control-label">上/下架状态</label> <div class="col-sm-10" style="height: 32px;line-height: 32px"> <span>待上架</span> </div> </div> <div class="form-group"> <label class="col-sm-2 control-label">上/下架时间</label> <div class="col-sm-10" style="height: 32px;line-height: 32px"> <span>空</span> </div> </div> <div class="form-group"> <label for="courseDescInput" class="col-sm-2 control-label">备注</label> <div class="col-sm-10"> <textarea onblur="{courseDescInputBlur}" type="password" class="form-control" id="courseDescInput"></textarea> </div> </div> </form> </div> </div> </div> <div class="row" style="margin-top: 10px"> <div class="col-md-12 col-lg-12 text-center"> <input __disabled="{!courseMediaPriceInput.value.trim() || !courseNameInput.value.trim()}" onclick="{onSubmit}" type="button" class="btn btn-primary" value="保存"> <a href="#sd/courses" class="btn btn-default">取消</a> </div> </div> </div> </div> </div>', '.form-horizontal .control-label{ text-align: left !important; }', function(opts) {
+riot.tag('boss-tenant-sd-courses-add', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd/courses"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div class="row" style="text-align: center"> <h4>新建课程</h4> </div> <alert validators="{validators}" clear="{clear}"></alert> <div class="row"> <div class="panel panel-default"> <div class="panel-heading">基本信息</div> <div class="panel-body"> <form class="form-horizontal"> <div class="form-group text-left"> <label for="courseNameInput" class="col-sm-2 control-label text-left">课程名称</label> <div class="col-sm-10 {has-error: !courseNameInput.value.trim()} has-feedback"> <input onblur="{courseNameInputBlur}" type="text" class="form-control " id="courseNameInput"> </div> </div> <div class="form-group"> <label for="coursePromoteInput" class="col-sm-2 control-label">推广语</label> <div class="col-sm-10 {has-error: !courseNameInput.value.trim()} has-feedback"> <input onblur="{coursePromoteInputBlur}" type="text" class="form-control" id="coursePromoteInput"> </div> </div> <div class="form-group"> <label for="courseMediaPriceInput" class="col-sm-2 control-label">媒体价 ( :元 )</label> <div class="col-sm-10 {has-error: !courseMediaPriceInput.value.trim()}"> <input onblur="{courseMediaPriceInputBlur}" type="number" class="form-control" id="courseMediaPriceInput"> </div> </div> <div class="form-group"> <label class="col-sm-2 control-label">上/下架状态</label> <div class="col-sm-10" style="height: 32px;line-height: 32px"> <span>待上架</span> </div> </div> <div class="form-group"> <label class="col-sm-2 control-label">上/下架时间</label> <div class="col-sm-10" style="height: 32px;line-height: 32px"> <span>空</span> </div> </div> <div class="form-group"> <label for="courseDescInput" class="col-sm-2 control-label">备注</label> <div class="col-sm-10"> <textarea onblur="{courseDescInputBlur}" type="password" class="form-control" id="courseDescInput"></textarea> </div> </div> </form> </div> </div> </div> <div class="row" style="margin-top: 10px"> <div class="col-md-12 col-lg-12 text-center"> <input __disabled="{!courseMediaPriceInput.value.trim() || !courseNameInput.value.trim() || !coursePromoteInput.value.trim()}" onclick="{onSubmit}" type="button" class="btn btn-primary" value="保存"> <a href="#sd/courses" class="btn btn-default">取消</a> </div> </div> </div> </div> </div>', '.form-horizontal .control-label{ text-align: left !important; }', function(opts) {
         "use strict"
         var self = nest.presentable(this);
         var createCourseAction = domain.action('createCourse');
@@ -1662,7 +1662,15 @@ riot.tag('boss-tenant-sd-courses-add', '<div if="{!hidden}" class="container" st
             self.course.desc = self.courseDescInput.value.trim();
         };
         self.coursePromoteInputBlur = function(){
-            self.course.slogan = self.coursePromoteInput.value.trim();
+            var slogan = self.coursePromoteInput.value.trim();
+            if(!slogan){
+                return self.validators.push({
+                    success: false,
+                    field: '推广语',
+                    desc: '不能为空!'
+                });
+            }
+            self.course.slogan = slogan;
         };
         self.courseMediaPriceInputBlur = function(){
             var listPrice = self.courseMediaPriceInput.value.trim();
@@ -1865,6 +1873,7 @@ riot.tag('boss-tenant-sd-courses-edit', '<div if="{!hidden}" class="container" s
         self.on('open', function(ctx){
             var courseId = ctx.req.paramList[0];
             self.posterInput.value = "";
+            self.bannersInput.value = "";
             loadCourseByIdAction.newInvocation({
                 id: courseId
             }).onDone(function(res){
