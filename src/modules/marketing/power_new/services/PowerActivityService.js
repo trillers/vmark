@@ -151,8 +151,8 @@ Service.prototype.loadAll = function*(tenantId){
             filter.org = tenantId;
         }else{
             filter.org = {$exists: false};
-            filter.withPic = {$exists: false};
-            filter.qrCode = {$exists: false};
+            //filter.withPic = {$exists: false};
+            //filter.qrCode = {$exists: false};
         }
 
         var docs = yield PowerActivity.find(filter).populate({path: 'qrCode'}).lean().exec();
