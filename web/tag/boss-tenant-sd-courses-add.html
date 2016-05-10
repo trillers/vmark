@@ -117,7 +117,7 @@
         self.onSubmit = function(){
             createCourseAction.newInvocation(self.course)
                 .onDone(function(res){
-                    riot.route('sd/courses');
+                    riot.route('sd/courses/_' + res.course._id);
                 })
                 .execute();
         };

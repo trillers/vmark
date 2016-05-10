@@ -104,7 +104,7 @@
             self.catalog.media = self.catalogWechatsiteInput.value;
             createCatalogAction.newInvocation(self.catalog)
                 .onDone(function(res){
-                    riot.route('sd/catalogs');
+                    riot.route('sd/catalogs/_' + res.courses._id);
                 })
                 .execute();
         };
