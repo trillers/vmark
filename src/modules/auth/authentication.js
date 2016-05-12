@@ -9,6 +9,8 @@ var DEFAULT_RETURN_URL = '/';
 var Authentication = function(){};
 
 Authentication.prototype.setAuthentication = function(ctx, auth){
+    console.error('set auth&&&&&&&&&&&');
+    console.error(auth);
     if(auth.wechatSiteUser){
         agentToken.set(ctx, auth.wechatSiteUser.at);
     }
