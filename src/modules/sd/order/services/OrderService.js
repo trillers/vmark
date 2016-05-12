@@ -268,7 +268,7 @@ Service.prototype.find = function (params, callback) {
 
         if (params.page) {
             var skip = (params.page.no - 1) * params.page.size;
-            var limit = params.page.size;
+            var limit = parseInt(params.page.size, 10);
             if (skip) query.skip(skip);
             if (limit) query.limit(limit);
         }
