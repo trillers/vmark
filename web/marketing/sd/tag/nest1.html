@@ -8,7 +8,7 @@ require('./page.html');
     </div>
     <script>
         var self = this;
-        this.mixin('viewify');
+        self.mixin('viewify');
         self.mixin('router');
         self.routeConfig([
             {
@@ -43,7 +43,7 @@ require('./page.html');
                 name: 'judy'
             }
         ];
-        this.on('open', function(ctx){
+        self.on('open', function(ctx){
             self.trigger('ready');
         })
     </script>

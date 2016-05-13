@@ -18,16 +18,16 @@ require('./nest2.html');
 
     <script>
         var self = this;
-        this.mixin('viewify');
-        this.mixin('router');
+        self.mixin('viewify');
+        self.mixin('router');
         self.nav = 0;
-        this.onClick = function(i){
+        self.onClick = function(i){
             return function(e){
                 self.nav = i;
                 riot.route('//test/_11111/nest' + i);
             }
         };
-        this.routeConfig([
+        self.routeConfig([
             {
                 path: '/nest1',
                 name: 'nest1',
@@ -42,20 +42,16 @@ require('./nest2.html');
                 path: '/nest2',
                 name: 'nest2',
                 before: function(done){
+                    console.log('router hook begin ****');
                     self.nav = 2;
                     self.update();
                     done();
                 }
             }
         ]);
-        this.on('open', function(){
+        self.on('open', function(){
             console.log("[parent] set time out begin ****")
             self.trigger('ready');
-            setTimeout(function(){
-                console.log("[parent] set time out over ****")
-
-            }, 1000)
-
         })
     </script>
 </test-detail>

@@ -4,8 +4,8 @@
     </div>
     <script>
         var self = this;
-        this.mixin('viewify');
-        this.on('open', function(ctx){
+        self.mixin('viewify');
+        self.on('open', function(ctx){
             console.warn(ctx);
             self.trigger('ready');
         })

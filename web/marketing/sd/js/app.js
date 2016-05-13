@@ -50,7 +50,6 @@ app._parseRoute = function(){
                 return combineUriParts(parts, --i, uri);
             }
         }
-
         return req;
     })
 };
@@ -84,6 +83,7 @@ app._doRoute = function(){
             let ctx = {
                 request
             };
+            console.log(route);
             if(route.before){
                 route.before.apply(tag, [done]);
                 return;

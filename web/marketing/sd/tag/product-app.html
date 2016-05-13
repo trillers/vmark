@@ -1,7 +1,10 @@
 require('./product.html');
 require('./personal.html');
+require('./test-detail.html');
 
 <product-app>
+    <a href="#/test/_11111">跳转</a>
+    <test-detail></test-detail>
     <product id="{opts.id}" media="{opts.media}" catalog="{opts.catalog}" product="{product}"></product>
     <personal></personal>
     <div class="footer">
@@ -141,9 +144,14 @@ require('./personal.html');
         self.product = {};
         self.routeConfig([
             {
+                path: '/test/_:id',
+                name: 'test-detail',
+                defaultRoute: true
+            },
+            {
                 path: '/product',
                 name: 'product',
-                defaultRoute: true
+
             },
             {
                 path: '/personal',
