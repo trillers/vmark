@@ -16,7 +16,6 @@ export var router = {
             name,
             before,
             tag: container.tags[name]};
-        console.log(me.prefixPath + path);
         app.registerRoute({path: me.prefixPath + path, name, before}, container);
         return this;
     },
