@@ -13,8 +13,6 @@ var handler = function*(ctx, next){
      */
     var auth = yield authenticationService.signupWithUserInfoAsync(oauthUserInfo);
     authentication.setAuthentication(ctx, auth);
-    console.error('auth session ');
-    console.error(ctx.session['auth']);
     authentication.redirectReturnUrl(ctx);
 };
 

@@ -13,8 +13,7 @@ var handler = function*(ctx, next){
      * sign up with base info by openid
      */
     var auth = yield authenticationService.signupWithBaseInfoAsync(openid);
-    console.error('handler auth ******');
-    console.error(auth);
+
     authentication.setAuthentication(ctx, auth);
     authentication.redirectReturnUrl(ctx);
 };

@@ -74,7 +74,7 @@ Service.prototype.registerPlatformPost = function (openid, role, callback) {
             user = yield self.updatePlatformUserPostsAsync(user, role, updateOrAdd);
             if (callback) callback(null, user);
         }
-    }).catch(Error, function (err) {
+    }).catch(function (err) {
         logger.error('Fail to register platform user for openid ' + openid + ': ' + err);
         if (callback) callback(err);
     });

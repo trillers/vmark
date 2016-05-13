@@ -11,7 +11,6 @@ var generate = function(level){
     return function* (next) {
         var auth = authentication.getAuthentication(this);
         console.error('auth**************');
-        console.error(auth);
         var authLevel = AuthLevel.get(auth);
         if (authLevel>=level) {
             yield next;

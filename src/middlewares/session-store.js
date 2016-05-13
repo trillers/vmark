@@ -9,17 +9,28 @@ var Store = function(){
 }
 
 Store.prototype.get = function *(sid) {
-    var sess = yield this.client.getAsync(sid);
-    if(sess){
-        return JSON.parse(sess);
-    }else{
-        return null;
+    try {
+        console.error('start get session : sid ' + sid);
+        var sess = yield this.client.getAsync(sid);
+        if (sess) {
+            return JSON.parse(sess);
+        } else {
+            return null;
+        }
+    }catch(e){
+        console.error('session store get session error: ' + e);
     }
 };
 
 Store.prototype.set = function *(sid, sess, ttl) {
-    sess = JSON.stringify(sess || '{}');
-    return this.client.setAsync(sid, sess, 'PX', ttl);
+    try {
+        console.error('start set session : sid ' + sid);
+        sess = JSON.stringify(sess || '{}');
+        var res = yield this.client.setAsync(sid, sess, 'PX', ttl);
+        return res;
+    }catch(e){
+        console.error('session store set session error: ' + e);
+    }
 };
 
 Store.prototype.destroy = function *(sid) {
