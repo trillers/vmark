@@ -9,8 +9,8 @@ hub.defaultRoute = null;
 
 hub.init = function(){
     hub._parseRoute();
-    riot.route.start();
     riot.route(hub._doRoute());
+    riot.route.start();
     nextTick(riot.route.exec, 0);
     function nextTick(fn){
         setTimeout(fn, 0);
@@ -90,12 +90,12 @@ hub._doRoute = function(){
                 return riot.route(route.redirectTo);
             }
             if(route.before){
-                route.before.apply(tag, [done]);
+                route.before.apply(tag, [done, request]);
                 return;
             }
             done();
             function done(){
-                if(tag.hasOwnProperty('hidden') && tag.hidden){
+                if(tag.hasOwnProperty('hidden')){
                     tag.one('ready', ()=>{
                         hub._routeTo(tag);
                         recursiveHints(hints.slice(1));
@@ -108,24 +108,29 @@ hub._doRoute = function(){
         }
         recursiveHints(req.hints);
         if(!isFounded){
-            let url = hub.defaultRoute.path;
-            let paramsParts = url.match(/_[a-zA-Z0-9:]+/g);
-            if(paramsParts && paramsParts.length){
-                paramsParts.map(part=>{
-                    let key = part.slice(2);
-                    let value = hub.defaultRoute.defaultRoute.params
-                        && hub.defaultRoute.defaultRoute.params[key]
-                        || "";
-                    url = url.replace(new RegExp('_:' + key + '+'), '_' + value);
-                });
+            try{
+                let url = hub.defaultRoute.path;
+                let paramsParts = url.match(/_[a-zA-Z0-9:]+/g);
+                if(paramsParts && paramsParts.length){
+                    paramsParts.map(part=>{
+                        let key = part.slice(2);
+                        let value = hub.defaultRoute.defaultRoute.params
+                            && hub.defaultRoute.defaultRoute.params[key]
+                            || "";
+                        url = url.replace(new RegExp('_:' + key + '+'), '_' + value);
+                    });
+                }
+                riot.route('/' + url);
+            }catch(e){
+                console.warn(e);
+                console.info('404')
             }
-            riot.route('/' + url);
         }
     };
 };
 
 hub._routeTo = function(tag){
-    tag.hidden = !tag.hidden;
+    tag.hidden = false;
     tag.update();
     Object.keys(tag.parent.tags)
         .map(k=>tag.parent.tags[k])
@@ -149,13 +154,23 @@ hub._getMetaDataFromRouteMap = function(routeKey){
             let paramValues = (extractParams(routeKey) || []).map(i=>i.slice(1));
             return {
                 route,
-                params: _.object(paramKeys, paramValues)
+                params: composeObject(paramKeys, paramValues)
             };
         }
     }
     return {
         tag: null,
         params: null
+    };
+    function composeObject(ks, vs){
+        var o = {};
+        if(!Array.isArray(ks) || !Array.isArray(vs) || ks.length != vs.length){
+            return o;
+        }
+        ks.forEach((k, index)=>{
+            o[k] = vs[index]
+        });
+        return o;
     };
     function extractParams(path){
         return path.match(/_[a-zA-Z0-9:]+/g);

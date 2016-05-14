@@ -1,1 +1,2909 @@
-webpackJsonp([0,1],[function(t,e,n){"use strict";var r=n(1);console.log(r.mixins)},function(t,e,n){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.mixins=void 0;var r=n(2),o=n(6);e.mixins={router:r.router,viewify:o.viewify}},function(t,e,n){"use strict";function r(t){return t&&t.__esModule?t:{"default":t}}Object.defineProperty(e,"__esModule",{value:!0}),e.router=void 0;var o=function(){function t(t,e){var n=[],r=!0,o=!1,i=void 0;try{for(var u,a=t[Symbol.iterator]();!(r=(u=a.next()).done)&&(n.push(u.value),!e||n.length!==e);r=!0);}catch(f){o=!0,i=f}finally{try{!r&&a["return"]&&a["return"]()}finally{if(o)throw i}}return n}return function(e,n){if(Array.isArray(e))return e;if(Symbol.iterator in Object(e))return t(e,n);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}(),i=n(3),u=r(i),a=u["default"].observable();a.routesMap={},a.defaultRoute=null,a.init=function(){function t(t){setTimeout(t,0)}a._parseRoute(),u["default"].route.start(),u["default"].route(a._doRoute()),t(u["default"].route.exec,0)},a._parseRoute=function(){function t(e,n,r){if(!e.length||0>=n)return r;var o=e[n-1]+"/"+r;return t(e,--n,o)}u["default"].route.parser(function(e){var n={},r=e.split("?"),i=o(r,2),u=i[0],a=i[1],f=u.split("/");return n.params={},n.paramList=[],u.match(/_(\w+)/g)&&(n.paramList=f.filter(function(t){return t.match(/_(\w+)/g)}).map(function(t){return t.slice(1)})),n.query={},a&&a.split("&").map(function(t){return n.query[t.split("=")[0]]=t.split("=")[1]}),n.hints=[],f.length&&(n.hints=f.map(function(e,n){return 0===n?e:t(f,n,e)})),n})},a.registerRoute=function(t,e){var n=t.path,r=t.name,o=t.before,i=t.redirectTo;return a.routesMap[n]={before:o,redirectTo:i,tag:e.tags[r]},this},a._doRoute=function(){var t=this;return function(e){function n(t){function f(){return h.hasOwnProperty("hidden")&&h.hidden?(h.one("ready",function(){a._routeTo(h),n(t.slice(1))}),void h.trigger("open",g)):void n(t.slice(1))}if(t.length&&!i){var c=t[0],s={},l=r._getMetaDataFromRouteMap(c),p=l.route,d=l.params;if(!p)return n(t.slice(1));var h=p.tag;o=!0,s.params=d,s.query=e.query;var g={request:s};return p.redirectTo?(i=!0,u["default"].route(p.redirectTo)):p.before?void p.before.apply(h,[f]):void f()}}var r=t,o=!1,i=!1;n(e.hints),o||!function(){var t=a.defaultRoute.path,e=t.match(/_[a-zA-Z0-9:]+/g);e&&e.length&&e.map(function(e){var n=e.slice(2),r=a.defaultRoute.defaultRoute.params&&a.defaultRoute.defaultRoute.params[n]||"";t=t.replace(new RegExp("_:"+n+"+"),"_"+r)}),u["default"].route("/"+t)}()}},a._routeTo=function(t){t.hidden=!t.hidden,t.update(),Object.keys(t.parent.tags).map(function(e){return t.parent.tags[e]}).filter(function(e){return e!=t}).forEach(function(e){t.hasOwnProperty("hidden")&&(e.hidden=!0,e.update())})},a._getMetaDataFromRouteMap=function(t){function e(t){return t.match(/_[a-zA-Z0-9:]+/g)}function n(t){return t.replace(/_[a-zA-Z0-9:]+/g,"*")}t="/"+t;for(var r=Object.keys(this.routesMap),o=0,i=r.length;i>o;o++){var u=r[o],a=this.routesMap[u];if(n(u)===n(t)){var f=(e(u)||[]).map(function(t){return t.slice(2)}),c=(e(t)||[]).map(function(t){return t.slice(1)});return{route:a,params:_.object(f,c)}}}return{tag:null,params:null}},a.init();e.router={defaultRoute:null,prefixPath:"",routesMap:null,_registerRoute:function(t,e){var n=t.path,r=t.name,o=t.before,i=t.redirectTo,u=this;return u.routesMap||(u.routesMap={}),u.routesMap[n]={name:r,before:o,tag:e.tags[r]},a.registerRoute({path:u.prefixPath+n,name:r,before:o,redirectTo:i},e),this},prefix:function(t){return this.prefixPath=t,this},routeConfig:function(t){function e(t){var e="";return Object.keys(t.parent.routesMap).forEach(function(r){var o=t.parent.routesMap[r];o.name===n(t)&&(e=r)}),e}function n(t){return t.root.localName}var r=this;!this.prefixPath&&this.parent&&this.parent.routesMap&&(this.prefixPath=(this.parent.prefixPath||"")+e(this)),t.forEach(function(t){t.defaultRoute&&(a.defaultRoute=t),r._registerRoute(t,r)})}}},function(t,e,n){var r,o="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol?"symbol":typeof t};!function(i,u){"use strict";function a(t,e,n){var r={};return r[t.key]=e,t.pos&&(r[t.pos]=n),r}function f(t,e){for(var n,r=e.length,o=t.length;r>o;)n=e[--r],e.splice(r,1),n.unmount()}function c(t,e){Object.keys(t.tags).forEach(function(n){var r=t.tags[n];$(r)?b(r,function(t){E(t,n,e)}):E(r,n,e)})}function s(t,e,n){var r,o=t._root;for(t._virts=[];o;)r=o.nextSibling,n?e.insertBefore(o,n._root):e.appendChild(o),t._virts.push(o),o=r}function l(t,e,n,r){for(var o,i=t._root,u=0;r>u;u++)o=i.nextSibling,e.insertBefore(i,n._root),i=o}function p(t,e,n){w(t,"each");var r,i=o(N(t,"no-reorder"))!==rt||w(t,"no-reorder"),u=j(t),p=Y[u]||{tmpl:t.outerHTML},d=at.test(u),h=t.parentNode,v=document.createTextNode(""),m=T(t),y="option"===u.toLowerCase(),b=[],x=[],_="VIRTUAL"==t.tagName;n=lt.loopKeys(n),h.insertBefore(v,t),e.one("before-mount",function(){t.parentNode.removeChild(t),h.stub&&(h=e.root)}).on("update",function(){var o=lt(n.val,e),w=document.createDocumentFragment();$(o)||(r=o||!1,o=r?Object.keys(o).map(function(t){return a(n,t,o[t])}):[]);for(var M=0,N=o.length;N>M;M++){var R=o[M],T=i&&R instanceof Object&&!r,C=x.indexOf(R),E=~C&&T?C:M,L=b[E];R=!r&&n.key?a(n,R,M):R,!T&&!L||T&&!~C||!L?(L=new g(p,{parent:e,isLoop:!0,hasImpl:!!Y[u],root:d?h:t.cloneNode(),item:R},t.innerHTML),L.mount(),_&&(L._root=L.root.firstChild),M!=b.length&&b[M]?(_?s(L,h,b[M]):h.insertBefore(L.root,b[M].root),x.splice(M,0,R)):_?s(L,w):w.appendChild(L.root),b.splice(M,0,L),E=M):L.update(R,!0),E!==M&&T&&b[M]&&(_?l(L,h,b[M],t.childNodes.length):h.insertBefore(L.root,b[M].root),n.pos&&(L[n.pos]=M),b.splice(M,0,b.splice(E,1)[0]),x.splice(M,0,x.splice(E,1)[0]),!m&&L.tags&&c(L,M)),L._item=R,O(L,"_parent",e)}if(f(o,b),y){if(h.appendChild(w),h.length){var S,j=h.options;for(h.selectedIndex=S=-1,M=0;M<j.length;M++)(j[M].selected=j[M].__selected)&&0>S&&(h.selectedIndex=S=M)}}else h.insertBefore(w,v);m&&(e.tags[u]=b),x=o.slice()})}function d(t,e,n,r){H(t,function(t){if(1==t.nodeType){if(t.isLoop=t.isLoop||t.parentNode&&t.parentNode.isLoop||N(t,"each")?1:0,n){var o=T(t);o&&!t.isLoop&&n.push(L(o,{root:t,parent:e},t.innerHTML,e))}(!t.isLoop||r)&&V(t,e,[])}})}function h(t,e,n){function r(t,e,r){lt.hasExpr(e)&&n.push(A({dom:t,expr:e},r))}H(t,function(t){var n,o=t.nodeType;return 3==o&&"STYLE"!=t.parentNode.tagName&&r(t,t.nodeValue),1==o?(n=N(t,"each"))?(p(t,e,n),!1):(b(t.attributes,function(e){var n=e.name,o=n.split("__")[1];return r(t,e.value,{attr:o||n,bool:o}),o?(w(t,n),!1):void 0}),T(t)?!1:void 0):void 0})}function g(t,e,n){function r(){var t=m&&v?l:g||l;b(E.attributes,function(e){var n=e.value;p[M(e.name)]=lt.hasExpr(n)?lt(n,t):n}),b(Object.keys(j),function(e){p[M(e)]=lt(j[e],t)})}function i(t){for(var e in N)o(l[e])!==it&&P(l,e)&&(l[e]=t[e])}function a(){l.parent&&v&&b(Object.keys(l.parent),function(t){var e=!k(ft,t)&&k(H,t);(o(l[t])===it||e)&&(e||H.push(t),l[t]=l.parent[t])})}function f(t){l.update(t,!0)}function c(t){if(b(C,function(e){e[t?"mount":"unmount"]()}),g){var e=t?"on":"off";v?g[e]("unmount",l.unmount):g[e]("update",f)[e]("unmount",l.unmount)}}var s,l=G.observable(this),p=z(e.opts)||{},g=e.parent,v=e.isLoop,m=e.hasImpl,N=I(e.item),T=[],C=[],E=e.root,L=E.tagName.toLowerCase(),j={},H=[];t.name&&E._tag&&E._tag.unmount(!0),this.isMounted=!1,E.isLoop=v,E._tag=this,O(this,"_riot_id",++J),A(this,{parent:g,root:E,opts:p,tags:{}},N),b(E.attributes,function(t){var e=t.value;lt.hasExpr(e)&&(j[t.name]=e)}),s=pt(t.tmpl,n),O(this,"update",function(t,e){return t=I(t),a(),t&&_(N)&&(i(t),N=t),A(l,t),r(),l.trigger("update",t),y(T,l),e&&l.parent?l.parent.one("updated",function(){l.trigger("updated")}):ht(function(){l.trigger("updated")}),this}),O(this,"mixin",function(){return b(arguments,function(t){var e;t=("undefined"==typeof t?"undefined":o(t))===rt?G.mixin(t):t,x(t)?(e=new t,t=t.prototype):e=t,b(Object.getOwnPropertyNames(t),function(t){"init"!=t&&(l[t]=x(e[t])?e[t].bind(l):e[t])}),e.init&&e.init.bind(l)()}),this}),O(this,"mount",function(){r();var e=G.mixin(W);if(e&&l.mixin(e),t.fn&&t.fn.call(l,p),h(s,l,T),c(!0),t.attrs&&F(t.attrs,function(t,e){R(E,t,e)}),(t.attrs||m)&&h(l.root,l,T),(!l.parent||v)&&l.update(N),l.trigger("before-mount"),v&&!m)E=s.firstChild;else{for(;s.firstChild;)E.appendChild(s.firstChild);E.stub&&(E=g.root)}O(l,"root",E),v&&d(l.root,l.parent,null,!0),!l.parent||l.parent.isMounted?(l.isMounted=!0,l.trigger("mount")):l.parent.one("mount",function(){q(l.root)||(l.parent.isMounted=l.isMounted=!0,l.trigger("mount"))})}),O(this,"unmount",function(t){var e,n=E,r=n.parentNode,o=X.indexOf(l);if(l.trigger("before-unmount"),~o&&X.splice(o,1),this._virts&&b(this._virts,function(t){t.parentNode&&t.parentNode.removeChild(t)}),r){if(g)e=S(g),$(e.tags[L])?b(e.tags[L],function(t,n){t._riot_id==l._riot_id&&e.tags[L].splice(n,1)}):e.tags[L]=u;else for(;n.firstChild;)n.removeChild(n.firstChild);t?w(r,"riot-tag"):r.removeChild(n)}l.trigger("unmount"),c(),l.off("*"),l.isMounted=!1,delete E._tag}),d(s,this,C)}function v(t,e,n,r){n[t]=function(t){var o,u=r._parent,a=r._item;if(!a)for(;u&&!a;)a=u._item,u=u._parent;t=t||i.event,P(t,"currentTarget")&&(t.currentTarget=n),P(t,"target")&&(t.target=t.srcElement),P(t,"which")&&(t.which=t.charCode||t.keyCode),t.item=a,e.call(r,t)===!0||/radio|check/.test(n.type)||(t.preventDefault&&t.preventDefault(),t.returnValue=!1),t.preventUpdate||(o=a?S(u):r,o.update())}}function m(t,e,n){t&&(t.insertBefore(n,e),t.removeChild(e))}function y(t,e){b(t,function(t,n){var r=t.dom,i=t.attr,u=lt(t.expr,e),a=t.dom.parentNode;if(t.bool?(u=!!u,"selected"===i&&(r.__selected=u)):null==u&&(u=""),t.value!==u){if(t.value=u,!i)return u+="",void(a&&("TEXTAREA"===a.tagName?(a.value=u,ct||(r.nodeValue=u)):r.nodeValue=u));if("value"===i)return void(r.value=u);if(w(r,i),x(u))v(i,u,r,e);else if("if"==i){var f=t.stub,c=function(){m(f.parentNode,f,r)},s=function(){m(r.parentNode,r,f)};u?f&&(c(),r.inStub=!1,q(r)||H(r,function(t){t._tag&&!t._tag.isMounted&&(t._tag.isMounted=!!t._tag.trigger("mount"))})):(f=t.stub=f||document.createTextNode(""),r.parentNode?s():(e.parent||e).one("updated",s),r.inStub=!0)}else"show"===i?r.style.display=u?"":"none":"hide"===i?r.style.display=u?"none":"":t.bool?(r[i]=u,u&&R(r,i,i)):(0===u||u&&("undefined"==typeof u?"undefined":o(u))!==ot)&&(U(i,tt)&&i!=et&&(i=i.slice(tt.length)),R(r,i,u))}})}function b(t,e){for(var n,r=t?t.length:0,o=0;r>o;o++)n=t[o],null!=n&&e(n,o)===!1&&o--;return t}function x(t){return("undefined"==typeof t?"undefined":o(t))===ut||!1}function _(t){return t&&("undefined"==typeof t?"undefined":o(t))===ot}function w(t,e){t.removeAttribute(e)}function M(t){return t.replace(/-(\w)/g,function(t,e){return e.toUpperCase()})}function N(t,e){return t.getAttribute(e)}function R(t,e,n){t.setAttribute(e,n)}function T(t){return t.tagName&&Y[N(t,nt)||N(t,et)||t.tagName.toLowerCase()]}function C(t,e,n){var r=n.tags[e];r?($(r)||r!==t&&(n.tags[e]=[r]),k(n.tags[e],t)||n.tags[e].push(t)):n.tags[e]=t}function E(t,e,n){var r,o=t.parent;o&&(r=o.tags[e],$(r)?r.splice(n,0,r.splice(r.indexOf(t),1)[0]):C(t,e,o))}function L(t,e,n,r){var o=new g(t,e,n),i=j(e.root),u=S(r);return o.parent=u,o._parent=r,C(o,i,u),u!==r&&C(o,i,r),e.root.innerHTML="",o}function S(t){for(var e=t;!T(e.root)&&e.parent;)e=e.parent;return e}function O(t,e,n,r){return Object.defineProperty(t,e,A({value:n,enumerable:!1,writable:!1,configurable:!1},r)),t}function j(t){var e=T(t),n=N(t,"name"),r=n&&!lt.hasExpr(n)?n:e?e.name:t.tagName.toLowerCase();return r}function A(t){for(var e,n=arguments,r=1;r<n.length;++r)if(e=n[r])for(var o in e)P(t,o)&&(t[o]=e[o]);return t}function k(t,e){return~t.indexOf(e)}function $(t){return Array.isArray(t)||t instanceof Array}function P(t,e){var n=Object.getOwnPropertyDescriptor(t,e);return o(t[e])===it||n&&n.writable}function I(t){if(!(t instanceof g||t&&o(t.trigger)==ut))return t;var e={};for(var n in t)k(ft,n)||(e[n]=t[n]);return e}function H(t,e){if(t){if(e(t)===!1)return;for(t=t.firstChild;t;)H(t,e),t=t.nextSibling}}function F(t,e){for(var n,r=/([-\w]+) ?= ?(?:"([^"]*)|'([^']*)|({[^}]*}))/g;n=r.exec(t);)e(n[1].toLowerCase(),n[2]||n[3]||n[4])}function q(t){for(;t;){if(t.inStub)return!0;t=t.parentNode}return!1}function B(t){return document.createElement(t)}function D(t,e){return(e||document).querySelectorAll(t)}function K(t,e){return(e||document).querySelector(t)}function z(t){function e(){}return e.prototype=t,new e}function Z(t){return N(t,"id")||N(t,"name")}function V(t,e,n){var r,o=Z(t),i=function(i){k(n,o)||(r=$(i),i?(!r||r&&!k(i,t))&&(r?i.push(t):e[o]=[i,t]):e[o]=t)};o&&(lt.hasExpr(o)?e.one("mount",function(){o=Z(t),i(e[o])}):i(e[o]))}function U(t,e){return t.slice(0,e.length)===e}function Q(t,e,n){var r=Y[e],o=t._innerHTML=t._innerHTML||t.innerHTML;return t.innerHTML="",r&&t&&(r=new g(r,{root:t,opts:n},o)),r&&r.mount&&(r.mount(),k(X,r)||X.push(r)),r}var G={version:"v2.3.17",settings:{}},J=0,X=[],Y={},W="__global_mixin",tt="riot-",et=tt+"tag",nt="data-is",rt="string",ot="object",it="undefined",ut="function",at=/^(?:t(?:body|head|foot|[rhd])|caption|col(?:group)?|opt(?:ion|group))$/,ft=["_item","_id","_parent","update","root","mount","unmount","mixin","isMounted","isLoop","tags","parent","opts","trigger","on","off","one"],ct=0|(i&&i.document||{}).documentMode;G.observable=function(t){t=t||{};var e={},n=Array.prototype.slice,r=function(t,e){t.replace(/\S+/g,e)};return Object.defineProperties(t,{on:{value:function(n,o){return"function"!=typeof o?t:(r(n,function(t,n){(e[t]=e[t]||[]).push(o),o.typed=n>0}),t)},enumerable:!1,writable:!1,configurable:!1},off:{value:function(n,o){return"*"!=n||o?r(n,function(t){if(o)for(var n,r=e[t],i=0;n=r&&r[i];++i)n==o&&r.splice(i--,1);else delete e[t]}):e={},t},enumerable:!1,writable:!1,configurable:!1},one:{value:function(e,n){function r(){t.off(e,r),n.apply(t,arguments)}return t.on(e,r)},enumerable:!1,writable:!1,configurable:!1},trigger:{value:function(o){for(var i,u=arguments.length-1,a=new Array(u),f=0;u>f;f++)a[f]=arguments[f+1];return r(o,function(r){i=n.call(e[r]||[],0);for(var o,u=0;o=i[u];++u){if(o.busy)return;o.busy=1,o.apply(t,o.typed?[r].concat(a):a),i[u]!==o&&u--,o.busy=0}e["*"]&&"*"!=r&&t.trigger.apply(t,["*",r].concat(a))}),t},enumerable:!1,writable:!1,configurable:!1}}),t},function(t){function e(t){return t.split(/[\/?#]/)}function n(t,e){var n=new RegExp("^"+e[N](/\*/g,"([^/?#]+?)")[N](/\.\./,".*")+"$"),r=t.match(n);return r?r.slice(1):void 0}function r(t,e){var n;return function(){clearTimeout(n),n=setTimeout(t,e)}}function o(t){h=r(l,1),L[w](R,h),L[w](T,h),S[w](k,p),t&&l(!0)}function u(){this.$=[],t.observable(this),P.on("stop",this.s.bind(this)),P.on("emit",this.e.bind(this))}function a(t){return t[N](/^\/|\/$/,"")}function f(t){return"string"==typeof t}function c(t){return(t||j.href||"")[N](b,"")}function s(t){return"#"==g[0]?(t||j.href||"").split(g)[1]||"":c(t)[N](g,"")}function l(t){var e=0==F;if(!(F>=E)&&(F++,H.push(function(){var e=s();(t||e!=v)&&(P[C]("emit",e),v=e)}),e)){for(;H.length;)H[0](),H.shift();F=0}}function p(t){if(!(1!=t.which||t.metaKey||t.ctrlKey||t.shiftKey||t.defaultPrevented)){for(var e=t.target;e&&"A"!=e.nodeName;)e=e.parentNode;!e||"A"!=e.nodeName||e[M]("download")||!e[M]("href")||e.target&&"_self"!=e.target||-1==e.href.indexOf(j.href.match(b)[0])||(e.href==j.href||e.href.split("#")[0]!=j.href.split("#")[0]&&("#"==g||0===c(e.href).indexOf(g))&&d(s(e.href),e.title||S.title))&&t.preventDefault()}}function d(t,e,n){return O?(t=g+a(t),e=e||S.title,n?O.replaceState(null,e,t):O.pushState(null,e,t),S.title=e,I=!1,l(),I):P[C]("emit",s(t))}var h,g,v,m,y,b=/^.+?\/+[^\/]+/,x="EventListener",_="remove"+x,w="add"+x,M="hasAttribute",N="replace",R="popstate",T="hashchange",C="trigger",E=3,L="undefined"!=typeof i&&i,S="undefined"!=typeof document&&document,O=L&&history,j=L&&(O.location||L.location),A=u.prototype,k=S&&S.ontouchstart?"touchstart":"click",$=!1,P=t.observable(),I=!1,H=[],F=0;A.m=function(t,e,n){!f(t)||e&&!f(e)?e?this.r(t,e):this.r("@",t):d(t,e,n||!1)},A.s=function(){this.off("*"),this.$=[]},A.e=function(t){this.$.concat("@").some(function(e){var n=("@"==e?m:y)(a(t),a(e));return"undefined"!=typeof n?(this[C].apply(null,[e].concat(n)),I=!0):void 0},this)},A.r=function(t,e){"@"!=t&&(t="/"+a(t),this.$.push(t)),this.on(t,e)};var q=new u,B=q.m.bind(q);B.create=function(){var t=new u;return t.m.stop=t.s.bind(t),t.m.bind(t)},B.base=function(t){g=t||"#",v=s()},B.exec=function(){l(!0)},B.parser=function(t,r){t||r||(m=e,y=n),t&&(m=t),r&&(y=r)},B.query=function(){var t={},e=j.href||v;return e[N](/[?&](.+?)=([^&]*)/g,function(e,n,r){t[n]=r}),t},B.stop=function(){$&&(L&&(L[_](R,h),L[_](T,h),S[_](k,p)),P[C]("stop"),$=!1)},B.start=function(t){$||(L&&("complete"==document.readyState?o(t):L[w]("load",function(){setTimeout(function(){o(t)},1)})),$=!0)},B.base(),B.parser(),t.route=B}(G);var st=function(t){function e(t){return t}function n(t,e){return e||(e=m),new RegExp(t.source.replace(/{/g,e[2]).replace(/}/g,e[3]),t.global?c:"")}function r(t){if(t===h)return g;var e=t.split(" ");if(2!==e.length||/[\x00-\x1F<>a-zA-Z0-9'",;\\]/.test(t))throw new Error('Unsupported brackets "'+t+'"');return e=e.concat(t.replace(/(?=[[\]()*+?.^$|])/g,"\\").split(" ")),e[4]=n(e[1].length>1?/{[\S\s]*?}/:g[4],e),e[5]=n(t.length>3?/\\({|})/g:g[5],e),e[6]=n(g[6],e),e[7]=RegExp("\\\\("+e[3]+")|([[({])|("+e[3]+")|"+p,c),e[8]=t,e}function o(t){return t instanceof RegExp?a(t):m[t]}function i(t){(t||(t=h))!==m[8]&&(m=r(t),a=t===h?e:n,m[9]=a(g[9]),m[10]=a(g[10])),v=t}function u(t){var e;t=t||{},e=t.brackets,Object.defineProperty(t,"brackets",{set:i,get:function(){return v},enumerable:!0}),f=t,i(e)}var a,f,c="g",s=/\/\*[^*]*\*+(?:[^*\/][^*]*\*+)*\//g,l=/"[^"\\]*(?:\\[\S\s][^"\\]*)*"|'[^'\\]*(?:\\[\S\s][^'\\]*)*'/g,p=l.source+"|"+/(?:\breturn\s+|(?:[$\w\)\]]|\+\+|--)\s*(\/)(?![*\/]))/.source+"|"+/\/(?=[^*\/])[^[\/\\]*(?:(?:\[(?:\\.|[^\]\\]*)*\]|\\.)[^[\/\\]*)*?(\/)[gim]*/.source,d={"(":RegExp("([()])|"+p,c),"[":RegExp("([[\\]])|"+p,c),"{":RegExp("([{}])|"+p,c)},h="{ }",g=["{","}","{","}",/{[^}]*}/,/\\([{}])/g,/\\({)|{/g,RegExp("\\\\(})|([[({])|(})|"+p,c),h,/^\s*{\^?\s*([$\w]+)(?:\s*,\s*(\S+))?\s+in\s+(\S.*)\s*}/,/(^|[^\\]){=[\S\s]*?}/],v=t,m=[];return o.split=function(t,e,n){function r(t){e||u?c.push(t&&t.replace(n[5],"$1")):c.push(t)}function o(t,e,n){var r,o=d[e];for(o.lastIndex=n,n=1;(r=o.exec(t))&&(!r[1]||(r[1]===e?++n:--n)););return n?t.length:o.lastIndex}n||(n=m);var i,u,a,f,c=[],s=n[6];for(u=a=s.lastIndex=0;i=s.exec(t);){if(f=i.index,u){if(i[2]){s.lastIndex=o(t,i[2],s.lastIndex);continue}if(!i[3])continue}i[1]||(r(t.slice(a,f)),a=s.lastIndex,s=n[6+(u^=1)],s.lastIndex=a)}return t&&a<t.length&&r(t.slice(a)),c},o.hasExpr=function(t){return m[4].test(t)},o.loopKeys=function(t){var e=t.match(m[9]);return e?{key:e[1],pos:e[2],val:m[0]+e[3].trim()+m[1]}:{val:t.trim()}},o.hasRaw=function(t){return m[10].test(t)},o.array=function(t){return t?r(t):m},Object.defineProperty(o,"settings",{set:u,get:function(){return f}}),o.settings="undefined"!=typeof G&&G.settings||{},o.set=i,o.R_STRINGS=l,o.R_MLCOMMS=s,o.S_QBLOCKS=p,o}(),lt=function(){function t(t,r){return t?(f[t]||(f[t]=n(t))).call(r,e):t}function e(e,n){t.errorHandler&&(e.riotData={tagName:n&&n.root&&n.root.tagName,_riot_id:n&&n._riot_id},t.errorHandler(e))}function n(t){var e=r(t);return"try{return "!==e.slice(0,11)&&(e="return "+e),new Function("E",e+";")}function r(t){var e,n=[],r=st.split(t.replace(/\u2057/g,'"'),1);if(r.length>2||r[0]){var o,i,a=[];for(o=i=0;o<r.length;++o)e=r[o],e&&(e=1&o?u(e,1,n):'"'+e.replace(/\\/g,"\\\\").replace(/\r\n?|\n/g,"\\n").replace(/"/g,'\\"')+'"')&&(a[i++]=e);e=2>i?a[0]:"["+a.join(",")+'].join("")'}else e=u(r[1],0,n);return n[0]&&(e=e.replace(s,function(t,e){return n[e].replace(/\r/g,"\\r").replace(/\n/g,"\\n")})),e}function u(t,e,n){function r(e,n){var r,o=1,i=l[e];for(i.lastIndex=n.lastIndex;r=i.exec(t);)if(r[0]===e)++o;else if(!--o)break;n.lastIndex=o?t.length:i.lastIndex}if("="===t[0]&&(t=t.slice(1)),t=t.replace(c,function(t,e){return t.length>2&&!e?""+(n.push(t)-1)+"~":t}).replace(/\s+/g," ").trim().replace(/\ ?([[\({},?\.:])\ ?/g,"$1")){for(var o,i=[],u=0;t&&(o=t.match(p))&&!o.index;){var f,s,d=/,|([[{(])|$/g;for(t=RegExp.rightContext,f=o[2]?n[o[2]].slice(1,-1).trim().replace(/\s+/g," "):o[1];s=(o=d.exec(t))[1];)r(s,d);s=t.slice(0,o.index),t=RegExp.rightContext,i[u++]=a(s,1,f)}t=u?u>1?"["+i.join(",")+'].join(" ").trim()':i[0]:a(t,e)}return t}function a(t,e,n){var r;return t=t.replace(h,function(t,e,n,o,i){return n&&(o=r?0:o+t.length,"this"!==n&&"global"!==n&&"window"!==n?(t=e+'("'+n+d+n,o&&(r="."===(i=i[o])||"("===i||"["===i)):o&&(r=!g.test(i.slice(o)))),t}),r&&(t="try{return "+t+"}catch(e){E(e,this)}"),n?t=(r?"function(){"+t+"}.call(this)":"("+t+")")+'?"'+n+'":""':e&&(t="function(v){"+(r?t.replace("return ","v="):"v=("+t+")")+';return v||v===0?v:""}.call(this)'),t}var f={};t.haveRaw=st.hasRaw,t.hasExpr=st.hasExpr,t.loopKeys=st.loopKeys,t.errorHandler=null;var c=RegExp(st.S_QBLOCKS,"g"),s=/\x01(\d+)~/g,l={"(":/[()]/g,"[":/[[\]]/g,"{":/[{}]/g},p=/^(?:(-?[_A-Za-z\xA0-\xFF][-\w\xA0-\xFF]*)|\x01(\d+)~):/,d='"in this?this:'+("object"!==("undefined"==typeof i?"undefined":o(i))?"global":"window")+").",h=/[,{][$\w]+:|(^ *|[^$\w\.])(?!(?:typeof|true|false|null|undefined|in|instanceof|is(?:Finite|NaN)|void|NaN|new|Date|RegExp|Math)(?![$\w]))([$_A-Za-z][$\w]*)/g,g=/^(?=(\.[$\w]+))\1(?:[^.[(]|$)/;return t.parse=function(t){return t},t.version=st.version="v2.3.21",t}(),pt=function gt(){function gt(n,r){var o=n&&n.match(/^\s*<([-\w]+)/),i=o&&o[1].toLowerCase(),u=B("div");return n=e(n,r),a.test(i)?u=t(u,n,i):u.innerHTML=n,u.stub=!0,u}function t(t,e,n){var r="o"===n[0],o=r?"select>":"table>";if(t.innerHTML="<"+o+e.trim()+"</"+o,o=t.firstChild,r)o.selectedIndex=-1;else{var i=u[n];i&&1===o.childElementCount&&(o=K(i,o))}return o}function e(t,e){if(!n.test(t))return t;var u={};return e=e&&e.replace(o,function(t,e,n){return u[e]=u[e]||n,""}).trim(),t.replace(i,function(t,e,n){return u[e]||n||""}).replace(r,function(t,n){return e||n||""})}var n=/<yield\b/i,r=/<yield\s*(?:\/>|>([\S\s]*?)<\/yield\s*>)/gi,o=/<yield\s+to=['"]([^'">]*)['"]\s*>([\S\s]*?)<\/yield\s*>/gi,i=/<yield\s+from=['"]?([-\w]+)['"]?\s*(?:\/>|>([\S\s]*?)<\/yield\s*>)/gi,u={tr:"tbody",th:"tr",td:"tr",col:"colgroup"},a=ct&&10>ct?at:/^(?:t(?:body|head|foot|[rhd])|caption|col(?:group)?)$/;return gt}(),dt=function(t){if(!i)return{add:function(){},inject:function(){}};var e=function(){var t=B("style");R(t,"type","text/css");var e=K("style[type=riot]");return e?(e.id&&(t.id=e.id),e.parentNode.replaceChild(t,e)):document.getElementsByTagName("head")[0].appendChild(t),t}(),n=e.styleSheet,r="";return Object.defineProperty(t,"styleNode",{value:e,writable:!0}),{add:function(t){r+=t},inject:function(){r&&(n?n.cssText+=r:e.innerHTML+=r,r="")}}}(G),ht=function(t){var e=t.requestAnimationFrame||t.mozRequestAnimationFrame||t.webkitRequestAnimationFrame;if(!e||/iP(ad|hone|od).*OS 6/.test(t.navigator.userAgent)){var n=0;e=function(t){var e=Date.now(),r=Math.max(16-(e-n),0);setTimeout(function(){t(n=e+r)},r)}}return e}(i||{});G.util={brackets:st,tmpl:lt},G.mixin=function(){var t={};return function(e,n){return _(e)?(n=e,void(t[W]=A(t[W]||{},n))):n?void(t[e]=n):t[e]}}(),G.tag=function(t,e,n,r,o){return x(r)&&(o=r,/^[\w\-]+\s?=/.test(n)?(r=n,n=""):r=""),n&&(x(n)?o=n:dt.add(n)),t=t.toLowerCase(),Y[t]={name:t,tmpl:e,attrs:r,fn:o},t},G.tag2=function(t,e,n,r,o){return n&&dt.add(n),Y[t]={name:t,tmpl:e,attrs:r,fn:o},t},G.mount=function(t,e,n){function r(t){var e="";return b(t,function(t){/[^-\w]/.test(t)||(t=t.trim().toLowerCase(),e+=",["+nt+'="'+t+'"],['+et+'="'+t+'"]')}),e}function i(){var t=Object.keys(Y);return t+r(t)}function u(t){if(t.tagName){var r=N(t,nt)||N(t,et);e&&r!==e&&(r=e,R(t,nt,e));var o=Q(t,r||t.tagName.toLowerCase(),n);o&&c.push(o)}else t.length&&b(t,u)}var a,f,c=[];if(dt.inject(),_(e)&&(n=e,e=0),("undefined"==typeof t?"undefined":o(t))===rt?("*"===t?t=f=i():t+=r(t.split(/, */)),a=t?D(t):[]):a=t,"*"===e){if(e=f||i(),a.tagName)a=D(e,a);else{var s=[];b(a,function(t){s.push(D(e,t))}),a=s}e=0}return u(a),c},G.update=function(){return b(X,function(t){t.update()})},G.Tag=g,o(e)===ot?t.exports=G:o(n(4))===ut&&o(n(5))!==it?(r=function(){return G}.call(e,n,e,t),!(r!==u&&(t.exports=r))):i.riot=G}("undefined"!=typeof window?window:void 0)},function(t,e){t.exports=function(){throw new Error("define cannot be used indirect")}},function(t,e){(function(e){t.exports=e}).call(e,{})},function(t,e){"use strict";Object.defineProperty(e,"__esModule",{value:!0});e.viewify={hidden:!0}}]);
+webpackJsonp([0,1],[
+/* 0 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {'use strict';
+
+	var _index = __webpack_require__(4);
+
+	__webpack_require__(7);
+	Object.keys(_index.mixins).forEach(function (key) {
+	    console.log(_index.mixins[key]);
+	    riot.mixin(key, _index.mixins[key]);
+	});
+	riot.mount('*');
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	/* Riot v2.3.17, @license MIT */
+
+	;(function (window, undefined) {
+	  'use strict';
+
+	  var riot = { version: 'v2.3.17', settings: {} },
+
+	  // be aware, internal usage
+	  // ATTENTION: prefix the global dynamic variables with `__`
+
+	  // counter to give a unique id to all the Tag instances
+	  __uid = 0,
+
+	  // tags instances cache
+	  __virtualDom = [],
+
+	  // tags implementation cache
+	  __tagImpl = {},
+
+
+	  /**
+	   * Const
+	   */
+	  GLOBAL_MIXIN = '__global_mixin',
+
+
+	  // riot specific prefixes
+	  RIOT_PREFIX = 'riot-',
+	      RIOT_TAG = RIOT_PREFIX + 'tag',
+	      RIOT_TAG_IS = 'data-is',
+
+
+	  // for typeof == '' comparisons
+	  T_STRING = 'string',
+	      T_OBJECT = 'object',
+	      T_UNDEF = 'undefined',
+	      T_BOOL = 'boolean',
+	      T_FUNCTION = 'function',
+
+	  // special native tags that cannot be treated like the others
+	  SPECIAL_TAGS_REGEX = /^(?:t(?:body|head|foot|[rhd])|caption|col(?:group)?|opt(?:ion|group))$/,
+	      RESERVED_WORDS_BLACKLIST = ['_item', '_id', '_parent', 'update', 'root', 'mount', 'unmount', 'mixin', 'isMounted', 'isLoop', 'tags', 'parent', 'opts', 'trigger', 'on', 'off', 'one'],
+
+
+	  // version# for IE 8-11, 0 for others
+	  IE_VERSION = (window && window.document || {}).documentMode | 0;
+	  /* istanbul ignore next */
+	  riot.observable = function (el) {
+
+	    /**
+	     * Extend the original object or create a new empty one
+	     * @type { Object }
+	     */
+
+	    el = el || {};
+
+	    /**
+	     * Private variables and methods
+	     */
+	    var callbacks = {},
+	        slice = Array.prototype.slice,
+	        onEachEvent = function onEachEvent(e, fn) {
+	      e.replace(/\S+/g, fn);
+	    };
+
+	    // extend the object adding the observable methods
+	    Object.defineProperties(el, {
+	      /**
+	       * Listen to the given space separated list of `events` and execute the `callback` each time an event is triggered.
+	       * @param  { String } events - events ids
+	       * @param  { Function } fn - callback function
+	       * @returns { Object } el
+	       */
+	      on: {
+	        value: function value(events, fn) {
+	          if (typeof fn != 'function') return el;
+
+	          onEachEvent(events, function (name, pos) {
+	            (callbacks[name] = callbacks[name] || []).push(fn);
+	            fn.typed = pos > 0;
+	          });
+
+	          return el;
+	        },
+	        enumerable: false,
+	        writable: false,
+	        configurable: false
+	      },
+
+	      /**
+	       * Removes the given space separated list of `events` listeners
+	       * @param   { String } events - events ids
+	       * @param   { Function } fn - callback function
+	       * @returns { Object } el
+	       */
+	      off: {
+	        value: function value(events, fn) {
+	          if (events == '*' && !fn) callbacks = {};else {
+	            onEachEvent(events, function (name) {
+	              if (fn) {
+	                var arr = callbacks[name];
+	                for (var i = 0, cb; cb = arr && arr[i]; ++i) {
+	                  if (cb == fn) arr.splice(i--, 1);
+	                }
+	              } else delete callbacks[name];
+	            });
+	          }
+	          return el;
+	        },
+	        enumerable: false,
+	        writable: false,
+	        configurable: false
+	      },
+
+	      /**
+	       * Listen to the given space separated list of `events` and execute the `callback` at most once
+	       * @param   { String } events - events ids
+	       * @param   { Function } fn - callback function
+	       * @returns { Object } el
+	       */
+	      one: {
+	        value: function value(events, fn) {
+	          function on() {
+	            el.off(events, on);
+	            fn.apply(el, arguments);
+	          }
+	          return el.on(events, on);
+	        },
+	        enumerable: false,
+	        writable: false,
+	        configurable: false
+	      },
+
+	      /**
+	       * Execute all callback functions that listen to the given space separated list of `events`
+	       * @param   { String } events - events ids
+	       * @returns { Object } el
+	       */
+	      trigger: {
+	        value: function value(events) {
+
+	          // getting the arguments
+	          var arglen = arguments.length - 1,
+	              args = new Array(arglen),
+	              fns;
+
+	          for (var i = 0; i < arglen; i++) {
+	            args[i] = arguments[i + 1]; // skip first argument
+	          }
+
+	          onEachEvent(events, function (name) {
+
+	            fns = slice.call(callbacks[name] || [], 0);
+
+	            for (var i = 0, fn; fn = fns[i]; ++i) {
+	              if (fn.busy) return;
+	              fn.busy = 1;
+	              fn.apply(el, fn.typed ? [name].concat(args) : args);
+	              if (fns[i] !== fn) {
+	                i--;
+	              }
+	              fn.busy = 0;
+	            }
+
+	            if (callbacks['*'] && name != '*') el.trigger.apply(el, ['*', name].concat(args));
+	          });
+
+	          return el;
+	        },
+	        enumerable: false,
+	        writable: false,
+	        configurable: false
+	      }
+	    });
+
+	    return el;
+	  }
+	  /* istanbul ignore next */
+	  ;(function (riot) {
+
+	    /**
+	     * Simple client-side router
+	     * @module riot-route
+	     */
+
+	    var RE_ORIGIN = /^.+?\/+[^\/]+/,
+	        EVENT_LISTENER = 'EventListener',
+	        REMOVE_EVENT_LISTENER = 'remove' + EVENT_LISTENER,
+	        ADD_EVENT_LISTENER = 'add' + EVENT_LISTENER,
+	        HAS_ATTRIBUTE = 'hasAttribute',
+	        REPLACE = 'replace',
+	        POPSTATE = 'popstate',
+	        HASHCHANGE = 'hashchange',
+	        TRIGGER = 'trigger',
+	        MAX_EMIT_STACK_LEVEL = 3,
+	        win = typeof window != 'undefined' && window,
+	        doc = typeof document != 'undefined' && document,
+	        hist = win && history,
+	        loc = win && (hist.location || win.location),
+	        // see html5-history-api
+	    prot = Router.prototype,
+	        // to minify more
+	    clickEvent = doc && doc.ontouchstart ? 'touchstart' : 'click',
+	        started = false,
+	        central = riot.observable(),
+	        routeFound = false,
+	        debouncedEmit,
+	        base,
+	        current,
+	        parser,
+	        secondParser,
+	        emitStack = [],
+	        emitStackLevel = 0;
+
+	    /**
+	     * Default parser. You can replace it via router.parser method.
+	     * @param {string} path - current path (normalized)
+	     * @returns {array} array
+	     */
+	    function DEFAULT_PARSER(path) {
+	      return path.split(/[/?#]/);
+	    }
+
+	    /**
+	     * Default parser (second). You can replace it via router.parser method.
+	     * @param {string} path - current path (normalized)
+	     * @param {string} filter - filter string (normalized)
+	     * @returns {array} array
+	     */
+	    function DEFAULT_SECOND_PARSER(path, filter) {
+	      var re = new RegExp('^' + filter[REPLACE](/\*/g, '([^/?#]+?)')[REPLACE](/\.\./, '.*') + '$'),
+	          args = path.match(re);
+
+	      if (args) return args.slice(1);
+	    }
+
+	    /**
+	     * Simple/cheap debounce implementation
+	     * @param   {function} fn - callback
+	     * @param   {number} delay - delay in seconds
+	     * @returns {function} debounced function
+	     */
+	    function debounce(fn, delay) {
+	      var t;
+	      return function () {
+	        clearTimeout(t);
+	        t = setTimeout(fn, delay);
+	      };
+	    }
+
+	    /**
+	     * Set the window listeners to trigger the routes
+	     * @param {boolean} autoExec - see route.start
+	     */
+	    function start(autoExec) {
+	      debouncedEmit = debounce(emit, 1);
+	      win[ADD_EVENT_LISTENER](POPSTATE, debouncedEmit);
+	      win[ADD_EVENT_LISTENER](HASHCHANGE, debouncedEmit);
+	      doc[ADD_EVENT_LISTENER](clickEvent, click);
+	      if (autoExec) emit(true);
+	    }
+
+	    /**
+	     * Router class
+	     */
+	    function Router() {
+	      this.$ = [];
+	      riot.observable(this); // make it observable
+	      central.on('stop', this.s.bind(this));
+	      central.on('emit', this.e.bind(this));
+	    }
+
+	    function normalize(path) {
+	      return path[REPLACE](/^\/|\/$/, '');
+	    }
+
+	    function isString(str) {
+	      return typeof str == 'string';
+	    }
+
+	    /**
+	     * Get the part after domain name
+	     * @param {string} href - fullpath
+	     * @returns {string} path from root
+	     */
+	    function getPathFromRoot(href) {
+	      return (href || loc.href || '')[REPLACE](RE_ORIGIN, '');
+	    }
+
+	    /**
+	     * Get the part after base
+	     * @param {string} href - fullpath
+	     * @returns {string} path from base
+	     */
+	    function getPathFromBase(href) {
+	      return base[0] == '#' ? (href || loc.href || '').split(base)[1] || '' : getPathFromRoot(href)[REPLACE](base, '');
+	    }
+
+	    function emit(force) {
+	      // the stack is needed for redirections
+	      var isRoot = emitStackLevel == 0;
+	      if (MAX_EMIT_STACK_LEVEL <= emitStackLevel) return;
+
+	      emitStackLevel++;
+	      emitStack.push(function () {
+	        var path = getPathFromBase();
+	        if (force || path != current) {
+	          central[TRIGGER]('emit', path);
+	          current = path;
+	        }
+	      });
+	      if (isRoot) {
+	        while (emitStack.length) {
+	          emitStack[0]();
+	          emitStack.shift();
+	        }
+	        emitStackLevel = 0;
+	      }
+	    }
+
+	    function click(e) {
+	      if (e.which != 1 // not left click
+	       || e.metaKey || e.ctrlKey || e.shiftKey // or meta keys
+	       || e.defaultPrevented // or default prevented
+	      ) return;
+
+	      var el = e.target;
+	      while (el && el.nodeName != 'A') {
+	        el = el.parentNode;
+	      }if (!el || el.nodeName != 'A' // not A tag
+	       || el[HAS_ATTRIBUTE]('download') // has download attr
+	       || !el[HAS_ATTRIBUTE]('href') // has no href attr
+	       || el.target && el.target != '_self' // another window or frame
+	       || el.href.indexOf(loc.href.match(RE_ORIGIN)[0]) == -1 // cross origin
+	      ) return;
+
+	      if (el.href != loc.href) {
+	        if (el.href.split('#')[0] == loc.href.split('#')[0] // internal jump
+	         || base != '#' && getPathFromRoot(el.href).indexOf(base) !== 0 // outside of base
+	         || !go(getPathFromBase(el.href), el.title || doc.title) // route not found
+	        ) return;
+	      }
+
+	      e.preventDefault();
+	    }
+
+	    /**
+	     * Go to the path
+	     * @param {string} path - destination path
+	     * @param {string} title - page title
+	     * @param {boolean} shouldReplace - use replaceState or pushState
+	     * @returns {boolean} - route not found flag
+	     */
+	    function go(path, title, shouldReplace) {
+	      if (hist) {
+	        // if a browser
+	        path = base + normalize(path);
+	        title = title || doc.title;
+	        // browsers ignores the second parameter `title`
+	        shouldReplace ? hist.replaceState(null, title, path) : hist.pushState(null, title, path);
+	        // so we need to set it manually
+	        doc.title = title;
+	        routeFound = false;
+	        emit();
+	        return routeFound;
+	      }
+
+	      // Server-side usage: directly execute handlers for the path
+	      return central[TRIGGER]('emit', getPathFromBase(path));
+	    }
+
+	    /**
+	     * Go to path or set action
+	     * a single string:                go there
+	     * two strings:                    go there with setting a title
+	     * two strings and boolean:        replace history with setting a title
+	     * a single function:              set an action on the default route
+	     * a string/RegExp and a function: set an action on the route
+	     * @param {(string|function)} first - path / action / filter
+	     * @param {(string|RegExp|function)} second - title / action
+	     * @param {boolean} third - replace flag
+	     */
+	    prot.m = function (first, second, third) {
+	      if (isString(first) && (!second || isString(second))) go(first, second, third || false);else if (second) this.r(first, second);else this.r('@', first);
+	    };
+
+	    /**
+	     * Stop routing
+	     */
+	    prot.s = function () {
+	      this.off('*');
+	      this.$ = [];
+	    };
+
+	    /**
+	     * Emit
+	     * @param {string} path - path
+	     */
+	    prot.e = function (path) {
+	      this.$.concat('@').some(function (filter) {
+	        var args = (filter == '@' ? parser : secondParser)(normalize(path), normalize(filter));
+	        if (typeof args != 'undefined') {
+	          this[TRIGGER].apply(null, [filter].concat(args));
+	          return routeFound = true; // exit from loop
+	        }
+	      }, this);
+	    };
+
+	    /**
+	     * Register route
+	     * @param {string} filter - filter for matching to url
+	     * @param {function} action - action to register
+	     */
+	    prot.r = function (filter, action) {
+	      if (filter != '@') {
+	        filter = '/' + normalize(filter);
+	        this.$.push(filter);
+	      }
+	      this.on(filter, action);
+	    };
+
+	    var mainRouter = new Router();
+	    var route = mainRouter.m.bind(mainRouter);
+
+	    /**
+	     * Create a sub router
+	     * @returns {function} the method of a new Router object
+	     */
+	    route.create = function () {
+	      var newSubRouter = new Router();
+	      // stop only this sub-router
+	      newSubRouter.m.stop = newSubRouter.s.bind(newSubRouter);
+	      // return sub-router's main method
+	      return newSubRouter.m.bind(newSubRouter);
+	    };
+
+	    /**
+	     * Set the base of url
+	     * @param {(str|RegExp)} arg - a new base or '#' or '#!'
+	     */
+	    route.base = function (arg) {
+	      base = arg || '#';
+	      current = getPathFromBase(); // recalculate current path
+	    };
+
+	    /** Exec routing right now **/
+	    route.exec = function () {
+	      emit(true);
+	    };
+
+	    /**
+	     * Replace the default router to yours
+	     * @param {function} fn - your parser function
+	     * @param {function} fn2 - your secondParser function
+	     */
+	    route.parser = function (fn, fn2) {
+	      if (!fn && !fn2) {
+	        // reset parser for testing...
+	        parser = DEFAULT_PARSER;
+	        secondParser = DEFAULT_SECOND_PARSER;
+	      }
+	      if (fn) parser = fn;
+	      if (fn2) secondParser = fn2;
+	    };
+
+	    /**
+	     * Helper function to get url query as an object
+	     * @returns {object} parsed query
+	     */
+	    route.query = function () {
+	      var q = {};
+	      var href = loc.href || current;
+	      href[REPLACE](/[?&](.+?)=([^&]*)/g, function (_, k, v) {
+	        q[k] = v;
+	      });
+	      return q;
+	    };
+
+	    /** Stop routing **/
+	    route.stop = function () {
+	      if (started) {
+	        if (win) {
+	          win[REMOVE_EVENT_LISTENER](POPSTATE, debouncedEmit);
+	          win[REMOVE_EVENT_LISTENER](HASHCHANGE, debouncedEmit);
+	          doc[REMOVE_EVENT_LISTENER](clickEvent, click);
+	        }
+	        central[TRIGGER]('stop');
+	        started = false;
+	      }
+	    };
+
+	    /**
+	     * Start routing
+	     * @param {boolean} autoExec - automatically exec after starting if true
+	     */
+	    route.start = function (autoExec) {
+	      if (!started) {
+	        if (win) {
+	          if (document.readyState == 'complete') start(autoExec);
+	          // the timeout is needed to solve
+	          // a weird safari bug https://github.com/riot/route/issues/33
+	          else win[ADD_EVENT_LISTENER]('load', function () {
+	              setTimeout(function () {
+	                start(autoExec);
+	              }, 1);
+	            });
+	        }
+	        started = true;
+	      }
+	    };
+
+	    /** Prepare the router **/
+	    route.base();
+	    route.parser();
+
+	    riot.route = route;
+	  })(riot);
+	  /* istanbul ignore next */
+
+	  /**
+	   * The riot template engine
+	   * @version v2.3.21
+	   */
+
+	  /**
+	   * riot.util.brackets
+	   *
+	   * - `brackets    ` - Returns a string or regex based on its parameter
+	   * - `brackets.set` - Change the current riot brackets
+	   *
+	   * @module
+	   */
+
+	  var brackets = function (UNDEF) {
+
+	    var REGLOB = 'g',
+	        R_MLCOMMS = /\/\*[^*]*\*+(?:[^*\/][^*]*\*+)*\//g,
+	        R_STRINGS = /"[^"\\]*(?:\\[\S\s][^"\\]*)*"|'[^'\\]*(?:\\[\S\s][^'\\]*)*'/g,
+	        S_QBLOCKS = R_STRINGS.source + '|' + /(?:\breturn\s+|(?:[$\w\)\]]|\+\+|--)\s*(\/)(?![*\/]))/.source + '|' + /\/(?=[^*\/])[^[\/\\]*(?:(?:\[(?:\\.|[^\]\\]*)*\]|\\.)[^[\/\\]*)*?(\/)[gim]*/.source,
+	        FINDBRACES = {
+	      '(': RegExp('([()])|' + S_QBLOCKS, REGLOB),
+	      '[': RegExp('([[\\]])|' + S_QBLOCKS, REGLOB),
+	      '{': RegExp('([{}])|' + S_QBLOCKS, REGLOB)
+	    },
+	        DEFAULT = '{ }';
+
+	    var _pairs = ['{', '}', '{', '}', /{[^}]*}/, /\\([{}])/g, /\\({)|{/g, RegExp('\\\\(})|([[({])|(})|' + S_QBLOCKS, REGLOB), DEFAULT, /^\s*{\^?\s*([$\w]+)(?:\s*,\s*(\S+))?\s+in\s+(\S.*)\s*}/, /(^|[^\\]){=[\S\s]*?}/];
+
+	    var cachedBrackets = UNDEF,
+	        _regex,
+	        _cache = [],
+	        _settings;
+
+	    function _loopback(re) {
+	      return re;
+	    }
+
+	    function _rewrite(re, bp) {
+	      if (!bp) bp = _cache;
+	      return new RegExp(re.source.replace(/{/g, bp[2]).replace(/}/g, bp[3]), re.global ? REGLOB : '');
+	    }
+
+	    function _create(pair) {
+	      if (pair === DEFAULT) return _pairs;
+
+	      var arr = pair.split(' ');
+
+	      if (arr.length !== 2 || /[\x00-\x1F<>a-zA-Z0-9'",;\\]/.test(pair)) {
+	        throw new Error('Unsupported brackets "' + pair + '"');
+	      }
+	      arr = arr.concat(pair.replace(/(?=[[\]()*+?.^$|])/g, '\\').split(' '));
+
+	      arr[4] = _rewrite(arr[1].length > 1 ? /{[\S\s]*?}/ : _pairs[4], arr);
+	      arr[5] = _rewrite(pair.length > 3 ? /\\({|})/g : _pairs[5], arr);
+	      arr[6] = _rewrite(_pairs[6], arr);
+	      arr[7] = RegExp('\\\\(' + arr[3] + ')|([[({])|(' + arr[3] + ')|' + S_QBLOCKS, REGLOB);
+	      arr[8] = pair;
+	      return arr;
+	    }
+
+	    function _brackets(reOrIdx) {
+	      return reOrIdx instanceof RegExp ? _regex(reOrIdx) : _cache[reOrIdx];
+	    }
+
+	    _brackets.split = function split(str, tmpl, _bp) {
+	      // istanbul ignore next: _bp is for the compiler
+	      if (!_bp) _bp = _cache;
+
+	      var parts = [],
+	          match,
+	          isexpr,
+	          start,
+	          pos,
+	          re = _bp[6];
+
+	      isexpr = start = re.lastIndex = 0;
+
+	      while (match = re.exec(str)) {
+
+	        pos = match.index;
+
+	        if (isexpr) {
+
+	          if (match[2]) {
+	            re.lastIndex = skipBraces(str, match[2], re.lastIndex);
+	            continue;
+	          }
+	          if (!match[3]) continue;
+	        }
+
+	        if (!match[1]) {
+	          unescapeStr(str.slice(start, pos));
+	          start = re.lastIndex;
+	          re = _bp[6 + (isexpr ^= 1)];
+	          re.lastIndex = start;
+	        }
+	      }
+
+	      if (str && start < str.length) {
+	        unescapeStr(str.slice(start));
+	      }
+
+	      return parts;
+
+	      function unescapeStr(s) {
+	        if (tmpl || isexpr) parts.push(s && s.replace(_bp[5], '$1'));else parts.push(s);
+	      }
+
+	      function skipBraces(s, ch, ix) {
+	        var match,
+	            recch = FINDBRACES[ch];
+
+	        recch.lastIndex = ix;
+	        ix = 1;
+	        while (match = recch.exec(s)) {
+	          if (match[1] && !(match[1] === ch ? ++ix : --ix)) break;
+	        }
+	        return ix ? s.length : recch.lastIndex;
+	      }
+	    };
+
+	    _brackets.hasExpr = function hasExpr(str) {
+	      return _cache[4].test(str);
+	    };
+
+	    _brackets.loopKeys = function loopKeys(expr) {
+	      var m = expr.match(_cache[9]);
+	      return m ? { key: m[1], pos: m[2], val: _cache[0] + m[3].trim() + _cache[1] } : { val: expr.trim() };
+	    };
+
+	    _brackets.hasRaw = function (src) {
+	      return _cache[10].test(src);
+	    };
+
+	    _brackets.array = function array(pair) {
+	      return pair ? _create(pair) : _cache;
+	    };
+
+	    function _reset(pair) {
+	      if ((pair || (pair = DEFAULT)) !== _cache[8]) {
+	        _cache = _create(pair);
+	        _regex = pair === DEFAULT ? _loopback : _rewrite;
+	        _cache[9] = _regex(_pairs[9]);
+	        _cache[10] = _regex(_pairs[10]);
+	      }
+	      cachedBrackets = pair;
+	    }
+
+	    function _setSettings(o) {
+	      var b;
+	      o = o || {};
+	      b = o.brackets;
+	      Object.defineProperty(o, 'brackets', {
+	        set: _reset,
+	        get: function get() {
+	          return cachedBrackets;
+	        },
+	        enumerable: true
+	      });
+	      _settings = o;
+	      _reset(b);
+	    }
+
+	    Object.defineProperty(_brackets, 'settings', {
+	      set: _setSettings,
+	      get: function get() {
+	        return _settings;
+	      }
+	    });
+
+	    /* istanbul ignore next: in the browser riot is always in the scope */
+	    _brackets.settings = typeof riot !== 'undefined' && riot.settings || {};
+	    _brackets.set = _reset;
+
+	    _brackets.R_STRINGS = R_STRINGS;
+	    _brackets.R_MLCOMMS = R_MLCOMMS;
+	    _brackets.S_QBLOCKS = S_QBLOCKS;
+
+	    return _brackets;
+	  }();
+
+	  /**
+	   * @module tmpl
+	   *
+	   * tmpl          - Root function, returns the template value, render with data
+	   * tmpl.hasExpr  - Test the existence of a expression inside a string
+	   * tmpl.loopKeys - Get the keys for an 'each' loop (used by `_each`)
+	   */
+
+	  var tmpl = function () {
+
+	    var _cache = {};
+
+	    function _tmpl(str, data) {
+	      if (!str) return str;
+
+	      return (_cache[str] || (_cache[str] = _create(str))).call(data, _logErr);
+	    }
+
+	    _tmpl.haveRaw = brackets.hasRaw;
+
+	    _tmpl.hasExpr = brackets.hasExpr;
+
+	    _tmpl.loopKeys = brackets.loopKeys;
+
+	    _tmpl.errorHandler = null;
+
+	    function _logErr(err, ctx) {
+
+	      if (_tmpl.errorHandler) {
+
+	        err.riotData = {
+	          tagName: ctx && ctx.root && ctx.root.tagName,
+	          _riot_id: ctx && ctx._riot_id //eslint-disable-line camelcase
+	        };
+	        _tmpl.errorHandler(err);
+	      }
+	    }
+
+	    function _create(str) {
+
+	      var expr = _getTmpl(str);
+	      if (expr.slice(0, 11) !== 'try{return ') expr = 'return ' + expr;
+
+	      return new Function('E', expr + ';');
+	    }
+
+	    var RE_QBLOCK = RegExp(brackets.S_QBLOCKS, 'g'),
+	        RE_QBMARK = /\x01(\d+)~/g;
+
+	    function _getTmpl(str) {
+	      var qstr = [],
+	          expr,
+	          parts = brackets.split(str.replace(/\u2057/g, '"'), 1);
+
+	      if (parts.length > 2 || parts[0]) {
+	        var i,
+	            j,
+	            list = [];
+
+	        for (i = j = 0; i < parts.length; ++i) {
+
+	          expr = parts[i];
+
+	          if (expr && (expr = i & 1 ? _parseExpr(expr, 1, qstr) : '"' + expr.replace(/\\/g, '\\\\').replace(/\r\n?|\n/g, '\\n').replace(/"/g, '\\"') + '"')) list[j++] = expr;
+	        }
+
+	        expr = j < 2 ? list[0] : '[' + list.join(',') + '].join("")';
+	      } else {
+
+	        expr = _parseExpr(parts[1], 0, qstr);
+	      }
+
+	      if (qstr[0]) expr = expr.replace(RE_QBMARK, function (_, pos) {
+	        return qstr[pos].replace(/\r/g, '\\r').replace(/\n/g, '\\n');
+	      });
+
+	      return expr;
+	    }
+
+	    var RE_BREND = {
+	      '(': /[()]/g,
+	      '[': /[[\]]/g,
+	      '{': /[{}]/g
+	    },
+	        CS_IDENT = /^(?:(-?[_A-Za-z\xA0-\xFF][-\w\xA0-\xFF]*)|\x01(\d+)~):/;
+
+	    function _parseExpr(expr, asText, qstr) {
+
+	      if (expr[0] === '=') expr = expr.slice(1);
+
+	      expr = expr.replace(RE_QBLOCK, function (s, div) {
+	        return s.length > 2 && !div ? '\x01' + (qstr.push(s) - 1) + '~' : s;
+	      }).replace(/\s+/g, ' ').trim().replace(/\ ?([[\({},?\.:])\ ?/g, '$1');
+
+	      if (expr) {
+	        var list = [],
+	            cnt = 0,
+	            match;
+
+	        while (expr && (match = expr.match(CS_IDENT)) && !match.index) {
+	          var key,
+	              jsb,
+	              re = /,|([[{(])|$/g;
+
+	          expr = RegExp.rightContext;
+	          key = match[2] ? qstr[match[2]].slice(1, -1).trim().replace(/\s+/g, ' ') : match[1];
+
+	          while (jsb = (match = re.exec(expr))[1]) {
+	            skipBraces(jsb, re);
+	          }jsb = expr.slice(0, match.index);
+	          expr = RegExp.rightContext;
+
+	          list[cnt++] = _wrapExpr(jsb, 1, key);
+	        }
+
+	        expr = !cnt ? _wrapExpr(expr, asText) : cnt > 1 ? '[' + list.join(',') + '].join(" ").trim()' : list[0];
+	      }
+	      return expr;
+
+	      function skipBraces(ch, re) {
+	        var mm,
+	            lv = 1,
+	            ir = RE_BREND[ch];
+
+	        ir.lastIndex = re.lastIndex;
+	        while (mm = ir.exec(expr)) {
+	          if (mm[0] === ch) ++lv;else if (! --lv) break;
+	        }
+	        re.lastIndex = lv ? expr.length : ir.lastIndex;
+	      }
+	    }
+
+	    // istanbul ignore next: not both
+	    var JS_CONTEXT = '"in this?this:' + ((typeof window === 'undefined' ? 'undefined' : _typeof(window)) !== 'object' ? 'global' : 'window') + ').',
+	        JS_VARNAME = /[,{][$\w]+:|(^ *|[^$\w\.])(?!(?:typeof|true|false|null|undefined|in|instanceof|is(?:Finite|NaN)|void|NaN|new|Date|RegExp|Math)(?![$\w]))([$_A-Za-z][$\w]*)/g,
+	        JS_NOPROPS = /^(?=(\.[$\w]+))\1(?:[^.[(]|$)/;
+
+	    function _wrapExpr(expr, asText, key) {
+	      var tb;
+
+	      expr = expr.replace(JS_VARNAME, function (match, p, mvar, pos, s) {
+	        if (mvar) {
+	          pos = tb ? 0 : pos + match.length;
+
+	          if (mvar !== 'this' && mvar !== 'global' && mvar !== 'window') {
+	            match = p + '("' + mvar + JS_CONTEXT + mvar;
+	            if (pos) tb = (s = s[pos]) === '.' || s === '(' || s === '[';
+	          } else if (pos) {
+	            tb = !JS_NOPROPS.test(s.slice(pos));
+	          }
+	        }
+	        return match;
+	      });
+
+	      if (tb) {
+	        expr = 'try{return ' + expr + '}catch(e){E(e,this)}';
+	      }
+
+	      if (key) {
+
+	        expr = (tb ? 'function(){' + expr + '}.call(this)' : '(' + expr + ')') + '?"' + key + '":""';
+	      } else if (asText) {
+
+	        expr = 'function(v){' + (tb ? expr.replace('return ', 'v=') : 'v=(' + expr + ')') + ';return v||v===0?v:""}.call(this)';
+	      }
+
+	      return expr;
+	    }
+
+	    // istanbul ignore next: compatibility fix for beta versions
+	    _tmpl.parse = function (s) {
+	      return s;
+	    };
+
+	    _tmpl.version = brackets.version = 'v2.3.21';
+
+	    return _tmpl;
+	  }();
+
+	  /*
+	    lib/browser/tag/mkdom.js
+	  
+	    Includes hacks needed for the Internet Explorer version 9 and below
+	    See: http://kangax.github.io/compat-table/es5/#ie8
+	         http://codeplanet.io/dropping-ie8/
+	  */
+	  var mkdom = function _mkdom() {
+	    var reHasYield = /<yield\b/i,
+	        reYieldAll = /<yield\s*(?:\/>|>([\S\s]*?)<\/yield\s*>)/ig,
+	        reYieldSrc = /<yield\s+to=['"]([^'">]*)['"]\s*>([\S\s]*?)<\/yield\s*>/ig,
+	        reYieldDest = /<yield\s+from=['"]?([-\w]+)['"]?\s*(?:\/>|>([\S\s]*?)<\/yield\s*>)/ig;
+	    var rootEls = { tr: 'tbody', th: 'tr', td: 'tr', col: 'colgroup' },
+	        tblTags = IE_VERSION && IE_VERSION < 10 ? SPECIAL_TAGS_REGEX : /^(?:t(?:body|head|foot|[rhd])|caption|col(?:group)?)$/;
+
+	    /**
+	     * Creates a DOM element to wrap the given content. Normally an `DIV`, but can be
+	     * also a `TABLE`, `SELECT`, `TBODY`, `TR`, or `COLGROUP` element.
+	     *
+	     * @param   {string} templ  - The template coming from the custom tag definition
+	     * @param   {string} [html] - HTML content that comes from the DOM element where you
+	     *           will mount the tag, mostly the original tag in the page
+	     * @returns {HTMLElement} DOM element with _templ_ merged through `YIELD` with the _html_.
+	     */
+	    function _mkdom(templ, html) {
+	      var match = templ && templ.match(/^\s*<([-\w]+)/),
+	          tagName = match && match[1].toLowerCase(),
+	          el = mkEl('div');
+
+	      // replace all the yield tags with the tag inner html
+	      templ = replaceYield(templ, html);
+
+	      /* istanbul ignore next */
+	      if (tblTags.test(tagName)) el = specialTags(el, templ, tagName);else el.innerHTML = templ;
+
+	      el.stub = true;
+
+	      return el;
+	    }
+
+	    /*
+	      Creates the root element for table or select child elements:
+	      tr/th/td/thead/tfoot/tbody/caption/col/colgroup/option/optgroup
+	    */
+	    function specialTags(el, templ, tagName) {
+	      var select = tagName[0] === 'o',
+	          parent = select ? 'select>' : 'table>';
+
+	      // trim() is important here, this ensures we don't have artifacts,
+	      // so we can check if we have only one element inside the parent
+	      el.innerHTML = '<' + parent + templ.trim() + '</' + parent;
+	      parent = el.firstChild;
+
+	      // returns the immediate parent if tr/th/td/col is the only element, if not
+	      // returns the whole tree, as this can include additional elements
+	      if (select) {
+	        parent.selectedIndex = -1; // for IE9, compatible w/current riot behavior
+	      } else {
+	          // avoids insertion of cointainer inside container (ex: tbody inside tbody)
+	          var tname = rootEls[tagName];
+	          if (tname && parent.childElementCount === 1) parent = $(tname, parent);
+	        }
+	      return parent;
+	    }
+
+	    /*
+	      Replace the yield tag from any tag template with the innerHTML of the
+	      original tag in the page
+	    */
+	    function replaceYield(templ, html) {
+	      // do nothing if no yield
+	      if (!reHasYield.test(templ)) return templ;
+
+	      // be careful with #1343 - string on the source having `$1`
+	      var src = {};
+
+	      html = html && html.replace(reYieldSrc, function (_, ref, text) {
+	        src[ref] = src[ref] || text; // preserve first definition
+	        return '';
+	      }).trim();
+
+	      return templ.replace(reYieldDest, function (_, ref, def) {
+	        // yield with from - to attrs
+	        return src[ref] || def || '';
+	      }).replace(reYieldAll, function (_, def) {
+	        // yield without any "from"
+	        return html || def || '';
+	      });
+	    }
+
+	    return _mkdom;
+	  }();
+
+	  /**
+	   * Convert the item looped into an object used to extend the child tag properties
+	   * @param   { Object } expr - object containing the keys used to extend the children tags
+	   * @param   { * } key - value to assign to the new object returned
+	   * @param   { * } val - value containing the position of the item in the array
+	   * @returns { Object } - new object containing the values of the original item
+	   *
+	   * The variables 'key' and 'val' are arbitrary.
+	   * They depend on the collection type looped (Array, Object)
+	   * and on the expression used on the each tag
+	   *
+	   */
+	  function mkitem(expr, key, val) {
+	    var item = {};
+	    item[expr.key] = key;
+	    if (expr.pos) item[expr.pos] = val;
+	    return item;
+	  }
+
+	  /**
+	   * Unmount the redundant tags
+	   * @param   { Array } items - array containing the current items to loop
+	   * @param   { Array } tags - array containing all the children tags
+	   */
+	  function unmountRedundant(items, tags) {
+
+	    var i = tags.length,
+	        j = items.length,
+	        t;
+
+	    while (i > j) {
+	      t = tags[--i];
+	      tags.splice(i, 1);
+	      t.unmount();
+	    }
+	  }
+
+	  /**
+	   * Move the nested custom tags in non custom loop tags
+	   * @param   { Object } child - non custom loop tag
+	   * @param   { Number } i - current position of the loop tag
+	   */
+	  function moveNestedTags(child, i) {
+	    Object.keys(child.tags).forEach(function (tagName) {
+	      var tag = child.tags[tagName];
+	      if (isArray(tag)) each(tag, function (t) {
+	        moveChildTag(t, tagName, i);
+	      });else moveChildTag(tag, tagName, i);
+	    });
+	  }
+
+	  /**
+	   * Adds the elements for a virtual tag
+	   * @param { Tag } tag - the tag whose root's children will be inserted or appended
+	   * @param { Node } src - the node that will do the inserting or appending
+	   * @param { Tag } target - only if inserting, insert before this tag's first child
+	   */
+	  function addVirtual(tag, src, target) {
+	    var el = tag._root,
+	        sib;
+	    tag._virts = [];
+	    while (el) {
+	      sib = el.nextSibling;
+	      if (target) src.insertBefore(el, target._root);else src.appendChild(el);
+
+	      tag._virts.push(el); // hold for unmounting
+	      el = sib;
+	    }
+	  }
+
+	  /**
+	   * Move virtual tag and all child nodes
+	   * @param { Tag } tag - first child reference used to start move
+	   * @param { Node } src  - the node that will do the inserting
+	   * @param { Tag } target - insert before this tag's first child
+	   * @param { Number } len - how many child nodes to move
+	   */
+	  function moveVirtual(tag, src, target, len) {
+	    var el = tag._root,
+	        sib,
+	        i = 0;
+	    for (; i < len; i++) {
+	      sib = el.nextSibling;
+	      src.insertBefore(el, target._root);
+	      el = sib;
+	    }
+	  }
+
+	  /**
+	   * Manage tags having the 'each'
+	   * @param   { Object } dom - DOM node we need to loop
+	   * @param   { Tag } parent - parent tag instance where the dom node is contained
+	   * @param   { String } expr - string contained in the 'each' attribute
+	   */
+	  function _each(dom, parent, expr) {
+
+	    // remove the each property from the original tag
+	    remAttr(dom, 'each');
+
+	    var mustReorder = _typeof(getAttr(dom, 'no-reorder')) !== T_STRING || remAttr(dom, 'no-reorder'),
+	        tagName = getTagName(dom),
+	        impl = __tagImpl[tagName] || { tmpl: dom.outerHTML },
+	        useRoot = SPECIAL_TAGS_REGEX.test(tagName),
+	        root = dom.parentNode,
+	        ref = document.createTextNode(''),
+	        child = getTag(dom),
+	        isOption = tagName.toLowerCase() === 'option',
+	        // the option tags must be treated differently
+	    tags = [],
+	        oldItems = [],
+	        hasKeys,
+	        isVirtual = dom.tagName == 'VIRTUAL';
+
+	    // parse the each expression
+	    expr = tmpl.loopKeys(expr);
+
+	    // insert a marked where the loop tags will be injected
+	    root.insertBefore(ref, dom);
+
+	    // clean template code
+	    parent.one('before-mount', function () {
+
+	      // remove the original DOM node
+	      dom.parentNode.removeChild(dom);
+	      if (root.stub) root = parent.root;
+	    }).on('update', function () {
+	      // get the new items collection
+	      var items = tmpl(expr.val, parent),
+
+	      // create a fragment to hold the new DOM nodes to inject in the parent tag
+	      frag = document.createDocumentFragment();
+
+	      // object loop. any changes cause full redraw
+	      if (!isArray(items)) {
+	        hasKeys = items || false;
+	        items = hasKeys ? Object.keys(items).map(function (key) {
+	          return mkitem(expr, key, items[key]);
+	        }) : [];
+	      }
+
+	      // loop all the new items
+	      var i = 0,
+	          itemsLength = items.length;
+
+	      for (; i < itemsLength; i++) {
+	        // reorder only if the items are objects
+	        var item = items[i],
+	            _mustReorder = mustReorder && item instanceof Object && !hasKeys,
+	            oldPos = oldItems.indexOf(item),
+	            pos = ~oldPos && _mustReorder ? oldPos : i,
+
+	        // does a tag exist in this position?
+	        tag = tags[pos];
+
+	        item = !hasKeys && expr.key ? mkitem(expr, item, i) : item;
+
+	        // new tag
+	        if (!_mustReorder && !tag // with no-reorder we just update the old tags
+	         || _mustReorder && ! ~oldPos || !tag // by default we always try to reorder the DOM elements
+	        ) {
+
+	            tag = new Tag(impl, {
+	              parent: parent,
+	              isLoop: true,
+	              hasImpl: !!__tagImpl[tagName],
+	              root: useRoot ? root : dom.cloneNode(),
+	              item: item
+	            }, dom.innerHTML);
+
+	            tag.mount();
+
+	            if (isVirtual) tag._root = tag.root.firstChild; // save reference for further moves or inserts
+	            // this tag must be appended
+	            if (i == tags.length || !tags[i]) {
+	              // fix 1581
+	              if (isVirtual) addVirtual(tag, frag);else frag.appendChild(tag.root);
+	            }
+	            // this tag must be insert
+	            else {
+	                if (isVirtual) addVirtual(tag, root, tags[i]);else root.insertBefore(tag.root, tags[i].root); // #1374 some browsers reset selected here
+	                oldItems.splice(i, 0, item);
+	              }
+
+	            tags.splice(i, 0, tag);
+	            pos = i; // handled here so no move
+	          } else tag.update(item, true);
+
+	        // reorder the tag if it's not located in its previous position
+	        if (pos !== i && _mustReorder && tags[i] // fix 1581 unable to reproduce it in a test!
+	        ) {
+	            // update the DOM
+	            if (isVirtual) moveVirtual(tag, root, tags[i], dom.childNodes.length);else root.insertBefore(tag.root, tags[i].root);
+	            // update the position attribute if it exists
+	            if (expr.pos) tag[expr.pos] = i;
+	            // move the old tag instance
+	            tags.splice(i, 0, tags.splice(pos, 1)[0]);
+	            // move the old item
+	            oldItems.splice(i, 0, oldItems.splice(pos, 1)[0]);
+	            // if the loop tags are not custom
+	            // we need to move all their custom tags into the right position
+	            if (!child && tag.tags) moveNestedTags(tag, i);
+	          }
+
+	        // cache the original item to use it in the events bound to this node
+	        // and its children
+	        tag._item = item;
+	        // cache the real parent tag internally
+	        defineProperty(tag, '_parent', parent);
+	      }
+
+	      // remove the redundant tags
+	      unmountRedundant(items, tags);
+
+	      // insert the new nodes
+	      if (isOption) {
+	        root.appendChild(frag);
+
+	        // #1374 <select> <option selected={true}> </select>
+	        if (root.length) {
+	          var si,
+	              op = root.options;
+
+	          root.selectedIndex = si = -1;
+	          for (i = 0; i < op.length; i++) {
+	            if (op[i].selected = op[i].__selected) {
+	              if (si < 0) root.selectedIndex = si = i;
+	            }
+	          }
+	        }
+	      } else root.insertBefore(frag, ref);
+
+	      // set the 'tags' property of the parent tag
+	      // if child is 'undefined' it means that we don't need to set this property
+	      // for example:
+	      // we don't need store the `myTag.tags['div']` property if we are looping a div tag
+	      // but we need to track the `myTag.tags['child']` property looping a custom child node named `child`
+	      if (child) parent.tags[tagName] = tags;
+
+	      // clone the items array
+	      oldItems = items.slice();
+	    });
+	  }
+	  /**
+	   * Object that will be used to inject and manage the css of every tag instance
+	   */
+	  var styleManager = function (_riot) {
+
+	    if (!window) return { // skip injection on the server
+	      add: function add() {},
+	      inject: function inject() {}
+	    };
+
+	    var styleNode = function () {
+	      // create a new style element with the correct type
+	      var newNode = mkEl('style');
+	      setAttr(newNode, 'type', 'text/css');
+
+	      // replace any user node or insert the new one into the head
+	      var userNode = $('style[type=riot]');
+	      if (userNode) {
+	        if (userNode.id) newNode.id = userNode.id;
+	        userNode.parentNode.replaceChild(newNode, userNode);
+	      } else document.getElementsByTagName('head')[0].appendChild(newNode);
+
+	      return newNode;
+	    }();
+
+	    // Create cache and shortcut to the correct property
+	    var cssTextProp = styleNode.styleSheet,
+	        stylesToInject = '';
+
+	    // Expose the style node in a non-modificable property
+	    Object.defineProperty(_riot, 'styleNode', {
+	      value: styleNode,
+	      writable: true
+	    });
+
+	    /**
+	     * Public api
+	     */
+	    return {
+	      /**
+	       * Save a tag style to be later injected into DOM
+	       * @param   { String } css [description]
+	       */
+	      add: function add(css) {
+	        stylesToInject += css;
+	      },
+	      /**
+	       * Inject all previously saved tag styles into DOM
+	       * innerHTML seems slow: http://jsperf.com/riot-insert-style
+	       */
+	      inject: function inject() {
+	        if (stylesToInject) {
+	          if (cssTextProp) cssTextProp.cssText += stylesToInject;else styleNode.innerHTML += stylesToInject;
+	          stylesToInject = '';
+	        }
+	      }
+	    };
+	  }(riot);
+
+	  function parseNamedElements(root, tag, childTags, forceParsingNamed) {
+
+	    walk(root, function (dom) {
+	      if (dom.nodeType == 1) {
+	        dom.isLoop = dom.isLoop || dom.parentNode && dom.parentNode.isLoop || getAttr(dom, 'each') ? 1 : 0;
+
+	        // custom child tag
+	        if (childTags) {
+	          var child = getTag(dom);
+
+	          if (child && !dom.isLoop) childTags.push(initChildTag(child, { root: dom, parent: tag }, dom.innerHTML, tag));
+	        }
+
+	        if (!dom.isLoop || forceParsingNamed) setNamed(dom, tag, []);
+	      }
+	    });
+	  }
+
+	  function parseExpressions(root, tag, expressions) {
+
+	    function addExpr(dom, val, extra) {
+	      if (tmpl.hasExpr(val)) {
+	        expressions.push(extend({ dom: dom, expr: val }, extra));
+	      }
+	    }
+
+	    walk(root, function (dom) {
+	      var type = dom.nodeType,
+	          attr;
+
+	      // text node
+	      if (type == 3 && dom.parentNode.tagName != 'STYLE') addExpr(dom, dom.nodeValue);
+	      if (type != 1) return;
+
+	      /* element */
+
+	      // loop
+	      attr = getAttr(dom, 'each');
+
+	      if (attr) {
+	        _each(dom, tag, attr);return false;
+	      }
+
+	      // attribute expressions
+	      each(dom.attributes, function (attr) {
+	        var name = attr.name,
+	            bool = name.split('__')[1];
+
+	        addExpr(dom, attr.value, { attr: bool || name, bool: bool });
+	        if (bool) {
+	          remAttr(dom, name);return false;
+	        }
+	      });
+
+	      // skip custom tags
+	      if (getTag(dom)) return false;
+	    });
+	  }
+	  function Tag(impl, conf, innerHTML) {
+
+	    var self = riot.observable(this),
+	        opts = inherit(conf.opts) || {},
+	        parent = conf.parent,
+	        isLoop = conf.isLoop,
+	        hasImpl = conf.hasImpl,
+	        item = cleanUpData(conf.item),
+	        expressions = [],
+	        childTags = [],
+	        root = conf.root,
+	        tagName = root.tagName.toLowerCase(),
+	        attr = {},
+	        implAttr = {},
+	        propsInSyncWithParent = [],
+	        dom;
+
+	    // only call unmount if we have a valid __tagImpl (has name property)
+	    if (impl.name && root._tag) root._tag.unmount(true);
+
+	    // not yet mounted
+	    this.isMounted = false;
+	    root.isLoop = isLoop;
+
+	    // keep a reference to the tag just created
+	    // so we will be able to mount this tag multiple times
+	    root._tag = this;
+
+	    // create a unique id to this tag
+	    // it could be handy to use it also to improve the virtual dom rendering speed
+	    defineProperty(this, '_riot_id', ++__uid); // base 1 allows test !t._riot_id
+
+	    extend(this, { parent: parent, root: root, opts: opts, tags: {} }, item);
+
+	    // grab attributes
+	    each(root.attributes, function (el) {
+	      var val = el.value;
+	      // remember attributes with expressions only
+	      if (tmpl.hasExpr(val)) attr[el.name] = val;
+	    });
+
+	    dom = mkdom(impl.tmpl, innerHTML);
+
+	    // options
+	    function updateOpts() {
+	      var ctx = hasImpl && isLoop ? self : parent || self;
+
+	      // update opts from current DOM attributes
+	      each(root.attributes, function (el) {
+	        var val = el.value;
+	        opts[toCamel(el.name)] = tmpl.hasExpr(val) ? tmpl(val, ctx) : val;
+	      });
+	      // recover those with expressions
+	      each(Object.keys(attr), function (name) {
+	        opts[toCamel(name)] = tmpl(attr[name], ctx);
+	      });
+	    }
+
+	    function normalizeData(data) {
+	      for (var key in item) {
+	        if (_typeof(self[key]) !== T_UNDEF && isWritable(self, key)) self[key] = data[key];
+	      }
+	    }
+
+	    function inheritFromParent() {
+	      if (!self.parent || !isLoop) return;
+	      each(Object.keys(self.parent), function (k) {
+	        // some properties must be always in sync with the parent tag
+	        var mustSync = !contains(RESERVED_WORDS_BLACKLIST, k) && contains(propsInSyncWithParent, k);
+	        if (_typeof(self[k]) === T_UNDEF || mustSync) {
+	          // track the property to keep in sync
+	          // so we can keep it updated
+	          if (!mustSync) propsInSyncWithParent.push(k);
+	          self[k] = self.parent[k];
+	        }
+	      });
+	    }
+
+	    /**
+	     * Update the tag expressions and options
+	     * @param   { * }  data - data we want to use to extend the tag properties
+	     * @param   { Boolean } isInherited - is this update coming from a parent tag?
+	     * @returns { self }
+	     */
+	    defineProperty(this, 'update', function (data, isInherited) {
+
+	      // make sure the data passed will not override
+	      // the component core methods
+	      data = cleanUpData(data);
+	      // inherit properties from the parent
+	      inheritFromParent();
+	      // normalize the tag properties in case an item object was initially passed
+	      if (data && isObject(item)) {
+	        normalizeData(data);
+	        item = data;
+	      }
+	      extend(self, data);
+	      updateOpts();
+	      self.trigger('update', data);
+	      update(expressions, self);
+
+	      // the updated event will be triggered
+	      // once the DOM will be ready and all the re-flows are completed
+	      // this is useful if you want to get the "real" root properties
+	      // 4 ex: root.offsetWidth ...
+	      if (isInherited && self.parent)
+	        // closes #1599
+	        self.parent.one('updated', function () {
+	          self.trigger('updated');
+	        });else rAF(function () {
+	        self.trigger('updated');
+	      });
+
+	      return this;
+	    });
+
+	    defineProperty(this, 'mixin', function () {
+	      each(arguments, function (mix) {
+	        var instance;
+
+	        mix = (typeof mix === 'undefined' ? 'undefined' : _typeof(mix)) === T_STRING ? riot.mixin(mix) : mix;
+
+	        // check if the mixin is a function
+	        if (isFunction(mix)) {
+	          // create the new mixin instance
+	          instance = new mix();
+	          // save the prototype to loop it afterwards
+	          mix = mix.prototype;
+	        } else instance = mix;
+
+	        // loop the keys in the function prototype or the all object keys
+	        each(Object.getOwnPropertyNames(mix), function (key) {
+	          // bind methods to self
+	          if (key != 'init') self[key] = isFunction(instance[key]) ? instance[key].bind(self) : instance[key];
+	        });
+
+	        // init method will be called automatically
+	        if (instance.init) instance.init.bind(self)();
+	      });
+	      return this;
+	    });
+
+	    defineProperty(this, 'mount', function () {
+
+	      updateOpts();
+
+	      // add global mixin
+	      var globalMixin = riot.mixin(GLOBAL_MIXIN);
+	      if (globalMixin) self.mixin(globalMixin);
+
+	      // initialiation
+	      if (impl.fn) impl.fn.call(self, opts);
+
+	      // parse layout after init. fn may calculate args for nested custom tags
+	      parseExpressions(dom, self, expressions);
+
+	      // mount the child tags
+	      toggle(true);
+
+	      // update the root adding custom attributes coming from the compiler
+	      // it fixes also #1087
+	      if (impl.attrs) walkAttributes(impl.attrs, function (k, v) {
+	        setAttr(root, k, v);
+	      });
+	      if (impl.attrs || hasImpl) parseExpressions(self.root, self, expressions);
+
+	      if (!self.parent || isLoop) self.update(item);
+
+	      // internal use only, fixes #403
+	      self.trigger('before-mount');
+
+	      if (isLoop && !hasImpl) {
+	        // update the root attribute for the looped elements
+	        root = dom.firstChild;
+	      } else {
+	        while (dom.firstChild) {
+	          root.appendChild(dom.firstChild);
+	        }if (root.stub) root = parent.root;
+	      }
+
+	      defineProperty(self, 'root', root);
+
+	      // parse the named dom nodes in the looped child
+	      // adding them to the parent as well
+	      if (isLoop) parseNamedElements(self.root, self.parent, null, true);
+
+	      // if it's not a child tag we can trigger its mount event
+	      if (!self.parent || self.parent.isMounted) {
+	        self.isMounted = true;
+	        self.trigger('mount');
+	      }
+	      // otherwise we need to wait that the parent event gets triggered
+	      else self.parent.one('mount', function () {
+	          // avoid to trigger the `mount` event for the tags
+	          // not visible included in an if statement
+	          if (!isInStub(self.root)) {
+	            self.parent.isMounted = self.isMounted = true;
+	            self.trigger('mount');
+	          }
+	        });
+	    });
+
+	    defineProperty(this, 'unmount', function (keepRootTag) {
+	      var el = root,
+	          p = el.parentNode,
+	          ptag,
+	          tagIndex = __virtualDom.indexOf(self);
+
+	      self.trigger('before-unmount');
+
+	      // remove this tag instance from the global virtualDom variable
+	      if (~tagIndex) __virtualDom.splice(tagIndex, 1);
+
+	      if (this._virts) {
+	        each(this._virts, function (v) {
+	          if (v.parentNode) v.parentNode.removeChild(v);
+	        });
+	      }
+
+	      if (p) {
+
+	        if (parent) {
+	          ptag = getImmediateCustomParentTag(parent);
+	          // remove this tag from the parent tags object
+	          // if there are multiple nested tags with same name..
+	          // remove this element form the array
+	          if (isArray(ptag.tags[tagName])) each(ptag.tags[tagName], function (tag, i) {
+	            if (tag._riot_id == self._riot_id) ptag.tags[tagName].splice(i, 1);
+	          });else
+	            // otherwise just delete the tag instance
+	            ptag.tags[tagName] = undefined;
+	        } else while (el.firstChild) {
+	          el.removeChild(el.firstChild);
+	        }if (!keepRootTag) p.removeChild(el);else
+	          // the riot-tag attribute isn't needed anymore, remove it
+	          remAttr(p, 'riot-tag');
+	      }
+
+	      self.trigger('unmount');
+	      toggle();
+	      self.off('*');
+	      self.isMounted = false;
+	      delete root._tag;
+	    });
+
+	    // proxy function to bind updates
+	    // dispatched from a parent tag
+	    function onChildUpdate(data) {
+	      self.update(data, true);
+	    }
+
+	    function toggle(isMount) {
+
+	      // mount/unmount children
+	      each(childTags, function (child) {
+	        child[isMount ? 'mount' : 'unmount']();
+	      });
+
+	      // listen/unlisten parent (events flow one way from parent to children)
+	      if (!parent) return;
+	      var evt = isMount ? 'on' : 'off';
+
+	      // the loop tags will be always in sync with the parent automatically
+	      if (isLoop) parent[evt]('unmount', self.unmount);else {
+	        parent[evt]('update', onChildUpdate)[evt]('unmount', self.unmount);
+	      }
+	    }
+
+	    // named elements available for fn
+	    parseNamedElements(dom, this, childTags);
+	  }
+	  /**
+	   * Attach an event to a DOM node
+	   * @param { String } name - event name
+	   * @param { Function } handler - event callback
+	   * @param { Object } dom - dom node
+	   * @param { Tag } tag - tag instance
+	   */
+	  function setEventHandler(name, handler, dom, tag) {
+
+	    dom[name] = function (e) {
+
+	      var ptag = tag._parent,
+	          item = tag._item,
+	          el;
+
+	      if (!item) while (ptag && !item) {
+	        item = ptag._item;
+	        ptag = ptag._parent;
+	      }
+
+	      // cross browser event fix
+	      e = e || window.event;
+
+	      // override the event properties
+	      if (isWritable(e, 'currentTarget')) e.currentTarget = dom;
+	      if (isWritable(e, 'target')) e.target = e.srcElement;
+	      if (isWritable(e, 'which')) e.which = e.charCode || e.keyCode;
+
+	      e.item = item;
+
+	      // prevent default behaviour (by default)
+	      if (handler.call(tag, e) !== true && !/radio|check/.test(dom.type)) {
+	        if (e.preventDefault) e.preventDefault();
+	        e.returnValue = false;
+	      }
+
+	      if (!e.preventUpdate) {
+	        el = item ? getImmediateCustomParentTag(ptag) : tag;
+	        el.update();
+	      }
+	    };
+	  }
+
+	  /**
+	   * Insert a DOM node replacing another one (used by if- attribute)
+	   * @param   { Object } root - parent node
+	   * @param   { Object } node - node replaced
+	   * @param   { Object } before - node added
+	   */
+	  function insertTo(root, node, before) {
+	    if (!root) return;
+	    root.insertBefore(before, node);
+	    root.removeChild(node);
+	  }
+
+	  /**
+	   * Update the expressions in a Tag instance
+	   * @param   { Array } expressions - expression that must be re evaluated
+	   * @param   { Tag } tag - tag instance
+	   */
+	  function update(expressions, tag) {
+
+	    each(expressions, function (expr, i) {
+
+	      var dom = expr.dom,
+	          attrName = expr.attr,
+	          value = tmpl(expr.expr, tag),
+	          parent = expr.dom.parentNode;
+
+	      if (expr.bool) {
+	        value = !!value;
+	        if (attrName === 'selected') dom.__selected = value; // #1374
+	      } else if (value == null) value = '';
+
+	      // #1638: regression of #1612, update the dom only if the value of the
+	      // expression was changed
+	      if (expr.value === value) {
+	        return;
+	      }
+	      expr.value = value;
+
+	      // textarea and text nodes has no attribute name
+	      if (!attrName) {
+	        // about #815 w/o replace: the browser converts the value to a string,
+	        // the comparison by "==" does too, but not in the server
+	        value += '';
+	        // test for parent avoids error with invalid assignment to nodeValue
+	        if (parent) {
+	          if (parent.tagName === 'TEXTAREA') {
+	            parent.value = value; // #1113
+	            if (!IE_VERSION) dom.nodeValue = value; // #1625 IE throws here, nodeValue
+	          } // will be available on 'updated'
+	          else dom.nodeValue = value;
+	        }
+	        return;
+	      }
+
+	      // ~~#1612: look for changes in dom.value when updating the value~~
+	      if (attrName === 'value') {
+	        dom.value = value;
+	        return;
+	      }
+
+	      // remove original attribute
+	      remAttr(dom, attrName);
+
+	      // event handler
+	      if (isFunction(value)) {
+	        setEventHandler(attrName, value, dom, tag);
+
+	        // if- conditional
+	      } else if (attrName == 'if') {
+	          var stub = expr.stub,
+	              add = function add() {
+	            insertTo(stub.parentNode, stub, dom);
+	          },
+	              remove = function remove() {
+	            insertTo(dom.parentNode, dom, stub);
+	          };
+
+	          // add to DOM
+	          if (value) {
+	            if (stub) {
+	              add();
+	              dom.inStub = false;
+	              // avoid to trigger the mount event if the tags is not visible yet
+	              // maybe we can optimize this avoiding to mount the tag at all
+	              if (!isInStub(dom)) {
+	                walk(dom, function (el) {
+	                  if (el._tag && !el._tag.isMounted) el._tag.isMounted = !!el._tag.trigger('mount');
+	                });
+	              }
+	            }
+	            // remove from DOM
+	          } else {
+	              stub = expr.stub = stub || document.createTextNode('');
+	              // if the parentNode is defined we can easily replace the tag
+	              if (dom.parentNode) remove();
+	              // otherwise we need to wait the updated event
+	              else (tag.parent || tag).one('updated', remove);
+
+	              dom.inStub = true;
+	            }
+	          // show / hide
+	        } else if (attrName === 'show') {
+	            dom.style.display = value ? '' : 'none';
+	          } else if (attrName === 'hide') {
+	            dom.style.display = value ? 'none' : '';
+	          } else if (expr.bool) {
+	            dom[attrName] = value;
+	            if (value) setAttr(dom, attrName, attrName);
+	          } else if (value === 0 || value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== T_OBJECT) {
+	            // <img src="{ expr }">
+	            if (startsWith(attrName, RIOT_PREFIX) && attrName != RIOT_TAG) {
+	              attrName = attrName.slice(RIOT_PREFIX.length);
+	            }
+	            setAttr(dom, attrName, value);
+	          }
+	    });
+	  }
+	  /**
+	   * Specialized function for looping an array-like collection with `each={}`
+	   * @param   { Array } els - collection of items
+	   * @param   {Function} fn - callback function
+	   * @returns { Array } the array looped
+	   */
+	  function each(els, fn) {
+	    var len = els ? els.length : 0;
+
+	    for (var i = 0, el; i < len; i++) {
+	      el = els[i];
+	      // return false -> current item was removed by fn during the loop
+	      if (el != null && fn(el, i) === false) i--;
+	    }
+	    return els;
+	  }
+
+	  /**
+	   * Detect if the argument passed is a function
+	   * @param   { * } v - whatever you want to pass to this function
+	   * @returns { Boolean } -
+	   */
+	  function isFunction(v) {
+	    return (typeof v === 'undefined' ? 'undefined' : _typeof(v)) === T_FUNCTION || false; // avoid IE problems
+	  }
+
+	  /**
+	   * Detect if the argument passed is an object, exclude null.
+	   * NOTE: Use isObject(x) && !isArray(x) to excludes arrays.
+	   * @param   { * } v - whatever you want to pass to this function
+	   * @returns { Boolean } -
+	   */
+	  function isObject(v) {
+	    return v && (typeof v === 'undefined' ? 'undefined' : _typeof(v)) === T_OBJECT; // typeof null is 'object'
+	  }
+
+	  /**
+	   * Remove any DOM attribute from a node
+	   * @param   { Object } dom - DOM node we want to update
+	   * @param   { String } name - name of the property we want to remove
+	   */
+	  function remAttr(dom, name) {
+	    dom.removeAttribute(name);
+	  }
+
+	  /**
+	   * Convert a string containing dashes to camel case
+	   * @param   { String } string - input string
+	   * @returns { String } my-string -> myString
+	   */
+	  function toCamel(string) {
+	    return string.replace(/-(\w)/g, function (_, c) {
+	      return c.toUpperCase();
+	    });
+	  }
+
+	  /**
+	   * Get the value of any DOM attribute on a node
+	   * @param   { Object } dom - DOM node we want to parse
+	   * @param   { String } name - name of the attribute we want to get
+	   * @returns { String | undefined } name of the node attribute whether it exists
+	   */
+	  function getAttr(dom, name) {
+	    return dom.getAttribute(name);
+	  }
+
+	  /**
+	   * Set any DOM attribute
+	   * @param { Object } dom - DOM node we want to update
+	   * @param { String } name - name of the property we want to set
+	   * @param { String } val - value of the property we want to set
+	   */
+	  function setAttr(dom, name, val) {
+	    dom.setAttribute(name, val);
+	  }
+
+	  /**
+	   * Detect the tag implementation by a DOM node
+	   * @param   { Object } dom - DOM node we need to parse to get its tag implementation
+	   * @returns { Object } it returns an object containing the implementation of a custom tag (template and boot function)
+	   */
+	  function getTag(dom) {
+	    return dom.tagName && __tagImpl[getAttr(dom, RIOT_TAG_IS) || getAttr(dom, RIOT_TAG) || dom.tagName.toLowerCase()];
+	  }
+	  /**
+	   * Add a child tag to its parent into the `tags` object
+	   * @param   { Object } tag - child tag instance
+	   * @param   { String } tagName - key where the new tag will be stored
+	   * @param   { Object } parent - tag instance where the new child tag will be included
+	   */
+	  function addChildTag(tag, tagName, parent) {
+	    var cachedTag = parent.tags[tagName];
+
+	    // if there are multiple children tags having the same name
+	    if (cachedTag) {
+	      // if the parent tags property is not yet an array
+	      // create it adding the first cached tag
+	      if (!isArray(cachedTag))
+	        // don't add the same tag twice
+	        if (cachedTag !== tag) parent.tags[tagName] = [cachedTag];
+	      // add the new nested tag to the array
+	      if (!contains(parent.tags[tagName], tag)) parent.tags[tagName].push(tag);
+	    } else {
+	      parent.tags[tagName] = tag;
+	    }
+	  }
+
+	  /**
+	   * Move the position of a custom tag in its parent tag
+	   * @param   { Object } tag - child tag instance
+	   * @param   { String } tagName - key where the tag was stored
+	   * @param   { Number } newPos - index where the new tag will be stored
+	   */
+	  function moveChildTag(tag, tagName, newPos) {
+	    var parent = tag.parent,
+	        tags;
+	    // no parent no move
+	    if (!parent) return;
+
+	    tags = parent.tags[tagName];
+
+	    if (isArray(tags)) tags.splice(newPos, 0, tags.splice(tags.indexOf(tag), 1)[0]);else addChildTag(tag, tagName, parent);
+	  }
+
+	  /**
+	   * Create a new child tag including it correctly into its parent
+	   * @param   { Object } child - child tag implementation
+	   * @param   { Object } opts - tag options containing the DOM node where the tag will be mounted
+	   * @param   { String } innerHTML - inner html of the child node
+	   * @param   { Object } parent - instance of the parent tag including the child custom tag
+	   * @returns { Object } instance of the new child tag just created
+	   */
+	  function initChildTag(child, opts, innerHTML, parent) {
+	    var tag = new Tag(child, opts, innerHTML),
+	        tagName = getTagName(opts.root),
+	        ptag = getImmediateCustomParentTag(parent);
+	    // fix for the parent attribute in the looped elements
+	    tag.parent = ptag;
+	    // store the real parent tag
+	    // in some cases this could be different from the custom parent tag
+	    // for example in nested loops
+	    tag._parent = parent;
+
+	    // add this tag to the custom parent tag
+	    addChildTag(tag, tagName, ptag);
+	    // and also to the real parent tag
+	    if (ptag !== parent) addChildTag(tag, tagName, parent);
+	    // empty the child node once we got its template
+	    // to avoid that its children get compiled multiple times
+	    opts.root.innerHTML = '';
+
+	    return tag;
+	  }
+
+	  /**
+	   * Loop backward all the parents tree to detect the first custom parent tag
+	   * @param   { Object } tag - a Tag instance
+	   * @returns { Object } the instance of the first custom parent tag found
+	   */
+	  function getImmediateCustomParentTag(tag) {
+	    var ptag = tag;
+	    while (!getTag(ptag.root)) {
+	      if (!ptag.parent) break;
+	      ptag = ptag.parent;
+	    }
+	    return ptag;
+	  }
+
+	  /**
+	   * Helper function to set an immutable property
+	   * @param   { Object } el - object where the new property will be set
+	   * @param   { String } key - object key where the new property will be stored
+	   * @param   { * } value - value of the new property
+	  * @param   { Object } options - set the propery overriding the default options
+	   * @returns { Object } - the initial object
+	   */
+	  function defineProperty(el, key, value, options) {
+	    Object.defineProperty(el, key, extend({
+	      value: value,
+	      enumerable: false,
+	      writable: false,
+	      configurable: false
+	    }, options));
+	    return el;
+	  }
+
+	  /**
+	   * Get the tag name of any DOM node
+	   * @param   { Object } dom - DOM node we want to parse
+	   * @returns { String } name to identify this dom node in riot
+	   */
+	  function getTagName(dom) {
+	    var child = getTag(dom),
+	        namedTag = getAttr(dom, 'name'),
+	        tagName = namedTag && !tmpl.hasExpr(namedTag) ? namedTag : child ? child.name : dom.tagName.toLowerCase();
+
+	    return tagName;
+	  }
+
+	  /**
+	   * Extend any object with other properties
+	   * @param   { Object } src - source object
+	   * @returns { Object } the resulting extended object
+	   *
+	   * var obj = { foo: 'baz' }
+	   * extend(obj, {bar: 'bar', foo: 'bar'})
+	   * console.log(obj) => {bar: 'bar', foo: 'bar'}
+	   *
+	   */
+	  function extend(src) {
+	    var obj,
+	        args = arguments;
+	    for (var i = 1; i < args.length; ++i) {
+	      if (obj = args[i]) {
+	        for (var key in obj) {
+	          // check if this property of the source object could be overridden
+	          if (isWritable(src, key)) src[key] = obj[key];
+	        }
+	      }
+	    }
+	    return src;
+	  }
+
+	  /**
+	   * Check whether an array contains an item
+	   * @param   { Array } arr - target array
+	   * @param   { * } item - item to test
+	   * @returns { Boolean } Does 'arr' contain 'item'?
+	   */
+	  function contains(arr, item) {
+	    return ~arr.indexOf(item);
+	  }
+
+	  /**
+	   * Check whether an object is a kind of array
+	   * @param   { * } a - anything
+	   * @returns {Boolean} is 'a' an array?
+	   */
+	  function isArray(a) {
+	    return Array.isArray(a) || a instanceof Array;
+	  }
+
+	  /**
+	   * Detect whether a property of an object could be overridden
+	   * @param   { Object }  obj - source object
+	   * @param   { String }  key - object property
+	   * @returns { Boolean } is this property writable?
+	   */
+	  function isWritable(obj, key) {
+	    var props = Object.getOwnPropertyDescriptor(obj, key);
+	    return _typeof(obj[key]) === T_UNDEF || props && props.writable;
+	  }
+
+	  /**
+	   * With this function we avoid that the internal Tag methods get overridden
+	   * @param   { Object } data - options we want to use to extend the tag instance
+	   * @returns { Object } clean object without containing the riot internal reserved words
+	   */
+	  function cleanUpData(data) {
+	    if (!(data instanceof Tag) && !(data && _typeof(data.trigger) == T_FUNCTION)) return data;
+
+	    var o = {};
+	    for (var key in data) {
+	      if (!contains(RESERVED_WORDS_BLACKLIST, key)) o[key] = data[key];
+	    }
+	    return o;
+	  }
+
+	  /**
+	   * Walk down recursively all the children tags starting dom node
+	   * @param   { Object }   dom - starting node where we will start the recursion
+	   * @param   { Function } fn - callback to transform the child node just found
+	   */
+	  function walk(dom, fn) {
+	    if (dom) {
+	      // stop the recursion
+	      if (fn(dom) === false) return;else {
+	        dom = dom.firstChild;
+
+	        while (dom) {
+	          walk(dom, fn);
+	          dom = dom.nextSibling;
+	        }
+	      }
+	    }
+	  }
+
+	  /**
+	   * Minimize risk: only zero or one _space_ between attr & value
+	   * @param   { String }   html - html string we want to parse
+	   * @param   { Function } fn - callback function to apply on any attribute found
+	   */
+	  function walkAttributes(html, fn) {
+	    var m,
+	        re = /([-\w]+) ?= ?(?:"([^"]*)|'([^']*)|({[^}]*}))/g;
+
+	    while (m = re.exec(html)) {
+	      fn(m[1].toLowerCase(), m[2] || m[3] || m[4]);
+	    }
+	  }
+
+	  /**
+	   * Check whether a DOM node is in stub mode, useful for the riot 'if' directive
+	   * @param   { Object }  dom - DOM node we want to parse
+	   * @returns { Boolean } -
+	   */
+	  function isInStub(dom) {
+	    while (dom) {
+	      if (dom.inStub) return true;
+	      dom = dom.parentNode;
+	    }
+	    return false;
+	  }
+
+	  /**
+	   * Create a generic DOM node
+	   * @param   { String } name - name of the DOM node we want to create
+	   * @returns { Object } DOM node just created
+	   */
+	  function mkEl(name) {
+	    return document.createElement(name);
+	  }
+
+	  /**
+	   * Shorter and fast way to select multiple nodes in the DOM
+	   * @param   { String } selector - DOM selector
+	   * @param   { Object } ctx - DOM node where the targets of our search will is located
+	   * @returns { Object } dom nodes found
+	   */
+	  function $$(selector, ctx) {
+	    return (ctx || document).querySelectorAll(selector);
+	  }
+
+	  /**
+	   * Shorter and fast way to select a single node in the DOM
+	   * @param   { String } selector - unique dom selector
+	   * @param   { Object } ctx - DOM node where the target of our search will is located
+	   * @returns { Object } dom node found
+	   */
+	  function $(selector, ctx) {
+	    return (ctx || document).querySelector(selector);
+	  }
+
+	  /**
+	   * Simple object prototypal inheritance
+	   * @param   { Object } parent - parent object
+	   * @returns { Object } child instance
+	   */
+	  function inherit(parent) {
+	    function Child() {}
+	    Child.prototype = parent;
+	    return new Child();
+	  }
+
+	  /**
+	   * Get the name property needed to identify a DOM node in riot
+	   * @param   { Object } dom - DOM node we need to parse
+	   * @returns { String | undefined } give us back a string to identify this dom node
+	   */
+	  function getNamedKey(dom) {
+	    return getAttr(dom, 'id') || getAttr(dom, 'name');
+	  }
+
+	  /**
+	   * Set the named properties of a tag element
+	   * @param { Object } dom - DOM node we need to parse
+	   * @param { Object } parent - tag instance where the named dom element will be eventually added
+	   * @param { Array } keys - list of all the tag instance properties
+	   */
+	  function setNamed(dom, parent, keys) {
+	    // get the key value we want to add to the tag instance
+	    var key = getNamedKey(dom),
+	        isArr,
+
+	    // add the node detected to a tag instance using the named property
+	    add = function add(value) {
+	      // avoid to override the tag properties already set
+	      if (contains(keys, key)) return;
+	      // check whether this value is an array
+	      isArr = isArray(value);
+	      // if the key was never set
+	      if (!value)
+	        // set it once on the tag instance
+	        parent[key] = dom;
+	        // if it was an array and not yet set
+	      else if (!isArr || isArr && !contains(value, dom)) {
+	          // add the dom node into the array
+	          if (isArr) value.push(dom);else parent[key] = [value, dom];
+	        }
+	    };
+
+	    // skip the elements with no named properties
+	    if (!key) return;
+
+	    // check whether this key has been already evaluated
+	    if (tmpl.hasExpr(key))
+	      // wait the first updated event only once
+	      parent.one('mount', function () {
+	        key = getNamedKey(dom);
+	        add(parent[key]);
+	      });else add(parent[key]);
+	  }
+
+	  /**
+	   * Faster String startsWith alternative
+	   * @param   { String } src - source string
+	   * @param   { String } str - test string
+	   * @returns { Boolean } -
+	   */
+	  function startsWith(src, str) {
+	    return src.slice(0, str.length) === str;
+	  }
+
+	  /**
+	   * requestAnimationFrame function
+	   * Adapted from https://gist.github.com/paulirish/1579671, license MIT
+	   */
+	  var rAF = function (w) {
+	    var raf = w.requestAnimationFrame || w.mozRequestAnimationFrame || w.webkitRequestAnimationFrame;
+
+	    if (!raf || /iP(ad|hone|od).*OS 6/.test(w.navigator.userAgent)) {
+	      // buggy iOS6
+	      var lastTime = 0;
+
+	      raf = function raf(cb) {
+	        var nowtime = Date.now(),
+	            timeout = Math.max(16 - (nowtime - lastTime), 0);
+	        setTimeout(function () {
+	          cb(lastTime = nowtime + timeout);
+	        }, timeout);
+	      };
+	    }
+	    return raf;
+	  }(window || {});
+
+	  /**
+	   * Mount a tag creating new Tag instance
+	   * @param   { Object } root - dom node where the tag will be mounted
+	   * @param   { String } tagName - name of the riot tag we want to mount
+	   * @param   { Object } opts - options to pass to the Tag instance
+	   * @returns { Tag } a new Tag instance
+	   */
+	  function mountTo(root, tagName, opts) {
+	    var tag = __tagImpl[tagName],
+
+	    // cache the inner HTML to fix #855
+	    innerHTML = root._innerHTML = root._innerHTML || root.innerHTML;
+
+	    // clear the inner html
+	    root.innerHTML = '';
+
+	    if (tag && root) tag = new Tag(tag, { root: root, opts: opts }, innerHTML);
+
+	    if (tag && tag.mount) {
+	      tag.mount();
+	      // add this tag to the virtualDom variable
+	      if (!contains(__virtualDom, tag)) __virtualDom.push(tag);
+	    }
+
+	    return tag;
+	  }
+	  /**
+	   * Riot public api
+	   */
+
+	  // share methods for other riot parts, e.g. compiler
+	  riot.util = { brackets: brackets, tmpl: tmpl };
+
+	  /**
+	   * Create a mixin that could be globally shared across all the tags
+	   */
+	  riot.mixin = function () {
+	    var mixins = {};
+
+	    /**
+	     * Create/Return a mixin by its name
+	     * @param   { String } name - mixin name (global mixin if missing)
+	     * @param   { Object } mixin - mixin logic
+	     * @returns { Object } the mixin logic
+	     */
+	    return function (name, mixin) {
+	      if (isObject(name)) {
+	        mixin = name;
+	        mixins[GLOBAL_MIXIN] = extend(mixins[GLOBAL_MIXIN] || {}, mixin);
+	        return;
+	      }
+
+	      if (!mixin) return mixins[name];
+	      mixins[name] = mixin;
+	    };
+	  }();
+
+	  /**
+	   * Create a new riot tag implementation
+	   * @param   { String }   name - name/id of the new riot tag
+	   * @param   { String }   html - tag template
+	   * @param   { String }   css - custom tag css
+	   * @param   { String }   attrs - root tag attributes
+	   * @param   { Function } fn - user function
+	   * @returns { String } name/id of the tag just created
+	   */
+	  riot.tag = function (name, html, css, attrs, fn) {
+	    if (isFunction(attrs)) {
+	      fn = attrs;
+	      if (/^[\w\-]+\s?=/.test(css)) {
+	        attrs = css;
+	        css = '';
+	      } else attrs = '';
+	    }
+	    if (css) {
+	      if (isFunction(css)) fn = css;else styleManager.add(css);
+	    }
+	    name = name.toLowerCase();
+	    __tagImpl[name] = { name: name, tmpl: html, attrs: attrs, fn: fn };
+	    return name;
+	  };
+
+	  /**
+	   * Create a new riot tag implementation (for use by the compiler)
+	   * @param   { String }   name - name/id of the new riot tag
+	   * @param   { String }   html - tag template
+	   * @param   { String }   css - custom tag css
+	   * @param   { String }   attrs - root tag attributes
+	   * @param   { Function } fn - user function
+	   * @returns { String } name/id of the tag just created
+	   */
+	  riot.tag2 = function (name, html, css, attrs, fn) {
+	    if (css) styleManager.add(css);
+	    //if (bpair) riot.settings.brackets = bpair
+	    __tagImpl[name] = { name: name, tmpl: html, attrs: attrs, fn: fn };
+	    return name;
+	  };
+
+	  /**
+	   * Mount a tag using a specific tag implementation
+	   * @param   { String } selector - tag DOM selector
+	   * @param   { String } tagName - tag implementation name
+	   * @param   { Object } opts - tag logic
+	   * @returns { Array } new tags instances
+	   */
+	  riot.mount = function (selector, tagName, opts) {
+
+	    var els,
+	        allTags,
+	        tags = [];
+
+	    // helper functions
+
+	    function addRiotTags(arr) {
+	      var list = '';
+	      each(arr, function (e) {
+	        if (!/[^-\w]/.test(e)) {
+	          e = e.trim().toLowerCase();
+	          list += ',[' + RIOT_TAG_IS + '="' + e + '"],[' + RIOT_TAG + '="' + e + '"]';
+	        }
+	      });
+	      return list;
+	    }
+
+	    function selectAllTags() {
+	      var keys = Object.keys(__tagImpl);
+	      return keys + addRiotTags(keys);
+	    }
+
+	    function pushTags(root) {
+	      if (root.tagName) {
+	        var riotTag = getAttr(root, RIOT_TAG_IS) || getAttr(root, RIOT_TAG);
+
+	        // have tagName? force riot-tag to be the same
+	        if (tagName && riotTag !== tagName) {
+	          riotTag = tagName;
+	          setAttr(root, RIOT_TAG_IS, tagName);
+	        }
+	        var tag = mountTo(root, riotTag || root.tagName.toLowerCase(), opts);
+
+	        if (tag) tags.push(tag);
+	      } else if (root.length) {
+	        each(root, pushTags); // assume nodeList
+	      }
+	    }
+
+	    // ----- mount code -----
+
+	    // inject styles into DOM
+	    styleManager.inject();
+
+	    if (isObject(tagName)) {
+	      opts = tagName;
+	      tagName = 0;
+	    }
+
+	    // crawl the DOM to find the tag
+	    if ((typeof selector === 'undefined' ? 'undefined' : _typeof(selector)) === T_STRING) {
+	      if (selector === '*')
+	        // select all the tags registered
+	        // and also the tags found with the riot-tag attribute set
+	        selector = allTags = selectAllTags();else
+	        // or just the ones named like the selector
+	        selector += addRiotTags(selector.split(/, */));
+
+	      // make sure to pass always a selector
+	      // to the querySelectorAll function
+	      els = selector ? $$(selector) : [];
+	    } else
+	      // probably you have passed already a tag or a NodeList
+	      els = selector;
+
+	    // select all the registered and mount them inside their root elements
+	    if (tagName === '*') {
+	      // get all custom tags
+	      tagName = allTags || selectAllTags();
+	      // if the root els it's just a single tag
+	      if (els.tagName) els = $$(tagName, els);else {
+	        // select all the children for all the different root elements
+	        var nodeList = [];
+	        each(els, function (_el) {
+	          nodeList.push($$(tagName, _el));
+	        });
+	        els = nodeList;
+	      }
+	      // get rid of the tagName
+	      tagName = 0;
+	    }
+
+	    pushTags(els);
+
+	    return tags;
+	  };
+
+	  /**
+	   * Update all the tags instances created
+	   * @returns { Array } all the tags instances
+	   */
+	  riot.update = function () {
+	    return each(__virtualDom, function (tag) {
+	      tag.update();
+	    });
+	  };
+
+	  /**
+	   * Export the Tag constructor
+	   */
+	  riot.Tag = Tag;
+	  // support CommonJS, AMD & browser
+	  /* istanbul ignore next */
+	  if (( false ? 'undefined' : _typeof(exports)) === T_OBJECT) module.exports = riot;else if (( false ? 'undefined' : _typeof(__webpack_require__(2))) === T_FUNCTION && _typeof(__webpack_require__(3)) !== T_UNDEF) !(__WEBPACK_AMD_DEFINE_RESULT__ = function () {
+	    return riot;
+	  }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));else window.riot = riot;
+	})(typeof window != 'undefined' ? window : void 0);
+
+/***/ },
+/* 2 */
+/***/ function(module, exports) {
+
+	module.exports = function() { throw new Error("define cannot be used indirect"); };
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;
+
+	/* WEBPACK VAR INJECTION */}.call(exports, {}))
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.mixins = undefined;
+
+	var _router = __webpack_require__(5);
+
+	var _viewify = __webpack_require__(6);
+
+	var mixins = exports.mixins = {
+	    router: _router.router,
+	    viewify: _viewify.viewify
+	};
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.router = undefined;
+
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+	var _riot = __webpack_require__(1);
+
+	var _riot2 = _interopRequireDefault(_riot);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var hub = _riot2.default.observable();
+
+	hub.routesMap = {};
+
+	hub.defaultRoute = null;
+
+	hub.init = function () {
+	    hub._parseRoute();
+	    _riot2.default.route(hub._doRoute());
+	    _riot2.default.route.start();
+	    nextTick(_riot2.default.route.exec, 0);
+	    function nextTick(fn) {
+	        setTimeout(fn, 0);
+	    }
+	};
+
+	hub._parseRoute = function () {
+	    _riot2.default.route.parser(function (path) {
+	        var req = {};
+
+	        var _path$split = path.split('?');
+
+	        var _path$split2 = _slicedToArray(_path$split, 2);
+
+	        var uri = _path$split2[0];
+	        var queryString = _path$split2[1];
+
+	        var uriParts = uri.split('/');
+
+	        req.params = {};
+	        req.paramList = [];
+	        if (uri.match(/_(\w+)/g)) {
+	            req.paramList = uriParts.filter(function (p) {
+	                return p.match(/_(\w+)/g);
+	            }).map(function (o) {
+	                return o.slice(1);
+	            });
+	        }
+
+	        req.query = {};
+	        if (queryString) {
+	            queryString.split('&').map(function (i) {
+	                return req.query[i.split('=')[0]] = i.split('=')[1];
+	            });
+	        }
+
+	        req.hints = [];
+	        if (uriParts.length) {
+	            req.hints = uriParts.map(function (i, index) {
+	                if (index === 0) {
+	                    return i;
+	                }
+	                return combineUriParts(uriParts, index, i);
+	            });
+	        }
+	        return req;
+	    });
+	    function combineUriParts(parts, i, combined) {
+	        if (!parts.length || i <= 0) {
+	            return combined;
+	        }
+	        var uri = parts[i - 1] + '/' + combined;
+	        return combineUriParts(parts, --i, uri);
+	    }
+	};
+
+	hub.registerRoute = function (_ref, container) {
+	    var path = _ref.path;
+	    var name = _ref.name;
+	    var before = _ref.before;
+	    var redirectTo = _ref.redirectTo;
+
+	    hub.routesMap[path] = {
+	        before: before,
+	        redirectTo: redirectTo,
+	        tag: container.tags[name] };
+	    return this;
+	};
+
+	hub._doRoute = function () {
+	    var _this = this;
+
+	    return function (req) {
+	        var me = _this;
+	        var isFounded = false;
+	        var isBreak = false;
+	        function recursiveHints(hints) {
+	            if (!hints.length || isBreak) {
+	                return;
+	            }
+	            var path = hints[0];
+	            var request = {};
+
+	            var _me$_getMetaDataFromR = me._getMetaDataFromRouteMap(path);
+
+	            var route = _me$_getMetaDataFromR.route;
+	            var params = _me$_getMetaDataFromR.params;
+
+
+	            if (!route) {
+	                return recursiveHints(hints.slice(1));
+	            }
+	            var tag = route.tag;
+	            isFounded = true;
+	            request.params = params;
+	            request.query = req.query;
+	            var ctx = {
+	                request: request
+	            };
+	            if (route.redirectTo) {
+	                isBreak = true;
+	                return _riot2.default.route(route.redirectTo);
+	            }
+	            if (route.before) {
+	                route.before.apply(tag, [done, request]);
+	                return;
+	            }
+	            done();
+	            function done() {
+	                if (tag.hasOwnProperty('hidden')) {
+	                    tag.one('ready', function () {
+	                        hub._routeTo(tag);
+	                        recursiveHints(hints.slice(1));
+	                    });
+	                    tag.trigger('open', ctx);
+	                    return;
+	                }
+	                recursiveHints(hints.slice(1));
+	            }
+	        }
+	        recursiveHints(req.hints);
+	        if (!isFounded) {
+	            try {
+	                (function () {
+	                    var url = hub.defaultRoute.path;
+	                    var paramsParts = url.match(/_[a-zA-Z0-9:]+/g);
+	                    if (paramsParts && paramsParts.length) {
+	                        paramsParts.map(function (part) {
+	                            var key = part.slice(2);
+	                            var value = hub.defaultRoute.defaultRoute.params && hub.defaultRoute.defaultRoute.params[key] || "";
+	                            url = url.replace(new RegExp('_:' + key + '+'), '_' + value);
+	                        });
+	                    }
+	                    _riot2.default.route('/' + url);
+	                })();
+	            } catch (e) {
+	                console.warn(e);
+	                console.info('404');
+	            }
+	        }
+	    };
+	};
+
+	hub._routeTo = function (tag) {
+	    tag.hidden = false;
+	    tag.update();
+	    Object.keys(tag.parent.tags).map(function (k) {
+	        return tag.parent.tags[k];
+	    }).filter(function (t) {
+	        return t != tag;
+	    }).forEach(function (t) {
+	        if (tag.hasOwnProperty('hidden')) {
+	            t.hidden = true;
+	            t.update();
+	        }
+	    });
+	};
+
+	hub._getMetaDataFromRouteMap = function (routeKey) {
+	    routeKey = '/' + routeKey;
+	    var keys = Object.keys(this.routesMap);
+	    for (var i = 0, len = keys.length; i < len; i++) {
+	        var k = keys[i];
+	        var route = this.routesMap[k];
+	        if (toPattern(k) === toPattern(routeKey)) {
+	            var paramKeys = (extractParams(k) || []).map(function (i) {
+	                return i.slice(2);
+	            });
+	            var paramValues = (extractParams(routeKey) || []).map(function (i) {
+	                return i.slice(1);
+	            });
+	            return {
+	                route: route,
+	                params: composeObject(paramKeys, paramValues)
+	            };
+	        }
+	    }
+	    return {
+	        tag: null,
+	        params: null
+	    };
+	    function composeObject(ks, vs) {
+	        var o = {};
+	        if (!Array.isArray(ks) || !Array.isArray(vs) || ks.length != vs.length) {
+	            return o;
+	        }
+	        ks.forEach(function (k, index) {
+	            o[k] = vs[index];
+	        });
+	        return o;
+	    };
+	    function extractParams(path) {
+	        return path.match(/_[a-zA-Z0-9:]+/g);
+	    }
+	    function toPattern(route) {
+	        return route.replace(/_[a-zA-Z0-9:]+/g, "*");
+	    }
+	};
+
+	hub.init();
+
+	var router = exports.router = {
+	    defaultRoute: null,
+
+	    prefixPath: '',
+
+	    routesMap: null,
+
+	    _registerRoute: function _registerRoute(_ref2, container) {
+	        var path = _ref2.path;
+	        var name = _ref2.name;
+	        var before = _ref2.before;
+	        var redirectTo = _ref2.redirectTo;
+
+	        var me = this;
+	        if (!me.routesMap) {
+	            me.routesMap = {};
+	        }
+	        me.routesMap[path] = {
+	            name: name,
+	            before: before,
+	            tag: container.tags[name] };
+	        hub.registerRoute({ path: me.prefixPath + path, name: name, before: before, redirectTo: redirectTo }, container);
+	        return this;
+	    },
+
+	    prefix: function prefix(_prefix) {
+	        this.prefixPath = _prefix;
+	        return this;
+	    },
+
+	    routeConfig: function routeConfig(routes) {
+	        var _this2 = this;
+
+	        if (!this.prefixPath && this.parent && this.parent.routesMap) {
+	            this.prefixPath = (this.parent.prefixPath || '') + getPrefix(this);
+	        }
+	        routes.forEach(function (route) {
+	            if (route.defaultRoute) {
+	                hub.defaultRoute = route;
+	            }
+	            _this2._registerRoute(route, _this2);
+	        });
+	        function getPrefix(tag) {
+	            var returnPath = '';
+	            Object.keys(tag.parent.routesMap).forEach(function (path) {
+	                var route = tag.parent.routesMap[path];
+	                if (route.name === getTagName(tag)) {
+	                    returnPath = path;
+	                }
+	            });
+	            return returnPath;
+	        }
+	        function getTagName(tag) {
+	            return tag.root.localName;
+	        }
+	    }
+	};
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var viewify = exports.viewify = {
+	    hidden: true
+	};
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {__webpack_require__(8);
+	__webpack_require__(10);
+	__webpack_require__(11);
+
+	riot.tag2('app', '<a href="#/todo/list">todo list</a> <a href="#/todo/new">add todo</a> <todo-list></todo-list> <todo-new></todo-new> <todo-more></todo-more>', '', '', function(opts) {
+	        this.mixin('router');
+	        this.routeConfig([
+	            {
+	                path: '/todo/list',
+	                name: 'todo-list',
+	                defaultRoute: true
+	            },
+	            {
+	                path: '/todo/new',
+	                name: 'todo-new'
+	            },
+	            {
+	                path: '/todo/more/_:id',
+	                name: 'todo-more'
+	            }
+	        ])
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {__webpack_require__(9);
+
+	riot.tag2('todo-list', '<h3>TODO LIST</h3> <ul> <li each="{todo, i in todos}" class="{active: i===parent.activeTodo}"><a href="#/todo/list/_{todo.id}?name={todo.name}" onclick="{parent.onClick(i)}">{todo.id} | {todo.name}</a></li> </ul> <todo-detail></todo-detail>', '.active{ color: red; }', 'if="{!hidden}"', function(opts) {
+	        var me = this;
+	        me.mixin('router');
+	        me.mixin('viewify');
+	        me.todos = [
+	            {
+	                id: '1',
+	                name: 'todo1'
+	            },
+	            {
+	                id: '2',
+	                name: 'todo2'
+	            },
+	            {
+	                id: '3',
+	                name: 'todo3'
+	            }
+	        ];
+	        me.routeConfig([
+	            {
+	                path: '/_:id',
+	                name: 'todo-detail',
+	                before: function(done, request){
+	                    me.activeTodo = parseInt(request.params.id)-1;
+	                    me.update();
+	                    done();
+	                }
+	            }
+	        ])
+	        me.onClick = function(i){
+	            return function(){
+	                me.activeTodo = i;
+	                return true;
+	            }
+	        }
+	        me.on('open', function(ctx){
+	            console.log('routed to todo list');
+	            me.trigger('ready');
+	        })
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('todo-detail', '<div> <h4>TODO DETAIL</h4> <div>todo id: {id}</div> <div>todo decs: {name}</div> <a href="#/todo/more/_{id}?name={name}" class="btn">more</a> </div>', '.btn{ display: block; width: 48px; height: 24px; line-height: 24px; background: orange; text-align: center; border: none; }', 'if="{!hidden}"', function(opts) {
+	        var me = this;
+	        me.mixin('viewify');
+	        me.on('open', function(ctx){
+	            console.log('routed to todo detail');
+	            me.id = ctx.request.params.id;
+	            me.name = ctx.request.query.name;
+	            me.trigger('ready');
+	        })
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('todo-new', '<h3>ADD TODO</h3> <input type="text" name="todoName"> <input class="btn" type="button" onclick="{onSubmit}" value="submit">', '', 'if="{!hidden}"', function(opts) {
+	        var me = this;
+	        var id = 4;
+	        me.mixin('viewify');
+	        me.on('open', function(){
+	            me.todoName.value = "";
+	            me.trigger('ready');
+	        })
+	        me.onSubmit = function(){
+	            if(me.todoName.value.trim() === ''){
+	                return;
+	            }
+	            me.parent.tags['todo-list'].todos.push({
+	                id: id++,
+	                name: me.todoName.value.trim()
+	            })
+	            riot.route('//todo/list');
+	        }
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(riot) {riot.tag2('todo-more', '<h3>TODO INFO</h3> <h4> <label>NAME: </label> <br> <strong>{name}</strong> </h4> <hr> <h4> <label>ID: </label> <br> <strong>{id}</strong> </h4> <hr> <p> <label>DESCRIBE: </label> <br> balabalabala... </p>', '', 'if="{!hidden}"', function(opts) {
+	        var me = this;
+	        me.mixin('viewify');
+	        me.mixin('router');
+	        me.on('open', function(ctx){
+	            console.log('routed to todo detail');
+	            me.id = ctx.request.params.id;
+	            me.name = ctx.request.query.name;
+	            me.trigger('ready');
+	        })
+	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ }
+]);
