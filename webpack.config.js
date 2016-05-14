@@ -4,7 +4,7 @@ var path = require('path');
 
 module.exports = {
     entry: {
-        index: './web/marketing/sd/js/index.js'
+        index: './web/js/index.js'
     },
     output: {
         path: path.join(__dirname , '/web/build/js'),
@@ -14,10 +14,6 @@ module.exports = {
         extensions: ['', '.js'],
         root: __dirname,
         alias: {
-            fetch: '../../../../node_modules/components/isomorphic-fetch/fetch-npm-browserify.js',
-            'es6-promise': '../../../../node_modules/es6-promise/dist/es6-promise.min.js',
-            jQuery: '../../../../web/marketing/sd/framework/jQueryLean.js',
-            wx: '../../../../web/js/app/jssdk.js'
         }
     },
     module: {

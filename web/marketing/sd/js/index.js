@@ -1,7 +1,6 @@
 "use strict";
 import {} from 'jQuery';
 import {} from 'wx';
-
 import {app} from './app';
 import {actions} from '../actions/index';
 import {mixins} from '../mixins/index';
