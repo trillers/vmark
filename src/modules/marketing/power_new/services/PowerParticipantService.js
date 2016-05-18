@@ -334,7 +334,7 @@ Service.prototype.scanCoParticipantPoster = function*(user, participant, wechatI
         + '活动说明: \n' + participant.activity.desc;
     yield wechatApi.sendTextAsync(user.openid, replyToUser);
     yield wechatApi.sendImageAsync(user.openid, poster.mediaId);
-    if (helpArr.length >= participant.activity.friend_help_count_limit) {
+    if (helpArr.length == participant.activity.friend_help_count_limit) {
         replyToParticipant = '恭喜你,你的好友 ' + user.nickname + ' 帮你获得了上课链接,点击下方卡片进入';
         yield wechatApi.sendTextAsync(participant.user.openid, replyToParticipant);
         var articles = [
@@ -345,6 +345,11 @@ Service.prototype.scanCoParticipantPoster = function*(user, participant, wechatI
                 "picurl": participant.activity.shareImg
             }];
         yield wechatApi.sendNewsAsync(participant.user.openid, articles);
+        return;
+    }
+    if (helpArr.length > participant.activity.friend_help_count_limit) {
+        replyToParticipant = '恭喜你,你的好友 ' + user.nickname + ' 帮你助力咯,人气不错哦~~';
+        yield wechatApi.sendTextAsync(participant.user.openid, replyToParticipant);
         return;
     }
     var num = participant.activity.friend_help_count_limit - helpArr.length;

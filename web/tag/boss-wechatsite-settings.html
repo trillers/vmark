@@ -1,0 +1,191 @@
+<boss-wechatsite-settings>
+    <div id="tips" class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
+        <div if="{alert_success}" class="alert alert-success" role="alert" style="text-align: center">
+            <strong>{tip_msg}</strong>
+        </div>
+        <div  if="{alert_failed}" class="alert alert-danger" role="alert" style="text-align: center">
+            <strong>{tip_msg}</strong>
+        </div>
+    </div>
+    <div class="container" if="{!hidden}">
+        <div class="row" style="margin-top: 10px">
+            <div class="row">
+                <div class="col-md-2 col-md-offset-2 col-lg-offset-2">
+                    <a href="#wechatsite">返回公众号列表</a>
+                </div>
+                <div class="col-md-2 col-md-offset-1 col-lg-2 col-lg-offset-1" style="text-align: center"><h3>{wechatSite.name}</h3></div>
+            </div>
+            <div class="form-con col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
+                <div class="panel panel-default">
+                    <div class="panel-heading">公众号关注回复消息设置</div>
+                    <div class="panel-body">
+                        <div class="type-nav">
+                            <ul class="type-nav-ul" style="margin-left:0;">
+
+                                <li>
+                                    <a type="text" onclick="{selectType}" href="javascript:void(0);" onclick="return false;" class="{replyType == 'text' ? 'selected' : ''}"><i class="glyphicon glyphicon-pencil"></i>&nbsp;<span class="msg_tab_title">文字</span></a>
+                                </li>
+
+                                <li>
+                                    <a type="image" href="javascript:void(0);" class="{replyType == 'image' ? 'selected' : ''}"><i class="glyphicon glyphicon-picture"></i>&nbsp;<span class="msg_tab_title">图片</span></a>
+                                </li>
+
+                                <li>
+                                    <a type="voice" href="javascript:void(0);" class="{replyType == 'voice' ? 'selected' : ''}"><i class="glyphicon glyphicon-volume-up"></i>&nbsp;<span class="msg_tab_title">语音</span></a>
+                                </li>
+
+                                <li>
+                                    <a type="video" href="javascript:void(0);" class="{replyType == 'video' ? 'selected' : ''}"><i class="glyphicon glyphicon-facetime-video"></i>&nbsp;<span class="msg_tab_title">视频</span></a>
+                                </li>
+
+                            </ul>
+                        </div>
+                        <div if="{replyType == 'text'}" class="text-reply">
+                            <textarea id="text-reply-con" cols="30" rows="10">{reply_con}</textarea>
+                        </div>
+                        <div if="{replyType == 'image'}" class="text-reply">
+
+                        </div>
+                        <div if="{replyType == 'voice'}" class="text-reply">
+                            <br>
+                            <div style="margin-left: 30px;">开发中.......</div>
+                        </div>
+                        <div if="{replyType == 'video'}" class="text-reply">
+                            <br>
+                            <div style="margin-left: 30px;">开发中.......</div>
+                        </div>
+                        <div>
+                            <div class="btn btn-success btn-save" onclick="{subReplySave}">保存</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">公众号菜单设置</div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div style="margin-left: 30px;">开发中.......</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style scoped>
+        a {
+            cursor: pointer;
+        }
+        .row{
+            margin-top: 10px;
+        }
+        .panel-container >div{
+            height: 40px;
+            line-height: 40px;
+        }
+        .form-con {
+            margin-top: 15px;
+            padding: 0 0;
+        }
+        .type-nav {
+            border: solid 1px #C3C3C3;
+            height: 33px;
+        }
+        .type-nav-ul{
+            list-style: none;
+            margin-top: 5px;
+        }
+        .type-nav-ul li{
+            width: 15%;
+            float: left;
+        }
+        .type-nav-ul li a{
+            text-decoration: none;
+            color: #9A9494;
+        }
+        .type-nav-ul li a:hover{
+            text-decoration: none;
+            color: black !important;
+        }
+        .text-reply{
+            height: 200px;
+            border: solid 1px #C3C3C3;
+            border-top-style: none;
+            padding: 10px;
+        }
+        .selected {
+            color: black !important;
+        }
+        .btn-save {
+            margin-top: 5px;
+            width: 100px;
+        }
+        #text-reply-con{
+            height: 180px;
+            width: 100%;
+            resize: none;
+            border: none;
+        }
+        #text-reply-con:focus{
+            outline: none;
+        }
+    </style>
+    <script>
+        var self = nest.presentable(this);
+        var loadWechatSiteSettings = domain.action('loadWechatSiteSettings');
+        var saveWechatSiteSettings = domain.action('saveWechatSiteSettings');
+
+        self.on('open', function(opt){
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+            self.originalId = opt.id;
+            self.replyType = 'text';
+            loadWechatSiteSettings.newInvocation(self.originalId).onDone(function(data){
+                if(data){
+                    self.id = data._id;
+                    if(data.subscribeReply){
+                        self.replyType = data.subscribeReply.type;
+                        self.reply_con = data.subscribeReply.content;
+                    }
+                }
+                self.update();
+            }).execute();
+        });
+
+        self.on('mount', function(){
+            //TODO
+        })
+
+        self.selectType = function(e){
+            document.querySelector('a[class=selected]') && (document.querySelector('a[class=selected]').className = '');
+            e.currentTarget.className = 'selected';
+            self.replyType = e.currentTarget.type;
+        }
+
+        self.subReplySave = function(e){
+            var data = {
+                id: self.id,
+                originalId: self.originalId,
+                subscribeReply: {
+                    type: self.replyType
+                }
+            };
+            if(self.replyType === 'text'){
+                data.subscribeReply.content = document.querySelector('#text-reply-con').value.trim();
+            }
+            saveWechatSiteSettings.newInvocation(data).onDone(function(res){
+                if(res.success){
+                    self.id = res.data._id;
+                    self.update({'alert_success': true, 'tip_msg': '保存关注自动回复成功'});
+                }else{
+                    self.update({'alert_failed': true, 'tip_msg': '保存关注自动回复失败'});
+                }
+                tipFade();
+            }).execute();
+        }
+
+        var tipFade = function(){
+            setTimeout(function(){
+                self.update({'alert_success': false, 'alert_failed': false, 'tip_msg': ''});
+            }, 2000);
+        }
+    </script>
+</boss-wechatsite-settings>

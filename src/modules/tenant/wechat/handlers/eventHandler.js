@@ -2,6 +2,9 @@ var co = require('co');
 var logger = require('../../../../app/logging').logger;
 var context = require('../../../../context/context');
 var qrTypeRegistry = require('../../../wechatsite/qr/QrTypeRegistries').tenantQrTypeRegistry;
+var wechatMediaSettingService = context.services.wechatMediaSettingService;
+var wechatApiCache = require('../api-cache');
+
 
 module.exports = function (emitter) {
     emitter.qr(function (event, ctx) {
@@ -17,6 +20,15 @@ module.exports = function (emitter) {
             var openid = ctx.weixin.FromUserName;
             var wechatId = ctx.weixin.ToUserName;
             yield context.services.tenantAuthenticationService.signupOnSubscriptionAsync(wechatId, openid);
+            var wechatApi = (yield wechatApiCache.get(wechatId)).api;
+            var settings = yield wechatMediaSettingService.loadByWechatIdAsync(wechatId);
+            if(settings.subscribeReply){
+                if(settings.subscribeReply.type === 'text'){
+                    wechatApi.sendText(openid, settings.subscribeReply.content, function(){
+                        //TODO
+                    })
+                }
+            }
         })
     })
 };
