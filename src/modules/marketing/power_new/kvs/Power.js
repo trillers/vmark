@@ -62,7 +62,9 @@ Kv.prototype.saveParticipant = function(json, callback){
     redis.hmset(key, obj, function(err, result){
         if(!err && result === 'OK'){
             self.linkUserToParticipantId(obj.activity, obj.user, participantId);
-            self.addParticipantInRankingList(obj.activity, obj.user, obj.total_power);
+            if(obj.total_power) {
+                self.addParticipantInRankingList(obj.activity, obj.user, obj.total_power);
+            }
             self.incActivityParticipantsCountById(obj.activity);
         }
         cbUtil.logCallback(

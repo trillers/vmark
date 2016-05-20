@@ -199,24 +199,28 @@ Service.prototype.help = function*(participant, user){
     var status = yield this.getStatus(participant, user);
     var result = {};
     var kv = this.context.kvs.power;
-    if (status.helpLimited === 'none') {
-        var res = yield kv.addHelpFriendToSetAsync(participant.id, user.openid);
-        if(res === 1) {
-            var min = parseInt(participant.activity.friend_help_min_power || 0);
-            var max = parseInt(participant.activity.friend_help_max_power || 0);
-            var helpPower = myUtil.random(min, max);
-            var data = yield kv.incParticipantPowerByIdAsync(participant.id, helpPower);
-            yield kv.increaseParticipantScoreInRankingListAsync(participant.activity._id, participant.user.id, helpPower);
+    if(status.active) {
+        if (status.helpLimited === 'none') {
+            var res = yield kv.addHelpFriendToSetAsync(participant.id, user.openid);
+            if (res === 1) {
+                var min = parseInt(participant.activity.friend_help_min_power || 0);
+                var max = parseInt(participant.activity.friend_help_max_power || 0);
+                var helpPower = myUtil.random(min, max);
+                var data = yield kv.incParticipantPowerByIdAsync(participant.id, helpPower);
+                yield kv.increaseParticipantScoreInRankingListAsync(participant.activity._id, participant.user.id, helpPower);
 
-            var rank = yield kv.getParticipantRankAsync(participant.activity._id, participant.user._id);
-            result = {rank: rank, total_power: data, helpPower: helpPower};
-        } else if(res === 0) {
-            result = {helped: true};
+                var rank = yield kv.getParticipantRankAsync(participant.activity._id, participant.user._id);
+                result = {rank: rank, total_power: data, helpPower: helpPower};
+            } else if (res === 0) {
+                result = {helped: true};
+            } else {
+                result = {error: 'unknown error'};
+            }
         } else {
-            result = {error: 'unknown error'};
+            result = {limited: true};
         }
-    } else {
-        result = {limited: true};
+    }else{
+        result = {active: false}
     }
     return result;
 }
@@ -265,7 +269,10 @@ Service.prototype.scanRpAndPoParticipantPoster = function*(user, participant, we
 
     var res = yield this.help(participant, user);
     var reply = '';
-    if(res.limited){
+    if(!res.active){
+        reply = '活动已结束';
+    }
+    else if(res.limited){
         reply = '<' + participant.user.nickname + '> 助力人数已达上限';
     }else if(res.error){
         reply = '助力<' + participant.user.nickname + '> 失败';
@@ -312,7 +319,30 @@ Service.prototype.scanCoParticipantPoster = function*(user, participant, wechatI
     }
     yield kv.addHelpFriendToSetAsync(participant.id, user.openid);
     var helpArr = yield kv.getHelpFriendsSetAsync(participant.id);
-
+    if (helpArr.length >= participant.activity.friend_help_count_limit) {
+        !participant.prize_level && (participant.prize_level = 0);
+        participant.prize_level = parseInt(participant.prize_level);
+        if(participant.prize_level == 0) {
+            replyToParticipant = '恭喜你,你的好友 ' + user.nickname + ' 帮你获得了上课链接,点击下方卡片进入';
+            yield wechatApi.sendTextAsync(participant.user.openid, replyToParticipant);
+            var articles = [
+                {
+                    "title": participant.activity.shareTitle,
+                    "description": participant.activity.shareDesc,
+                    "url": participant.activity.courseUrl,
+                    "picurl": participant.activity.shareImg
+                }];
+            yield wechatApi.sendNewsAsync(participant.user.openid, articles);
+            yield powerParticipantService.updateById(participant.id, {prize_level: 1});
+        }else{
+            replyToParticipant = '恭喜你,你的好友 ' + user.nickname + ' 帮你助力咯,人气不错哦~~';
+            yield wechatApi.sendTextAsync(participant.user.openid, replyToParticipant);
+        }
+    } else {
+        var num = participant.activity.friend_help_count_limit - helpArr.length;
+        replyToParticipant = '你的好友 ' + user.nickname + ' 帮你扫码啦,还需' + num + '位好友帮忙扫码就可获得免费课程链接了,继续加油哦~~';
+        yield wechatApi.sendTextAsync(participant.user.openid, replyToParticipant);
+    }
     var participantJson = {
         activity: participant.activity._id
         , user: user._id
@@ -334,27 +364,6 @@ Service.prototype.scanCoParticipantPoster = function*(user, participant, wechatI
         + '活动说明: \n' + participant.activity.desc;
     yield wechatApi.sendTextAsync(user.openid, replyToUser);
     yield wechatApi.sendImageAsync(user.openid, poster.mediaId);
-    if (helpArr.length == participant.activity.friend_help_count_limit) {
-        replyToParticipant = '恭喜你,你的好友 ' + user.nickname + ' 帮你获得了上课链接,点击下方卡片进入';
-        yield wechatApi.sendTextAsync(participant.user.openid, replyToParticipant);
-        var articles = [
-            {
-                "title": participant.activity.shareTitle ,
-                "description": participant.activity.shareDesc,
-                "url": participant.activity.courseUrl,
-                "picurl": participant.activity.shareImg
-            }];
-        yield wechatApi.sendNewsAsync(participant.user.openid, articles);
-        return;
-    }
-    if (helpArr.length > participant.activity.friend_help_count_limit) {
-        replyToParticipant = '恭喜你,你的好友 ' + user.nickname + ' 帮你助力咯,人气不错哦~~';
-        yield wechatApi.sendTextAsync(participant.user.openid, replyToParticipant);
-        return;
-    }
-    var num = participant.activity.friend_help_count_limit - helpArr.length;
-    replyToParticipant = '你的好友 ' + user.nickname + ' 帮你扫码啦,还需' + num + '位好友帮忙扫码就可获得免费课程链接了,继续加油哦~~';
-    yield wechatApi.sendTextAsync(participant.user.openid, replyToParticipant);
 }
 
 module.exports = Service;

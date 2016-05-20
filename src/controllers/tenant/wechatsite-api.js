@@ -1,6 +1,8 @@
 var context = require('../../context/context');
 var wechatMediaSettingService = context.services.wechatMediaSettingService;
 var logger = context.logger;
+var wechatApiCache = require('../../modules/tenant/wechat/api-cache');
+
 var util = require('../../app/util');
 
 module.exports = function(router){
@@ -8,7 +10,17 @@ module.exports = function(router){
         try {
             var json = this.request.body;
             var data = null;
-            console.error(json)
+            if(json.menu){
+                var wechatApi = (yield wechatApiCache.get(json.originalId)).api;
+                yield wechatApi.createMenuAsync(json.menu);
+                json.menu.button.map(function(item, i){
+                    if(!item.name){
+                        json.menu.button.splice(i, 1);
+                    }
+                })
+                json.menu = JSON.stringify(json.menu);
+            }
+
             if(!json.id){
                 data = yield wechatMediaSettingService.createAsync(json);
             }else{

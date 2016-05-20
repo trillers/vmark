@@ -22,6 +22,7 @@ module.exports = function (emitter) {
             yield context.services.tenantAuthenticationService.signupOnSubscriptionAsync(wechatId, openid);
             var wechatApi = (yield wechatApiCache.get(wechatId)).api;
             var settings = yield wechatMediaSettingService.loadByWechatIdAsync(wechatId);
+            //subscribe reply
             if(settings.subscribeReply){
                 if(settings.subscribeReply.type === 'text'){
                     wechatApi.sendText(openid, settings.subscribeReply.content, function(){
@@ -31,4 +32,36 @@ module.exports = function (emitter) {
             }
         })
     })
+
+    emitter.CLICK(function (event, ctx){
+        co(function*(){
+            var openid = ctx.weixin.FromUserName;
+            var wechatId = ctx.weixin.ToUserName;
+            var key = ctx.weixin.EventKey;
+            yield context.services.tenantAuthenticationService.signupOnSubscriptionAsync(wechatId, openid);
+            var wechatApi = (yield wechatApiCache.get(wechatId)).api;
+            var settings = yield wechatMediaSettingService.loadByWechatIdAsync(wechatId);
+            //subscribe reply
+            if(settings.menu){
+                var menu = JSON.parse(settings.menu);
+                menu.button.map(function(item){
+                    if(item.key === key){
+                        wechatApi.sendText(openid, item.con, function(){
+                            //TODO
+                        })
+                    }else if(item.sub_button){
+                        item.sub_button.map(function(data){
+                            if(data.key === key){
+                                wechatApi.sendText(openid, data.con, function(){
+                                    //TODO
+                                })
+                            }
+                        })
+                    }
+                })
+
+            }
+        })
+    })
+
 };
