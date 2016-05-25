@@ -28,6 +28,14 @@ domain.action('updateTenantWechatSiteById').onExecute(function(data){
     apiFactory.put('/tenant/wechatsite/_' + data.id).drive(this).send(data);
 });
 
+domain.action('loadWechatSiteSettings').onExecute(function(id){
+    apiFactory.get('/tenant/wechatsite/settings/load?id=' + id).drive(this).send();
+});
+
+domain.action('saveWechatSiteSettings').onExecute(function(data){
+    apiFactory.post('/tenant/wechatsite/settings/save').drive(this).send(data);
+});
+
 domain.action('findDistributorsCountByTenantId').onExecute(function(data){
     apiFactory.get('/tenant/sd/distributors/count?tenant=' + data.tenant).drive(this).send();
 });

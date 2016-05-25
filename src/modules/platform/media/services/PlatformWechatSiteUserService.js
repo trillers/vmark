@@ -47,9 +47,13 @@ Service.prototype.deletePlatformWechatSiteUserByOpenid = function(openid, callba
     var logger = this.context.logger;
     var kv = this.context.kvs.platformWechatSiteUser;
     var platformUserKv = this.context.kvs.platformUser;
+    var wechatMediaUserUserKv = this.context.kvs.wechatMediaUser;
     var wechatMediaUserService = this.context.services.wechatMediaUserService;
     co(function* (){
-        var json = yield kv.loadByOpenidAsync(openid);
+        var platformWechatSiteUser = yield kv.loadByOpenidAsync(openid);
+        var wechatSiteUser = yield wechatMediaUserService.loadByOpenidAsync(openid);
+
+        var json = platformWechatSiteUser || wechatSiteUser;
         if(!json){ //user is not found, so skip running further
             if(callback) callback(null, null);
             return;
@@ -63,6 +67,7 @@ Service.prototype.deletePlatformWechatSiteUserByOpenid = function(openid, callba
             }
 
             yield kv.deleteByOpenidAsync(openid);
+            yield wechatMediaUserUserKv.deleteByOpenidAsync(openid);
             yield wechatMediaUserService.deleteByIdAsync(wechatSiteUserId);
         }
         catch(e){

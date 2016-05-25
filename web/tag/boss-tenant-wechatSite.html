@@ -16,6 +16,7 @@
                                 <th>类型</th>
                                 <th>状态</th>
                                 <th>创建时间</th>
+                                <th>操作</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -24,6 +25,7 @@
                                 <td>{ __app.enums.WechatSiteType.values[wechatSiteType] }</td>
                                 <td>{ __app.enums.LifeFlag.values[lFlg] }</td>
                                 <td>{_.date.format(new Date(crtOn), 'yyyy-MM-dd hh点mm分')}</td>
+                                <td><a href="#wechatsite/_{originalId}/settings">设置</a></td>
                             </tr>
                         </tbody>
                     </table>

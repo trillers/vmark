@@ -11,6 +11,7 @@ var Model = function(DomainBuilder) {
                     , total_power: {type: Number}
                     , help_friends: [{type: String}] //openid array
                     , poster: {type: String, ref: 'PowerPoster'} //participant poster
+                    , prize_level: {type: Number, default: 0}
             })
             .build();
         return schema.model(true);

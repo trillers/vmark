@@ -38,6 +38,11 @@ Service.prototype.loadPlatformUserByOpenid = function(openid, callback) {
     });
 };
 
+/**
+ * clear platform user from mongo and redis
+ * @param openid
+ * @param callback
+ */
 Service.prototype.deletePlatformUserByOpenid = function(openid, callback) {
     var logger = this.context.logger;
     var platformWechatSiteUserService = this.context.services.platformWechatSiteUserService;
@@ -51,7 +56,7 @@ Service.prototype.deletePlatformUserByOpenid = function(openid, callback) {
         }
         yield me.deleteByIdAsync(userid);
         if(callback) callback();
-    }).catch(Error, function(err){
+    }).catch(function(err){
         logger.error('Fail to delete platform user by wechat site user\'s openid ' + openid + ' : ' + err);
         logger.error(err.stack);
         if(callback) callback(err);

@@ -45,6 +45,7 @@ Authentication.prototype.deleteReturnUrl = function(ctx){
 
 Authentication.prototype.redirectReturnUrl = function(ctx){
     var returnUrl = ctx.session[RETURN_URL_KEY];
+    console.error('return url: ' + returnUrl);
     if(returnUrl){
         ctx.session[RETURN_URL_KEY] = null;
     }

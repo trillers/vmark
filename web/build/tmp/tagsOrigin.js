@@ -2761,7 +2761,7 @@ riot.tag('boss-tenant-topbar', '<nav class="navbar navbar-default navbar-inverse
         }.bind(this);
     
 });
-riot.tag('boss-tenant-wechatsite', '<div class="container" if="{!hidden}"> <div class="row"> <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2" style="text-align: center"><h3>公众号管理</h3></div> </div> <div class="row" style="margin-top: 10px"> <div class="action col-md-offset-2 col-lg-offset-2"> <button class="btn btn-default" onclick="{add}">添加</button> </div> <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2"> <div class="row panel-container"> <table class="table table-striped"> <thead> <tr> <th>名称</th> <th>类型</th> <th>状态</th> <th>创建时间</th> </tr> </thead> <tbody> <tr each="{wechatSites}"> <td><a href="#wechatsite/_{_id}">{name}</a></td> <td>{ __app.enums.WechatSiteType.values[wechatSiteType] }</td> <td>{ __app.enums.LifeFlag.values[lFlg] }</td> <td>{_.date.format(new Date(crtOn), \'yyyy-MM-dd hh点mm分\')}</td> </tr> </tbody> </table> </div> </div> </div> </div>', 'boss-tenant-wechatsite .panel-container >div{ height: 40px; line-height: 40px; }', function(opts) {
+riot.tag('boss-tenant-wechatsite', '<div class="container" if="{!hidden}"> <div class="row"> <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2" style="text-align: center"><h3>公众号管理</h3></div> </div> <div class="row" style="margin-top: 10px"> <div class="action col-md-offset-2 col-lg-offset-2"> <button class="btn btn-default" onclick="{add}">添加</button> </div> <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2"> <div class="row panel-container"> <table class="table table-striped"> <thead> <tr> <th>名称</th> <th>类型</th> <th>状态</th> <th>创建时间</th> <th>操作</th> </tr> </thead> <tbody> <tr each="{wechatSites}"> <td><a href="#wechatsite/_{_id}">{name}</a></td> <td>{ __app.enums.WechatSiteType.values[wechatSiteType] }</td> <td>{ __app.enums.LifeFlag.values[lFlg] }</td> <td>{_.date.format(new Date(crtOn), \'yyyy-MM-dd hh点mm分\')}</td> <td><a href="#wechatsite/_{originalId}/settings">设置</a></td> </tr> </tbody> </table> </div> </div> </div> </div>', 'boss-tenant-wechatsite .panel-container >div{ height: 40px; line-height: 40px; }', function(opts) {
         var self = nest.presentable(this);
         var loadAllWechatSite = domain.action('loadAllTenantWechatSite');
 
@@ -3050,6 +3050,232 @@ riot.tag('boss-wechatsite-edit', '<div class="container" if="{!hidden}"> <alert 
             self.wechatSite.encodingAESKey = _.generateRandomString(43);
             self.update()
         }
+    
+});
+riot.tag('boss-wechatsite-settings', '<div id="tips" style="position: fixed; top:0px; z-index: 1000" class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2"> <div if="{alert_success}" class="alert alert-success" role="alert" style="text-align: center"> <strong>{tip_msg}</strong> </div> <div if="{alert_failed}" class="alert alert-danger" role="alert" style="text-align: center"> <strong>{tip_msg}</strong> </div> </div> <div class="container" if="{!hidden}"> <div class="row" style="margin-top: 10px"> <div class="row"> <div class="col-md-2 col-md-offset-2 col-lg-offset-2"> <a href="#wechatsite">返回公众号列表</a> </div> <div class="col-md-2 col-md-offset-1 col-lg-2 col-lg-offset-1" style="text-align: center"><h3>{wechatSite.name}</h3></div> </div> <div class="form-con col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2"> <div class="panel panel-default"> <div class="panel-heading">公众号关注回复消息设置</div> <div class="panel-body"> <div class="type-nav"> <ul class="type-nav-ul" style="margin-left:0;"> <li> <a type="text" onclick="{selectType}" href="javascript:void(0);" onclick="return false;" class="{replyType == \'text\' ? \'selected\' : \'\'}"><i class="glyphicon glyphicon-pencil"></i>&nbsp;<span class="msg_tab_title">文字</span></a> </li> <li> <a type="image" href="javascript:void(0);" class="{replyType == \'image\' ? \'selected\' : \'\'}"><i class="glyphicon glyphicon-picture"></i>&nbsp;<span class="msg_tab_title">图片</span></a> </li> <li> <a type="voice" href="javascript:void(0);" class="{replyType == \'voice\' ? \'selected\' : \'\'}"><i class="glyphicon glyphicon-volume-up"></i>&nbsp;<span class="msg_tab_title">语音</span></a> </li> <li> <a type="video" href="javascript:void(0);" class="{replyType == \'video\' ? \'selected\' : \'\'}"><i class="glyphicon glyphicon-facetime-video"></i>&nbsp;<span class="msg_tab_title">视频</span></a> </li> </ul> </div> <div if="{replyType == \'text\'}" class="text-reply"> <textarea id="text-reply-con" cols="30" rows="10">{reply_con}</textarea> </div> <div if="{replyType == \'image\'}" class="text-reply"> </div> <div if="{replyType == \'voice\'}" class="text-reply"> <br> <div style="margin-left: 30px;">开发中.......</div> </div> <div if="{replyType == \'video\'}" class="text-reply"> <br> <div style="margin-left: 30px;">开发中.......</div> </div> <div> <div class="btn btn-success btn-save" onclick="{subReplySave}">保存</div> </div> </div> </div> <div class="panel panel-default"> <div class="panel-heading">公众号菜单设置</div> <div class="panel-body" style="padding-top: 0"> <div class="row" style="margin-top: 0"> <div id="menu-setting"> <div id="menu-con"> <ul each="{menu.button}" riot-style="margin-top: {parent.getMenuMarginTopValue(sub_button)}"> <li if="{(!sub_button && name) || (name && sub_button && sub_button.length < 5)}" class="add-menu" onclick="{parent.addSubMenu}">+</li> <li each="{sub_button}" class="menu sub-menu" onclick="{parent.parent.clickMenu}">{name}</li> <li if="{name}" class="menu" onclick="{parent.clickMenu}">{name}</li> <li if="{!name}" class="add-menu" style="margin-top: 35px" onclick="{parent.addMenu}">+</li> </ul> </div> <div id="setting"> <div if="{!current_menu}" id="menu-edit-tip">点击左侧菜单进行编辑</div> <div if="{current_menu}"> <div> <span>菜单名称</span><a style="float:right" onclick="{deleteMenu}">删除菜单</a> </div> <hr> <div if="{current_menu.sub_button}" style="color: #8d8d8d;"> 已添加子菜单，仅可设置菜单名称。 </div> <div> <span>菜单名称</span><input style="margin-left: 50px" type="text" value="{current_menu.name}" name="menu_name" onblur="{saveMenuName}"> </div> <div> <span style="margin-left: 100px; color: #8d8d8d;">{sub_menu_index == -1 ? \'字数不超过4个汉字或8个字母\' : \'字数不超过8个汉字或16个字母\'}</span> </div> <div if="{!current_menu.sub_button}"> <span>菜单内容</span> <label style="margin-left: 30px; cursor: pointer"><input name="menu_con_type" type="radio" value="click" __checked="{current_menu.type === \'click\'}" onclick="{selectMenuType}">发送消息</label> <label style="margin-left: 30px;cursor: pointer"><input name="menu_con_type" type="radio" value="view" __checked="{current_menu.type === \'view\'}" onclick="{selectMenuType}">跳转网页</label> </div> <div if="{!current_menu.sub_button}"> <div if="{current_menu.type == \'view\'}"> <div>订阅者点击该子菜单会跳到以下链接</div> <div style="margin-top: 20px"><span>页面地址</span><input name="view_url" type="text" style="margin-left: 50px;width: 300px;" value="{current_menu.url}" onblur="{saveMenuUrl}"></div> <div style="margin-left: 107px;">参考格式:&nbsp;&nbsp;http://www.baijiabao.com</div> </div> <div if="{current_menu.type == \'click\'}"> <textarea class="menu_reply_con" onblur="{saveMenuCon}" name="menu_reply_con"></textarea> </div> </div> </div> </div> <hr style="clear:both"> <div> <div class="btn btn-success btn-save" onclick="{saveMenu}" style="margin-left: 10px">保存</div> </div> </div> </div> </div> </div> </div> </div> </div>', 'boss-wechatsite-settings a { cursor: pointer; } boss-wechatsite-settings .row{ margin-top: 10px; } boss-wechatsite-settings .panel-container >div{ height: 40px; line-height: 40px; } boss-wechatsite-settings .form-con { margin-top: 15px; padding: 0 0; } boss-wechatsite-settings .type-nav { border: solid 1px #C3C3C3; height: 33px; } boss-wechatsite-settings .type-nav-ul{ list-style: none; margin-top: 5px; } boss-wechatsite-settings .type-nav-ul li{ width: 15%; float: left; } boss-wechatsite-settings .type-nav-ul li a{ text-decoration: none; color: #9A9494; } boss-wechatsite-settings .type-nav-ul li a:hover{ text-decoration: none; color: black !important; } boss-wechatsite-settings .text-reply{ height: 200px; border: solid 1px #C3C3C3; border-top-style: none; padding: 10px; } boss-wechatsite-settings .selected { color: black !important; } boss-wechatsite-settings .btn-save { margin-top: 5px; width: 100px; } boss-wechatsite-settings #text-reply-con{ height: 180px; width: 100%; resize: none; border: none; } boss-wechatsite-settings #text-reply-con:focus{ outline: none; } boss-wechatsite-settings #menu-setting{ min-height: 400px; } boss-wechatsite-settings #menu-setting ul{ padding: 0; list-style: none; float:left; } boss-wechatsite-settings #menu-con{ padding: 5px; padding-top: 15px; border-right: solid 1px lightgray; min-height: 360px; min-width: 265px; float:left; } boss-wechatsite-settings #setting{ padding: 10px; min-height: 360px; min-width: 500px; float:left; } boss-wechatsite-settings #setting div{ margin-bottom: 5px; } boss-wechatsite-settings .menu{ cursor: pointer; line-height: 35px; text-align: center; width: 85px; height: 35px; border: solid 1px lightgray; } boss-wechatsite-settings .menu_selected{ border: solid 1px #44b549; color: #44b549; } boss-wechatsite-settings .sub-menu{ font-size: 12px; overflow: hidden; } boss-wechatsite-settings .menu:hover{ background-color: #eeeeee; } boss-wechatsite-settings .add-menu{ cursor: pointer; line-height: 25px; text-align: center; width: 85px; height: 35px; color: gray; font-size: 30px; border: solid 1px lightgray; } boss-wechatsite-settings .add-menu:hover{ background-color: #eeeeee; } boss-wechatsite-settings #menu-edit-tip{ text-align: center; line-height: 340px; } boss-wechatsite-settings .menu_reply_con{ height: 175px; width: 100%; resize: none; border: solid 1px lightgray; } boss-wechatsite-settings .menu_reply_con:focus{ outline: none; }', function(opts) {
+        var self = nest.presentable(this);
+        var loadWechatSiteSettings = domain.action('loadWechatSiteSettings');
+        var saveWechatSiteSettings = domain.action('saveWechatSiteSettings');
+
+        self.current_menu = null;
+        self.menu_index = -1;
+        self.sub_menu_index = -1;
+        self.on('open', function(opt){
+            self.trigger('ready', false);
+            self.trigger('view-route-to');
+            self.originalId = opt.id;
+            self.replyType = 'text';
+            loadWechatSiteSettings.newInvocation(self.originalId).onDone(function(data){
+                if(data){
+                    self.id = data._id;
+                    if(data.subscribeReply){
+                        self.replyType = data.subscribeReply.type;
+                        self.reply_con = data.subscribeReply.content;
+                    }
+                    if(data.menu){
+                        self.menu = JSON.parse(data.menu);
+                        for(var i=0; i < 3 - self.menu.button.length; i++){
+                            self.menu.button.push({});
+                        }
+                    }else{
+                        self.menu = {
+                            "button":[{},{},{}]
+                        }
+                    }
+                }else{
+                    self.menu = {
+                        "button":[{},{},{}]
+                    }
+                }
+                self.update();
+            }).execute();
+        });
+
+        self.on('mount', function(){
+
+        })
+
+        self.selectType = function(e){
+            document.querySelector('a[class=selected]') && (document.querySelector('a[class=selected]').className = '');
+            e.currentTarget.className = 'selected';
+            self.replyType = e.currentTarget.type;
+        }
+
+        self.subReplySave = function(e){
+            var data = {
+                id: self.id,
+                originalId: self.originalId,
+                subscribeReply: {
+                    type: self.replyType
+                }
+            };
+            if(self.replyType === 'text'){
+                data.subscribeReply.content = document.querySelector('#text-reply-con').value.trim();
+            }
+            saveWechatSiteSettings.newInvocation(data).onDone(function(res){
+                if(res.success){
+                    self.id = res.data._id;
+                    self.update({'alert_success': true, 'tip_msg': '保存关注自动回复成功'});
+                }else{
+                    self.update({'alert_failed': true, 'tip_msg': '保存关注自动回复失败'});
+                }
+                tipFade();
+            }).execute();
+        }
+
+        var tipFade = function(){
+            setTimeout(function(){
+                self.update({'alert_success': false, 'alert_failed': false, 'tip_msg': ''});
+            }, 2000);
+        }
+
+        self.getMenuMarginTopValue = function(sub_button){
+            if(sub_button){
+                if(sub_button.length < 4) {
+                    return 35 * ( 4 - sub_button.length) + 'px';
+                }else{
+                    return 0;
+                }
+            }else{
+                return '140px';
+            }
+        }
+
+        self.selectMenuType = function(e){
+            self.current_menu.type = e.currentTarget.value;
+            if(self.sub_menu_index == -1){
+                self.menu.button[self.menu_index].type = e.currentTarget.value;
+            }else{
+                self.menu.button[self.menu_index].sub_button[self.sub_menu_index].type = e.currentTarget.value;
+            }
+            return true;
+        }
+
+        self.addMenu = function(e){
+            var menu = {
+                name: '菜单',
+                type: 'click',
+                key: new Date().getTime(),
+                con: ''
+            }
+            self.menu_index = self.menu.button.indexOf(e.item);
+            self.sub_menu_index = -1;
+            self.menu.button.splice(self.menu_index, 1, menu);
+            self.menu_reply_con.value = "";
+            self.current_menu = null;
+        }
+
+        self.addSubMenu = function(e){
+            var menu = {
+                name: '菜单',
+                type: 'click',
+                key: new Date().getTime(),
+                con: ''
+            }
+            self.menu_index = self.menu.button.indexOf(e.item);
+            if(self.menu.button[self.menu_index].sub_button){
+                self.menu.button[self.menu_index].sub_button.push(menu)
+            }else{
+                self.menu.button[self.menu_index].sub_button = [menu];
+            }
+            self.sub_menu_index = self.menu.button[self.menu_index].sub_button.length - 1;
+            self.menu_reply_con.value = "";
+            self.current_menu = null;
+        }
+
+        self.clickMenu = function(e){
+            document.querySelector('li[class="menu menu_selected"]') && (document.querySelector('li[class="menu menu_selected"]').className = 'menu');
+            document.querySelector('li[class="menu sub-menu menu_selected"]') && (document.querySelector('li[class="menu sub-menu menu_selected"]').className = 'menu sub-menu');
+            e.currentTarget.className += ' menu_selected';
+            self.current_menu = e.item;
+            self.menu_index = self.menu.button.indexOf(e.item);
+            if(self.menu_index === -1){
+                self.menu.button.map(function(v, i){
+                    if(v.sub_button){
+                        if(v.sub_button.indexOf(e.item) !== -1){
+                            self.sub_menu_index = v.sub_button.indexOf(e.item);
+                            self.menu_index = i;
+                        }
+                    }
+
+                })
+            }else{
+                self.sub_menu_index = -1;
+            }
+            self.menu_reply_con.value = self.current_menu.con;
+            self.update();
+        }
+
+        self.deleteMenu = function(e){
+            self.current_menu = null;
+            if(self.sub_menu_index == -1){
+                self.menu.button.splice(self.menu_index, 1, {});
+            }else{
+                self.menu.button[self.menu_index].sub_button.splice(self.sub_menu_index, 1);
+            }
+        }
+
+        self.saveMenuName = function(e){
+            var err = false, errMsg = '';
+            var name = self.menu_name.value;
+            name = name.replace(/[^\u0000-\u00ff]/g,"aa");
+            if(self.sub_menu_index == -1){
+                if(name.length > 8){
+                    err = true;
+                    errMsg = '菜单名称不能超过4个汉字或8个字母';
+                }else{
+                    self.menu.button[self.menu_index].name = self.menu_name.value;
+                }
+            }else{
+                if(name.length > 16){
+                    err = true;
+                    errMsg = '子菜单名称不能超过8个汉字或16个字母';
+                }else {
+                    self.menu.button[self.menu_index].sub_button[self.sub_menu_index].name = self.menu_name.value;
+                }
+            }
+            if(err){
+                self.update({'alert_failed': true, 'tip_msg': errMsg});
+                tipFade();
+            }
+        }
+        self.saveMenuUrl = function(e){
+            if(/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/.test(self.view_url.value)) {
+                if (self.sub_menu_index == -1) {
+                    self.menu.button[self.menu_index].url = self.view_url.value;
+                } else {
+                    self.menu.button[self.menu_index].sub_button[self.sub_menu_index].url = self.view_url.value;
+                }
+            }else{
+                self.update({'alert_failed': true, 'tip_msg': '输入网址格式不对'});
+                tipFade();
+            }
+        }
+        self.saveMenuCon = function(e){
+            if(self.sub_menu_index == -1){
+                self.menu.button[self.menu_index].con = e.currentTarget.value;
+            }else{
+                self.menu.button[self.menu_index].sub_button[self.sub_menu_index].con = e.currentTarget.value;;
+            }
+        }
+
+        self.saveMenu = function(e){
+            var data = {
+                id: self.id,
+                originalId: self.originalId,
+                menu: self.menu
+            };
+            saveWechatSiteSettings.newInvocation(data).onDone(function(res){
+                if(res.success){
+                    self.id = res.data._id;
+                    self.update({'alert_success': true, 'tip_msg': '保存菜单成功'});
+                }else{
+                    self.update({'alert_failed': true, 'tip_msg': '保存关菜单失败'});
+                }
+                tipFade();
+            }).execute();
+        }
+
     
 });
 riot.tag('boss-wechatsite', '<div class="container" if="{!hidden}"> <div class="row" style="margin-top: 10px"> <div class="row"> <div class="col-md-2 col-md-offset-2 col-lg-offset-2"> <a href="#wechatsite">返回公众号列表</a> </div> <div class="col-md-2 col-md-offset-1 col-lg-2 col-lg-offset-1" style="text-align: center"><h3>{wechatSite.name}</h3></div> </div> <div class="form-con col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2"> <div class="panel panel-default"> <div class="panel-heading">基本信息</div> <div class="panel-body"> <div class="row"> <div class="col-md-3">名称</div> <div class="col-md-9">{wechatSite.name}</div> </div> <div class="row"> <div class="col-md-3">类型</div> <div class="col-md-9">{ __app.enums.WechatSiteType.values[wechatSite.wechatSiteType] }</div> </div> <div class="row"> <div class="col-md-3">状态</div> <div class="col-md-9">{ __app.enums.LifeFlag.values[wechatSite.lFlg] }</div> </div> <div class="row"> <div class="col-md-3">创建时间</div> <div class="col-md-9">{_.date.format(new Date(wechatSite.crtOn), \'yyyy-MM-dd hh点mm分\')}</div> </div> <div class="row"> <div class="col-md-3">公众号邮箱</div> <div class="col-md-9">{wechatSite.email}</div> </div> <div class="row"> <div class="col-md-3">原始ID</div> <div class="col-md-9">{wechatSite.originalId}</div> </div> <div class="row"> <div class="col-md-3">AppID</div> <div class="col-md-9">{wechatSite.appId}</div> </div> <div class="row"> <div class="col-md-3">AppSecret</div> <div class="col-md-9">{wechatSite.appSecret}</div> </div> </div> </div> <div class="panel panel-default"> <div class="panel-heading">托管配置信息</div> <div class="panel-body"> <div class="row"> <div class="col-md-3">URL(服务器地址)</div> <div class="col-md-8" id="url">{__app.settings.app.protocol + \'://\' + __app.settings.app.domain + \'/wechat/\' + wechatSite.originalId + \'/message\'}</div> <a class="col-md-1 clip_button" data-clipboard-target="url">复制</a> </div> <div class="row"> <div class="col-md-3">Token(令牌)</div> <div class="col-md-8" id="token">{ wechatSite.token }</div> <a class="col-md-1 clip_button" data-clipboard-target="token">复制</a> </div> <div class="row"> <div class="col-md-3">EncodingAESKey<br>(消息加解密密钥)</div> <div class="col-md-8" id="encodingAESKey">{ wechatSite.encodingAESKey }</div> <a class="col-md-1 clip_button" data-clipboard-target="encodingAESKey">复制</a> </div> <div class="row"> <div class="col-md-3">公众号邮箱</div> <div class="col-md-8" id="email">{wechatSite.email}</div> <a class="col-md-1 clip_button" data-clipboard-target="email">复制</a> </div> <div class="row"> <div class="col-md-3">授权回调页面域名</div> <div class="col-md-8" id="callbackDomain">{__app.settings.app.domain}</div> <a class="col-md-1 clip_button" data-clipboard-target="callbackDomain">复制</a> </div> <div class="row"> <div class="col-md-3">JS接口安全域名</div> <div class="col-md-8" id="jsDomain">{__app.settings.app.domain}</div> <a class="col-md-1 clip_button" data-clipboard-target="jsDomain">复制</a> </div> </div> </div> <div class="action"> <a href="#wechatsite/edit/_{wechatSite._id}" class="btn btn-default">修改</a> <input if="{wechatSite.lFlg != \'a\'}" onclick="{unlockWechatSite}" class="btn btn-default" data-toggle="modal" data-target="#modal" type="button" value="激活"> <input if="{wechatSite.lFlg != \'i\'}" onclick="{lockWechatSite}" class="btn btn-default" data-toggle="modal" data-target="#modal" type="button" value="锁定"> <input if="{wechatSite.lFlg != \'d\'}" onclick="{delWechatSite}" class="btn btn-default" data-toggle="modal" data-target="#modal" type="button" value="删除"> </div> </div> </div> </div>', 'boss-wechatsite a { cursor: pointer; } boss-wechatsite .row{ margin-top: 10px; } boss-wechatsite .panel-container >div{ height: 40px; line-height: 40px; } boss-wechatsite .form-con { margin-top: 15px; padding: 0 0; } boss-wechatsite .action{ text-align: center; padding-bottom: 50px; } boss-wechatsite .action input{ margin-left: 30px; }', function(opts) {

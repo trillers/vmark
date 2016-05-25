@@ -35,11 +35,11 @@ Service.prototype.signupWithBaseInfo = function(openid, callback){
         var userId = null;
         var status = UserStatus.Anonymous.value();
         var type = UserType.Customer.value();
-        try{
+        try {
             wechatMediaUser = yield wechatMediaUserKv.loadByOpenidAsync(openid);
-            if(wechatMediaUser){
+            if (wechatMediaUser) {
                 user = yield userKv.loadByIdAsync(wechatMediaUser.user);
-                if(user) {
+                if (user) {
                     if (callback) callback(null, {
                         user: user,
                         wechatMediaUser: wechatMediaUser,

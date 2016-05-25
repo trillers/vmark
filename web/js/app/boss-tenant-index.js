@@ -226,6 +226,17 @@ app.routeView('wechatsite/_:id', nest.viewable({
     this.tag.trigger('open', {id: ctx.req.params.id});
   }
 }));
+app.routeView('wechatsite/_:id/settings', nest.viewable({
+  name: 'wechatsite/_:id/settings',
+  mount: function(ctx){
+    var tags = riot.mount('boss-wechatsite-settings', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', {id: ctx.req.params.id});
+  }
+}));
 
 app.routeView('wechatsite/edit/_:id', nest.viewable({
   name: 'wechatsite/edit/_:id',

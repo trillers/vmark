@@ -1,4 +1,4 @@
-var router = require('koa-router');
+var Router = require('koa-router');
 module.exports = function(app){
     //wechat
     app.use(require('./wechat-message')());
@@ -10,8 +10,12 @@ module.exports = function(app){
     app.use(require('./power')());
 
     //marketing tenant power activity
-    router = new router();
+    var router = new Router();
     router.prefix('/api/marketing/tenant/power');
     require('./power-api')(router);
+    app.use(router.routes());
+    router = new Router();
+    router.prefix('/api/tenant/wechatsite');
+    require('./wechatsite-api')(router);
     app.use(router.routes());
 }
