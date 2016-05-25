@@ -233,10 +233,7 @@ module.exports = function (router) {
     router.post('/sd/bespeak', function*(){
         try{
             let bespeak = this.request.body;
-            console.log("media***************");
-            console.log(bespeak.media);
             let wechatsite = yield context.services.tenantWechatSiteService.loadByIdAsync(bespeak.media);
-            console.log(wechatsite);
             yield context.services.membershipService.ensureSignUpAsync(wechatsite.originalId, bespeak.user._id);
             yield context.services.bespeakService.createAsync({
                 product: bespeak.product._id || bespeak.product,
@@ -363,6 +360,119 @@ module.exports = function (router) {
 
             this.body = {order: orderPersisted, error: null};
         }catch(e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.get('/sd/points', function*(){
+        try{
+            let tenantId = this.request.query.tenant;
+            let nickname = this.request.query.nickname;
+            let phone = this.request.query.phone;
+            let restIsNotEmpty = parseInt(this.request.query.rest, 10) === 1;
+            let status = this.request.query.status;
+            let options = {
+                page: {
+                    no: this.request.query.no,
+                    size: this.request.query.size
+                },
+                conditions: {
+                    org: tenantId
+                },
+                populates: [
+                    {
+                        path: 'user',
+                        model: 'TenantUser',
+                        select: 'nickname openid wechatId'
+                    }
+                ]
+            };
+            if(nickname){
+                if(!options.populates[0].match){
+                    options.populates[0].match = {
+                        nickname: new RegExp(nickname)
+                    }
+                }else{
+                    options.populates[0].match['nickname'] = new RegExp(nickname);
+                }
+            }
+            if(phone){
+                if(!options.populates[0].match){
+                    options.populates[0].match = {
+                        phone: phone
+                    }
+                }else{
+                    options.populates[0].match['phone'] = phone;
+                }
+            }
+            if(restIsNotEmpty){
+                options.conditions['points.rest'] = {
+                    $gt: 0
+                }
+            }
+            if(status){
+                options.conditions.status = status;
+            }
+            console.log(options.populates[0]);
+            let docs = yield context.services.membershipService.findAsync(options);
+            let points = docs.filter(function(p){
+                return p.user
+            });
+            console.log(points);
+            let docsForCount = yield context.services.membershipService.findAsync(_.omit(options, 'page'));
+            let pointsForCount = docsForCount.filter(function(p){
+                return p.user
+            });
+            this.body = {points: points, count: pointsForCount.length, error: null};
+        } catch (e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.post('/sd/points/records', function*(){
+        try{
+            let body = this.request.body;
+            let membershipId = body.membership;
+            let options = {
+                conditions: {
+                    membership: membershipId
+                }
+            };
+            console.log(options);
+            let docs = yield context.services.pointsService.findAsync(options);
+            this.body = {error: null, pointsRecords: docs};
+        } catch (e){
+            logger.error(e);
+            this.body = {error: e};
+        }
+    });
+
+    router.post('/sd/points/consume', function*(){
+        try{
+            let body = this.request.body;
+            let distributorId = body.distributor;
+            let rest = body.rest;
+            let consumed = body.consumed;
+            let desc = body.desc;
+            let num = parseInt('-' + body.num, 10);
+            let wechatId = body.wechatId;
+            let points = {
+                membership: distributorId,
+                num: num,
+                rest: rest,
+                consumed: consumed,
+                desc: desc
+            };
+            yield context.services.pointsService.createAsync(wechatId, points);
+            yield context.services.membershipService.updateByIdAsync(distributorId, {
+                $inc: {
+                    'points.rest': num
+                }
+            });
+            this.body = {error: null};
+        } catch (e){
             logger.error(e);
             this.body = {error: e};
         }
@@ -648,7 +758,8 @@ module.exports = function (router) {
                 bespeaks: bespeaks,
                 orders: myOrders,
                 clearPrice: pricesObject && pricesObject.clear || 0,
-                unclearPrice: pricesObject && pricesObject.unclear || 0
+                unclearPrice: pricesObject && pricesObject.unclear || 0,
+                membership: membership
             };
             this.body = {error: null, data: data}
         }catch(e){

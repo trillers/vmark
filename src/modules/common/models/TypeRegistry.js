@@ -49,6 +49,10 @@ registry
     .addChild('Percent','p', '比率')
     .addChild('Cash','c', '现金')
 
+    .up().item('DistributeStrategy', 'DistributeStrategy', '分销策略')
+    .addChild('Points','p', '积分')
+    .addChild('Cash','c', '现金')
+
     .up().item('WechatBotStatus', 'WechatBotStatus', '状态') //助手号状态
     .addChild('Starting','starting', '启动中')
     .addChild('Logging','logging', '登录中')

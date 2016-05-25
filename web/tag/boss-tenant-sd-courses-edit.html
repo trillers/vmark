@@ -85,6 +85,35 @@
                             <td class="text-left">
                                 <table class="my-table table table-striped">
                                     <tr>
+                                        <td><strong>结算方式</strong></td>
+                                        <td>
+                                        </td>
+                                        <td>
+                                            <table>
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <div class="radio form-inline">
+                                                            <label>
+                                                                <input name="distributeStrategy" value="{__app.enums.DistributeStrategy.names.Points}" checked="{(course.distributeStrategy || __app.enums.DistributeStrategy.names.Points) === __app.enums.DistributeStrategy.names.Points}" type="radio">
+                                                                积分
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <div class="radio form-inline">
+                                                            <label>
+                                                                <input name="distributeStrategy" value="{__app.enums.DistributeStrategy.names.Cash}" checked="{(course.distributeStrategy || __app.enums.DistributeStrategy.names.Points) === __app.enums.DistributeStrategy.names.Cash}" type="radio">
+                                                                现金
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <td><strong>会员折扣</strong></td>
                                         <td>单位课程优惠</td>
                                         <td>
@@ -696,6 +725,7 @@
             self.course.upLine1CommissionValue = self.course.upLine1CommissionValue || 0;
             self.course.upLine2CommissionValue = self.course.upLine2CommissionValue || 0;
             self.course.upLine3CommissionValue = self.course.upLine3CommissionValue || 0;
+            self.course.distributeStrategy = $('input[name="distributeStrategy"]:checked').val();
             var req = {
                 id: self.course._id,
                 o: self.course

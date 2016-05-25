@@ -6,6 +6,7 @@ var cbUtil = require('../../../../framework/callback');
 var typeRegistry = require('../../../common/models/TypeRegistry');
 var MembershipType = typeRegistry.item('MembershipType');
 var CommissionType = typeRegistry.item('CommissionType');
+var DistributeStrategy = typeRegistry.item('DistributeStrategy');
 var LifeFlag = typeRegistry.item('LifeFlag');
 var _ = require('underscore');
 var wechatApiCache = require('../../../tenant/wechat/api-cache');
@@ -163,6 +164,7 @@ Service.prototype.checkoutByDistributorId = function(distributorId, tenantId, me
     var done = callback || function noop(){};
     co(function*(){
         try{
+            var Membership = me.context.models.Membership;
             let responseText = "网络错误.";
             let distributor = yield me.loadUserInfoByIdAsync(distributorId);
             let orders = yield me.context.services.orderService.finishByDistributorIdAndTenantIdAndMediaIdAsync(distributorId, tenantId, media._id);
@@ -172,17 +174,36 @@ Service.prototype.checkoutByDistributorId = function(distributorId, tenantId, me
                 let order = yield me.context.services.orderService.loadFullInfoByIdAsync(orders[i]._id);
                 let payment = 0;
                 if(order.distributors){
+                    let product = order.bespeak.product;
                     let level = order.distributors.indexOf(distributorId) + 1;
-                    let cmType = order.bespeak.product['upLine' + level + 'CommissionType'];
-                    let cmValue = order.bespeak.product['upLine' + level + 'CommissionValue'];
+                    let cmType = product['upLine' + level + 'CommissionType'];
+                    let cmValue = product['upLine' + level + 'CommissionValue'];
                     if(cmType === CommissionType.Percent.value()){
                         payment = parseFloat(order.finalPrice, 10) * (parseFloat(cmValue, 10)/100);
                     }else{
                         payment = parseFloat(cmValue, 10);
                     }
+
                     responseText = "尊贵的经纪人 " + distributor.user.nickname + "\n" +
-                        "客户 [ " + order.bespeak.user.nickname + " ] 购买了您分享的 " + order.bespeak.product.name + '\n' +
-                        "您此单收入 " + payment;
+                        "客户 [ " + order.bespeak.user.nickname + " ] 购买了您分享的 " + order.bespeak.product.name + '\n';
+
+                    if(product.distributeStrategy === DistributeStrategy.Points.value()){
+                        responseText += "您此单积分入账 " + payment;
+                        var membershipUpdated = yield Membership.findByIdAndUpdate(distributorId, {$inc: {'points.rest': payment}}, {new: true, lean: true}).exec();
+                        var points = {
+                            membership: distributorId,
+                            num: payment,
+                            desc: '分销入账'
+                        };
+                        if(membershipUpdated.rest){
+                            points.rest = membershipUpdated.rest;
+                        }
+                        yield me.context.services.pointsService.createAsync(points);
+                        yield me.updateByIdAsync(membershipUpdated._id, _.omit(membershipUpdated, '_id'));
+                    }
+                    else{
+                        responseText += "您此单收入 " + payment;
+                    }
                 }
                 yield wechatApi.sendTextAsync(distributor.user.openid, responseText);
             }

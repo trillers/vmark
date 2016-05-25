@@ -70,7 +70,7 @@ var drawImg = function*(ctx, url, path, offsetX, offsetY, width, height, type){
 var drawText = function*(ctx, text, offsetX, offsetY, maxWidth){
     ctx.save();
     //todo font size
-    ctx.font = "16px SimHei";
+    ctx.font = "5px arial";
     ctx.fillStyle = 'white';
     ctx.textAlign = 'center';
     ctx.fillText(text, offsetX, offsetY, maxWidth);
@@ -79,6 +79,7 @@ var drawText = function*(ctx, text, offsetX, offsetY, maxWidth){
 
 
 var drawSdActivityPoster = function*(posterMeta, wechatId, bgImg){
+    console.log('^^^^^^^^^^^^^^^^^^^^^^^')
     var qr = posterMeta.qr;
     var canvas = new Canvas(450, 800);
     var ctx = canvas.getContext('2d');
@@ -93,6 +94,7 @@ var drawSdActivityPoster = function*(posterMeta, wechatId, bgImg){
 
 var drawSdParticipantPoster = function*(meta){
     try{
+        console.log("&&&&&&&&&&&&&&&&&&&")
         var qr = meta.qr;
         var user = meta.user;
         var bgImg = meta.bgImg;

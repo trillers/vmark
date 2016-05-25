@@ -18,5 +18,5 @@ module.exports = function (emitter) {
             var wechatId = ctx.weixin.ToUserName;
             yield context.services.tenantAuthenticationService.signupOnSubscriptionAsync(wechatId, openid);
         })
-    })
+    });
 };
