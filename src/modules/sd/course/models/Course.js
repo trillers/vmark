@@ -1,5 +1,6 @@
 var typeRegistry = require('../../../common/models/TypeRegistry');
 var LiveStatus = typeRegistry.item('LiveStatus');
+var DistributeStrategy = typeRegistry.item('DistributeStrategy');
 var CommissionType = typeRegistry.item('CommissionType');
 
 var Model = function(domainBuilder){
@@ -13,6 +14,7 @@ var Model = function(domainBuilder){
             name:                  {type: String, required: true},
             slogan:                {type: String, required: true},
             listPrice:             {type: String, required: true},
+            distributeStrategy:    {type: String, enum: DistributeStrategy.valueList(), default: DistributeStrategy.Points.value()},
             upLine1CommissionType: {type: String, enum: CommissionType.valueList(), default: CommissionType.Cash.value()},
             upLine2CommissionType: {type: String, enum: CommissionType.valueList(), default: CommissionType.Cash.value()},
             upLine3CommissionType: {type: String, enum: CommissionType.valueList(), default: CommissionType.Cash.value()},

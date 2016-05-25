@@ -63,6 +63,18 @@ webpackJsonp([0,1],[
 	    }
 	}));
 
+	app.routeView('sd/points', nest.viewable({
+	  name: 'boss-tenant-sd-points',
+	  mount: function(ctx){
+	    var tags = riot.mount('boss-tenant-sd-points', {filter: ctx.req.query, app: this.parent});
+	    this.tag = tags[0];
+	  },
+	  route: function(ctx){
+	    this.context = ctx;
+	    this.tag.trigger('open', ctx.req.query);
+	  }
+	}));
+
 	app.routeView('sd/catalogs', nest.viewable({
 	  name: 'boss-tenant-sd-catalogs',
 	  mount: function(ctx){
@@ -2026,7 +2038,7 @@ webpackJsonp([0,1],[
 	        };
 	    
 	});
-	riot.tag('boss-tenant-sd-courses-detail', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd/courses"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div> <div class="row" style="text-align: center"> <a href="#sd/courses" style="position: absolute; left: 0px; top: 10px">返回课程列表</a> <h4>{course.name}</h4> </div> <alert validators="{validators.raw()}" clear="{clear}"></alert> <div class="row"> <ul class="nav nav-tabs"> <li role="presentation" class="{active: currNav === 0}"> <a onclick="{onChangeTab(0)}">课程</a> </li> <li role="presentation" class="{active: currNav === 1}"> <a onclick="{onChangeTab(1)}">分销<b if="{course.upLine1CommissionValue == 0 && course.upLine2CommissionValue == 0 && course.upLine3CommissionValue == 0}" class="new_tag">新</b></a> </li> </ul> </div> <div class="row" if="{currNav === 0}"> <div class="panel panel-default"> <div class="panel-body"> <div> <table class="table table-narrow"> <tr> <td>课程名称</td> <td>{course.name}</td> </tr> <tr> <td>推广语</td> <td>{course.slogan}</td> </tr> <tr> <td>媒体价 ( :元 )</td> <td>{course.listPrice}</td> </tr> <tr> <td>上/下架状态</td> <td>{__app.enums.LiveStatus.values[course.liveStatus]}</td> </tr> <tr> <td>上/下架时间</td> <td>{course.actionTime && _.date.format(new Date(course.actionTime), \'yyyy-MM-dd hh点mm分\') || \'空\'}</td> </tr> <tr> <td>备注</td> <td>{course.desc}</td> </tr> <tr> <td><strong>焦点图</strong></td> <td colspan="2"> <ul class="banners-container"> <li each="{banner, i in course.banners}"> <img riot-src="{banner && (__app.settings.api.url + \'/file?media_id=\' + banner)}"> </li> </ul> </td> </tr> </table> <div class="row text-center"> <div class="col-md-12 col-lg-12"> <a href="#sd/courses/edit/details/_{course._id}">编辑课程详情</a> </div> </div> </div> </div> </div> </div> <div class="row" if="{currNav === 1}"> <div class="panel panel-default"> <div class="panel-body"> <td class="text-left"> <table class="my-table table table-narrow"> <tr> <td><strong>会员折扣</strong></td> <td>单位课程优惠</td> <td> <span>{__app.enums.CommissionType.names.Cash === course.memberDiscountsType && \'金额\' || \'百分比\'}</span> <span>{ course.memberDiscountsValue }</span> </td> </tr> <tr> <td><strong>直接分销商-直接推荐人</strong></td> <td>单位课程佣金</td> <td> <span>{__app.enums.CommissionType.names.Cash === course.upLine1CommissionType && \'金额\' || \'百分比\'}</span> <span>{ course.upLine1CommissionValue }</span> </td> </tr> <tr> <td><strong>间接分销商-间接推荐人</strong></td> <td>单位课程佣金</td> <td> <span>{__app.enums.CommissionType.names.Cash === course.upLine2CommissionType && \'金额\' || \'百分比\'}</span> <span>{ course.upLine2CommissionValue }</span> </td> </tr> <tr> <td><strong>第三级分销商-间接推荐人的推荐人</strong></td> <td>单位课程佣金</td> <td> <span>{__app.enums.CommissionType.names.Cash === course.upLine3CommissionType && \'金额\' || \'百分比\'}</span> <span>{ course.upLine3CommissionValue }</span> </td> </tr> <tr> <td colspan="3" style="text-align: center">注： 如果佣金按百分比计算，佣金基数以实际消费者实付金额为准（即线下实际核销金额）</td> </tr> <tr> <td><strong>分销海报背景</strong></td> <td colspan="2"><img style="width: 200px" riot-src="{course.poster &&__app.settings.api.url + \'/file?media_id=\' + course.poster}"></td> </tr> </table> </div> </div> </div>  <div class="row text-center" style="margin-top: 20px; margin-bottom: 20px"> <div class="col-md-12 col-lg-12"> <a href="#sd/courses/edit/_{course._id}" class="btn btn-default">修改</a> <input if="{course.liveStatus === __app.enums.LiveStatus.names.Idle}" onclick="{onGoLive}" data-toggle="modal" data-target="#modal" value="上架" type="button" class="btn btn-default"> <input if="{course.liveStatus === __app.enums.LiveStatus.names.GoLive}" onclick="{onSunset}" data-toggle="modal" data-target="#modal" value="下架" type="button" class="btn btn-default"> <input onclick="{onDelete}" data-toggle="modal" data-target="#modal" value="删除" type="button" class="btn btn-default"> </div> </div> </div> </div> </div> </div> </div>', 'boss-tenant-sd-courses-detail .form-horizontal .control-label{ text-align: left !important; } boss-tenant-sd-courses-detail .vcenter { vertical-align: middle; } boss-tenant-sd-courses-detail .table-narrow tr td{ border: none !important; width: 30% !important; } boss-tenant-sd-courses-detail .my-table{ width: 100%; } boss-tenant-sd-courses-detail .my-table td{ width: 33.33333%; } boss-tenant-sd-courses-detail .panel-default { border-top: none; border-color: #ddd; } boss-tenant-sd-courses-detail .new_tag { display: block; position: absolute; top: 5px; right: 5px; background: red; width: 10px; height: 10px; border-radius: 50em; text-indent: -99em; }', function(opts) {
+	riot.tag('boss-tenant-sd-courses-detail', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd/courses"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div> <div class="row" style="text-align: center"> <a href="#sd/courses" style="position: absolute; left: 0px; top: 10px">返回课程列表</a> <h4>{course.name}</h4> </div> <alert validators="{validators.raw()}" clear="{clear}"></alert> <div class="row"> <ul class="nav nav-tabs"> <li role="presentation" class="{active: currNav === 0}"> <a onclick="{onChangeTab(0)}">课程</a> </li> <li role="presentation" class="{active: currNav === 1}"> <a onclick="{onChangeTab(1)}">分销<b if="{course.upLine1CommissionValue == 0 && course.upLine2CommissionValue == 0 && course.upLine3CommissionValue == 0}" class="new_tag">新</b></a> </li> </ul> </div> <div class="row" if="{currNav === 0}"> <div class="panel panel-default"> <div class="panel-body"> <div> <table class="table table-narrow"> <tr> <td>课程名称</td> <td>{course.name}</td> </tr> <tr> <td>推广语</td> <td>{course.slogan}</td> </tr> <tr> <td>媒体价 ( :元 )</td> <td>{course.listPrice}</td> </tr> <tr> <td>上/下架状态</td> <td>{__app.enums.LiveStatus.values[course.liveStatus]}</td> </tr> <tr> <td>上/下架时间</td> <td>{course.actionTime && _.date.format(new Date(course.actionTime), \'yyyy-MM-dd hh点mm分\') || \'空\'}</td> </tr> <tr> <td>备注</td> <td>{course.desc}</td> </tr> <tr> <td><strong>焦点图</strong></td> <td colspan="2"> <ul class="banners-container"> <li each="{banner, i in course.banners}"> <img riot-src="{banner && (__app.settings.api.url + \'/file?media_id=\' + banner)}"> </li> </ul> </td> </tr> </table> <div class="row text-center"> <div class="col-md-12 col-lg-12"> <a href="#sd/courses/edit/details/_{course._id}">编辑课程详情</a> </div> </div> </div> </div> </div> </div> <div class="row" if="{currNav === 1}"> <div class="panel panel-default"> <div class="panel-body"> <td class="text-left"> <table class="my-table table table-narrow"> <tr> <td><strong>结算方式</strong></td> <td colspan="2">{__app.enums.DistributeStrategy.values[course.distributeStrategy] || \'积分\'}</td> </tr> <tr> <td><strong>会员折扣</strong></td> <td>单位课程优惠</td> <td> <span>{__app.enums.CommissionType.names.Cash === course.memberDiscountsType && \'金额\' || \'百分比\'}</span> <span>{ course.memberDiscountsValue }</span> </td> </tr> <tr> <td><strong>直接分销商-直接推荐人</strong></td> <td>单位课程佣金</td> <td> <span>{__app.enums.CommissionType.names.Cash === course.upLine1CommissionType && \'金额\' || \'百分比\'}</span> <span>{ course.upLine1CommissionValue }</span> </td> </tr> <tr> <td><strong>间接分销商-间接推荐人</strong></td> <td>单位课程佣金</td> <td> <span>{__app.enums.CommissionType.names.Cash === course.upLine2CommissionType && \'金额\' || \'百分比\'}</span> <span>{ course.upLine2CommissionValue }</span> </td> </tr> <tr> <td><strong>第三级分销商-间接推荐人的推荐人</strong></td> <td>单位课程佣金</td> <td> <span>{__app.enums.CommissionType.names.Cash === course.upLine3CommissionType && \'金额\' || \'百分比\'}</span> <span>{ course.upLine3CommissionValue }</span> </td> </tr> <tr> <td colspan="3" style="text-align: center">注： 如果佣金按百分比计算，佣金基数以实际消费者实付金额为准（即线下实际核销金额）</td> </tr> <tr> <td><strong>分销海报背景</strong></td> <td colspan="2"><img style="width: 200px" riot-src="{course.poster &&__app.settings.api.url + \'/file?media_id=\' + course.poster}"></td> </tr> </table> </div> </div> </div>  <div class="row text-center" style="margin-top: 20px; margin-bottom: 20px"> <div class="col-md-12 col-lg-12"> <a href="#sd/courses/edit/_{course._id}" class="btn btn-default">修改</a> <input if="{course.liveStatus === __app.enums.LiveStatus.names.Idle}" onclick="{onGoLive}" data-toggle="modal" data-target="#modal" value="上架" type="button" class="btn btn-default"> <input if="{course.liveStatus === __app.enums.LiveStatus.names.GoLive}" onclick="{onSunset}" data-toggle="modal" data-target="#modal" value="下架" type="button" class="btn btn-default"> <input onclick="{onDelete}" data-toggle="modal" data-target="#modal" value="删除" type="button" class="btn btn-default"> </div> </div> </div> </div> </div> </div> </div>', 'boss-tenant-sd-courses-detail .form-horizontal .control-label{ text-align: left !important; } boss-tenant-sd-courses-detail .vcenter { vertical-align: middle; } boss-tenant-sd-courses-detail .table-narrow tr td{ border: none !important; width: 30% !important; } boss-tenant-sd-courses-detail .my-table{ width: 100%; } boss-tenant-sd-courses-detail .my-table td{ width: 33.33333%; } boss-tenant-sd-courses-detail .panel-default { border-top: none; border-color: #ddd; } boss-tenant-sd-courses-detail .new_tag { display: block; position: absolute; top: 5px; right: 5px; background: red; width: 10px; height: 10px; border-radius: 50em; text-indent: -99em; }', function(opts) {
 	        "use strict"
 	        var self = nest.presentable(this);
 	        var loadCourseByIdAction = domain.action('loadCourseById');
@@ -2192,7 +2204,7 @@ webpackJsonp([0,1],[
 	        }
 	    
 	});
-	riot.tag('boss-tenant-sd-courses-edit', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd/courses"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div class="row" style="text-align: center"> <h4>{course.name}</h4> </div> <alert validators="{validators.raw()}" clear="{clear}"></alert> <div class="row"> <ul class="nav nav-tabs"> <li role="presentation" class="{active: currNav === 0}"><a onclick="{onChangeTab(0)}">课程</a></li> <li role="presentation" class="{active: currNav === 1}"><a onclick="{onChangeTab(1)}">分销</a></li> </ul> </div> <div class="row" if="{currNav === 0}"> <div class="panel panel-default"> <div class="panel-body"> <form class="form-horizontal"> <div class="form-group text-left"> <label for="courseNameInput" class="col-sm-2 control-label text-left">课程名称</label> <div class="col-sm-10 {has-error: !courseNameInput.value.trim()} has-feedback"> <input onblur="{courseNameInputBlur}" value="{course.name}" id="courseNameInput" type="text" class="form-control "> </div> </div> <div class="form-group"> <label for="coursePromoteInput" class="col-sm-2 control-label">推广语</label> <div class="col-sm-10"> <input onblur="{coursePromoteInputBlur}" value="{course.slogan}" type="text" class="form-control" id="coursePromoteInput"> </div> </div> <div class="form-group"> <label for="courseMediaPriceInput" class="col-sm-2 control-label">媒体价 ( :元 )</label> <div class="col-sm-10 {has-error: !courseMediaPriceInput.value.trim()}"> <input onblur="{courseMediaPriceInputBlur}" value="{course.listPrice}" type="number" class="form-control" id="courseMediaPriceInput"> </div> </div> <div class="form-group"> <label class="col-sm-2 control-label">上/下架状态</label> <div class="col-sm-10" style="height: 32px;line-height: 32px"> <span>{__app.enums.LiveStatus.values[course.liveStatus]}</span> </div> </div> <div class="form-group"> <label class="col-sm-2 control-label">上/下架时间</label> <div class="col-sm-10" style="height: 32px;line-height: 32px"> <span>{course.actionTime && _.date.format(new Date(course.actionTime), \'yyyy-MM-dd hh点mm分\') || \'空\'}</span> </div> </div> <div class="form-group"> <label for="courseDescInput" class="col-sm-2 control-label">备注</label> <div class="col-sm-10"> <textarea onblur="{courseDescInputBlur}" type="password" class="form-control" id="courseDescInput"> {course.desc} </textarea> </div> </div> <div class="form-group"> <label for="courseDescInput" class="col-sm-2 control-label">轮播焦点图</label> <div class="col-sm-10"> <input multiple="multiple" onchange="{onBannersChange}" id="bannersInput" type="file" accept="image/jpeg, image/png, image/jpg"> <ul class="banners-container"> <li each="{banner, i in course.banners}" onmouseenter="{parent.onHover}" onmouseleave="{parent.onUnHover}"> <div onclick="{parent.removeBanner}" if="{isImgMaskShow}"> <b> <b class="close-a"></b> <b class="close-b"></b> </b> </div> <img riot-src="{banner.data || banner && (__app.settings.api.url + \'/file?media_id=\' + banner)}"> </li> </ul> </div> </div> </form> </div> </div> </div> <div class="row" if="{currNav === 1}"> <div class="panel panel-default"> <div class="panel-body"> <td class="text-left"> <table class="my-table table table-striped"> <tr> <td><strong>会员折扣</strong></td> <td>单位课程优惠</td> <td> <table> <tr> <td> <div onclick="{onSelectMemberDiscountsType1}" class="radio form-inline"> <label for="memberDiscountsTypeInput1"> <input id="memberDiscountsTypeInput1" value="{__app.enums.CommissionType.names.Cash}" __checked="{course.memberDiscountsType === __app.enums.CommissionType.names.Cash}" type="radio" name="memberDiscountsType"> 金额 </label> </div> </td> <td> <input id="memberDiscountsValueInput1" onblur="{onValidateValue}" __disabled="{course.memberDiscountsType != __app.enums.CommissionType.names.Cash}" value="{course.memberDiscountsType === __app.enums.CommissionType.names.Cash && course.memberDiscountsValue || \'\'}" class="form-control" type="number"> </td> </tr> <tr> <td> <div onclick="{onSelectMemberDiscountsType2}" class="radio form-inline"> <label for="memberDiscountsTypeInput2"> <input type="radio" name="memberDiscountsType" id="memberDiscountsTypeInput2" value="{__app.enums.CommissionType.names.Percent}" __checked="{course.memberDiscountsType === __app.enums.CommissionType.names.Percent}"> 百分比 </label> </div> </td> <td> <input id="memberDiscountsValueInput2" onblur="{onValidatePercent}" __disabled="{course.memberDiscountsType != __app.enums.CommissionType.names.Percent}" value="{course.memberDiscountsType === __app.enums.CommissionType.names.Percent && course.memberDiscountsValue || \'\'}" class="form-control" type="number"> </td> </tr> </table> </td> </tr> <tr> <td><strong>直接分销商-直接推荐人</strong></td> <td>单位课程佣金</td> <td> <table> <tr> <td> <div onclick="{onSelectUpLine1CommissionType1}" class="radio form-inline"> <label for="upLine1CommissionTypeInput1"> <input id="upLine1CommissionTypeInput1" value="{__app.enums.CommissionType.names.Cash}" __checked="{course.upLine1CommissionType === __app.enums.CommissionType.names.Cash}" type="radio" name="upLine1CommissionType"> 金额 </label> </div> </td> <td> <input id="upLine1CommissionValueInput1" onblur="{onBlurUpLine1CommissionValue(\'val\')}" __disabled="{course.upLine1CommissionType != __app.enums.CommissionType.names.Cash}" value="{course.upLine1CommissionType === __app.enums.CommissionType.names.Cash && course.upLine1CommissionValue || \'\'}" class="form-control" type="number"> </td> </tr> <tr> <td> <div onclick="{onSelectUpLine1CommissionType2}" class="radio form-inline"> <label for="upLine1CommissionTypeInput2"> <input id="upLine1CommissionTypeInput2" value="{__app.enums.CommissionType.names.Percent}" __checked="{course.upLine1CommissionType === __app.enums.CommissionType.names.Percent}" type="radio" name="upLine1CommissionType"> 百分比 </label> </div> </td> <td> <input id="upLine1CommissionValueInput2" onblur="{onBlurUpLine1CommissionValue(\'percent\')}" __disabled="{course.upLine1CommissionType != __app.enums.CommissionType.names.Percent}" value="{course.upLine1CommissionType === __app.enums.CommissionType.names.Percent && course.upLine1CommissionValue || \'\'}" class="form-control" type="number"> </td> </tr> </table> </td> </tr> <tr> <td><strong>间接分销商-间接推荐人</strong></td> <td>单位课程佣金</td> <td> <table> <tr> <td> <div onclick="{onSelectUpLine2CommissionType1}" class="radio form-inline"> <label for="upLine2CommissionTypeInput1"> <input id="upLine2CommissionTypeInput1" value="{__app.enums.CommissionType.names.Cash}" __checked="{course.upLine2CommissionType === __app.enums.CommissionType.names.Cash}" type="radio" name="upLine2CommissionType"> 金额 </label> </div> </td> <td> <input id="upLine2CommissionValueInput1" onblur="{onBlurUpLine2CommissionValue(\'val\')}" __disabled="{course.upLine2CommissionType != __app.enums.CommissionType.names.Cash}" value="{course.upLine2CommissionType === __app.enums.CommissionType.names.Cash && course.upLine2CommissionValue || \'\'}" class="form-control" type="number"> </td> </tr> <tr> <td> <div onclick="{onSelectUpLine2CommissionType2}" class="radio form-inline"> <label for="upLine2CommissionTypeInput2"> <input id="upLine2CommissionTypeInput2" value="{__app.enums.CommissionType.names.Percent}" __checked="{course.upLine2CommissionType === __app.enums.CommissionType.names.Percent}" type="radio" name="upLine2CommissionType"> 百分比 </label> </div> </td> <td> <input id="upLine2CommissionValueInput2" onblur="{onBlurUpLine2CommissionValue(\'percent\')}" __disabled="{course.upLine2CommissionType != __app.enums.CommissionType.names.Percent}" value="{course.upLine2CommissionType === __app.enums.CommissionType.names.Percent && course.upLine2CommissionValue || \'\'}" class="form-control" type="number"> </td> </tr> </table> </td> </tr> <tr> <td><strong>第三级分销商-间接推荐人的推荐人</strong></td> <td>单位课程佣金</td> <td> <table> <tr> <td> <div onclick="{onSelectUpLine3CommissionType1}" class="radio form-inline"> <label for="upLine3CommissionTypeInput1"> <input id="upLine3CommissionTypeInput1" value="{__app.enums.CommissionType.names.Cash}" __checked="{course.upLine3CommissionType === __app.enums.CommissionType.names.Cash}" type="radio" name="upLine3CommissionType"> 金额 </label> </div> </td> <td> <input id="upLine3CommissionValueInput1" onblur="{onBlurUpLine3CommissionValue(\'val\')}" __disabled="{course.upLine3CommissionType != __app.enums.CommissionType.names.Cash}" value="{course.upLine3CommissionType === __app.enums.CommissionType.names.Cash && course.upLine3CommissionValue || \'\'}" class="form-control" type="number"> </td> </tr> <tr> <td> <div onclick="{onSelectUpLine3CommissionType2}" class="radio form-inline"> <label for="upLine3CommissionTypeInput2"> <input id="upLine3CommissionTypeInput2" value="{__app.enums.CommissionType.names.Percent}" __checked="{course.upLine3CommissionType === __app.enums.CommissionType.names.Percent}" type="radio" name="upLine3CommissionType"> 百分比 </label> </div> </td> <td> <input id="upLine3CommissionValueInput2" onblur="{onBlurUpLine3CommissionValue(\'percent\')}" __disabled="{course.upLine3CommissionType != __app.enums.CommissionType.names.Percent}" value="{course.upLine3CommissionType === __app.enums.CommissionType.names.Percent && course.upLine3CommissionValue || \'\'}" class="form-control" type="number"> </td> </tr> </table> </td> </tr> <tr> <td colspan="3" style="text-align: center">注： 如果佣金按百分比计算，佣金基数以实际消费者实付金额为准（即线下实际核销金额）</td> </tr> <tr> <td> <strong>分销海报背景</strong> </td> <td colspan="2"> <input onchange="{onFileChange}" id="posterInput" type="file" accept="image/jpeg, image/png, image/jpg"> <img style="width: 100px; margin-top: 10px" riot-src="{course.poster && !course.poster.data && __app.settings.api.url + \'/file?media_id=\' + course.poster || course.poster.data}"> </td> </tr> </table> </div> </div> </div>  <div class="row" style="margin-top: 10px"> <div class="col-md-12 col-lg-12 text-center"> <input __disabled="{!courseMediaPriceInput.value.trim() || !courseNameInput.value.trim() || !validators.allOk()}" onclick="{onSubmit}" type="button" class="btn btn-primary" value="保存"> <a href="#sd/courses" class="btn btn-default">取消</a> </div> </div> </div> </div> </div> </div>', '.form-horizontal .control-label{ text-align: left !important; } .vcenter { vertical-align: middle; } .my-table{ width: 100%; } .my-table td{ width: 33.33333%; } .panel-default { border-top: none; border-color: #ddd; } .banners-container{ margin: 0px; margin-top: 10px;overflow: hidden;padding:0px } .banners-container >li { position: relative;width: 100px;height:100px;overflow: hidden;background-color: #EFEFEF; list-style-type:none;float:left;margin-right: 10px;line-height: 100px;text-align: center } .banners-container >li img{ width: 100px; } .banners-container >li div{ position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.3); } .banners-container >li div >b{ position: absolute; top:38px; left:38px; width:24px; height:24px; } .close-a{ position: absolute; top:0px; left:10px; width: 4px; height: 24px; transform:rotate(45deg); background: white; } .close-b{ position: absolute; top:0px; left:10px; width: 4px; height: 24px; transform:rotate(135deg); background: white; }', function(opts) {
+	riot.tag('boss-tenant-sd-courses-edit', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd/courses"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div class="row" style="text-align: center"> <h4>{course.name}</h4> </div> <alert validators="{validators.raw()}" clear="{clear}"></alert> <div class="row"> <ul class="nav nav-tabs"> <li role="presentation" class="{active: currNav === 0}"><a onclick="{onChangeTab(0)}">课程</a></li> <li role="presentation" class="{active: currNav === 1}"><a onclick="{onChangeTab(1)}">分销</a></li> </ul> </div> <div class="row" if="{currNav === 0}"> <div class="panel panel-default"> <div class="panel-body"> <form class="form-horizontal"> <div class="form-group text-left"> <label for="courseNameInput" class="col-sm-2 control-label text-left">课程名称</label> <div class="col-sm-10 {has-error: !courseNameInput.value.trim()} has-feedback"> <input onblur="{courseNameInputBlur}" value="{course.name}" id="courseNameInput" type="text" class="form-control "> </div> </div> <div class="form-group"> <label for="coursePromoteInput" class="col-sm-2 control-label">推广语</label> <div class="col-sm-10"> <input onblur="{coursePromoteInputBlur}" value="{course.slogan}" type="text" class="form-control" id="coursePromoteInput"> </div> </div> <div class="form-group"> <label for="courseMediaPriceInput" class="col-sm-2 control-label">媒体价 ( :元 )</label> <div class="col-sm-10 {has-error: !courseMediaPriceInput.value.trim()}"> <input onblur="{courseMediaPriceInputBlur}" value="{course.listPrice}" type="number" class="form-control" id="courseMediaPriceInput"> </div> </div> <div class="form-group"> <label class="col-sm-2 control-label">上/下架状态</label> <div class="col-sm-10" style="height: 32px;line-height: 32px"> <span>{__app.enums.LiveStatus.values[course.liveStatus]}</span> </div> </div> <div class="form-group"> <label class="col-sm-2 control-label">上/下架时间</label> <div class="col-sm-10" style="height: 32px;line-height: 32px"> <span>{course.actionTime && _.date.format(new Date(course.actionTime), \'yyyy-MM-dd hh点mm分\') || \'空\'}</span> </div> </div> <div class="form-group"> <label for="courseDescInput" class="col-sm-2 control-label">备注</label> <div class="col-sm-10"> <textarea onblur="{courseDescInputBlur}" type="password" class="form-control" id="courseDescInput"> {course.desc} </textarea> </div> </div> <div class="form-group"> <label for="courseDescInput" class="col-sm-2 control-label">轮播焦点图</label> <div class="col-sm-10"> <input multiple="multiple" onchange="{onBannersChange}" id="bannersInput" type="file" accept="image/jpeg, image/png, image/jpg"> <ul class="banners-container"> <li each="{banner, i in course.banners}" onmouseenter="{parent.onHover}" onmouseleave="{parent.onUnHover}"> <div onclick="{parent.removeBanner}" if="{isImgMaskShow}"> <b> <b class="close-a"></b> <b class="close-b"></b> </b> </div> <img riot-src="{banner.data || banner && (__app.settings.api.url + \'/file?media_id=\' + banner)}"> </li> </ul> </div> </div> </form> </div> </div> </div> <div class="row" if="{currNav === 1}"> <div class="panel panel-default"> <div class="panel-body"> <td class="text-left"> <table class="my-table table table-striped"> <tr> <td><strong>结算方式</strong></td> <td> </td> <td> <table> <tr> <td colspan="2"> <div class="radio form-inline"> <label> <input name="distributeStrategy" value="{__app.enums.DistributeStrategy.names.Points}" __checked="{(course.distributeStrategy || __app.enums.DistributeStrategy.names.Points) === __app.enums.DistributeStrategy.names.Points}" type="radio"> 积分 </label> </div> </td> </tr> <tr> <td colspan="2"> <div class="radio form-inline"> <label> <input name="distributeStrategy" value="{__app.enums.DistributeStrategy.names.Cash}" __checked="{(course.distributeStrategy || __app.enums.DistributeStrategy.names.Points) === __app.enums.DistributeStrategy.names.Cash}" type="radio"> 现金 </label> </div> </td> </tr> </table> </td> </tr> <tr> <td><strong>会员折扣</strong></td> <td>单位课程优惠</td> <td> <table> <tr> <td> <div class="radio form-inline"> <label for="memberDiscountsTypeInput1"> <input onclick="{onSelectMemberDiscountsType1}" id="memberDiscountsTypeInput1" value="{__app.enums.CommissionType.names.Cash}" __checked="{course.memberDiscountsType === __app.enums.CommissionType.names.Cash}" type="radio" name="memberDiscountsType"> 金额 </label> </div> </td> <td> <input id="memberDiscountsValueInput1" onblur="{onValidateValue}" __disabled="{course.memberDiscountsType != __app.enums.CommissionType.names.Cash}" value="{course.memberDiscountsType === __app.enums.CommissionType.names.Cash && course.memberDiscountsValue || \'\'}" class="form-control" type="number"> </td> </tr> <tr> <td> <div class="radio form-inline"> <label for="memberDiscountsTypeInput2"> <input onclick="{onSelectMemberDiscountsType2}" type="radio" name="memberDiscountsType" id="memberDiscountsTypeInput2" value="{__app.enums.CommissionType.names.Percent}" __checked="{course.memberDiscountsType === __app.enums.CommissionType.names.Percent}"> 百分比 </label> </div> </td> <td> <input id="memberDiscountsValueInput2" onblur="{onValidatePercent}" __disabled="{course.memberDiscountsType != __app.enums.CommissionType.names.Percent}" value="{course.memberDiscountsType === __app.enums.CommissionType.names.Percent && course.memberDiscountsValue || \'\'}" class="form-control" type="number"> </td> </tr> </table> </td> </tr> <tr> <td><strong>直接分销商-直接推荐人</strong></td> <td>单位课程佣金</td> <td> <table> <tr> <td> <div class="radio form-inline"> <label for="upLine1CommissionTypeInput1"> <input onclick="{onSelectUpLine1CommissionType1}" id="upLine1CommissionTypeInput1" value="{__app.enums.CommissionType.names.Cash}" __checked="{course.upLine1CommissionType === __app.enums.CommissionType.names.Cash}" type="radio" name="upLine1CommissionType"> 金额 </label> </div> </td> <td> <input id="upLine1CommissionValueInput1" onblur="{onBlurUpLine1CommissionValue(\'val\')}" __disabled="{course.upLine1CommissionType != __app.enums.CommissionType.names.Cash}" value="{course.upLine1CommissionType === __app.enums.CommissionType.names.Cash && course.upLine1CommissionValue || \'\'}" class="form-control" type="number"> </td> </tr> <tr> <td> <div class="radio form-inline"> <label for="upLine1CommissionTypeInput2"> <input onclick="{onSelectUpLine1CommissionType2}" id="upLine1CommissionTypeInput2" value="{__app.enums.CommissionType.names.Percent}" __checked="{course.upLine1CommissionType === __app.enums.CommissionType.names.Percent}" type="radio" name="upLine1CommissionType"> 百分比 </label> </div> </td> <td> <input id="upLine1CommissionValueInput2" onblur="{onBlurUpLine1CommissionValue(\'percent\')}" __disabled="{course.upLine1CommissionType != __app.enums.CommissionType.names.Percent}" value="{course.upLine1CommissionType === __app.enums.CommissionType.names.Percent && course.upLine1CommissionValue || \'\'}" class="form-control" type="number"> </td> </tr> </table> </td> </tr> <tr> <td><strong>间接分销商-间接推荐人</strong></td> <td>单位课程佣金</td> <td> <table> <tr> <td> <div class="radio form-inline"> <label for="upLine2CommissionTypeInput1"> <input onclick="{onSelectUpLine2CommissionType1}" id="upLine2CommissionTypeInput1" value="{__app.enums.CommissionType.names.Cash}" __checked="{course.upLine2CommissionType === __app.enums.CommissionType.names.Cash}" type="radio" name="upLine2CommissionType"> 金额 </label> </div> </td> <td> <input id="upLine2CommissionValueInput1" onblur="{onBlurUpLine2CommissionValue(\'val\')}" __disabled="{course.upLine2CommissionType != __app.enums.CommissionType.names.Cash}" value="{course.upLine2CommissionType === __app.enums.CommissionType.names.Cash && course.upLine2CommissionValue || \'\'}" class="form-control" type="number"> </td> </tr> <tr> <td> <div class="radio form-inline"> <label for="upLine2CommissionTypeInput2"> <input onclick="{onSelectUpLine2CommissionType2}" id="upLine2CommissionTypeInput2" value="{__app.enums.CommissionType.names.Percent}" __checked="{course.upLine2CommissionType === __app.enums.CommissionType.names.Percent}" type="radio" name="upLine2CommissionType"> 百分比 </label> </div> </td> <td> <input id="upLine2CommissionValueInput2" onblur="{onBlurUpLine2CommissionValue(\'percent\')}" __disabled="{course.upLine2CommissionType != __app.enums.CommissionType.names.Percent}" value="{course.upLine2CommissionType === __app.enums.CommissionType.names.Percent && course.upLine2CommissionValue || \'\'}" class="form-control" type="number"> </td> </tr> </table> </td> </tr> <tr> <td><strong>第三级分销商-间接推荐人的推荐人</strong></td> <td>单位课程佣金</td> <td> <table> <tr> <td> <div class="radio form-inline"> <label for="upLine3CommissionTypeInput1"> <input onclick="{onSelectUpLine3CommissionType1}" id="upLine3CommissionTypeInput1" value="{__app.enums.CommissionType.names.Cash}" __checked="{course.upLine3CommissionType === __app.enums.CommissionType.names.Cash}" type="radio" name="upLine3CommissionType"> 金额 </label> </div> </td> <td> <input id="upLine3CommissionValueInput1" onblur="{onBlurUpLine3CommissionValue(\'val\')}" __disabled="{course.upLine3CommissionType != __app.enums.CommissionType.names.Cash}" value="{course.upLine3CommissionType === __app.enums.CommissionType.names.Cash && course.upLine3CommissionValue || \'\'}" class="form-control" type="number"> </td> </tr> <tr> <td> <div class="radio form-inline"> <label for="upLine3CommissionTypeInput2"> <input onclick="{onSelectUpLine3CommissionType2}" id="upLine3CommissionTypeInput2" value="{__app.enums.CommissionType.names.Percent}" __checked="{course.upLine3CommissionType === __app.enums.CommissionType.names.Percent}" type="radio" name="upLine3CommissionType"> 百分比 </label> </div> </td> <td> <input id="upLine3CommissionValueInput2" onblur="{onBlurUpLine3CommissionValue(\'percent\')}" __disabled="{course.upLine3CommissionType != __app.enums.CommissionType.names.Percent}" value="{course.upLine3CommissionType === __app.enums.CommissionType.names.Percent && course.upLine3CommissionValue || \'\'}" class="form-control" type="number"> </td> </tr> </table> </td> </tr> <tr> <td colspan="3" style="text-align: center">注： 如果佣金按百分比计算，佣金基数以实际消费者实付金额为准（即线下实际核销金额）</td> </tr> <tr> <td> <strong>分销海报背景</strong> </td> <td colspan="2"> <input onchange="{onFileChange}" id="posterInput" type="file" accept="image/jpeg, image/png, image/jpg"> <img style="width: 100px; margin-top: 10px" riot-src="{course.poster && !course.poster.data && __app.settings.api.url + \'/file?media_id=\' + course.poster || course.poster.data}"> </td> </tr> </table> </div> </div> </div>  <div class="row" style="margin-top: 10px"> <div class="col-md-12 col-lg-12 text-center"> <input __disabled="{!courseMediaPriceInput.value.trim() || !courseNameInput.value.trim() || !validators.allOk()}" onclick="{onSubmit}" type="button" class="btn btn-primary" value="保存"> <a href="#sd/courses" class="btn btn-default">取消</a> </div> </div> </div> </div> </div> </div>', '.form-horizontal .control-label{ text-align: left !important; } .vcenter { vertical-align: middle; } .my-table{ width: 100%; } .my-table td{ width: 33.33333%; } .panel-default { border-top: none; border-color: #ddd; } .banners-container{ margin: 0px; margin-top: 10px;overflow: hidden;padding:0px } .banners-container >li { position: relative;width: 100px;height:100px;overflow: hidden;background-color: #EFEFEF; list-style-type:none;float:left;margin-right: 10px;line-height: 100px;text-align: center } .banners-container >li img{ width: 100px; } .banners-container >li div{ position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.3); } .banners-container >li div >b{ position: absolute; top:38px; left:38px; width:24px; height:24px; } .close-a{ position: absolute; top:0px; left:10px; width: 4px; height: 24px; transform:rotate(45deg); background: white; } .close-b{ position: absolute; top:0px; left:10px; width: 4px; height: 24px; transform:rotate(135deg); background: white; }', function(opts) {
 	        "use strict";
 	        var self = nest.presentable(this);
 	        var maxBannerCount = 3;
@@ -2272,9 +2284,127 @@ webpackJsonp([0,1],[
 	        self.onSelectMemberDiscountsType1 = function(e){
 	            self.course.memberDiscountsType = __app.enums.CommissionType.names.Cash;
 	            self.course.memberDiscountsValue = '';
+	            self.validators.pass('emptyMemberDiscountsValuePercent');
+	            self.validators.pass('membershipDiscountValue');
+	            self.validators.pass('membershipDiscountPercent');
+	            self.memberDiscountsValueInput1.value = "";
+	            self.memberDiscountsValueInput2.value = "";
+	            self.validators.addToSet({
+	                success: false,
+	                field: '请输入会员折扣金额',
+	                desc: '当前为空',
+	                key: 'emptyMemberDiscountsValueCash'
+	            });
+	            return true;
+	        };
+	        self.onSelectMemberDiscountsType2 = function(e){
+	            self.course.memberDiscountsType = __app.enums.CommissionType.names.Percent;
+	            self.course.memberDiscountsValue = '';
+	            self.validators.pass('emptyMemberDiscountsValueCash');
+	            self.validators.pass('membershipDiscountValue');
+	            self.validators.pass('membershipDiscountPercent');
+	            self.memberDiscountsValueInput1.value = "";
+	            self.memberDiscountsValueInput2.value = "";
+	            self.validators.addToSet({
+	                success: false,
+	                field: '请输入会员折扣百分比',
+	                desc: '当前为空',
+	                key: 'emptyMemberDiscountsValuePercent'
+	            });
+	            return true;
+	        };
+	        self.onSelectUpLine1CommissionType1 = function(e){
+	            self.course.upLine1CommissionType = __app.enums.CommissionType.names.Cash;
+	            self.course.upLine1CommissionValue = '';
+	            self.upLine1CommissionValueInput2.value = '';
+	            self.validators.pass('emptyUpLine1CommissionValuePercent');
+	            self.validators.pass('upLine1CommissionValue');
+	            self.validators.pass('upLine1CommissionPercent');
+	            self.validators.addToSet({
+	                success: false,
+	                field: '请输入直接分销商佣金金额',
+	                desc: '当前为空',
+	                key: 'emptyUpLine1CommissionValueCash'
+	            });
+	            return true;
+	        };
+	        self.onSelectUpLine1CommissionType2 = function(e){
+	            self.course.upLine1CommissionType = __app.enums.CommissionType.names.Percent;
+	            self.course.upLine1CommissionValue = '';
+	            self.upLine1CommissionValueInput1.value = '';
+	            self.validators.pass('upLine1CommissionValue');
+	            self.validators.pass('upLine1CommissionPercent');
+	            self.validators.pass('emptyUpLine1CommissionValueCash');
+	            self.validators.addToSet({
+	                success: false,
+	                field: '请输入直接分销商佣金百分比',
+	                desc: '当前为空',
+	                key: 'emptyUpLine1CommissionValuePercent'
+	            });
+	            return true;
+	        };
+	        self.onSelectUpLine2CommissionType1 = function(e){
+	            self.course.upLine2CommissionType = __app.enums.CommissionType.names.Cash;
+	            self.course.upLine2CommissionValue = '';
+	            self.upLine2CommissionValueInput2.value = '';
+	            self.validators.pass('emptyUpLine2CommissionValuePercent');
+	            self.validators.pass('upLine2CommissionValue');
+	            self.validators.pass('upLine2CommissionPercent');
+	            self.validators.addToSet({
+	                success: false,
+	                field: '请输入二级分销商佣金金额',
+	                desc: '当前为空',
+	                key: 'emptyUpLine2CommissionValueCash'
+	            });
+	            return true;
+	        };
+	        self.onSelectUpLine2CommissionType2 = function(e){
+	            self.course.upLine2CommissionType = __app.enums.CommissionType.names.Percent;
+	            self.course.upLine2CommissionValue = '';
+	            self.upLine2CommissionValueInput1.value = '';
+	            self.validators.pass('upLine2CommissionValue');
+	            self.validators.pass('upLine2CommissionPercent');
+	            self.validators.pass('emptyUpLine2CommissionValueCash');
+	            self.validators.addToSet({
+	                success: false,
+	                field: '请输入二级分销商佣金百分比',
+	                desc: '当前为空',
+	                key: 'emptyUpLine2CommissionValuePercent'
+	            });
+	            return true;
+	        };
+	        self.onSelectUpLine3CommissionType1 = function(e){
+	            self.course.upLine3CommissionType = __app.enums.CommissionType.names.Cash;
+	            self.course.upLine3CommissionValue = '';
+	            self.upLine3CommissionValueInput2.value = '';
+	            self.validators.pass('emptyUpLine3CommissionValuePercent');
+	            self.validators.pass('upLine3CommissionValue');
+	            self.validators.pass('upLine3CommissionPercent');
+	            self.validators.addToSet({
+	                success: false,
+	                field: '请输入三级分销商佣金金额',
+	                desc: '当前为空',
+	                key: 'emptyUpLine3CommissionValueCash'
+	            });
+	            return true;
+	        };
+	        self.onSelectUpLine3CommissionType2 = function(e){
+	            self.course.upLine3CommissionType = __app.enums.CommissionType.names.Percent;
+	            self.course.upLine3CommissionValue = '';
+	            self.upLine3CommissionValueInput1.value = '';
+	            self.validators.pass('upLine3CommissionValue');
+	            self.validators.pass('upLine3CommissionPercent');
+	            self.validators.pass('emptyUpLine3CommissionValueCash');
+	            self.validators.addToSet({
+	                success: false,
+	                field: '请输入三级分销商佣金百分比',
+	                desc: '当前为空',
+	                key: 'emptyUpLine3CommissionValuePercent'
+	            });
+	            return true;
 	        };
 	        var validateValue = function(val, kv, callback){
-	            if(val.trim() < 0 || parseInt(val.trim(), 10) > parseInt(self.course.listPrice, 10)){
+	            if(val.trim() === "" || val.trim() < 0 || parseInt(val.trim(), 10) > parseInt(self.course.listPrice, 10)){
 	                return self.validators.addToSet({
 	                    success: false,
 	                    field: kv.value,
@@ -2298,80 +2428,66 @@ webpackJsonp([0,1],[
 	            callback();
 	        };
 	        self.onValidateValue = function(e){
+	            self.validators.pass('emptyMemberDiscountsValueCash');
+	            self.validators.pass('membershipDiscountPercent');
 	            validateValue(e.target.value, {key: 'membershipDiscountValue', value: '会员折扣金额非法'}, function(){
 	                self.course.memberDiscountsValue = e.target.value;
 	            })
 	        };
 	        self.onValidatePercent = function(e){
+	            self.validators.pass('emptyMemberDiscountsValuePercent');
+	            self.validators.pass('membershipDiscountValue');
 	            validatePercent(e.target.value, {key: 'membershipDiscountPercent', value: '会员折扣百分比非法'}, function(){
 	                self.course.memberDiscountsValue = e.target.value;
 	            })
 	        };
-	        self.onSelectMemberDiscountsType2 = function(e){
-	            self.course.memberDiscountsType = __app.enums.CommissionType.names.Percent;
-	            self.course.memberDiscountsValue = '';
-	        };
-
-	        self.onSelectUpLine1CommissionType1 = function(e){
-	            self.course.upLine1CommissionType = __app.enums.CommissionType.names.Cash;
-	            self.course.upLine1CommissionValue = '';
-	        };
-	        self.onSelectUpLine1CommissionType2 = function(e){
-	            self.course.upLine1CommissionType = __app.enums.CommissionType.names.Percent;
-	            self.course.upLine1CommissionValue = '';
-	        };
 	        self.onBlurUpLine1CommissionValue = function(type){
 	            return function(e){
 	                if(type === 'val'){
+	                    self.validators.pass('emptyUpLine1CommissionValueCash');
+	                    self.validators.pass('upLine1CommissionPercent');
 	                    validateValue(e.target.value, {key: 'upLine1CommissionValue', value: '一级分销金额非法'}, function(){
 	                        self.course.upLine1CommissionValue = e.target.value;
 	                    });
 	                    return;
 	                }
+	                self.validators.pass('emptyUpLine1CommissionValuePercent');
+	                self.validators.pass('upLine1CommissionValue');
 	                validatePercent(e.target.value, {key: 'upLine1CommissionPercent', value: '一级分销百分比非法'}, function(){
 	                    self.course.upLine1CommissionValue = e.target.value;
 	                })
 	            }
 	        };
 
-	        self.onSelectUpLine2CommissionType1 = function(e){
-	            self.course.upLine2CommissionType = __app.enums.CommissionType.names.Cash;
-	            self.course.upLine2CommissionValue = '';
-	        };
-	        self.onSelectUpLine2CommissionType2 = function(e){
-	            self.course.upLine2CommissionType = __app.enums.CommissionType.names.Percent;
-	            self.course.upLine2CommissionValue = '';
-	        };
 	        self.onBlurUpLine2CommissionValue = function(type){
 	            return function(e){
 	                if(type === 'val'){
+	                    self.validators.pass('emptyUpLine2CommissionValueCash');
+	                    self.validators.pass('upLine2CommissionPercent');
 	                    validateValue(e.target.value, {key: 'upLine2CommissionValue', value: '二级分销金额非法'}, function(){
 	                        self.course.upLine2CommissionValue = e.target.value;
 	                    });
 	                    return;
 	                }
+	                self.validators.pass('emptyUpLine2CommissionValuePercent');
+	                self.validators.pass('upLine2CommissionValue');
 	                validatePercent(e.target.value, {key: 'upLine2CommissionPercent', value: '二级分销百分比非法'}, function(){
 	                    self.course.upLine2CommissionValue = e.target.value;
 	                })
 	            }
 	        };
-
-	        self.onSelectUpLine3CommissionType1 = function(e){
-	            self.course.upLine3CommissionType = __app.enums.CommissionType.names.Cash;
-	            self.course.upLine3CommissionValue = '';
-	        };
-	        self.onSelectUpLine3CommissionType2 = function(e){
-	            self.course.upLine3CommissionType = __app.enums.CommissionType.names.Percent;
-	            self.course.upLine3CommissionValue = '';
-	        };
 	        self.onBlurUpLine3CommissionValue = function(type){
 	            return function(e){
 	                if(type === 'val'){
+	                    self.validators.pass('emptyUpLine3CommissionValueCash');
+	                    self.validators.pass('upLine3CommissionPercent');
 	                    validateValue(e.target.value, {key: 'upLine3CommissionValue', value: '三级分销金额非法'}, function(){
 	                        self.course.upLine3CommissionValue = e.target.value;
 	                    });
 	                    return;
 	                }
+	                self.validators.pass('emptyUpLine3CommissionValuePercent');
+	                self.validators.pass('upLine3CommissionValue');
 	                validatePercent(e.target.value, {key: 'upLine3CommissionPercent', value: '三级分销百分比非法'}, function(){
 	                    self.course.upLine3CommissionValue = e.target.value;
 	                })
@@ -2460,6 +2576,11 @@ webpackJsonp([0,1],[
 	        self.onSubmit = function(){
 	            var totalTasksNum = 0;
 	            var completelyTasksNum = 0;
+	            self.course.memberDiscountsValue = self.course.memberDiscountsValue || 0;
+	            self.course.upLine1CommissionValue = self.course.upLine1CommissionValue || 0;
+	            self.course.upLine2CommissionValue = self.course.upLine2CommissionValue || 0;
+	            self.course.upLine3CommissionValue = self.course.upLine3CommissionValue || 0;
+	            self.course.distributeStrategy = $('input[name="distributeStrategy"]:checked').val();
 	            var req = {
 	                id: self.course._id,
 	                o: self.course
@@ -2804,6 +2925,10 @@ webpackJsonp([0,1],[
 	            {
 	                path: 'sd/splitbill',
 	                presentation: '分账管理'
+	            },
+	            {
+	                path: 'sd/points',
+	                presentation: '积分管理'
 	            }
 	        ];
 	        self.on('mount', function(){
@@ -2905,6 +3030,179 @@ webpackJsonp([0,1],[
 	            }
 	            self.filter.no = parseInt(self.pageTo.value, 10);
 	            findOrdersAction.execute({
+	                filter: self.filter
+	            });
+	        }
+	    
+	});
+	riot.tag('boss-tenant-sd-points', '<div if="{!hidden}" class="container" style="margin-top: 0px"> <div class="row"> <div class="col-md-3 col-lg-3"> <boss-tenant-sd-left path="sd/points"></boss-tenant-sd-left> </div> <div class="col-md-9 col-lg-9"> <div class="row" style="text-align: center"> <h4>积分管理</h4> </div> <div class="row"> <form class="form-inline"> <div class="col-md-12 col-lg-12"> <div class="form-group"> <label>用户昵称</label> <input name="nickname" class="form-control" onchange="{nicknameOnChange}"> </div> <div class="form-group"> <label>手机号</label> <input name="phone" class="form-control" onchange="{phoneOnChange}"> </div> <div class="form-group"> <label>有无积分</label> <select name="restIsNotEmpty" class="form-control" onchange="{restIsNotEmptyOnChange}"> <option value="">全部状态</option> <option value="1">有剩余积分</option> <option value="0">无剩余积分</option> </select> </div> <div class="form-group"> <input onclick="{onSearch}" class="btn btn-primary" type="button" value="查询"> </div> </div> </form> </div> <hr style="border-bottom: 1px solid #DADADA;"> <div class="row" style="margin-top: 10px"> <table class="table table-striped"> <thead> <tr> <th style="width: 25%">客户昵称</th> <th style="width: 25%">手机号</th> <th style="width: 25%">剩余积分</th> <th style="width: 25%">操作</th> </tr> </thead> <tbody> <tr each="{point in points}"> <td> {point.user.nickname} </td> <td> { __app.enums.OrderStatus.values[status] } </td> <td> {point && point.points && point.points.rest || 0} </td> <td> <input data-toggle="modal" data-target="#exchangeModal" onclick="{parent.onExchangePoints}" __disabled="{!point || !point.points || !point.points.rest || point.points.rest <= 0}" type="button" class="btn btn-primary" value="积分兑换"> <input data-toggle="modal" data-target="#relativeRecord" onclick="{parent.onRelativeRecord}" type="button" class="btn btn-default" value="兑换记录"> </td> </tr> </tbody> </table> <div> <input onclick="{prevPage}" type="button" class="btn btn-default" value="上一页"> <span>当前页: </span> <span>{filter.no}</span>, <span>共( {totalPage} )页: </span> <input onclick="{nextPage}" type="button" class="btn btn-default" value="下一页"> <input name="pageTo" type="number" value=""> <input onclick="{jumpToPage}" type="button" class="btn btn-default" value="跳转"> </div> </div> </div> </div> <div id="exchangeModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"> <div class="modal-dialog"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> <h4 class="modal-title">消费积分</h4> </div> <div class="modal-body"> <form class="form-horizontal"> <div class="form-group"> <label class="col-sm-2 control-label">现有积分</label> <div class="col-sm-10"> <span>{currPoints.point.points.rest || 0}</span> </div> </div> <div class="form-group"> <label class="col-sm-2 control-label">消费积分</label> <div class="col-sm-10"> <input class="form-control" oninput="{onInput}" type="number" min="0" name="consumedNumInput"> </div> </div> <div class="form-group"> <label class="col-sm-2 control-label">备注</label> <div class="col-sm-10"> <input class="form-control" type="text" name="descInput"> </div> </div> </form> </div> <div class="modal-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">取消</button> <button __disabled="{!consumedNum || parseInt(consumedNum, 10)<=0 || parseInt(consumedNum, 10) > currPoints.point.points.rest}" onclick="{onSubmitConsume}" data-dismiss="modal" type="button" class="btn btn-primary">确认</button> </div> </div> </div> </div> <div id="relativeRecord" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"> <div class="modal-dialog modal-lg"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> <h4 class="modal-title">积分变更记录</h4> </div> <div class="modal-body"> <div> </div> <table class="table table-striped"> <thead> <tr> <th style="width: 15%">变更前剩余</th> <th style="width: 15%">变更后剩余</th> <th style="width: 15%">变更数额</th> <th style="width: 15%">变更时间</th> <th style="width: 40%">备注</th> </tr> </thead> <tbody> <tr each="{pointsRecords}"> <td> { rest } </td> <td> { parseInt(rest, 10) + parseInt(num, 10) } </td> <td riot-style="color: {parseInt(num, 10) > 0 ? \'blue\' : \'red\'}"> { num } </td> <td> { _.date.format(new Date(crtOn), \'yyyy年MM月dd日 hh点mm\') } </td> <td> { desc } </td> </tr> </tbody> </table> </div> </div> </div> </div> </div>', function(opts) {
+	        "use strict"
+	        var self = nest.presentable(this);
+	        var findPointsAction = domain.action('findPoints');
+	        var consumePointsAction = domain.action('consumePoints');
+	        var pointsRecordsAction = domain.action('pointsRecords');
+
+	        self.points = [];
+	        self.totalPage = 1;
+	        self.filter = {
+	            tenant: __page.tenantId,
+	            no: 1,
+	            size: 10
+	        };
+	        self.on('mount', function(){
+	            findPointsAction.onDone(function(res){
+	                if(!res.error) {
+	                    if(parseInt(res.count) === 0){
+	                        self.filter.no = 1;
+	                    }else{
+	                        if(self.filter.no){
+	                            if(res.count <= (self.filter.no-1)*self.filter.size){
+	                                var page = Math.ceil(parseInt(res.count, 10)/parseInt(self.filter.size, 10));
+	                                self.filter.no = parseInt(page, 10);
+	                                findPointsAction.execute({
+	                                    filter: self.filter
+	                                });
+	                                return;
+	                            }
+	                        }
+	                    }
+	                    self.points = res.points;
+	                    self.totalPage = Math.ceil(res.count / self.filter.size);
+	                    self.update();
+	                }else{
+	                    console.error('failed find points err:' + res.error);
+	                }
+	            });
+	            consumePointsAction.onDone(function(res){
+	                if(res.error){
+	                    alert('消费积分失败');
+	                    return;
+	                }
+	                self.points = res.points;
+	                self.totalPage = Math.ceil(res.count / self.filter.size);
+	                self.update();
+	            });
+	            pointsRecordsAction.onDone(function(res){
+	                if(res.error){
+	                    alert('记录查找失败');
+	                    return;
+	                }
+	                console.log(res);
+	                self.pointsRecords = res.pointsRecords.pageDocs;
+	                self.update();
+	            })
+	        });
+	        self.on('open', function(){
+	            findPointsAction.execute({
+	                filter: self.filter
+	            });
+	            self.trigger('ready', false);
+	            self.trigger('view-route-to');
+	        });
+
+	        self.onSearch = function(e){
+	            findPointsAction.execute({
+	                filter: self.filter
+	            });
+	        };
+
+	        self.onSubmitConsume = function(e){
+	            var membership = self.currPoints.point;
+	            var record = {
+	                wechatId: membership.user.wechatId,
+	                distributor: membership._id,
+	                rest: membership.points.rest,
+	                consumed: membership.points.consumed,
+	                num: self.consumedNum
+	            };
+	            if(self.descInput.value.trim()){
+	                record.desc = self.descInput.value.trim();
+	            }
+	            membership.points.rest = membership.points.rest - self.consumedNum;
+	            consumePointsAction.execute(record);
+	        };
+
+	        self.onRelativeRecord = function(e){
+	            pointsRecordsAction.execute({
+	                membership: e.item.point._id,
+	                wechatId: e.item.point.user.wechatId
+	            });
+	        };
+
+	        self.onInput = function(e){
+	            self.consumedNum = self.consumedNumInput.value;
+	        };
+
+	        self.nicknameOnChange = function(){
+	            self.filter.nickname = self.nickname.value;
+	        };
+
+	        self.phoneOnChange = function(){
+	            self.filter.phone = self.phone.value;
+	        };
+
+	        self.restIsNotEmptyOnChange = function(){
+	            var rest = self.restIsNotEmpty.value;
+	            if(!rest){
+	                if(self.filter.hasOwnProperty('rest')){
+	                    delete self.filter['rest'];
+	                }
+	                return;
+	            }
+	            self.filter.rest = self.restIsNotEmpty.value;
+	        };
+
+	        self.getDistributorMoney = function(user, course, level, finalPrice){
+	            var money = 0;
+	            var commissionType = 'upLine' + level + 'CommissionType';
+	            var commissionValue = 'upLine' + level + 'CommissionValue';
+	            if(course[commissionType] === __app.enums.CommissionType.names.Percent){
+	                money = (parseFloat(finalPrice)*parseFloat(parseFloat(course[commissionValue])/100)).toFixed(2);
+	            }else if(course[commissionType] === __app.enums.CommissionType.names.Cash){
+	                money = parseFloat(course[commissionValue]);
+	            }
+	            return user.nickname + ': ' + money;
+	        };
+
+	        self.onExchangePoints = function(e){
+	            self.currPoints = e.item;
+	            self.consumedNumInput.value = '';
+	            self.consumedNum = '';
+	            self.descInput.value = '';
+	            console.log(self.currPoints.point.points.rest);
+	        };
+
+	        self.prevPage = function(e){
+	            var currPage = self.filter.no;
+	            if(currPage <= 1){
+	                return;
+	            }
+	            self.filter.no = --currPage;
+	            findPointsAction.execute({
+	                filter: self.filter
+	            });
+	        };
+	        self.nextPage = function(e){
+	            var currPage = self.filter.no;
+	            if(currPage >= self.totalPage){
+	                return;
+	            }
+	            self.filter.no = ++currPage;
+	            findPointsAction.execute({
+	                filter: self.filter
+	            });
+	        };
+	        self.jumpToPage = function(e){
+	            if(self.pageTo.value.trim() === ''){
+	                alert('请输入页码');
+	                return;
+	            }
+	            if(self.pageTo.value <= 0 || self.pageTo.value > self.totalPage){
+	                alert('页码非法');
+	                return;
+	            }
+	            self.filter.no = parseInt(self.pageTo.value, 10);
+	            findPointsAction.execute({
 	                filter: self.filter
 	            });
 	        }
@@ -6994,6 +7292,21 @@ webpackJsonp([0,1],[
 	        return k + "=" + data.filter[k]
 	    }).join("&");
 	    apiFactory.get('/tenant/sd/orders?' + querystring).drive(this).send();
+	});
+
+	domain.action('findPoints').onExecute(function(data){
+	    var querystring = Object.keys(data.filter).map(function(k){
+	        return k + "=" + data.filter[k]
+	    }).join("&");
+	    apiFactory.get('/tenant/sd/points?' + querystring).drive(this).send();
+	});
+
+	domain.action('consumePoints').onExecute(function(data){
+	    apiFactory.post('/tenant/sd/points/consume').drive(this).send(data);
+	});
+
+	domain.action('pointsRecords').onExecute(function(data){
+	    apiFactory.post('/tenant/sd/points/records').drive(this).send(data);
 	});
 	module.exports = null;
 

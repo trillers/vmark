@@ -59,6 +59,18 @@ app.routeView('sd/bespeaks', nest.viewable({
     }
 }));
 
+app.routeView('sd/points', nest.viewable({
+  name: 'boss-tenant-sd-points',
+  mount: function(ctx){
+    var tags = riot.mount('boss-tenant-sd-points', {filter: ctx.req.query, app: this.parent});
+    this.tag = tags[0];
+  },
+  route: function(ctx){
+    this.context = ctx;
+    this.tag.trigger('open', ctx.req.query);
+  }
+}));
+
 app.routeView('sd/catalogs', nest.viewable({
   name: 'boss-tenant-sd-catalogs',
   mount: function(ctx){

@@ -5,4 +5,5 @@ module.exports = {
     poster:     require('./poster'),
     bespeak:     require('./bespeak'),
     order:     require('./order'),
+    points:     require('./points')
 };

@@ -8,9 +8,6 @@ var adminService = require('../../admin/services/AdminService');
 
 module.exports = function (emitter) {
     var createCustomer = require('./commands/createCustomerCommand');
-    emitter.event(function (event, context) {
-        console.log(context.weixin);    
-    });
     emitter.subscribe(function(event, context){
         createCustomer(event, context, function(err){
             if(!err){

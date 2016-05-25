@@ -85,15 +85,44 @@
                             <td class="text-left">
                                 <table class="my-table table table-striped">
                                     <tr>
+                                        <td><strong>结算方式</strong></td>
+                                        <td>
+                                        </td>
+                                        <td>
+                                            <table>
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <div class="radio form-inline">
+                                                            <label>
+                                                                <input name="distributeStrategy" value="{__app.enums.DistributeStrategy.names.Points}" checked="{(course.distributeStrategy || __app.enums.DistributeStrategy.names.Points) === __app.enums.DistributeStrategy.names.Points}" type="radio">
+                                                                积分
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <div class="radio form-inline">
+                                                            <label>
+                                                                <input name="distributeStrategy" value="{__app.enums.DistributeStrategy.names.Cash}" checked="{(course.distributeStrategy || __app.enums.DistributeStrategy.names.Points) === __app.enums.DistributeStrategy.names.Cash}" type="radio">
+                                                                现金
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <td><strong>会员折扣</strong></td>
                                         <td>单位课程优惠</td>
                                         <td>
                                             <table>
                                                 <tr>
                                                     <td>
-                                                        <div onclick="{onSelectMemberDiscountsType1}" class="radio form-inline">
+                                                        <div class="radio form-inline">
                                                             <label for="memberDiscountsTypeInput1">
-                                                                <input id="memberDiscountsTypeInput1" value="{__app.enums.CommissionType.names.Cash}" checked="{course.memberDiscountsType === __app.enums.CommissionType.names.Cash}" type="radio" name="memberDiscountsType">
+                                                                <input onclick="{onSelectMemberDiscountsType1}" id="memberDiscountsTypeInput1" value="{__app.enums.CommissionType.names.Cash}" checked="{course.memberDiscountsType === __app.enums.CommissionType.names.Cash}" type="radio" name="memberDiscountsType">
                                                                 金额
                                                             </label>
                                                         </div>
@@ -105,9 +134,9 @@
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <div onclick="{onSelectMemberDiscountsType2}" class="radio form-inline">
+                                                        <div class="radio form-inline">
                                                             <label for="memberDiscountsTypeInput2">
-                                                                <input type="radio" name="memberDiscountsType" id="memberDiscountsTypeInput2" value="{__app.enums.CommissionType.names.Percent}" checked="{course.memberDiscountsType === __app.enums.CommissionType.names.Percent}">
+                                                                <input onclick="{onSelectMemberDiscountsType2}" type="radio" name="memberDiscountsType" id="memberDiscountsTypeInput2" value="{__app.enums.CommissionType.names.Percent}" checked="{course.memberDiscountsType === __app.enums.CommissionType.names.Percent}">
                                                                 百分比
                                                             </label>
                                                         </div>
@@ -128,9 +157,9 @@
                                             <table>
                                                 <tr>
                                                     <td>
-                                                        <div onclick="{onSelectUpLine1CommissionType1}" class="radio form-inline">
+                                                        <div class="radio form-inline">
                                                             <label for="upLine1CommissionTypeInput1">
-                                                                <input id="upLine1CommissionTypeInput1" value="{__app.enums.CommissionType.names.Cash}" checked="{course.upLine1CommissionType === __app.enums.CommissionType.names.Cash}" type="radio" name="upLine1CommissionType">
+                                                                <input onclick="{onSelectUpLine1CommissionType1}" id="upLine1CommissionTypeInput1" value="{__app.enums.CommissionType.names.Cash}" checked="{course.upLine1CommissionType === __app.enums.CommissionType.names.Cash}" type="radio" name="upLine1CommissionType">
                                                                 金额
                                                             </label>
                                                         </div>
@@ -141,9 +170,9 @@
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <div onclick="{onSelectUpLine1CommissionType2}" class="radio form-inline">
+                                                        <div class="radio form-inline">
                                                             <label for="upLine1CommissionTypeInput2">
-                                                                <input id="upLine1CommissionTypeInput2" value="{__app.enums.CommissionType.names.Percent}" checked="{course.upLine1CommissionType === __app.enums.CommissionType.names.Percent}" type="radio" name="upLine1CommissionType">
+                                                                <input onclick="{onSelectUpLine1CommissionType2}" id="upLine1CommissionTypeInput2" value="{__app.enums.CommissionType.names.Percent}" checked="{course.upLine1CommissionType === __app.enums.CommissionType.names.Percent}" type="radio" name="upLine1CommissionType">
                                                                 百分比
                                                             </label>
                                                         </div>
@@ -163,9 +192,9 @@
                                             <table>
                                                 <tr>
                                                     <td>
-                                                        <div onclick="{onSelectUpLine2CommissionType1}" class="radio form-inline">
+                                                        <div class="radio form-inline">
                                                             <label for="upLine2CommissionTypeInput1">
-                                                                <input id="upLine2CommissionTypeInput1" value="{__app.enums.CommissionType.names.Cash}" checked="{course.upLine2CommissionType === __app.enums.CommissionType.names.Cash}" type="radio" name="upLine2CommissionType">
+                                                                <input onclick="{onSelectUpLine2CommissionType1}" id="upLine2CommissionTypeInput1" value="{__app.enums.CommissionType.names.Cash}" checked="{course.upLine2CommissionType === __app.enums.CommissionType.names.Cash}" type="radio" name="upLine2CommissionType">
                                                                 金额
                                                             </label>
                                                         </div>
@@ -176,9 +205,9 @@
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <div onclick="{onSelectUpLine2CommissionType2}" class="radio form-inline">
+                                                        <div class="radio form-inline">
                                                             <label for="upLine2CommissionTypeInput2">
-                                                                <input id="upLine2CommissionTypeInput2" value="{__app.enums.CommissionType.names.Percent}" checked="{course.upLine2CommissionType === __app.enums.CommissionType.names.Percent}" type="radio" name="upLine2CommissionType">
+                                                                <input onclick="{onSelectUpLine2CommissionType2}" id="upLine2CommissionTypeInput2" value="{__app.enums.CommissionType.names.Percent}" checked="{course.upLine2CommissionType === __app.enums.CommissionType.names.Percent}" type="radio" name="upLine2CommissionType">
                                                                 百分比
                                                             </label>
                                                         </div>
@@ -198,9 +227,9 @@
                                             <table>
                                                 <tr>
                                                     <td>
-                                                        <div onclick="{onSelectUpLine3CommissionType1}" class="radio form-inline">
+                                                        <div class="radio form-inline">
                                                             <label for="upLine3CommissionTypeInput1">
-                                                                <input id="upLine3CommissionTypeInput1" value="{__app.enums.CommissionType.names.Cash}" checked="{course.upLine3CommissionType === __app.enums.CommissionType.names.Cash}" type="radio" name="upLine3CommissionType">
+                                                                <input onclick="{onSelectUpLine3CommissionType1}" id="upLine3CommissionTypeInput1" value="{__app.enums.CommissionType.names.Cash}" checked="{course.upLine3CommissionType === __app.enums.CommissionType.names.Cash}" type="radio" name="upLine3CommissionType">
                                                                 金额
                                                             </label>
                                                         </div>
@@ -211,9 +240,9 @@
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <div onclick="{onSelectUpLine3CommissionType2}" class="radio form-inline">
+                                                        <div class="radio form-inline">
                                                             <label for="upLine3CommissionTypeInput2">
-                                                                <input id="upLine3CommissionTypeInput2" value="{__app.enums.CommissionType.names.Percent}" checked="{course.upLine3CommissionType === __app.enums.CommissionType.names.Percent}" type="radio" name="upLine3CommissionType">
+                                                                <input onclick="{onSelectUpLine3CommissionType2}" id="upLine3CommissionTypeInput2" value="{__app.enums.CommissionType.names.Percent}" checked="{course.upLine3CommissionType === __app.enums.CommissionType.names.Percent}" type="radio" name="upLine3CommissionType">
                                                                 百分比
                                                             </label>
                                                         </div>
@@ -255,8 +284,6 @@
                     </div>
 
                 </div><!-- right end -->
-
-
 
             </div>
         </div>
@@ -402,9 +429,127 @@
         self.onSelectMemberDiscountsType1 = function(e){
             self.course.memberDiscountsType = __app.enums.CommissionType.names.Cash;
             self.course.memberDiscountsValue = '';
+            self.validators.pass('emptyMemberDiscountsValuePercent');
+            self.validators.pass('membershipDiscountValue');
+            self.validators.pass('membershipDiscountPercent');
+            self.memberDiscountsValueInput1.value = "";
+            self.memberDiscountsValueInput2.value = "";
+            self.validators.addToSet({
+                success: false,
+                field: '请输入会员折扣金额',
+                desc: '当前为空',
+                key: 'emptyMemberDiscountsValueCash'
+            });
+            return true;
+        };
+        self.onSelectMemberDiscountsType2 = function(e){
+            self.course.memberDiscountsType = __app.enums.CommissionType.names.Percent;
+            self.course.memberDiscountsValue = '';
+            self.validators.pass('emptyMemberDiscountsValueCash');
+            self.validators.pass('membershipDiscountValue');
+            self.validators.pass('membershipDiscountPercent');
+            self.memberDiscountsValueInput1.value = "";
+            self.memberDiscountsValueInput2.value = "";
+            self.validators.addToSet({
+                success: false,
+                field: '请输入会员折扣百分比',
+                desc: '当前为空',
+                key: 'emptyMemberDiscountsValuePercent'
+            });
+            return true;
+        };
+        self.onSelectUpLine1CommissionType1 = function(e){
+            self.course.upLine1CommissionType = __app.enums.CommissionType.names.Cash;
+            self.course.upLine1CommissionValue = '';
+            self.upLine1CommissionValueInput2.value = '';
+            self.validators.pass('emptyUpLine1CommissionValuePercent');
+            self.validators.pass('upLine1CommissionValue');
+            self.validators.pass('upLine1CommissionPercent');
+            self.validators.addToSet({
+                success: false,
+                field: '请输入直接分销商佣金金额',
+                desc: '当前为空',
+                key: 'emptyUpLine1CommissionValueCash'
+            });
+            return true;
+        };
+        self.onSelectUpLine1CommissionType2 = function(e){
+            self.course.upLine1CommissionType = __app.enums.CommissionType.names.Percent;
+            self.course.upLine1CommissionValue = '';
+            self.upLine1CommissionValueInput1.value = '';
+            self.validators.pass('upLine1CommissionValue');
+            self.validators.pass('upLine1CommissionPercent');
+            self.validators.pass('emptyUpLine1CommissionValueCash');
+            self.validators.addToSet({
+                success: false,
+                field: '请输入直接分销商佣金百分比',
+                desc: '当前为空',
+                key: 'emptyUpLine1CommissionValuePercent'
+            });
+            return true;
+        };
+        self.onSelectUpLine2CommissionType1 = function(e){
+            self.course.upLine2CommissionType = __app.enums.CommissionType.names.Cash;
+            self.course.upLine2CommissionValue = '';
+            self.upLine2CommissionValueInput2.value = '';
+            self.validators.pass('emptyUpLine2CommissionValuePercent');
+            self.validators.pass('upLine2CommissionValue');
+            self.validators.pass('upLine2CommissionPercent');
+            self.validators.addToSet({
+                success: false,
+                field: '请输入二级分销商佣金金额',
+                desc: '当前为空',
+                key: 'emptyUpLine2CommissionValueCash'
+            });
+            return true;
+        };
+        self.onSelectUpLine2CommissionType2 = function(e){
+            self.course.upLine2CommissionType = __app.enums.CommissionType.names.Percent;
+            self.course.upLine2CommissionValue = '';
+            self.upLine2CommissionValueInput1.value = '';
+            self.validators.pass('upLine2CommissionValue');
+            self.validators.pass('upLine2CommissionPercent');
+            self.validators.pass('emptyUpLine2CommissionValueCash');
+            self.validators.addToSet({
+                success: false,
+                field: '请输入二级分销商佣金百分比',
+                desc: '当前为空',
+                key: 'emptyUpLine2CommissionValuePercent'
+            });
+            return true;
+        };
+        self.onSelectUpLine3CommissionType1 = function(e){
+            self.course.upLine3CommissionType = __app.enums.CommissionType.names.Cash;
+            self.course.upLine3CommissionValue = '';
+            self.upLine3CommissionValueInput2.value = '';
+            self.validators.pass('emptyUpLine3CommissionValuePercent');
+            self.validators.pass('upLine3CommissionValue');
+            self.validators.pass('upLine3CommissionPercent');
+            self.validators.addToSet({
+                success: false,
+                field: '请输入三级分销商佣金金额',
+                desc: '当前为空',
+                key: 'emptyUpLine3CommissionValueCash'
+            });
+            return true;
+        };
+        self.onSelectUpLine3CommissionType2 = function(e){
+            self.course.upLine3CommissionType = __app.enums.CommissionType.names.Percent;
+            self.course.upLine3CommissionValue = '';
+            self.upLine3CommissionValueInput1.value = '';
+            self.validators.pass('upLine3CommissionValue');
+            self.validators.pass('upLine3CommissionPercent');
+            self.validators.pass('emptyUpLine3CommissionValueCash');
+            self.validators.addToSet({
+                success: false,
+                field: '请输入三级分销商佣金百分比',
+                desc: '当前为空',
+                key: 'emptyUpLine3CommissionValuePercent'
+            });
+            return true;
         };
         var validateValue = function(val, kv, callback){
-            if(val.trim() < 0 || parseInt(val.trim(), 10) > parseInt(self.course.listPrice, 10)){
+            if(val.trim() === "" || val.trim() < 0 || parseInt(val.trim(), 10) > parseInt(self.course.listPrice, 10)){
                 return self.validators.addToSet({
                     success: false,
                     field: kv.value,
@@ -428,80 +573,66 @@
             callback();
         };
         self.onValidateValue = function(e){
+            self.validators.pass('emptyMemberDiscountsValueCash');
+            self.validators.pass('membershipDiscountPercent');
             validateValue(e.target.value, {key: 'membershipDiscountValue', value: '会员折扣金额非法'}, function(){
                 self.course.memberDiscountsValue = e.target.value;
             })
         };
         self.onValidatePercent = function(e){
+            self.validators.pass('emptyMemberDiscountsValuePercent');
+            self.validators.pass('membershipDiscountValue');
             validatePercent(e.target.value, {key: 'membershipDiscountPercent', value: '会员折扣百分比非法'}, function(){
                 self.course.memberDiscountsValue = e.target.value;
             })
         };
-        self.onSelectMemberDiscountsType2 = function(e){
-            self.course.memberDiscountsType = __app.enums.CommissionType.names.Percent;
-            self.course.memberDiscountsValue = '';
-        };
-
-        self.onSelectUpLine1CommissionType1 = function(e){
-            self.course.upLine1CommissionType = __app.enums.CommissionType.names.Cash;
-            self.course.upLine1CommissionValue = '';
-        };
-        self.onSelectUpLine1CommissionType2 = function(e){
-            self.course.upLine1CommissionType = __app.enums.CommissionType.names.Percent;
-            self.course.upLine1CommissionValue = '';
-        };
         self.onBlurUpLine1CommissionValue = function(type){
             return function(e){
                 if(type === 'val'){
+                    self.validators.pass('emptyUpLine1CommissionValueCash');
+                    self.validators.pass('upLine1CommissionPercent');
                     validateValue(e.target.value, {key: 'upLine1CommissionValue', value: '一级分销金额非法'}, function(){
                         self.course.upLine1CommissionValue = e.target.value;
                     });
                     return;
                 }
+                self.validators.pass('emptyUpLine1CommissionValuePercent');
+                self.validators.pass('upLine1CommissionValue');
                 validatePercent(e.target.value, {key: 'upLine1CommissionPercent', value: '一级分销百分比非法'}, function(){
                     self.course.upLine1CommissionValue = e.target.value;
                 })
             }
         };
 
-        self.onSelectUpLine2CommissionType1 = function(e){
-            self.course.upLine2CommissionType = __app.enums.CommissionType.names.Cash;
-            self.course.upLine2CommissionValue = '';
-        };
-        self.onSelectUpLine2CommissionType2 = function(e){
-            self.course.upLine2CommissionType = __app.enums.CommissionType.names.Percent;
-            self.course.upLine2CommissionValue = '';
-        };
         self.onBlurUpLine2CommissionValue = function(type){
             return function(e){
                 if(type === 'val'){
+                    self.validators.pass('emptyUpLine2CommissionValueCash');
+                    self.validators.pass('upLine2CommissionPercent');
                     validateValue(e.target.value, {key: 'upLine2CommissionValue', value: '二级分销金额非法'}, function(){
                         self.course.upLine2CommissionValue = e.target.value;
                     });
                     return;
                 }
+                self.validators.pass('emptyUpLine2CommissionValuePercent');
+                self.validators.pass('upLine2CommissionValue');
                 validatePercent(e.target.value, {key: 'upLine2CommissionPercent', value: '二级分销百分比非法'}, function(){
                     self.course.upLine2CommissionValue = e.target.value;
                 })
             }
         };
-
-        self.onSelectUpLine3CommissionType1 = function(e){
-            self.course.upLine3CommissionType = __app.enums.CommissionType.names.Cash;
-            self.course.upLine3CommissionValue = '';
-        };
-        self.onSelectUpLine3CommissionType2 = function(e){
-            self.course.upLine3CommissionType = __app.enums.CommissionType.names.Percent;
-            self.course.upLine3CommissionValue = '';
-        };
         self.onBlurUpLine3CommissionValue = function(type){
             return function(e){
                 if(type === 'val'){
+                    self.validators.pass('emptyUpLine3CommissionValueCash');
+                    self.validators.pass('upLine3CommissionPercent');
                     validateValue(e.target.value, {key: 'upLine3CommissionValue', value: '三级分销金额非法'}, function(){
                         self.course.upLine3CommissionValue = e.target.value;
                     });
                     return;
                 }
+                self.validators.pass('emptyUpLine3CommissionValuePercent');
+                self.validators.pass('upLine3CommissionValue');
                 validatePercent(e.target.value, {key: 'upLine3CommissionPercent', value: '三级分销百分比非法'}, function(){
                     self.course.upLine3CommissionValue = e.target.value;
                 })
@@ -590,6 +721,11 @@
         self.onSubmit = function(){
             var totalTasksNum = 0;
             var completelyTasksNum = 0;
+            self.course.memberDiscountsValue = self.course.memberDiscountsValue || 0;
+            self.course.upLine1CommissionValue = self.course.upLine1CommissionValue || 0;
+            self.course.upLine2CommissionValue = self.course.upLine2CommissionValue || 0;
+            self.course.upLine3CommissionValue = self.course.upLine3CommissionValue || 0;
+            self.course.distributeStrategy = $('input[name="distributeStrategy"]:checked').val();
             var req = {
                 id: self.course._id,
                 o: self.course

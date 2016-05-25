@@ -10,16 +10,21 @@
             <div>
                 <ul>
                     <li>
-                        <div>全部收入:(元)</div>
+                        <div>全部收入</div>
                         <div><span>{parseInt(clearPrice, 10) + parseInt(unclearPrice, 10) || 0}</span></div>
                     </li>
                     <li>
-                        <div>已结款:(元)</div>
+                        <div>已结款</div>
                         <div><span>{clearPrice || 0}</span></div>
                     </li>
                     <li>
-                        <div>未结款:(元)</div>
+                        <div>未结款</div>
                         <div><span>{unclearPrice || 0}</span></div>
+                    </li>
+                    <li>
+                        <div>可用积分</div>
+
+                        <div><span>{membership && membership.points && membership.points.rest || 0}</span></div>
                     </li>
                 </ul>
             </div>
@@ -128,7 +133,7 @@
                                 &:last-child{
                                     border-right: none;
                                 }
-                                width: 33.3333333%;
+                                width: 25%;
                                 float: left;
                                 list-style:none;
                                 text-align: center;
@@ -206,6 +211,7 @@
         this.on('mount', function(){
             self.on('loadPersonalInfoByUserId', function(res){
                 self.clearPrice = res.data.clearPrice;
+                self.membership = res.data.membership;
                 self.unclearPrice = res.data.unclearPrice;
                 self.bespeaks = res.data.bespeaks;
                 self.orders = res.data.orders;

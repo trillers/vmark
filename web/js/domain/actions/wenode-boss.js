@@ -153,4 +153,19 @@ domain.action('findOrders').onExecute(function(data){
     }).join("&");
     apiFactory.get('/tenant/sd/orders?' + querystring).drive(this).send();
 });
+
+domain.action('findPoints').onExecute(function(data){
+    var querystring = Object.keys(data.filter).map(function(k){
+        return k + "=" + data.filter[k]
+    }).join("&");
+    apiFactory.get('/tenant/sd/points?' + querystring).drive(this).send();
+});
+
+domain.action('consumePoints').onExecute(function(data){
+    apiFactory.post('/tenant/sd/points/consume').drive(this).send(data);
+});
+
+domain.action('pointsRecords').onExecute(function(data){
+    apiFactory.post('/tenant/sd/points/records').drive(this).send(data);
+});
 module.exports = null;
