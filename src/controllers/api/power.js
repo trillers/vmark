@@ -180,5 +180,43 @@ module.exports = function(router){
             this.body = {error: 'please open in wechat browser'};
         }
     });
+
+    router.get('/sync', function *() {
+        var activityId = this.query.id;
+        var logger = context.logger;
+        var kv = context.kvs.power;
+        try {
+            logger.log('sync power participant job job start');
+            var activity = yield kv.loadActivityByIdAsync(activityId);
+            var update = {
+                views: activity.views,
+                participants_count: activity.participants_count
+            }
+            yield powerActivityService.syncById(activityId, update);
+
+            var params = {
+                conditions: {
+                    activity: activityId
+                }
+            }
+            var participants = yield powerParticipantService.filter(params);
+
+            for (var i = 0; i < participants.length; i++) {
+                var participant = yield kv.loadParticipantByIdAsync(participants[i]._id);
+                var help_friends = yield kv.getHelpFriendsSetAsync(participants[i]._id);
+                var update = {
+                    total_power: participant.total_power,
+                    help_friends: help_friends
+                }
+                yield powerParticipantService.syncById(participants[i]._id, update);
+            }
+            logger.info('sync power participant job job end');
+            this.body = 'sync successful!!'
+        }catch (e){
+            logger.error('failed sync power participant');
+            logger.error(e.stack);
+            this.body = 'sync failed!!'
+        }
+    });
 }
 
