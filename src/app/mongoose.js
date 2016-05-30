@@ -13,7 +13,6 @@ var makeUrl = function(mongo){
 };
 
 var url = makeUrl(settings);
-console.error(url)
 var options = {};
 
 mongoose.connect(url, options);
