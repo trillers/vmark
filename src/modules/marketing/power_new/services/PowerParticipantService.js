@@ -174,10 +174,11 @@ Service.prototype.getStatus = function*(participant, user){
             if (participantId) {
                 status.join = 'none';
                 status.joined = '';
+                var timestamp = new Date().getTime();
                 if(participant.activity.wechatId) {
                     status.homeLink = 'http://' + settings.app.domain + '/marketing/tenant/power/' + participant.activity.wechatId + '/participant?id=' + participantId;
                 }else{
-                    status.homeLink = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participantId;
+                    status.homeLink = 'http://' + settings.app.domain + '/marketing/power/' + timestamp + '/participant?id=' + participantId;
                 }
             }
             var helpArr = yield kv.getHelpFriendsSetAsync(participant.id);
