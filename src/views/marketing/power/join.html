@@ -41,7 +41,8 @@
                     $.post('/api/marketing/power/join', data, function (data) {
                         $('#mask').hide();
                         if (!data.error) {
-                            window.location.href = window.__app.settings.app.url + '/marketing/power/participant?id=' + data._id;
+                            var timestamp = new Date().getTime();
+                            window.location.href = window.__app.settings.app.url + '/marketing/power/' + timestamp + '/participant?id=' + data._id;
                         } else if (data.error === 'joined') {
                             alert('已参加');
                         } else if (data.error === 'phone no is must') {

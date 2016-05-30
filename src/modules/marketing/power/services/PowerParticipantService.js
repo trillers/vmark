@@ -157,9 +157,10 @@ Service.prototype.getStatus = function*(participant, user){
             status.inviteFriend = 'none';
             var participantId = yield kv.getParticipantIdByUserIdAndActivityIdAsync(participant.activity._id, user.id);
             if (participantId) {
+                var timestamp = new Date().getTime();
                 status.join = 'none';
                 status.joined = '';
-                status.homeLink = 'http://' + settings.app.domain + '/marketing/power/participant?id=' + participantId;
+                status.homeLink = 'http://' + settings.app.domain + '/marketing/power/' + timestamp + '/participant?id=' + participantId;
             }
             var helpArr = yield kv.getHelpFriendsSetAsync(participant.id);
             if (_.indexOf(helpArr, user.openid) !== -1) {
