@@ -59,21 +59,23 @@ module.exports = function(){
                     this.redirect('/marketing/power/fullInfo?id=' + participant._id);
                 }else {
                     if (participant.activity.lFlg === 'a') {
-                        var status = yield powerParticipantService.getStatus(participant, user);
-                        util.extend(participant, status);
-                        var participants = yield powerActivityService.getParticipantRankingList(participant.activity._id, 200);
-                        yield powerActivityService.increaseViews(participant.activity._id);
-                        if (participant.activity.type === PowerType.RedPacket.value()) {
-                            yield this.render('/marketing/power/participant-redpacket', {
-                                participant: participant,
-                                participants: participants
-                            });
-                        } else if (participant.activity.type === PowerType.Points.value()) {
-                            yield this.render('/marketing/power/participant-points', {
-                                participant: participant,
-                                participants: participants
-                            });
-                        }
+                        var time = new Date().getTime();
+                        this.redirect('/marketing/power/' + time + '/participant?id=' + participant._id);
+                        //var status = yield powerParticipantService.getStatus(participant, user);
+                        //util.extend(participant, status);
+                        //var participants = yield powerActivityService.getParticipantRankingList(participant.activity._id, 200);
+                        //yield powerActivityService.increaseViews(participant.activity._id);
+                        //if (participant.activity.type === PowerType.RedPacket.value()) {
+                        //    yield this.render('/marketing/power/participant-redpacket', {
+                        //        participant: participant,
+                        //        participants: participants
+                        //    });
+                        //} else if (participant.activity.type === PowerType.Points.value()) {
+                        //    yield this.render('/marketing/power/participant-points', {
+                        //        participant: participant,
+                        //        participants: participants
+                        //    });
+                        //}
                     } else {
                         yield this.render('/marketing/power/error', {error: '活动暂未开放'});
                     }
@@ -86,7 +88,7 @@ module.exports = function(){
         }
     });
 
-    router.get('/new/participant', needBaseInfoFilter, function *(){
+    router.get('/:time/participant', needBaseInfoFilter, function *(){
         var id = this.query.id;
         var user = this.session.auth && this.session.auth.user;
         if(user) {
