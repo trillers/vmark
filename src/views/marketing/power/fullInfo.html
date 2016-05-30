@@ -41,7 +41,8 @@
                     $.post('/api/marketing/power/fullInfo', data, function (data) {
                         $('#mask').hide();
                         if (!data.error) {
-                            window.location.href = window.__app.settings.app.url + '/marketing/power/participant?id={{participantId}}';
+                            var timestamp = new Date().getTime();
+                            window.location.href = window.__app.settings.app.url + '/marketing/power/' + timestamp + '/participant?id={{participantId}}';
                         } else if (data.error) {
                             alert('网络繁忙,请稍后重试');
                         }

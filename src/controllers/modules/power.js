@@ -33,7 +33,33 @@ module.exports = function(){
             var status = yield powerActivityService.getStatus(activity, user);
 
             if(status.participant){
-                this.redirect('/marketing/power/participant?id=' + status.participant);
+                var time = new Date().getTime();
+                this.redirect('/marketing/power/' + time + '/participant?id=' + status.participant);
+            }else {
+                util.extend(activity, status);
+                var participants = yield powerActivityService.getParticipantRankingList(activity._id, 200);
+                yield powerActivityService.increaseViews(activity._id);
+                if(activity.type === PowerType.RedPacket.value()) {
+                    yield this.render('/marketing/power/activity-redpacket', {activity: activity, participants: participants});
+                }else if(activity.type === PowerType.Points.value()) {
+                    yield this.render('/marketing/power/activity-points', {activity: activity, participants: participants});
+                }
+            }
+        }else{
+            yield this.render('/marketing/power/error', {error: '活动暂未开放'});
+        }
+    });
+
+    router.get('/:time/activity', needBaseInfoFilter, function *(){
+        var id = this.query.id;
+        var user = this.session.auth && this.session.auth.user;
+        var activity = yield powerActivityService.loadById(id);
+        if(activity && activity.lFlg === 'a'){
+            var status = yield powerActivityService.getStatus(activity, user);
+
+            if(status.participant){
+                var time = new Date().getTime();
+                this.redirect('/marketing/power/' + time + '/participant?id=' + status.participant);
             }else {
                 util.extend(activity, status);
                 var participants = yield powerActivityService.getParticipantRankingList(activity._id, 200);

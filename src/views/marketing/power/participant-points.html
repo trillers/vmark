@@ -422,13 +422,14 @@
             tip.slideUp()
         }, 3000);
     }
+    var timestamp = new Date().getTime();
     window.shareData = {
         "moduleName": "Helping",
         "moduleID": "0",
         "imgUrl": "{{participant.activity.shareImg || 'http://s.404.cn/tpl/static/helping/images/default.jpg'}}",
-        "timeLineLink": window.__app.settings.app.url + '/marketing/power/participant?id=' + '{{participant._id}}',
-        "sendFriendLink": window.__app.settings.app.url + '/marketing/power/participant?id=' + '{{participant._id}}',
-        "weiboLink": window.__app.settings.app.url + '/marketing/power/participant?id=' + '{{participant._id}}',
+        "timeLineLink": window.__app.settings.app.url + '/marketing/power/' + timestamp + '/participant?id=' + '{{participant._id}}',
+        "sendFriendLink": window.__app.settings.app.url + '/marketing/power/' + timestamp + '/participant?id=' + '{{participant._id}}',
+        "weiboLink": window.__app.settings.app.url + '/marketing/power/' + timestamp + '/participant?id=' + '{{participant._id}}',
         "tContent": "{{participant.activity.shareDesc || '我正在参加积分助力活动，小伙伴们快来帮忙呀！'}}",
         "tTitle": "{{participant.activity.shareTitle || '积分助力，祝我成功！'}}",
         "fTitle": "{{participant.activity.shareTitle || '我正在参加积分助力活动，小伙伴们快来帮忙呀！'}}"
