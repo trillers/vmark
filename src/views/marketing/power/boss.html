@@ -54,7 +54,7 @@
         $.get('/api/marketing/power/load', function (data) {
             data.forEach(function (item) {
                 item.type = getActivityType(item.type);
-                $('#list').append($('<li style="height: 17px; overflow: hidden; margin-top: 2px;"> <strong class="col-md-2 activity-name" _id="'+ item._id +'">' + item.name + '</strong> <strong class="col-md-2">' + formatDate(item.startTime) + '</strong> <strong class="col-md-2">' + formatDate(item.endTime) + '</strong><strong class="col-md-2">' + item.type + '</strong> <strong class="col-md-4 actionCon"><a href="'+ window.__app.settings.app.url + '/marketing/power/activity?id=' + item._id +'" target="_blank">查看</a><a href="{{api}}' + '/marketing/power/exportParticipants?id=' + item._id + '" target="_blank" >导出</a><a href="{{api}}' + '/marketing/power/sync?id=' + item._id + '" target="_blank" >同步</a></strong> </li>'));
+                $('#list').append($('<li style="height: 17px; overflow: hidden; margin-top: 2px;"> <strong class="col-md-2 activity-name" _id="'+ item._id +'">' + item.name + '</strong> <strong class="col-md-2">' + formatDate(item.startTime) + '</strong> <strong class="col-md-2">' + formatDate(item.endTime) + '</strong><strong class="col-md-2">' + item.type + '</strong> <strong class="col-md-2 actionCon"><a href="'+ window.__app.settings.app.url + '/marketing/power/activity?id=' + item._id +'" target="_blank">查看</a><a href="{{api}}' + '/marketing/power/exportParticipants?id=' + item._id + '" target="_blank" >导出</a><a href="{{api}}' + '/marketing/power/sync?id=' + item._id + '" target="_blank" >同步</a></strong> <strong class="col-md-2">' + (item.remark || '')  + '</strong></li>'));
             });
             $('.activity-name').off('click').click(function(){
                 edit($(this).attr('_id'));
@@ -133,6 +133,7 @@
                 type: $(':radio[name="activity_type"]:checked').val()
                 , withPic: false
                 , name: $('#activityName').val()
+                , remark: $('#remark').val()
                 , bgImg: bgImg
                 , shareImg: shareImg
                 , posterBgImg: posterBgImg
@@ -191,6 +192,7 @@
                 $('#powerList').hide();
                 $('#addForm').show();
                 $('#activityName').val(data.name);
+                $('#remark').val(data.remark || '');
                 $('#shareTitle').val(data.shareTitle);
                 if(data.type === 'rp'){
                     $("input[name='activity_type']")[0].checked = true;
@@ -351,7 +353,8 @@
                             <strong class="col-md-2">开始时间</strong>
                             <strong class="col-md-2">结束时间</strong>
                             <strong class="col-md-2">类型</strong>
-                            <strong class="col-md-4">操作</strong>
+                            <strong class="col-md-2">操作</strong>
+                            <strong class="col-md-2">备注</strong>
                         </li>
 
                         <li>
@@ -375,6 +378,7 @@
                             <!--<div id="posterBgImg1" class="posterBgImgCon"><i class="glyphicon glyphicon-remove"></i><img src="" alt=""/></div>-->
                         <!--</li>-->
                         <li><span>活动名称:  </span><input id="activityName" type="text"/></li>
+                        <li><span>活动备注:  </span><input id="remark" type="text"/></li>
                         <li class="bgImg" style="min-height: 26px"><span style="float: left">背景图片(3张):  </span><input id="bgImg" type="file" multiple="multiple" accept="image/bmp, image/jpg, image/jpeg, image/gif, image/png" onchange="uploadBgImg()" style="width: 60px;"/>
 
                             <div id="bgImg1" class="bgImgCon"><i class="glyphicon glyphicon-remove"></i><img src="" alt=""/></div>

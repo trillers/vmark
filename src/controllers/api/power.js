@@ -25,6 +25,7 @@ module.exports = function(router){
             ,friend_help_max_power: this.request.body.friend_help_max_power
             ,rule: this.request.body.rule
             ,desc: this.request.body.desc
+            ,remark: this.request.body.remark
             //,withPic: this.request.body.withPic
             //,posterBgImg: this.request.body.posterBgImg
     }
@@ -61,6 +62,7 @@ module.exports = function(router){
             ,friend_help_max_power: this.request.body.friend_help_max_power
             ,rule: this.request.body.rule
             ,desc: this.request.body.desc
+            ,remark: this.request.body.remark
             //,posterBgImg: this.request.body.posterBgImg
         }
         var data = yield powerActivityService.updateById(id, json);

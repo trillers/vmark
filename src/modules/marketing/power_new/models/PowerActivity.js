@@ -30,6 +30,7 @@ var Model = function(DomainBuilder){
             ,poster: {type: String, ref: 'PowerPoster'} //activity poster
             ,type: {type: String, enum: PowerType.valueList(), default: PowerType.RedPacket.value(), required: true}
             ,courseUrl: {type: String}
+            ,remark: {type: String}
         })
         .build();
     return schema.model(true);
