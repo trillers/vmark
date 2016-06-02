@@ -103,7 +103,8 @@ module.exports = function(router){
         }
         var participants = yield powerParticipantService.filter(params);
         participants.forEach(function(item){
-            conf.rows.push([item.activity.name, item.user.nickname, item.phone, item.total_power]);
+            var nickname = (item.user && item.user.nickname) || '匿名';
+            conf.rows.push([item.activity.name, nickname, item.phone, item.total_power]);
         });
         var result = nodeExcel.execute(conf);
         var data = yield powerActivityService.loadById(activityId);
