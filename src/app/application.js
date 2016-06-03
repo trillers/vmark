@@ -35,3 +35,8 @@ app.on('error', function(err){
 server.listen(app.port, app.bindip, function(){
     logger.info('Http server is binding on '+ app.bindip +' and listening on port ' + app.port + ' in ' + app.env );
 });
+
+//process.on('uncaughtException', function(err){
+//    console.log(`Caught exception: ${err}`);
+//});
+

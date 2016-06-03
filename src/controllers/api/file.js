@@ -2,10 +2,11 @@ var util = require('util');
 var logger = require('../../app/logging').logger;
 var FileService = require('../../modules/file/services/FileService');
 var wechatApi = require('../../modules/wechat/common/api').api;
-var fs = require('fs');
+var Promise = require('bluebird');
+var fs = Promise.promisifyAll(require('fs'));
 var path = require('path');
-var thunkify = require('thunkify');
-var readFile = thunkify(fs.readFile);
+//var thunkify = require('thunkify');
+//var readFile = thunkify(fs.readFile);
 
 module.exports = function(router){
     /**
@@ -17,8 +18,11 @@ module.exports = function(router){
         var media_id = self.query.media_id;
         try {
             var file = yield FileService.loadAsync(media_id);
+            var stats = yield fs.statAsync(file.path);
+            self.set('Last-Modified', stats.mtime.toUTCString());
+            self.set('Content-Length', stats.size);
             self.type = file.mimeType;
-            self.body = yield readFile(file.path);
+            self.body = fs.createReadStream(file.path);
         }catch(err){
             console.error(err.stack);
             self.body = '404';
