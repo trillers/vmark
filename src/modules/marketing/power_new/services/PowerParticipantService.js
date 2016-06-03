@@ -92,6 +92,16 @@ Service.prototype.deleteById = function*(id){
     return doc;
 }
 
+Service.prototype.deleteByUserIdAndActivityId = function* (userId, activityId){
+    var logger = this.context.logger;
+    var PowerParticipant = this.context.models.PowerParticipant;
+    var doc = yield PowerParticipant.findOneAndUpdate({activity: activityId, user: userId, lFlg: 'a'}, {lFlg: 'd'}, {new: true}).lean().exec();
+    var kv = this.context.kvs.power;
+    yield kv.delParticipantAsync(doc);
+    logger.info('success delete participant by user id: ' + userId + ' and activity id:' + activityId);
+    return doc;
+}
+
 Service.prototype.loadAll = function*(){
     var logger = this.context.logger;
     var PowerParticipant = this.context.models.PowerParticipant;

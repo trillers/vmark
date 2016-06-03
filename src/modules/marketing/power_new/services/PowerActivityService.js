@@ -321,14 +321,17 @@ Service.prototype.getActivityPoster = function*(qr, wechatId, openid){
 Service.prototype.scanActivityPoster = function*(qr, wechatId, openid){
     var logger = this.context.logger;
     var activity = null;
+    var user = null;
     var wechatApi = (yield wechatApiCache.get(wechatId)).api;
+    var powerParticipantService = this.context.services.powerParticipantService;
 
     try {
         var tenantUserService = this.context.services.tenantUserService;
         var powerPosterService = this.context.services.powerPosterService;
         var poster = yield powerPosterService.loadByWechatIdAndSceneId(wechatId, qr.sceneId);
-        var user = yield tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, openid);
+        user = yield tenantUserService.loadUserByWechatIdAndOpenidAsync(wechatId, openid);
         activity = yield this.loadById(poster.activity);
+
         var status = yield this.getStatus(activity, user);
         if(activity.type === ActivityType.RedPacket.value() || activity.type === ActivityType.Points.value()){
             yield this.scanRpAndPoActivityPoster(user, activity, status, wechatId);
@@ -339,6 +342,7 @@ Service.prototype.scanActivityPoster = function*(qr, wechatId, openid){
     }catch(e){
         logger.error('scan activity poster err: ' + e + ', qr: ' + qr._id + ', user openid: ' + openid);
         logger.error(e.stack);
+        yield powerParticipantService.deleteByUserIdAndActivityId(user._id, activity._id);
         wechatApi.sendText(openid, '抱歉,参与活动失败', function (err) {
             if(err) logger.error(err);
         });

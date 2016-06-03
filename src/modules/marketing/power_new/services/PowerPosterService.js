@@ -96,7 +96,7 @@ Service.prototype.getPosterMediaId = function*(poster){
     if(expired){
         var imageData = yield wechatApi.uploadMediaAsync(poster.path, 'image');
         var mediaId = imageData[0].media_id;
-        yield this.updateById(poster._id, {mediaId: mediaId});
+        yield this.updateById(poster._id, {crtOn: new Date(), mediaId: mediaId});
         return mediaId;
     }else {
         return poster.mediaId;

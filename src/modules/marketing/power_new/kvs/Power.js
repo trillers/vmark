@@ -76,6 +76,31 @@ Kv.prototype.saveParticipant = function(json, callback){
 }
 
 /**
+ * del power activity participant from redis
+ * @param participant json
+ * */
+Kv.prototype.delParticipant = function(json, callback){
+    var redis = this.context.redis.main;
+    var self = this;
+    var obj = _.clone(json);
+    obj.crtOn && (delete obj.crtOn);
+    var participantId = obj.id || obj._id;
+    var key = idToParticipantKey(participantId);
+    redis.del(key, function(err, result){
+        if(!err && result === 1){
+            self.unLinkUserToParticipantId(obj.activity, obj.user);
+            self.removeParticipantFromRankingList(obj.activity, obj.user);
+            self.decActivityParticipantsCountById(obj.activity);
+        }
+        cbUtil.logCallback(
+            err,
+            'Fail to del power activity participant by id ' + participantId + ': ' + err,
+            'Succeed to del power activity participant by id ' + participantId);
+        cbUtil.handleSingleValue(callback, err, result);
+    });
+}
+
+/**
  * link power activity participant to user
  * @param activity id
  * @param user id
@@ -88,6 +113,23 @@ Kv.prototype.linkUserToParticipantId = function(activityId, userId, participantI
             err,
             'Fail to link power activity participant to user:' + userId + 'err: ' + err,
             'Succeed to link power activity participant to user: ' + userId);
+        cbUtil.handleSingleValue(callback, err, result);
+    });
+}
+
+/**
+ * unLink power activity participant to user
+ * @param activity id
+ * @param user id
+ * */
+Kv.prototype.unLinkUserToParticipantId = function(activityId, userId, callback){
+    var redis = this.context.redis.main;
+    var key = activityIdToUserIdParticipantIdHashKey(activityId);
+    redis.hdel(key, userId, function(err, result){
+        cbUtil.logCallback(
+            err,
+            'Fail to unLink power activity participant to user:' + userId + 'err: ' + err,
+            'Succeed to unlink power activity participant to user: ' + userId);
         cbUtil.handleSingleValue(callback, err, result);
     });
 }
@@ -176,6 +218,22 @@ Kv.prototype.incActivityParticipantsCountById = function(id, callback){
 }
 
 /**
+ * update power activity participant count by id
+ * @param activity id
+ * */
+Kv.prototype.decActivityParticipantsCountById = function(id, callback){
+    var redis = this.context.redis.main;
+    var key = idToActivityKey(id);
+    redis.hincrby(key,'participants_count', -1, function(err, result){
+        cbUtil.logCallback(
+            err,
+            'Fail to update power activity participants_count by id ' + id + ': ' + err,
+            'Succeed to update power activity participants_count by id ' + id);
+        cbUtil.handleSingleValue(callback, err, result);
+    });
+}
+
+/**
  * update power activity participant power by id
  * @param participant id
  * */
@@ -239,6 +297,26 @@ Kv.prototype.addParticipantInRankingList = function(activityId, userId, initialP
             err,
             'Fail to add participant with score, activity id ' + activityId + ': ' + err,
             'Succeed to add participant with score, activity id ' + activityId);
+
+        cbUtil.handleSingleValue(callback, err, result);
+    });
+};
+
+/**
+ * remove participant from ranking list
+ * @param activityId activity id
+ * @param userId the id of the user of the participant
+ * @param initialPower
+ * @param callback callback(err, affectedNum)
+ */
+Kv.prototype.removeParticipantFromRankingList = function(activityId, userId, callback){
+    var redis = this.context.redis.main;
+    var key = idToRankingListKey(activityId);
+    redis.ZREM(key, userId, function(err, result){
+        cbUtil.logCallback(
+            err,
+            'Fail to remove participant from ranking list, activity id ' + activityId + ' user id: ' + userId + ' : ' + err,
+            'Success to remove participant from ranking list, activity id ' + activityId + ' user id: ' + userId);
 
         cbUtil.handleSingleValue(callback, err, result);
     });
