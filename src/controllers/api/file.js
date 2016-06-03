@@ -20,6 +20,7 @@ module.exports = function(router){
             self.type = file.mimeType;
             self.body = yield readFile(file.path);
         }catch(err){
+            console.error(err.stack);
             self.body = '404';
         }
     });
