@@ -14,10 +14,10 @@ var Canvas = require('canvas')
 
 var getImgPaths = function(type, openid){
     return {
-        bgImgPath: path.join(__dirname, '../../../../public/uploads/posters/' + type + '_bgImg_' + openid + '.png'),
-        qrPath: path.join(__dirname, '../../../../public/uploads/posters/' + type + '_qr_' + openid + '.png'),
-        posterPath: path.join(__dirname, '../../../../public/uploads/posters/' + type + '_poster_' + openid + '.png'),
-        headImgPath: path.join(__dirname, '../../../../public/uploads/posters/' + type + '_headImg_' + openid + '.png')
+        bgImgPath: path.join(__dirname, '../../../../public/uploads/posters/' + type + '_bgImg_' + openid + '.jpg'),
+        qrPath: path.join(__dirname, '../../../../public/uploads/posters/' + type + '_qr_' + openid + '.jpg'),
+        posterPath: path.join(__dirname, '../../../../public/uploads/posters/' + type + '_poster_' + openid + '.jpg'),
+        headImgPath: path.join(__dirname, '../../../../public/uploads/posters/' + type + '_headImg_' + openid + '.jpg')
     }
 }
 
@@ -70,7 +70,7 @@ var drawImg = function*(ctx, url, path, offsetX, offsetY, width, height, type){
 var drawText = function*(ctx, text, offsetX, offsetY, maxWidth){
     ctx.save();
     //todo font size
-    ctx.font = "5px arial";
+    ctx.font = "16px SimHei";
     ctx.fillStyle = 'white';
     ctx.textAlign = 'center';
     ctx.fillText(text, offsetX, offsetY, maxWidth);
@@ -79,7 +79,6 @@ var drawText = function*(ctx, text, offsetX, offsetY, maxWidth){
 
 
 var drawSdActivityPoster = function*(posterMeta, wechatId, bgImg){
-    console.log('^^^^^^^^^^^^^^^^^^^^^^^')
     var qr = posterMeta.qr;
     var canvas = new Canvas(450, 800);
     var ctx = canvas.getContext('2d');
@@ -94,7 +93,6 @@ var drawSdActivityPoster = function*(posterMeta, wechatId, bgImg){
 
 var drawSdParticipantPoster = function*(meta){
     try{
-        console.log("&&&&&&&&&&&&&&&&&&&")
         var qr = meta.qr;
         var user = meta.user;
         var bgImg = meta.bgImg;
